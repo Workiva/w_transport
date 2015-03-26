@@ -1,0 +1,6 @@
+.idea
+.pub
+packages
+pubspec.lock
+dartdoc-viewer
+example/http/cross_origin_file_transfer/files

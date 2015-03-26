@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cross Origin File Transfer | HTTP Example</title>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loading-overlay"><div class="loading">Loading...</div></div>
+
+    <div class="container">
+        <h1>Cross Origin File Transfer</h1>
+        <p>
+            Drag and drop files to upload them to a server via HTTP. Once files have been uploaded, they can be downloaded to the client.
+            This example uses the client-side implementation of <code>WRequest</code> and <code>WResponse</code> to transfer files to and from the server.
+            If you choose to enable the proxy server, all requests will go through the proxy instead of directly to the file server.
+            This effectively tests the server-side implementation of <code>WRequest</code> and <code>WStreamedResponse</code> since the
+            proxy server uses it to communicate with the file server.
+        </p>
+        <div id="app"></div>
+    </div>
+
+    <script src="packages/react/react.js"></script>
+    <script type="application/dart" src="client.dart"></script>
+    <script src="packages/browser/dart.js"></script>
+</body>
+</html>

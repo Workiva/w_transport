@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Client | HTTP Example</title>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loading-overlay"><div class="loading">Loading...</div></div>
+
+    <div class="container">
+        <h1>Simple Client File Browser</h1>
+        <p>This example mimics a file browser. Clicking on any of the file names will send a GET request to retrieve the file contents, displaying them in the content pane on the right.</p>
+
+        <ul class="files">
+            <li>data/
+                <ul>
+                    <li><a class="file" href="data/family.json">family.json</a></li>
+                    <li><a class="file" href="data/motto.txt">motto.txt</a></li>
+                </ul>
+            </li>
+            <li><a class="file" href="README.md">README.md</a></li>
+            <li><a class="file" href="index.html">index.html</a></li>
+            <li><a class="file" href="nonexistant.txt">nonexistant.txt</a></li>
+            <li><a class="file" href="client.dart">simple_client.dart</a></li>
+        </ul>
+
+        <div class="content">
+            <pre id="response"></pre>
+        </div>
+    </div>
+
+    <script src="packages/react/react.js"></script>
+    <script type="application/dart" src="client.dart"></script>
+    <script src="packages/browser/dart.js"></script>
+</body>
+</html>

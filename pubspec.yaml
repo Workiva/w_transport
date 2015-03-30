@@ -1,0 +1,7 @@
+name: w_transport
+version: 0.0.1
+author: Workiva
+description: Ready to use transport abstractions over HttpRequest and WebSocket.
+dev_dependencies:
+  browser: any
+  unittest: '>=0.11.0'

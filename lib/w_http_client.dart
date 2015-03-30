@@ -1,3 +1,3 @@
 library w_http_client;
 
-export 'src/http/client.dart';
+export 'src/http/w_http_client.dart';

@@ -1,3 +1,3 @@
 library w_http_server;
 
-export 'src/http/server.dart';
+export 'src/http/w_http_server.dart';

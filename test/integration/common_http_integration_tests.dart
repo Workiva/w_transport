@@ -1,11 +1,11 @@
 library common_http_integration_tests;
 
 // Dart imports
+import 'dart:async';
 import 'dart:convert';
 
 // Package imports
 import 'package:unittest/unittest.dart';
-import 'package:w_transport/w_http.dart';
 
 // Src imports
 import '../server/http_server_constants.dart';
@@ -16,74 +16,93 @@ import 'utils.dart';
  * These are HTTP integration tests that should work from client or server.
  * These will not pass if run on their own!
  */
-void run(String usage) {
+void run(String usage, dynamic newRequest(), Future<String> getResponseText(resp)) {
+
+  void setReqPath(WHttp req, String path) {
+    req.url(Uri.parse(httpServerAddress).replace(path: path));
+  }
+
   group('WHttp $usage', () {
 
-    WHttp req;
+    dynamic req;
 
     setUp(() {
-      req = new WHttp()..url = Uri.parse(httpServerAddress);
+      req = newRequest()..url(Uri.parse(httpServerAddress));
     });
 
     test('should successfully send an HTTP request', () {
-      req.path = Routes.ping;
-      req.get().then(expectAsync((_) {
-        expect(req.status, equals(200));
-        expect(req.response, equals(pingResponse));
+      setReqPath(req, Routes.ping);
+      req.get().then(expectAsync((response) {
+        expect(response.status, equals(200));
+        getResponseText(response).then(expectAsync((String responseText) {
+          expect(responseText, equals(pingResponse));
+        }));
       }));
     });
 
     group('request methods', () {
 
+      setUp(() {
+        setReqPath(req, Routes.reflect);
+      });
+
       test('should support a DELETE method', () {
-        req.path = Routes.reflect;
-        req.delete().then(expectAsync((_) {
-          Map response = JSON.decode(req.response);
-          expect(response['method'], equals('DELETE'));
+        req.delete().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            expect(responseJson['method'], equals('DELETE'));
+          }));
         }));
       });
 
       test('should support a GET method', () {
-        req.path = Routes.reflect;
-        req.get().then(expectAsync((_) {
-          Map response = JSON.decode(req.response);
-          expect(response['method'], equals('GET'));
+        req.get().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            expect(responseJson['method'], equals('GET'));
+          }));
         }));
       });
 
       test('should support a OPTIONS method', () {
-        req.path = Routes.reflect;
-        req.options().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          expect(response['method'], equals('OPTIONS'));
+        req.options().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            expect(responseJson['method'], equals('OPTIONS'));
+          }));
         }));
       });
 
       test('should support a PATCH method', () {
-        req.path = Routes.reflect;
-        req.patch().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          expect(response['method'], equals('PATCH'));
+        req.patch().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            expect(responseJson['method'], equals('PATCH'));
+          }));
         }));
       });
 
       test('should support a POST method', () {
-        req.path = Routes.reflect;
-        req.post().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          expect(response['method'], equals('POST'));
+        req.post().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            expect(responseJson['method'], equals('POST'));
+          }));
         }));
       });
 
       test('should support a PUT method', () {
-        req.path = Routes.reflect;
-        req.put().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          expect(response['method'], equals('PUT'));
+        req.put().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            expect(responseJson['method'], equals('PUT'));
+          }));
         }));
       });
 
@@ -91,39 +110,38 @@ void run(String usage) {
 
     group('request data', () {
 
-      test('should be supported on a PATCH request', () {
-        req
-          ..path = Routes.reflect
-          ..data = 'data';
+      setUp(() {
+        setReqPath(req, Routes.reflect);
+        req.data('data');
+      });
 
-        req.patch().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          expect(response['body'], equals('data'));
+      test('should be supported on a PATCH request', () {
+        req.patch().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            expect(responseJson['body'], equals('data'));
+          }));
         }));
       });
 
       test('should be supported on a POST request', () {
-        req
-          ..path = Routes.reflect
-          ..data = 'data';
-
-        req.post().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          expect(response['body'], equals('data'));
+        req.post().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            expect(responseJson['body'], equals('data'));
+          }));
         }));
       });
 
       test('should be supported on a PUT request', () {
-        req
-          ..path = Routes.reflect
-          ..data = 'data';
-
-        req.put().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          expect(response['body'], equals('data'));
+        req.put().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            expect(responseJson['body'], equals('data'));
+          }));
         }));
       });
 
@@ -132,78 +150,88 @@ void run(String usage) {
     group('request headers', () {
 
       setUp(() {
-        req
-          ..path = Routes.reflect
-          ..headers = {
+        setReqPath(req, Routes.reflect);
+        req.headers({
             'content-type': 'application/json',
             'x-tokens': 'token1, token2',
-        }
-          ..header('authorization', 'test');
+        }).header('authorization', 'test');
       });
 
       test('should be supported on a DELETE request', () {
-        req.delete().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          Map<String, List<String>> headers = parseHeaders(response['headers']);
-          expect(headers['content-type'], equals(['application/json']));
-          expect(headers['authorization'], equals(['test']));
-          expect(headers['x-tokens'], equals(['token1', 'token2']));
+        req.delete().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            Map<String, List<String>> headers = parseHeaders(responseJson['headers']);
+            expect(headers['content-type'], equals(['application/json']));
+            expect(headers['authorization'], equals(['test']));
+            expect(headers['x-tokens'], equals(['token1', 'token2']));
+          }));
         }));
       });
 
       test('should be supported on a GET request', () {
-        req.get().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          Map<String, List<String>> headers = parseHeaders(response['headers']);
-          expect(headers['content-type'], equals(['application/json']));
-          expect(headers['authorization'], equals(['test']));
-          expect(headers['x-tokens'], equals(['token1', 'token2']));
+        req.get().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            Map<String, List<String>> headers = parseHeaders(responseJson['headers']);
+            expect(headers['content-type'], equals(['application/json']));
+            expect(headers['authorization'], equals(['test']));
+            expect(headers['x-tokens'], equals(['token1', 'token2']));
+          }));
         }));
       });
 
       test('should be supported on a OPTIONS request', () {
-        req.options().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          Map<String, List<String>> headers = parseHeaders(response['headers']);
-          expect(headers['content-type'], equals(['application/json']));
-          expect(headers['authorization'], equals(['test']));
-          expect(headers['x-tokens'], equals(['token1', 'token2']));
+        req.options().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            Map<String, List<String>> headers = parseHeaders(responseJson['headers']);
+            expect(headers['content-type'], equals(['application/json']));
+            expect(headers['authorization'], equals(['test']));
+            expect(headers['x-tokens'], equals(['token1', 'token2']));
+          }));
         }));
       });
 
       test('should be supported on a PATCH request', () {
-        req.patch().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          Map<String, List<String>> headers = parseHeaders(response['headers']);
-          expect(headers['content-type'], equals(['application/json']));
-          expect(headers['authorization'], equals(['test']));
-          expect(headers['x-tokens'], equals(['token1', 'token2']));
+        req.patch().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            Map<String, List<String>> headers = parseHeaders(responseJson['headers']);
+            expect(headers['content-type'], equals(['application/json']));
+            expect(headers['authorization'], equals(['test']));
+            expect(headers['x-tokens'], equals(['token1', 'token2']));
+          }));
         }));
       });
 
       test('should be supported on a POST request', () {
-        req.post().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          Map<String, List<String>> headers = parseHeaders(response['headers']);
-          expect(headers['content-type'], equals(['application/json']));
-          expect(headers['authorization'], equals(['test']));
-          expect(headers['x-tokens'], equals(['token1', 'token2']));
+        req.post().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            Map<String, List<String>> headers = parseHeaders(responseJson['headers']);
+            expect(headers['content-type'], equals(['application/json']));
+            expect(headers['authorization'], equals(['test']));
+            expect(headers['x-tokens'], equals(['token1', 'token2']));
+          }));
         }));
       });
 
       test('should be supported on a PUT request', () {
-        req.put().then(expectAsync((_) {
-          expect(req.status, equals(200));
-          Map response = JSON.decode(req.response);
-          Map<String, List<String>> headers = parseHeaders(response['headers']);
-          expect(headers['content-type'], equals(['application/json']));
-          expect(headers['authorization'], equals(['test']));
-          expect(headers['x-tokens'], equals(['token1', 'token2']));
+        req.put().then(expectAsync((response) {
+          expect(response.status, equals(200));
+          getResponseText(response).then(expectAsync((String responseText) {
+            Map responseJson = JSON.decode(responseText);
+            Map<String, List<String>> headers = parseHeaders(responseJson['headers']);
+            expect(headers['content-type'], equals(['application/json']));
+            expect(headers['authorization'], equals(['test']));
+            expect(headers['x-tokens'], equals(['token1', 'token2']));
+          }));
         }));
       });
 

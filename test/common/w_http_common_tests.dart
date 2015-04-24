@@ -3,7 +3,7 @@ library w_transport.integration.w_http_common_tests;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 import './w_http_utils.dart';
 
@@ -13,7 +13,7 @@ import './w_http_utils.dart';
 void run(String usage, dynamic newRequest(), Future<String> getResponseText(resp)) {
 
   void setReqPath(req, String path) {
-    req.url = Uri.parse('http://localhost:8024').replace(path: path);
+    req.uri = Uri.parse('http://localhost:8024').replace(path: path);
   }
 
   group('WRequest ($usage)', () {
@@ -21,7 +21,7 @@ void run(String usage, dynamic newRequest(), Future<String> getResponseText(resp
     dynamic http;
 
     setUp(() {
-      http = newRequest()..url = Uri.parse('http://localhost:8024');
+      http = newRequest()..uri = Uri.parse('http://localhost:8024');
     });
 
     test('should successfully send an HTTP request', httpTest((store) async {

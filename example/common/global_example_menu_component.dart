@@ -7,6 +7,9 @@ import 'package:react/react.dart' as react;
 import 'package:w_transport/w_http_client.dart';
 
 
+const int _pollingInterval = 4; // 4 seconds
+
+
 void renderGlobalExampleMenu({nav: true, serverStatus: false, proxyStatus: false}) {
   // Insert a container div within which we will mount the global example menu.
   var container = document.createElement('div');
@@ -19,9 +22,9 @@ void renderGlobalExampleMenu({nav: true, serverStatus: false, proxyStatus: false
 }
 
 
-Future<bool> _ping(Uri url) async {
+Future<bool> _ping(Uri uri) async {
   try {
-    WResponse response = await new WRequest().get(url);
+    WResponse response = await new WRequest().get(uri);
     return response.status == 200;
   } catch (e) {
     return false;
@@ -40,7 +43,7 @@ Stream _poll(Future ping(), [StreamController controller]) {
 
   ping().then((bool status) {
     controller.add(status);
-    new Timer(new Duration(seconds: 4), () {
+    new Timer(new Duration(seconds: _pollingInterval), () {
       _poll(ping, controller);
     });
   });
@@ -90,11 +93,9 @@ class GlobalExampleMenuComponent extends react.Component {
   void componentWillUnmount() {
     if (serverPolling != null) {
       serverPolling.cancel();
-      serverPolling = null;
     }
     if (proxyPolling != null) {
       proxyPolling.cancel();
-      proxyPolling = null;
     }
   }
 
@@ -133,7 +134,11 @@ class GlobalExampleMenuComponent extends react.Component {
                            (this.props['proxyStatus'] && !this.state['proxyOnline']);
     if (serverTipNeeded) {
       String tip = 'Run <code>./tool/server.sh</code> to start both the server and the proxy server.';
-      serverTip = react.div({'className': 'server-status-tip muted', 'dangerouslySetInnerHTML': {'__html': tip}});
+      serverTip = react.div({'className': 'server-status-tip muted'}, [
+        react.span({}, 'Run '),
+        react.code({}, './tool/server.sh'),
+        react.span({}, ' to start both the server and the proxy server.'),
+      ]);
     }
 
     return react.div({'className': 'global-example-menu'},

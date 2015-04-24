@@ -56,7 +56,7 @@ Future<bool> logout() async {
 /// Attempt to make a request that requires credentials.
 /// This request sets the `withCredentials` flag, which
 /// means the session HTTP cookie (if set) will be included.
-/// Thus, if authenticated, this requets should succeed.
+/// Thus, if authenticated, this request should succeed.
 Future<String> makeCredentialedRequest() async {
   WRequest req = new WRequest()
     ..withCredentials = true;

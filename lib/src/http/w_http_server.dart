@@ -4,13 +4,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:w_transport/w_url.dart' show UrlMutation;
+import 'package:fluri/fluri.dart';
+
 import './w_http.dart';
 
 
 /// Server-side implementation of an HTTP transport.
 /// Uses dart:io.HttpClient and dart:io.HttpClientRequest.
-class WRequest extends UrlMutation implements WTransportRequest {
+class WRequest extends WTransportRequest with FluriMixin {
   HttpClientRequest _request;
 
   /// Create a WRequest that will use its own, new HttpClient instance.
@@ -28,7 +29,7 @@ class WRequest extends UrlMutation implements WTransportRequest {
   /// Can be a String or Stream.
   dynamic _data;
   dynamic get data => _data;
-  void set data(dynamic data) {
+  void set data(Object data) {
     if (data is! String && data is! Stream) {
       throw new ArgumentError('WRequest body must be a String or a Stream.');
     }
@@ -57,60 +58,60 @@ class WRequest extends UrlMutation implements WTransportRequest {
   }
 
   /// Send a DELETE request.
-  Future<WStreamedResponse> delete([Uri url]) {
-    return _send('DELETE', url);
+  Future<WStreamedResponse> delete([Uri uri]) {
+    return _send('DELETE', uri);
   }
 
   /// Send a GET request.
-  Future<WStreamedResponse> get([Uri url]) {
-    return _send('GET', url);
+  Future<WStreamedResponse> get([Uri uri]) {
+    return _send('GET', uri);
   }
 
   /// Send a HEAD request.
-  Future<WStreamedResponse> head([Uri url]) {
-    return _send('HEAD', url);
+  Future<WStreamedResponse> head([Uri uri]) {
+    return _send('HEAD', uri);
   }
 
   /// Send an OPTIONS request.
-  Future<WStreamedResponse> options([Uri url]) {
-    return _send('OPTIONS', url);
+  Future<WStreamedResponse> options([Uri uri]) {
+    return _send('OPTIONS', uri);
   }
 
   /// Send a PATCH request.
-  Future<WStreamedResponse> patch([Uri url, Object data]) {
-    return _send('PATCH', url, data);
+  Future<WStreamedResponse> patch([Uri uri, Object data]) {
+    return _send('PATCH', uri, data);
   }
 
   /// Send a POST request.
-  Future<WStreamedResponse> post([Uri url, Object data]) {
-    return _send('POST', url, data);
+  Future<WStreamedResponse> post([Uri uri, Object data]) {
+    return _send('POST', uri, data);
   }
 
   /// Send a PUT request.
-  Future<WStreamedResponse> put([Uri url, Object data]) {
-    return _send('PUT', url, data);
+  Future<WStreamedResponse> put([Uri uri, Object data]) {
+    return _send('PUT', uri, data);
   }
 
   /// Send a TRACE request.
-  Future<WStreamedResponse> trace([Uri url]) {
-    return _send('TRACE', url);
+  Future<WStreamedResponse> trace([Uri uri]) {
+    return _send('TRACE', uri);
   }
 
   /// Send an HTTP request using dart:io.HttpClient and dart:io.HttpClientRequest
-  Future<WStreamedResponse> _send(String method, [Uri url, Object data]) async {
-    if (url != null) {
-      this.url = url;
+  Future<WStreamedResponse> _send(String method, [Uri uri, Object data]) async {
+    if (uri != null) {
+      this.uri = uri;
     }
     if (data != null) {
       this.data = data;
     }
 
-    if (this.url == null || this.url.toString() == null || this.url.toString() == '') {
+    if (this.uri == null || this.uri.toString() == null || this.uri.toString() == '') {
       throw new StateError('WRequest: Cannot send a request without a URL.');
     }
 
     // Attempt to open an HTTP connection
-    _request = await _client.openUrl(method, this.url);
+    _request = await _client.openUrl(method, this.uri);
 
     // Add request headers
     if (headers != null) {
@@ -146,8 +147,8 @@ class WRequest extends UrlMutation implements WTransportRequest {
         response.statusCode == 0 || response.statusCode == 304) {
       return streamedResponse;
     } else {
-      String errorMessage = 'Failed: $method ${url} ${response.statusCode} (${response.reasonPhrase})';
-      throw new WHttpException(errorMessage, url, streamedResponse);
+      String errorMessage = 'Failed: $method ${this.uri} ${response.statusCode} (${response.reasonPhrase})';
+      throw new WHttpException(errorMessage, this.uri, streamedResponse);
     }
   }
 
@@ -168,7 +169,10 @@ class WHttp implements WTransportHttp {
 /// Response to a server-side HTTP request.
 /// Note that this is a streamed response because server-side HTTP requests
 /// receive responses that may be broken up into chunks of bytes.
-abstract class WStreamedResponse implements Stream<List<int>>, WTransportResponse {}
+abstract class WStreamedResponse implements Stream<List<int>>, WTransportResponse {
+  /// Decode the response to text.
+  Future<String> asText({Encoding encoding: UTF8});
+}
 
 
 /// Internal implementation of a response to a server-side HTTP request.
@@ -196,6 +200,9 @@ class _WStreamedResponse extends Stream<List<int>> implements WStreamedResponse 
     return _response.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
+
+  Future<String> asText({Encoding encoding: UTF8}) => encoding.decodeStream(this);
+
   Map<String, String> get headers => _headers;
   int get status => _response.statusCode;
   String get statusText => _response.reasonPhrase;
@@ -212,9 +219,9 @@ class WHttpException implements WTransportHttpException, Exception {
   final WStreamedResponse response;
 
   /// URL of the attempted/unsuccessful request.
-  final Uri url;
+  final Uri uri;
 
-  WHttpException(this.message, [this.url, this.response]);
+  WHttpException(this.message, [this.uri, this.response]);
 
   String toString() => message;
 }

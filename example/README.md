@@ -1,12 +1,11 @@
 Examples
 --------
 
-> There are 5 HTTP examples (3 browser, 2 server) and X WebSocket examples (Y browser, Z server) that demonstrate a wide range of use cases fulfilled by this library.
+> There are 3 examples that demonstrate a wide range of use cases fulfilled by this library.
 
-### HTTP
-- [Simple File Browser Client (Browser)](http/simple_client)
-- [Cross Origin Credentials (Browser)](http/cross_origin_credentials)
-- [Cross Origin Upload (Browser)](http/cross_origin_upload)
+- [Simple File Browser Client](http/simple_client)
+- [Cross Origin Credentials](http/cross_origin_credentials)
+- [Cross Origin Upload](http/cross_origin_upload)
 - [File Streaming (Server)](http/file_streaming)
 - [Persistent Connections (Server)](http/persistent_connections)
 

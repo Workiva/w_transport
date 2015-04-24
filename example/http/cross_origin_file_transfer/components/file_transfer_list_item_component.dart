@@ -7,6 +7,10 @@ import 'package:react/react.dart' as react;
 import '../services/file_transfer.dart';
 
 
+const int _transferCompleteLingerDuration = 4; // 4 seconds
+const int _transferCompleteFadeoutDuration = 2; // 2 seconds
+
+
 /// A single file upload or download. Contains the file name, a progressbar,
 /// and a control that allows cancellation of the upload or download.
 var fileTransferListItemComponent = react.registerComponent(() => new FileTransferListItemComponent());
@@ -56,9 +60,11 @@ class FileTransferListItemComponent extends react.Component {
   }
 
   Future _fadeTransferOut() async {
-    await new Future.delayed(new Duration(seconds: 4));
+    // wait a few seconds before beginning to fade the item out
+    await new Future.delayed(new Duration(seconds: _transferCompleteLingerDuration));
     this.setState({'will-remove': true});
-    await new Future.delayed(new Duration(seconds: 2));
+    // wait for the css transition to complete
+    await new Future.delayed(new Duration(seconds: _transferCompleteFadeoutDuration));
   }
 
   void _removeTransfer() {

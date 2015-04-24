@@ -4,7 +4,7 @@ import 'package:react/react.dart' as react;
 
 import './download_page.dart';
 import './upload_page.dart';
-import '../services/proxy.dart';
+import '../services/proxy.dart' as proxy;
 
 
 /// Main application component.
@@ -29,7 +29,7 @@ class AppComponent extends react.Component {
   }
 
   void _toggleProxy(e) {
-    toggleProxy(enabled: e.target.checked);
+    proxy.toggleProxy(enabled: e.target.checked);
   }
 
   render() {
@@ -40,15 +40,6 @@ class AppComponent extends react.Component {
     } else {
       pageComponent = downloadPage({});
     }
-
-    /**
-     * <p>
-        <label for="proxy">
-        <input type="checkbox" id="proxy">
-        Use Proxy Server
-        </label>
-        </p>
-     */
 
     return react.div({}, [
       react.p({},

@@ -1,20 +1,18 @@
 library w_transport.test.integration.w_http_client_test;
 
+@TestOn('browser || content-shell')
+
 import 'dart:async';
 import 'dart:html';
 
-import 'package:unittest/unittest.dart';
-import 'package:unittest/html_config.dart';
+import 'package:test/test.dart';
 import 'package:w_transport/w_http_client.dart';
 
-import './w_http_common_tests.dart' as common_tests;
-import './w_http_utils.dart';
+import '../common/w_http_common_tests.dart' as common_tests;
+import '../common/w_http_utils.dart';
 
 
 void main() {
-  // Setup tests for the browser
-  useHtmlConfiguration();
-
   // Almost all of the integration tests are identical regardless of client/server usage.
   // So, we run them from a common location.
   common_tests.run('Client', () => new WRequest(), (WResponse resp) {
@@ -22,14 +20,14 @@ void main() {
   });
 
   void setReqPath(WRequest req, String path) {
-    req.url = Uri.parse('http://localhost:8024').replace(path: path);
+    req.uri = Uri.parse('http://localhost:8024').replace(path: path);
   }
 
   group('WRequest (Client)', () {
     WRequest req;
 
     setUp(() {
-      req = new WRequest()..url = Uri.parse('http://localhost:8024');
+      req = new WRequest()..uri = Uri.parse('http://localhost:8024');
     });
 
     // The following two tests are unique from a client consumer.
@@ -53,9 +51,7 @@ void main() {
       data.appendBlob('blob', blob);
       data.append('text', 'text');
       req.data = data;
-      WResponse response = store(await req.post());
-      // TODO
-      print(response);
+      store(await req.post());
     }));
   });
 }

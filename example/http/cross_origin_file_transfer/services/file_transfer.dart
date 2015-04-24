@@ -15,7 +15,7 @@ int _transferNum = 0;
 
 // Maximum number of bytes from concurrent file transfers that can be
 // loaded into memory before potentially crashing the browser tab.
-int _concurrentFileTransferSizeLimit = math.pow(2, 20) * 75; // 75 MB
+final int _concurrentFileTransferSizeLimit = math.pow(2, 20) * 75; // 75 MB
 
 // Current number of bytes in memory from concurrent file transfers.
 int _concurrentFileTransferSize = 0;
@@ -26,8 +26,7 @@ class FileTransfer {
   WRequest _http;
   bool _cancelled;
 
-  FileTransfer(String name) : id = 'fileTransfer${_transferNum++}',
-                              _name = name,
+  FileTransfer(this.name) : id = 'fileTransfer${_transferNum++}',
                               _cancelled = false,
                               _doneCompleter = new Completer(),
                               _percentComplete = 0.0 {
@@ -37,8 +36,7 @@ class FileTransfer {
   final String id;
 
   /// Name of the file being transferred.
-  String get name => _name;
-  String _name;
+  final String name;
 
   /// Stream of ProgressEvents that may be used to monitor upload progress.
   Stream<ProgressEvent> get progressStream => _progressStream;
@@ -84,7 +82,7 @@ class Upload extends FileTransfer {
 
     // Prepare the upload request.
     _http = new WRequest()
-      ..url = getUploadEndpointUrl()
+      ..uri = getUploadEndpointUrl()
       ..data = data;
 
     // Convert the progress stream into a broadcast stream to
@@ -114,7 +112,7 @@ class Download extends FileTransfer {
     _bytesLoaded = 0;
 
     // Prepare the download request.
-    _http = new WRequest()..url = getDownloadEndpointUrl(rfd.name);
+    _http = new WRequest()..uri = getDownloadEndpointUrl(rfd.name);
 
     // Convert the progress stream into a broadcast stream to
     // allow multiple listeners.

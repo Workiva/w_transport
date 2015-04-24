@@ -1,6 +1,14 @@
-.idea
+# Dart
 .pub
 packages
 pubspec.lock
+
+# Coverage
+lcov_coverage.lcov
+lcov_report/
+
+# Docs
 dartdoc-viewer
-example/http/cross_origin_file_transfer/files
+
+# Examples
+example/http/cross_origin_file_transfer/files/

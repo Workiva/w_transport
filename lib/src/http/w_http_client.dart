@@ -2,22 +2,24 @@ library w_transport.src.http.w_http_client;
 
 import 'dart:async';
 import 'dart:html';
+import 'dart:typed_data';
 
-import 'package:w_transport/w_url.dart' show UrlMutation;
+import 'package:fluri/fluri.dart';
+
 import './w_http.dart';
 
 
 /// Client-side implementation of an HTTP transport.
 /// Uses dart:html.HttpRequest (XMLHttpRequest).
-class WRequest extends UrlMutation implements WTransportRequest {
+class WRequest extends WTransportRequest with FluriMixin {
   HttpRequest _request;
 
   /// Data to send with the HTTP request.
-  Object _data;
-  Object get data => _data;
+  dynamic _data;
+  dynamic get data => _data;
   void set data(Object data) {
-    if (data is! String && data is! FormData) {
-      throw new ArgumentError('WRequest body must be a String or a FormData.');
+    if (data is! ByteBuffer && data is! Document && data is! String && data is! FormData) {
+      throw new ArgumentError('WRequest body must be a String, FormData, ByteBuffer, or Document.');
     }
     _data = data;
   }
@@ -54,50 +56,50 @@ class WRequest extends UrlMutation implements WTransportRequest {
   // TODO: Should we expose an onAbort method here? Or an onAbort stream?
 
   /// Send a DELETE request.
-  Future<WResponse> delete([Uri url]) {
-    return _send('DELETE', url);
+  Future<WResponse> delete([Uri uri]) {
+    return _send('DELETE', uri);
   }
 
   /// Send a GET request.
-  Future<WResponse> get([Uri url]) {
-    return _send('GET', url);
+  Future<WResponse> get([Uri uri]) {
+    return _send('GET', uri);
   }
 
   /// Send a HEAD request.
-  Future<WResponse> head([Uri url]) {
-    return _send('HEAD', url);
+  Future<WResponse> head([Uri uri]) {
+    return _send('HEAD', uri);
   }
 
   /// Send an OPTIONS request.
-  Future<WResponse> options([Uri url]) {
-    return _send('OPTIONS', url);
+  Future<WResponse> options([Uri uri]) {
+    return _send('OPTIONS', uri);
   }
 
   /// Send a PATCH request.
-  Future<WResponse> patch([Uri url, Object data]) {
-    return _send('PATCH', url, data);
+  Future<WResponse> patch([Uri uri, Object data]) {
+    return _send('PATCH', uri, data);
   }
 
   /// Send a POST request.
-  Future<WResponse> post([Uri url, Object data]) {
-    return _send('POST', url, data);
+  Future<WResponse> post([Uri uri, Object data]) {
+    return _send('POST', uri, data);
   }
 
   /// Send a PUT request.
-  Future<WResponse> put([Uri url, Object data]) {
-    return _send('PUT', url, data);
+  Future<WResponse> put([Uri uri, Object data]) {
+    return _send('PUT', uri, data);
   }
 
   /// Send an HTTP request using dart:html.HttpRequest.
-  Future<WResponse> _send(String method, [Uri url, Object data]) async {
-    if (url != null) {
-      this.url = url;
+  Future<WResponse> _send(String method, [Uri uri, Object data]) async {
+    if (uri != null) {
+      this.uri = uri;
     }
     if (data != null) {
       this.data = data;
     }
 
-    if (this.url == null || this.url.toString() == null || this.url.toString() == '') {
+    if (this.uri == null || this.uri.toString() == null || this.uri.toString() == '') {
       throw new StateError('WRequest: Cannot send a request without a URL.');
     }
 
@@ -106,7 +108,7 @@ class WRequest extends UrlMutation implements WTransportRequest {
 
     // Create and open a new HttpRequest (XMLHttpRequest).
     _request = new HttpRequest();
-    _request.open(method, this.url.toString());
+    _request.open(method, this.uri.toString());
 
     // Add request headers.
     if (headers != null) {
@@ -129,8 +131,8 @@ class WRequest extends UrlMutation implements WTransportRequest {
           _request.status == 0 || _request.status == 304) {
         completer.complete(response);
       } else {
-        String errorMessage = 'Failed: $method ${url} ${response.status} (${response.statusText})';
-        completer.completeError(new WHttpException(errorMessage, url, response));
+        String errorMessage = 'Failed: $method ${this.uri} ${response.status} (${response.statusText})';
+        completer.completeError(new WHttpException(errorMessage, this.uri, response));
       }
     });
     _request.onError.listen(completer.completeError);
@@ -154,7 +156,7 @@ class WRequest extends UrlMutation implements WTransportRequest {
 
 
 /// Response to a client-side HTTP request.
-abstract class WResponse implements Stream<String>, WTransportResponse {
+abstract class WResponse implements WTransportResponse {
   /// The data received as a response from the request.
   ///
   /// Could be one of the following:
@@ -164,7 +166,7 @@ abstract class WResponse implements Stream<String>, WTransportResponse {
   /// * Blob
   ///
   /// `null` indicates a response failure.
-  Object get data;
+  dynamic get data;
 
   /// The data received as a response from the request in String format.
   String get text;
@@ -175,28 +177,18 @@ abstract class WResponse implements Stream<String>, WTransportResponse {
 /// By making the above abstract class public and this implementation private,
 /// the class structure can be public without exposing the constructor, since
 /// it will only be used internally.
-class _WResponse extends Stream<String> implements WResponse {
+class _WResponse implements WResponse {
   HttpRequest _request;
-  Stream _stream;
 
   /// Create a response from a completed dart:html.HttpRequest.
   _WResponse.fromHttpRequest(HttpRequest request) {
     _request = request;
-    _stream = new Stream.fromIterable([data]);
-  }
-
-  /// Make the data available via a stream for convenience.
-  StreamSubscription<String> listen(void onData(String event),
-                                    { Function onError,
-                                      void onDone(),
-                                      bool cancelOnError}) {
-    return _stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   Map<String, String> get headers => _request.responseHeaders;
   int get status => _request.status;
   String get statusText => _request.statusText;
-  Object get data => _request.response;
+  dynamic get data => _request.response;
   String get text => _request.responseText;
 }
 
@@ -211,7 +203,7 @@ class WHttpException implements WTransportHttpException, Exception {
   final WResponse response;
 
   /// URL of the attempted/unsuccessful request.
-  final Uri url;
+  final Uri uri;
 
-  WHttpException(this.message, [this.url, this.response]);
+  WHttpException(this.message, [this.uri, this.response]);
 }

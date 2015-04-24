@@ -11,9 +11,9 @@ import '../services/remote_files.dart';
 import './file_transfer_list_component.dart';
 
 
-double _gb = math.pow(2, 30);
-double _mb = math.pow(2, 20);
-double _kb = math.pow(2, 10);
+final double _gb = math.pow(2, 30);
+final double _mb = math.pow(2, 20);
+final double _kb = math.pow(2, 10);
 
 
 var downloadPage = react.registerComponent(() => new DownloadPage());
@@ -66,8 +66,9 @@ class DownloadPage extends react.Component {
   }
 
   void _downloadFile(RemoteFileDescription rfd) {
-    this.state['downloads'].add(Download.start(rfd));
-    this.setState({'downloads': this.state['downloads']});
+    List downloads = new List.from(this.state['downloads']);
+    downloads.add(Download.start(rfd));
+    this.setState({'downloads': downloads});
   }
 
   String _humanizeFileSize(int bytes) {

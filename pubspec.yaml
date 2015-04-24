@@ -2,13 +2,19 @@ name: w_transport
 version: 0.0.1
 author: Workiva
 description: Ready to use transport abstractions over HttpRequest and WebSocket.
+dependencies:
+  fluri:
+    git:
+      url: git@github.com:Workiva/fluri.git
+      ref: master
 dev_dependencies:
   ansicolor: '>=0.0.9 <0.1.0'
-  args: '>=0.13.0 <0.14.0'
+  args: '>=0.12.1 <0.14.0'
   browser: any
   http_server: '>=0.9.5+1 <0.10.0'
   mime: '>=0.9.3 <0.10.0'
+  path: '>=1.3.5 <2.0.0'
   react: '>=0.6.1'
   shelf: '>=0.6.1+1 <0.7.0'
-  unittest: '>=0.11.0'
+  test: '0.12.0-beta.10'
   uuid: 0.5.0

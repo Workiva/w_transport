@@ -70,6 +70,8 @@ class FileWatcher {
   FileWatcher(this._dir) {
     files = [];
 
+    _createUploadDirectory();
+
     _watching = true;
     _startWatching();
   }

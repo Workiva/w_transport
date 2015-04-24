@@ -2,13 +2,13 @@ library w_transport.src.http.w_http;
 
 import 'dart:async';
 
-import 'package:w_transport/w_url.dart';
+import 'package:fluri/fluri.dart';
 
 
 /// Abstract transport class for HTTP requests used internally to
 /// define the contract that must be fulfilled by the client and
 /// server implementations.
-abstract class WTransportRequest implements UrlMutation {
+abstract class WTransportRequest implements FluriMixin {
   /// Data to send on the HTTP request.
   void set data(dynamic data);
 
@@ -78,5 +78,5 @@ abstract class WTransportHttpException implements Exception {
   WTransportResponse get response;
 
   /// URL of the attempted/unsuccessful request.
-  Uri get url;
+  Uri get uri;
 }

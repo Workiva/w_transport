@@ -1,12 +1,15 @@
 library w_transport.test.integration.w_http_server_test;
 
+@TestOn('vm')
+
+import 'dart:async';
 import 'dart:convert';
 
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:w_transport/w_http_server.dart';
 
-import './w_http_common_tests.dart' as common_tests;
-import './w_http_utils.dart';
+import '../common/w_http_common_tests.dart' as common_tests;
+import '../common/w_http_utils.dart';
 
 
 void main() {
@@ -17,14 +20,14 @@ void main() {
   });
 
   void setReqPath(WRequest req, String path) {
-    req.url = Uri.parse('http://localhost:8024').replace(path: path);
+    req.uri = Uri.parse('http://localhost:8024').replace(path: path);
   }
 
   group('WRequest (Server)', () {
     WRequest req;
 
     setUp(() {
-      req = new WRequest()..url = Uri.parse('http://localhost:8024');
+      req = new WRequest()..uri = Uri.parse('http://localhost:8024');
     });
 
     // The following two tests are unique from a server consumer.
@@ -50,5 +53,24 @@ void main() {
       expect(response.status, equals(200));
       expect(JSON.decode(await response.transform(new Utf8Decoder()).join(''))['method'], equals('TRACE'));
     }));
+
+    test('should allow a String data payload', () {
+      WRequest req = new WRequest();
+      req.data = 'data';
+      expect(req.data, equals('data'));
+    });
+
+    test('should allow a Stream data payload', () async {
+      WRequest req = new WRequest();
+      req.data = new Stream.fromIterable(['data']);
+      expect(await req.data.join(''), equals('data'));
+    });
+
+    test('should throw on invalid data payload', () {
+      WRequest req = new WRequest();
+      expect(() {
+        req.data = 10;
+      }, throwsArgumentError);
+    });
   });
 }

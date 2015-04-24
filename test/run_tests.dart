@@ -3,170 +3,138 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ansicolor/ansicolor.dart' show AnsiPen;
+import 'package:args/args.dart';
 
 
-typedef void _LineListener(String line, Process process);
-typedef String _Pen(String input);
-
-bool debug = false;
+typedef String _Pen(String);
 
 _Pen _greenPen = new AnsiPen()..green(bold: true);
 _Pen _redPen = new AnsiPen()..red(bold: true);
 
+const String testSuccessMessage = 'All tests passed!';
+const String testFailureMessage = 'Some tests failed.';
 
-abstract class ProcessRunner {
 
-  _LineListener _stdoutListener;
-  _LineListener _stderrListener;
+class TestRunException implements Exception {}
 
-  bool _storeLogs = true;
-  bool _dumpLogs = debug;
+Future waitFor(Process process, {String successPattern, String failurePattern, bool verbose: false}) {
+  Completer completer = new Completer();
 
-  String _logs = '';
-  String get logs => _logs;
-
-  Completer<Process> _startedCompleter;
-  Completer<Process> _readyCompleter;
-  Completer<int> _doneCompleter;
-
-  Future<Process> get started => _startedCompleter.future;
-  Future<Process> get ready => _readyCompleter.future;
-  Future<int> get done => _doneCompleter.future;
-
-  ProcessRunner() {
-    _storeLogs = true;
-    _dumpLogs = true;
-
-    _logs = '';
-
-    _startedCompleter = new Completer<Process>();
-    _readyCompleter = new Completer<Process>();
-    _doneCompleter = new Completer<int>();
-
-    started.then(_addProcessListeners);
-    started.then(_listenForExit);
-  }
-
-  Future run();
-
-  Future<bool> kill([ProcessSignal signal]) async {
-    Process process = await started;
-    return process.kill(signal != null ? signal : ProcessSignal.SIGINT);
-  }
-
-  void _addProcessListeners(Process process) {
-    _lineByLine(process.stdout).listen((String line) {
-      if (_stdoutListener != null) {
-        _stdoutListener(line, process);
-      }
-      if (_storeLogs) {
-        _recordLog(line);
-      }
-      if (_dumpLogs) {
+  void listenTo(Stream ioStream) {
+    ioStream.transform(new Utf8Decoder()).transform(new LineSplitter()).listen((String line) {
+      if (verbose) {
         print(line);
       }
-    });
-
-    _lineByLine(process.stderr).listen((String line) {
-      if (_stderrListener != null) {
-        _stderrListener(line, process);
+      if (successPattern != null && line.contains(successPattern)) {
+        if (!completer.isCompleted) {
+          completer.complete(line);
+        }
       }
-      if (_storeLogs) {
-        _recordLog(line);
+      if (failurePattern != null && line.contains(failurePattern)) {
+        if (!completer.isCompleted) {
+          completer.completeError(line);
+        }
       }
-      if (_dumpLogs) {
-        print(line);
+    }, onDone: () {
+      if (!completer.isCompleted) {
+        completer.completeError(new TestRunException());
       }
     });
   }
 
-  Future _listenForExit(Process process) async {
-    int ec = await process.exitCode;
-    _doneCompleter.complete(ec);
-  }
+  listenTo(process.stdout);
+  listenTo(process.stderr);
 
-  Stream<String> _lineByLine(Stream outputStream) {
-    return outputStream.transform(new Utf8Decoder()).transform(new LineSplitter());
-  }
-
-  void _recordLog(String line) {
-    _logs = '$logs$line\n';
-  }
-
+  return completer.future;
 }
 
-class IntegrationServer extends ProcessRunner {
-
-  IntegrationServer() : super() {
-    _dumpLogs = debug;
-    _stdoutListener = checkForServerReady;
-  }
-
-  Future run() async {
-    _startedCompleter.complete(await Process.start('dart', ['--checked', 'tool/server/run.dart', '--no-proxy']));
-    done.then((ec) {
-      if (!_readyCompleter.isCompleted) {
-        _readyCompleter.completeError(ec);
-      }
-    });
-  }
-
-  void checkForServerReady(String line, Process process) {
-    if (line.contains('ready - listening') && !_readyCompleter.isCompleted) {
-      _readyCompleter.complete(process);
+void shutdown(List<Process> processesToKill) {
+  processesToKill.forEach((p) {
+    if (p != null) {
+      p.kill(ProcessSignal.SIGINT);
     }
-  }
-
+  });
+  print('Testing failed.');
+  exit(1);
 }
 
-class TestRunner extends ProcessRunner {
+main(List<String> args) async {
+  ArgParser parser = new ArgParser();
+  // Generate coverage (currently only runs VM tests).
+  parser.addFlag('coverage', negatable: false);
+  // Output everything.
+  parser.addFlag('verbose', abbr: 'v', negatable: false);
+  // Browser flags
+  parser.addFlag('chrome', abbr: 'c', defaultsTo: false);
+  parser.addFlag('content-shell', defaultsTo: false);
+  parser.addFlag('dartium', abbr: 'd', defaultsTo: false);
+  parser.addFlag('firefox', abbr: 'f', defaultsTo: false);
+  parser.addFlag('safari', abbr: 's', defaultsTo: false);
+  var env = parser.parse(args);
 
-  TestRunner() : super() {
-    _dumpLogs = true;
-  }
+  Process server;
+  Process coverage;
+  Process browserTests;
+  Process vmTests;
 
-  Future run() async {
-    _startedCompleter.complete(await Process.start('pub', ['global', 'run', 'test_runner', '-c']));
-  }
-
-}
-
-main() async {
-  // Servers
-  IntegrationServer integrationServer = new IntegrationServer();
-
-  // Test runner
-  TestRunner testRunner = new TestRunner();
-
-  // Start the HTTP integration server
-  print('Starting HTTP server for integration tests...');
-  await integrationServer.run();
-
-  // Run the test runner when the integration servers are ready
   try {
-    await integrationServer.ready;
-    print(_greenPen('HTTP server running.'));
-    print('\nStarting test runner..');
-    testRunner.run();
-  } catch (ec) {
-    print(integrationServer.logs);
-    exit(ec);
+    // Start the server (necessary for integration tests).
+    server = await Process.start('dart', ['--checked', 'tool/server/run.dart', '--no-proxy']);
+    await waitFor(server, successPattern: 'ready - listening', verbose: env['verbose']);
+
+    // If generating coverage, we run the tests differently
+    // TODO: Hopefully clean this up when test package adds support for coverage
+    if (env['coverage']) {
+      // Start the coverage run.
+      coverage = await Process.start('pub', ['global', 'run',  'dart_codecov_generator:generate_coverage', 'test/coverage_tests.dart']);
+      print(await waitFor(coverage, successPattern: 'Coverage generated', failurePattern: 'failed', verbose: env['verbose']));
+    } else {
+      // Start the test runs.
+      List browserTestsArgs = ['run', 'test:test', 'test/browser'];
+      var browsers = ['chrome', 'content-shell', 'dartium', 'firefox', 'safari'];
+      bool browserSpecified = false;
+      browsers.forEach((browser) {
+        if (env[browser]) {
+          browserSpecified = true;
+          browserTestsArgs.addAll(['-p', browser]);
+        }
+      });
+      if (!browserSpecified) {
+        browserTestsArgs.addAll(['-p', 'dartium']);
+      }
+      browserTests = await Process.start('pub', browserTestsArgs);
+      vmTests = await Process.start('pub', ['run', 'test:test', 'test/vm']);
+
+      // Wait for test runs to complete.
+      print(await waitFor(browserTests, successPattern: testSuccessMessage, failurePattern: testFailureMessage, verbose: env['verbose']));
+      print(await waitFor(vmTests, successPattern: testSuccessMessage, failurePattern: testFailureMessage, verbose: env['verbose']));
+    }
+
+    // Kill the server now that we're done.
+    server.kill(ProcessSignal.SIGINT);
+
+    // Also kill the browser test process since it doesn't exit
+    // automatically when using content-shell or dartium.
+    if (browserTests != null) {
+      browserTests.kill(ProcessSignal.SIGINT);
+    }
+
+    // Verify success of all processes
+    int serverEC = await server.exitCode;
+    int coverageEC = coverage != null ? await coverage.exitCode : 0;
+    int browserTestsEC = browserTests != null ? await browserTests.exitCode : 0;
+    int vmTestsEC = vmTests != null ? await vmTests.exitCode : 0;
+
+    if (serverEC > 0 || coverageEC > 0 || browserTestsEC > 0 || vmTestsEC > 0) throw new Exception('Testing failed.');
+
+    // Success!
+    print('Success!');
+    exit(0);
+  } on TestRunException catch (e) {
+    print('Unexpected error running tests. Try running again with -v for more info.');
+    shutdown([server, coverage, browserTests, vmTests]);
+  } catch (e, stackTrace) {
+    print('$e\n$stackTrace');
+    shutdown([server, coverage, browserTests, vmTests]);
   }
-
-  // Cleanup when the test run is complete
-  await testRunner.done;
-  await integrationServer.kill();
-
-  // Wait for all processes to finish before exiting
-  List<int> exitCodes = await Future.wait([integrationServer.done, testRunner.done]);
-  int httpIntegrationServerExitCode = exitCodes[0];
-  int testRunnerExitCode = exitCodes[1];
-
-  // Dump HTTP integration server logs if it crashed or if tests failed
-  if (testRunnerExitCode > 0 || httpIntegrationServerExitCode > 0) {
-    print('HTTP Server Logs:\n');
-    print(integrationServer.logs);
-  }
-
-  exitCode = testRunnerExitCode;
 }

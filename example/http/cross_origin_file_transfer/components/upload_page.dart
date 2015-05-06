@@ -10,6 +10,12 @@ import './file_transfer_list_component.dart';
 var uploadPage = react.registerComponent(() => new UploadPage());
 class UploadPage extends react.Component {
 
+  Map getDefaultProps() {
+    return {
+      'active': true,
+    };
+  }
+
   Map getInitialState() {
     return {
       // Whether or not the user is currently dragging something.
@@ -47,7 +53,7 @@ class UploadPage extends react.Component {
   }
 
   render() {
-    return react.div({}, [
+    return react.div({'className': this.props['active'] ? '' : 'hidden'}, [
       react.h2({}, 'Uploads'),
       dropZoneComponent({'onNewUploads': _newUploads, 'onDragStart': _dragStart, 'onDragEnd': _dragEnd}),
       fileTransferListComponent({

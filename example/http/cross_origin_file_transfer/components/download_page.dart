@@ -23,6 +23,12 @@ class DownloadPage extends react.Component {
   StreamSubscription fileStreamSubscription;
   StreamSubscription fileStreamErrorSubscription;
 
+  Map getDefaultProps() {
+    return {
+      'active': false,
+    };
+  }
+
   Map getInitialState() {
     return {
       // List of in-progress or completed downloads
@@ -107,6 +113,8 @@ class DownloadPage extends react.Component {
   }
 
   render() {
+    if (!this.props['active']) return null;
+
     var error = '';
     if (this.state['error'] != null) {
       error = react.p({'className': 'error'}, 'Could not retrieve the remote file list from the server.');
@@ -125,7 +133,7 @@ class DownloadPage extends react.Component {
       ]));
     });
 
-    return react.div({}, [
+    return react.div({'className': this.props['active'] ? '' : 'hidden'}, [
       react.h2({}, 'File Downloads'),
       react.p({'className': 'note'}, 'Note: Loading large files into memory will crash the browser tab. For this reason, downloads will be cancelled automatically if a concurrent file transfer size of 75 MB is exceeded.'),
       fileTransferListComponent({'transfers': this.state['downloads'], 'onTransferDone': _removeDownload}),

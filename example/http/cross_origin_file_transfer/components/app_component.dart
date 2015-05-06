@@ -34,12 +34,6 @@ class AppComponent extends react.Component {
 
   render() {
     String page = this.state['page'];
-    var pageComponent;
-    if (page == 'upload') {
-      pageComponent = uploadPage({});
-    } else {
-      pageComponent = downloadPage({});
-    }
 
     return react.div({}, [
       react.p({},
@@ -52,7 +46,8 @@ class AppComponent extends react.Component {
         react.a({'href': '#', 'className': page == 'upload' ? 'active' : '', 'onClick': _goToUploadPage}, 'Upload'),
         react.a({'href': '#', 'className': page == 'download' ? 'active' : '',  'onClick': _goToDownloadPage}, 'Download'),
       ]),
-      pageComponent,
+      uploadPage({'active': page == 'upload'}),
+      downloadPage({'active': page == 'download'}),
     ]);
   }
 }

@@ -5,33 +5,31 @@ Examples
 
 - [Simple File Browser Client](http/simple_client)
 - [Cross Origin Credentials](http/cross_origin_credentials)
-- [Cross Origin Upload](http/cross_origin_upload)
-- [File Streaming (Server)](http/file_streaming)
-- [Persistent Connections (Server)](http/persistent_connections)
+- [Cross Origin Upload](http/cross_origin_file_transfer)
 
 
 ### Building & Serving
 You can run a shell script from the project root to build and serve the examples:
 ```
-./tool/serve_examples.sh
+./tool/examples.sh
 ```
 
-> This is the same as simply running `pub get && pub serve example`.
+> This is the same as simply running `pub get && pub serve example --port 9000`.
 
 
 ### Server Component
-Most of the examples will require a server to handle HTTP requests and WebSocket connections. You can run this server by running a shell script from the project root:
+Most of the examples will require a server to handle HTTP requests. You can run this server by running a shell script from the project root:
 ```
-./tool/run_server.sh
+./tool/server.sh
 ```
 
-> This is the same as simply running `dart --checked tool/server/run.dart`.
+> This is the same as running `dart --checked tool/server/run.dart --proxy`.
 
 
 ### Viewing (Compiled JS)
-Open [http://localhost:8080](http://localhost:8080) in your browser of choice.
+Open [http://localhost:9000](http://localhost:9000) in your browser of choice.
 
 ### Viewing (Dartium)
 ```
-dartium --checked http://localhost:8080
+dartium --checked http://localhost:9000
 ```

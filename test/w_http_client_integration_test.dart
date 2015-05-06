@@ -1,6 +1,5 @@
-library w_transport.test.integration.w_http_client_test;
-
 @TestOn('browser || content-shell')
+library w_transport.test.integration.w_http_client_test;
 
 import 'dart:async';
 import 'dart:html';
@@ -8,8 +7,8 @@ import 'dart:html';
 import 'package:test/test.dart';
 import 'package:w_transport/w_http_client.dart';
 
-import '../common/w_http_common_tests.dart' as common_tests;
-import '../common/w_http_utils.dart';
+import './w_http_common_tests.dart' as common_tests;
+import './w_http_utils.dart';
 
 
 void main() {

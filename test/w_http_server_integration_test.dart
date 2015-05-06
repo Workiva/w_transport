@@ -1,6 +1,5 @@
-library w_transport.test.integration.w_http_server_test;
-
 @TestOn('vm')
+library w_transport.test.integration.w_http_server_test;
 
 import 'dart:async';
 import 'dart:convert';
@@ -8,8 +7,8 @@ import 'dart:convert';
 import 'package:test/test.dart';
 import 'package:w_transport/w_http_server.dart';
 
-import '../common/w_http_common_tests.dart' as common_tests;
-import '../common/w_http_utils.dart';
+import './w_http_common_tests.dart' as common_tests;
+import './w_http_utils.dart';
 
 
 void main() {

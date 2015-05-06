@@ -59,23 +59,15 @@ void shutdown(List<Process> processesToKill) {
 }
 
 main(List<String> args) async {
-  ArgParser parser = new ArgParser();
-  // Generate coverage (currently only runs VM tests).
-  parser.addFlag('coverage', negatable: false);
-  // Output everything.
-  parser.addFlag('verbose', abbr: 'v', negatable: false);
-  // Browser flags
-  parser.addFlag('chrome', abbr: 'c', defaultsTo: false);
-  parser.addFlag('content-shell', defaultsTo: false);
-  parser.addFlag('dartium', abbr: 'd', defaultsTo: false);
-  parser.addFlag('firefox', abbr: 'f', defaultsTo: false);
-  parser.addFlag('safari', abbr: 's', defaultsTo: false);
-  var env = parser.parse(args);
+  ArgParser parser = new ArgParser()
+    ..addOption('platform', abbr: 'p', allowMultiple: true)
+    ..addFlag('coverage', negatable: false)
+    ..addFlag('verbose', abbr: 'v', negatable: false);
+  ArgResults env = parser.parse(args);
 
   Process server;
   Process coverage;
-  Process browserTests;
-  Process vmTests;
+  Process tests;
 
   try {
     // Start the server (necessary for integration tests).
@@ -86,55 +78,47 @@ main(List<String> args) async {
     // TODO: Hopefully clean this up when test package adds support for coverage
     if (env['coverage']) {
       // Start the coverage run.
-      coverage = await Process.start('pub', ['global', 'run',  'dart_codecov_generator:generate_coverage', 'test/coverage_tests.dart']);
+      List coverageArgs = ['run', 'dart_codecov_generator', '--report-on=lib/'];
+      if (env['verbose']) {
+        coverageArgs.add('-v');
+      }
+      coverage = await Process.start('pub', coverageArgs);
+
+      // Wait for coverage to complete.
       print(await waitFor(coverage, successPattern: 'Coverage generated', failurePattern: 'failed', verbose: env['verbose']));
     } else {
       // Start the test runs.
-      List browserTestsArgs = ['run', 'test:test', 'test/browser'];
-      var browsers = ['chrome', 'content-shell', 'dartium', 'firefox', 'safari'];
-      bool browserSpecified = false;
-      browsers.forEach((browser) {
-        if (env[browser]) {
-          browserSpecified = true;
-          browserTestsArgs.addAll(['-p', browser]);
-        }
-      });
-      if (!browserSpecified) {
-        browserTestsArgs.addAll(['-p', 'dartium']);
+      List testArgs = ['run', 'test'];
+      if (env['platform'].length > 0) {
+        testArgs.addAll((env['platform'] as List).map((p) => '--platform=$p'));
+      } else {
+        testArgs.addAll(['-p', 'vm', '-p', 'dartium']);
       }
-      browserTests = await Process.start('pub', browserTestsArgs);
-      vmTests = await Process.start('pub', ['run', 'test:test', 'test/vm']);
+      print('pub ${testArgs.join(' ')}');
+      tests = await Process.start('pub', testArgs);
 
       // Wait for test runs to complete.
-      print(await waitFor(browserTests, successPattern: testSuccessMessage, failurePattern: testFailureMessage, verbose: env['verbose']));
-      print(await waitFor(vmTests, successPattern: testSuccessMessage, failurePattern: testFailureMessage, verbose: env['verbose']));
+      print(await waitFor(tests, successPattern: testSuccessMessage, failurePattern: testFailureMessage, verbose: env['verbose']));
     }
 
     // Kill the server now that we're done.
     server.kill(ProcessSignal.SIGINT);
 
-    // Also kill the browser test process since it doesn't exit
-    // automatically when using content-shell or dartium.
-    if (browserTests != null) {
-      browserTests.kill(ProcessSignal.SIGINT);
-    }
-
     // Verify success of all processes
     int serverEC = await server.exitCode;
     int coverageEC = coverage != null ? await coverage.exitCode : 0;
-    int browserTestsEC = browserTests != null ? await browserTests.exitCode : 0;
-    int vmTestsEC = vmTests != null ? await vmTests.exitCode : 0;
+    int testsEC = tests != null ? await tests.exitCode : 0;
 
-    if (serverEC > 0 || coverageEC > 0 || browserTestsEC > 0 || vmTestsEC > 0) throw new Exception('Testing failed.');
+    if (serverEC > 0 || coverageEC > 0 || testsEC > 0) throw new Exception('Testing failed.');
 
     // Success!
     print('Success!');
     exit(0);
   } on TestRunException catch (e) {
     print('Unexpected error running tests. Try running again with -v for more info.');
-    shutdown([server, coverage, browserTests, vmTests]);
+    shutdown([server, coverage, tests]);
   } catch (e, stackTrace) {
     print('$e\n$stackTrace');
-    shutdown([server, coverage, browserTests, vmTests]);
+    shutdown([server, coverage, tests]);
   }
 }

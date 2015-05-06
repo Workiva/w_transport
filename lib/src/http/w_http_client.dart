@@ -53,8 +53,6 @@ class WRequest extends WTransportRequest with FluriMixin {
     _request.abort();
   }
 
-  // TODO: Should we expose an onAbort method here? Or an onAbort stream?
-
   /// Send a DELETE request.
   Future<WResponse> delete([Uri uri]) {
     return _send('DELETE', uri);

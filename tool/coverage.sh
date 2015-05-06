@@ -7,4 +7,4 @@ if [ -f "./lcov_coverage.lcov" ]; then
     rm ./lcov_coverage.lcov
 fi
 
-./tool/test.sh --coverage
+./tool/test.sh --coverage "$@"

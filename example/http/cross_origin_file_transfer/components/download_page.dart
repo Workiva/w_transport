@@ -26,23 +26,18 @@ import '../services/file_transfer.dart';
 import '../services/remote_files.dart';
 import './file_transfer_list_component.dart';
 
-
 final double _gb = math.pow(2, 30);
 final double _mb = math.pow(2, 20);
 final double _kb = math.pow(2, 10);
 
-
 var downloadPage = react.registerComponent(() => new DownloadPage());
 class DownloadPage extends react.Component {
-
   RemoteFiles remoteFiles;
   StreamSubscription fileStreamSubscription;
   StreamSubscription fileStreamErrorSubscription;
 
   Map getDefaultProps() {
-    return {
-      'active': false,
-    };
+    return {'active': false,};
   }
 
   Map getInitialState() {
@@ -58,11 +53,9 @@ class DownloadPage extends react.Component {
 
   void componentWillMount() {
     remoteFiles = RemoteFiles.connect();
-    fileStreamSubscription = remoteFiles.stream.listen((List<RemoteFileDescription> fileDescriptions) {
-      this.setState({
-        'fileDescriptions': fileDescriptions,
-        'error': null,
-      });
+    fileStreamSubscription = remoteFiles.stream
+        .listen((List<RemoteFileDescription> fileDescriptions) {
+      this.setState({'fileDescriptions': fileDescriptions, 'error': null,});
     });
     fileStreamErrorSubscription = remoteFiles.errorStream.listen((error) {
       this.setState({'error': error});
@@ -131,7 +124,9 @@ class DownloadPage extends react.Component {
   render() {
     var error = '';
     if (this.state['error'] != null) {
-      error = react.p({'className': 'error'}, 'Could not retrieve the remote file list from the server.');
+      error = react.p({
+        'className': 'error'
+      }, 'Could not retrieve the remote file list from the server.');
     }
 
     var fileDescriptions = [];
@@ -142,23 +137,30 @@ class DownloadPage extends react.Component {
         'key': rfd.name,
         'onClick': _createDownloadFileCallback(rfd)
       }, [
-        react.div({'className': 'file-name', }, rfd.name),
+        react.div({'className': 'file-name',}, rfd.name),
         react.div({'className': 'file-size'}, _humanizeFileSize(rfd.size)),
       ]));
     });
 
     return react.div({'className': this.props['active'] ? '' : 'hidden'}, [
       react.h2({}, 'File Downloads'),
-      react.p({'className': 'note'}, 'Note: Loading large files into memory will crash the browser tab. For this reason, downloads will be cancelled automatically if a concurrent file transfer size of 75 MB is exceeded.'),
-      fileTransferListComponent({'transfers': this.state['downloads'], 'onTransferDone': _removeDownload}),
+      react.p({
+        'className': 'note'
+      }, 'Note: Loading large files into memory will crash the browser tab. For this reason, downloads will be cancelled automatically if a concurrent file transfer size of 75 MB is exceeded.'),
+      fileTransferListComponent({
+        'transfers': this.state['downloads'],
+        'onTransferDone': _removeDownload
+      }),
       react.h2({}, 'Remote Files'),
       react.p({}, [
         react.div({'className': 'muted'}, 'Click a file to download it. '),
-        react.a({'href': '#', 'onClick': _deleteAllRemoteFiles}, 'Click here to delete all remote files.'),
+        react.a({
+          'href': '#',
+          'onClick': _deleteAllRemoteFiles
+        }, 'Click here to delete all remote files.'),
       ]),
       error,
       react.div({'className': 'files clear'}, fileDescriptions),
     ]);
   }
-
 }

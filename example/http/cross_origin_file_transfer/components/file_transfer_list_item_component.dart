@@ -22,38 +22,29 @@ import 'package:react/react.dart' as react;
 
 import '../services/file_transfer.dart';
 
-
 const int _transferCompleteLingerDuration = 4; // 4 seconds
 const int _transferCompleteFadeoutDuration = 2; // 2 seconds
 
-
 /// A single file upload or download. Contains the file name, a progressbar,
 /// and a control that allows cancellation of the upload or download.
-var fileTransferListItemComponent = react.registerComponent(() => new FileTransferListItemComponent());
+var fileTransferListItemComponent =
+    react.registerComponent(() => new FileTransferListItemComponent());
 class FileTransferListItemComponent extends react.Component {
   Map getInitialState() {
-    return {
-      'done': false,
-      'success': false,
-      'will-remove': false,
-    };
+    return {'done': false, 'success': false, 'will-remove': false,};
   }
 
   Map getDefaultProps() {
-    return {
-      'transfer': null,
-      'onTransferDone': (_) {},
-    };
+    return {'transfer': null, 'onTransferDone': (_) {},};
   }
 
   void componentWillMount() {
     FileTransfer transfer = this.props['transfer'];
     if (transfer != null) {
       transfer.progressStream.listen((_) => this.redraw());
-      transfer
-        .done
-        .then((_) => _transferSucceeded())
-        .catchError((error) => _transferFailed());
+      transfer.done
+          .then((_) => _transferSucceeded())
+          .catchError((error) => _transferFailed());
     }
   }
 
@@ -77,10 +68,12 @@ class FileTransferListItemComponent extends react.Component {
 
   Future _fadeTransferOut() async {
     // wait a few seconds before beginning to fade the item out
-    await new Future.delayed(new Duration(seconds: _transferCompleteLingerDuration));
+    await new Future.delayed(
+        new Duration(seconds: _transferCompleteLingerDuration));
     this.setState({'will-remove': true});
     // wait for the css transition to complete
-    await new Future.delayed(new Duration(seconds: _transferCompleteFadeoutDuration));
+    await new Future.delayed(
+        new Duration(seconds: _transferCompleteFadeoutDuration));
   }
 
   void _removeTransfer() {
@@ -110,9 +103,10 @@ class FileTransferListItemComponent extends react.Component {
 
     return react.li({'className': transferClass}, [
       react.div({'className': 'name'}, label),
-      react.div({'className': 'progress'},
-      react.div({'className': 'progress-bar', 'style': {'width': '${transfer.percentComplete}%'}})
-      ),
+      react.div({'className': 'progress'}, react.div({
+        'className': 'progress-bar',
+        'style': {'width': '${transfer.percentComplete}%'}
+      })),
     ]);
   }
 }

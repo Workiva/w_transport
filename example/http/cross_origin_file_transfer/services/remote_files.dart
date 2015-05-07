@@ -23,9 +23,7 @@ import 'package:w_transport/w_http_client.dart';
 
 import './proxy.dart';
 
-
 int _remoteFilePollingInterval = 3; // 3 seconds
-
 
 class RemoteFiles {
 
@@ -50,7 +48,6 @@ class RemoteFiles {
   /// Stream of errors that may occur when trying to communicate with the proxy file server.
   Stream<WHttpException> get errorStream => _errorStream;
 
-
   bool _connected;
   StreamController _errorStreamController;
   Stream _errorStream;
@@ -73,7 +70,8 @@ class RemoteFiles {
   void _startPolling() {
     if (!_connected) return;
     _poll().then((_) {
-      _pollingTimer = new Timer(new Duration(seconds: _remoteFilePollingInterval), _startPolling);
+      _pollingTimer = new Timer(
+          new Duration(seconds: _remoteFilePollingInterval), _startPolling);
     });
   }
 
@@ -85,7 +83,10 @@ class RemoteFiles {
 
       // Parse the file list from the response
       List results = JSON.decode(response.text)['results'];
-      List<RemoteFileDescription> files = results.map((Map file) => new RemoteFileDescription(file['name'], file['size'])).toList();
+      List<RemoteFileDescription> files = results
+          .map((Map file) =>
+              new RemoteFileDescription(file['name'], file['size']))
+          .toList();
 
       // Send the updated file list to listeners
       _fileStreamController.add(files);
@@ -103,9 +104,7 @@ class RemoteFiles {
       _pollingTimer.cancel();
     }
   }
-
 }
-
 
 class RemoteFileDescription {
   final String name;

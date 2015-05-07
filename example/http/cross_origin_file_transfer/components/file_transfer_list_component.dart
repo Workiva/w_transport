@@ -21,9 +21,9 @@ import 'package:react/react.dart' as react;
 import '../services/file_transfer.dart';
 import './file_transfer_list_item_component.dart';
 
-
 /// List of all file uploads.
-var fileTransferListComponent = react.registerComponent(() => new FileUploadListComponent());
+var fileTransferListComponent =
+    react.registerComponent(() => new FileUploadListComponent());
 class FileUploadListComponent extends react.Component {
   Map getDefaultProps() {
     return {
@@ -40,7 +40,11 @@ class FileUploadListComponent extends react.Component {
     }
 
     Iterable transfers = this.props['transfers'].map((FileTransfer transfer) {
-      return fileTransferListItemComponent({'key': transfer.id, 'transfer': transfer, 'onTransferDone': this.props['onTransferDone']});
+      return fileTransferListItemComponent({
+        'key': transfer.id,
+        'transfer': transfer,
+        'onTransferDone': this.props['onTransferDone'],
+      });
     });
     String fileListClass = 'transfers';
     if (this.props['hideChildrenFromPointerEvents']) {

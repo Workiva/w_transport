@@ -16,7 +16,6 @@
 
 library w_transport.example.http.cross_origin_file_transfer.services.proxy;
 
-
 // Whether or not to route requests through a proxy server.
 bool proxyEnabled = false;
 

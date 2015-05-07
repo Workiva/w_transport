@@ -20,7 +20,6 @@ import 'dart:async';
 
 import 'package:fluri/fluri.dart';
 
-
 /// Abstract transport class for HTTP requests used internally to
 /// define the contract that must be fulfilled by the client and
 /// server implementations.
@@ -53,7 +52,6 @@ abstract class WTransportRequest implements FluriMixin {
   Future<WTransportResponse> put([Uri url, Object data]);
 }
 
-
 /// Abstract transport class for an HTTP client capable of sending many
 /// HTTP requests and maintaining persistent connections. Currently this
 /// is only possible from the server using dart:io.HttpClient.
@@ -65,7 +63,6 @@ abstract class WTransportHttp {
   /// Closes the client, cancelling or closing any outstanding connections.
   void close();
 }
-
 
 /// Abstract class that defines the common response meta data that will be
 /// available on a response to an HTTP request (client- or server-side).
@@ -81,7 +78,6 @@ abstract class WTransportResponse {
   /// 'OK', 'Not Found', etc.
   String get statusText;
 }
-
 
 /// Abstract class that defines what an HTTP exception should look like.
 /// An implementation of this exception should be rasied when a response

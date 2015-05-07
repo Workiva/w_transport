@@ -11,13 +11,14 @@ import './logger.dart';
 import './router.dart';
 import './server.dart';
 
-
-Uri filesEndpoint = Uri.parse('http://localhost:8024/example/http/cross_origin_file_transfer/files/');
-Uri uploadEndpoint = Uri.parse('http://localhost:8024/example/http/cross_origin_file_transfer/upload');
-Uri downloadEndpoint = Uri.parse('http://localhost:8024/example/http/cross_origin_file_transfer/download');
+Uri filesEndpoint = Uri.parse(
+    'http://localhost:8024/example/http/cross_origin_file_transfer/files/');
+Uri uploadEndpoint = Uri.parse(
+    'http://localhost:8024/example/http/cross_origin_file_transfer/upload');
+Uri downloadEndpoint = Uri.parse(
+    'http://localhost:8024/example/http/cross_origin_file_transfer/download');
 
 WHttp http = new WHttp();
-
 
 class FilesProxy extends Handler {
   FilesProxy() : super() {
@@ -25,22 +26,19 @@ class FilesProxy extends Handler {
   }
 
   Future<shelf.Response> get(shelf.Request request) async {
-    WRequest proxyRequest = http.newRequest()
-      ..headers = request.headers;
+    WRequest proxyRequest = http.newRequest()..headers = request.headers;
 
     WStreamedResponse proxyResponse = await proxyRequest.get(filesEndpoint);
     return new shelf.Response.ok(proxyResponse, headers: proxyResponse.headers);
   }
 
   Future<shelf.Response> delete(shelf.Request request) async {
-    WRequest proxyRequest = http.newRequest()
-      ..headers = request.headers;
+    WRequest proxyRequest = http.newRequest()..headers = request.headers;
 
     WStreamedResponse proxyResponse = await proxyRequest.delete(filesEndpoint);
     return new shelf.Response.ok(proxyResponse, headers: proxyResponse.headers);
   }
 }
-
 
 class UploadProxy extends Handler {
   UploadProxy() : super() {
@@ -56,7 +54,6 @@ class UploadProxy extends Handler {
     return new shelf.Response.ok(proxyResponse, headers: proxyResponse.headers);
   }
 }
-
 
 class DownloadProxy extends Handler {
   DownloadProxy() : super() {
@@ -74,7 +71,6 @@ class DownloadProxy extends Handler {
   }
 }
 
-
 void startProxy() {
   Router router = new Router([
     new Route('download', new DownloadProxy()),
@@ -85,7 +81,6 @@ void startProxy() {
   Logger logger = new Logger('Proxy', yellow: true);
   Server.start('Proxy', 'localhost', 8025, router, logger);
 }
-
 
 void main() {
   startProxy();

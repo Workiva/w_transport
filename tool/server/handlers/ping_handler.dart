@@ -6,7 +6,6 @@ import 'package:shelf/shelf.dart' as shelf;
 
 import '../handler.dart';
 
-
 /// Always responds with a 200 OK.
 class PingHandler extends Handler {
   PingHandler() : super() {

@@ -10,7 +10,6 @@ import 'package:uuid/uuid.dart';
 import '../../../handler.dart';
 import '../../../router.dart';
 
-
 String pathPrefix = 'example/http/cross_origin_credentials';
 
 List<Route> exampleHttpCrossOriginCredentialsRoutes = [
@@ -43,7 +42,6 @@ bool isValidSession(shelf.Request request) {
   return validSession;
 }
 
-
 class SessionHandler extends Handler {
   SessionHandler() : super() {
     enableCors(credentials: true);
@@ -53,27 +51,27 @@ class SessionHandler extends Handler {
     Cookie sessionCookie = new Cookie('session', sessionCookieValue);
     sessionCookie.httpOnly = true;
     sessionCookie.path = '/';
-    return {
-      'set-cookie': sessionCookie.toString()
-    };
+    return {'set-cookie': sessionCookie.toString()};
   }
 
   Future<shelf.Response> get(shelf.Request request) async {
-    return new shelf.Response.ok(JSON.encode({'authenticated': isValidSession(request)}));
+    return new shelf.Response.ok(
+        JSON.encode({'authenticated': isValidSession(request)}));
   }
 
   Future<shelf.Response> post(shelf.Request request) async {
     Map<String, String> headers = createSessionHeaders(generateSessionCookie());
-    return new shelf.Response.ok(JSON.encode({'authenticated': true}), headers: headers);
+    return new shelf.Response.ok(JSON.encode({'authenticated': true}),
+        headers: headers);
   }
 
   Future<shelf.Response> delete(shelf.Request request) async {
     session = null;
     Map<String, String> headers = createSessionHeaders('deleted');
-    return new shelf.Response.ok(JSON.encode({'authenticated': false}), headers: headers);
+    return new shelf.Response.ok(JSON.encode({'authenticated': false}),
+        headers: headers);
   }
 }
-
 
 class CredentialedRequestHandler extends Handler {
   CredentialedRequestHandler() : super() {
@@ -83,9 +81,11 @@ class CredentialedRequestHandler extends Handler {
   Future<shelf.Response> get(shelf.Request request) async {
     // Verify the request has a valid session cookie
     if (isValidSession(request)) {
-      return new shelf.Response.ok('Session verified, credentialed request successful!');
+      return new shelf.Response.ok(
+          'Session verified, credentialed request successful!');
     } else {
-      return new shelf.Response(HttpStatus.UNAUTHORIZED, body: 'Invalid session, credentialed request failed!');
+      return new shelf.Response(HttpStatus.UNAUTHORIZED,
+          body: 'Invalid session, credentialed request failed!');
     }
   }
 }

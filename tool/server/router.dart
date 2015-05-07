@@ -6,14 +6,12 @@ import 'package:shelf/shelf.dart' as shelf;
 
 import 'handler.dart';
 
-
 /// Simple mapping of a path to a handler.
 class Route {
   String path;
   Handler handler;
   Route(this.path, this.handler);
 }
-
 
 /// Routes incoming HTTP requests to a handler based on
 /// a routing table supplied upon construction.

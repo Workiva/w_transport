@@ -2,7 +2,6 @@ library w_transport.tool.server.logger;
 
 import 'package:ansicolor/ansicolor.dart' show AnsiPen;
 
-
 typedef String _Pen(String input);
 
 _Pen _green = new AnsiPen()..green(bold: true);
@@ -13,12 +12,12 @@ _Pen _yellow = new AnsiPen()..yellow(bold: true);
 _Pen _magenta = new AnsiPen()..magenta(bold: true);
 _Pen _gray = new AnsiPen()..gray(level: 0.5);
 
-
 class Logger {
   String _name;
   _Pen _pen;
 
-  Logger(this._name, {blue: false, cyan: false, gray: false, green: false, magenta: false, red: false, yellow: false}) {
+  Logger(this._name, {blue: false, cyan: false, gray: false, green: false,
+      magenta: false, red: false, yellow: false}) {
     if (blue) _pen = _blue;
     if (cyan) _pen = _cyan;
     if (gray) _pen = _gray;

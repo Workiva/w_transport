@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Workiva Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,8 @@
  *  limitations under the License.
  */
 
+/// Client-side implementations of HTTP logic.
+/// Uses [HttpRequest] (XMLHttpRequest) internally.
 library w_transport.src.http.w_http_client;
 
 import 'dart:async';
@@ -24,6 +26,7 @@ import 'dart:typed_data';
 import './w_http.dart';
 import './w_http_common.dart' as common;
 
+/// Configure w_transport/w_http library for use in the browser.
 void configureWHttpForBrowser() {
   common.configureWHttp(abort, getNewHttpClient, parseResponseHeaders,
       parseResponseStatus, parseResponseStatusText, parseResponseData,
@@ -31,6 +34,8 @@ void configureWHttpForBrowser() {
       validateDataType);
 }
 
+/// Transforms an [ProgressEvent] stream from an [HttpRequest] into
+/// a [WProgress] stream.
 StreamTransformer<ProgressEvent, WProgress> wProgressTransformer =
     new StreamTransformer<ProgressEvent, WProgress>(
         (Stream<ProgressEvent> input, bool cancelOnError) {
@@ -55,35 +60,52 @@ StreamTransformer<ProgressEvent, WProgress> wProgressTransformer =
   return controller.stream.listen(null);
 });
 
+/// Aborts the [HttpRequest].
 void abort(HttpRequest request) {
   request.abort();
 }
 
+/// Client-side HTTP requests have no notion of persistent or
+/// cached network connections, and thus have no client class
+/// like the server-side does.
 getNewHttpClient() => null;
 
+/// Get the response headers from the [HttpRequest].
 Map<String, String> parseResponseHeaders(HttpRequest request) {
   return request.responseHeaders;
 }
 
+/// Get the response status from the [HttpRequest].
 int parseResponseStatus(HttpRequest request) => request.status;
 
+/// Get the response status text from the [HttpRequest].
 String parseResponseStatusText(HttpRequest request) => request.statusText;
 
+/// Get the response data from the [HttpRequest].
 Future<Object> parseResponseData(HttpRequest request, _, __) async =>
     request.response;
 
+/// Get the the response text from the [HttpRequest].
 Future<String> parseResponseText(
         HttpRequest request, Encoding encoding, _, __) async =>
     request.responseText;
 
+/// Create a response stream from an [Iterable] with one element,
+/// the response data from [HttpRequest].
 Stream parseResponseStream(HttpRequest request, _, __) =>
     new Stream.fromIterable([request.response]);
 
+/// Opens a client-side HTTP request using [HttpRequest].
 Future<HttpRequest> openRequest(String method, Uri uri, [client]) async {
   // Create and open a new HttpRequest (XMLHttpRequest).
   return new HttpRequest()..open(method, uri.toString());
 }
 
+/// Sends a client-side HTTP request using [HttpRequest].
+/// Upload and download progress streams are made available
+/// for monitoring. Cross-origin credentialed requests are
+/// possible so long as the [withCredentials] flag is set on
+/// the [WRequest] instance.
 Future<WResponse> send(String method, WRequest wRequest, HttpRequest request,
     StreamController<WProgress> downloadProgressController,
     StreamController<WProgress> uploadProgressController,
@@ -117,10 +139,7 @@ Future<WResponse> send(String method, WRequest wRequest, HttpRequest request,
         request.status == 304) {
       completer.complete(response);
     } else {
-      String errorMessage =
-          'Failed: $method ${wRequest.uri} ${response.status} (${response.statusText})';
-      completer.completeError(
-          new WHttpException(errorMessage, wRequest.uri, wRequest, response));
+      completer.completeError(new WHttpException(method, wRequest, response));
     }
   });
   request.onError.listen(completer.completeError);
@@ -140,11 +159,15 @@ Future<WResponse> send(String method, WRequest wRequest, HttpRequest request,
   return await completer.future;
 }
 
+/// Validate the request data type. For client-side requests,
+/// `ByteBuffer`, `Document`, `FormData`, and `String` are valid types.
+///
+/// Throws an [ArgumentError] if [data] is invalid.
 void validateDataType(Object data) {
   if (data is! ByteBuffer &&
       data is! Document &&
-      data is! String &&
-      data is! FormData) {
+      data is! FormData &&
+      data is! String) {
     throw new ArgumentError(
         'WRequest body must be a String, FormData, ByteBuffer, or Document.');
   }

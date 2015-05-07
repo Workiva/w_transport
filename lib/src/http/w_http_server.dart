@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Workiva Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,8 @@
  *  limitations under the License.
  */
 
+/// Server-side implementations of HTTP logic.
+/// Uses [HttpClient], [HttpClientRequest], and [HttpClientResponse] internally.
 library w_transport.src.http.w_http_server;
 
 import 'dart:async';
@@ -23,6 +25,7 @@ import 'dart:io';
 import './w_http.dart';
 import './w_http_common.dart' as common;
 
+/// Configure w_transport/w_http library for use on the server.
 void configureWHttpForServer() {
   common.configureWHttp(abort, getNewHttpClient, parseResponseHeaders,
       parseResponseStatus, parseResponseStatusText, parseResponseData,
@@ -30,6 +33,11 @@ void configureWHttpForServer() {
       validateDataType);
 }
 
+/// Creates a [StreamTransformer] that monitors the progress of
+/// a data stream instead of actually transforming it. The returned
+/// stream is identical to the input stream, but [progressController]
+/// will be populated with a stream of [WProgress] instances as long
+/// as the data stream progress is calculable.
 StreamTransformer wProgressListener(
     int total, StreamController<WProgress> progressController) {
   int loaded = 0;
@@ -58,12 +66,17 @@ StreamTransformer wProgressListener(
   });
 }
 
+/// Aborts the [HttpClientRequest] by immediately closing the connection.
 void abort(HttpClientRequest request) {
   request.close();
 }
 
+/// Creates a new [HttpClient] so that server-side HTTP requests can benefit
+/// from cached network connections.
 getNewHttpClient() => new HttpClient();
 
+/// Get the response headers from the [HttpClientResponse].
+/// Joins multiple values for a header into a comma-separated list.
 Map<String, String> parseResponseHeaders(HttpClientResponse response) {
   Map<String, String> headers = {};
   response.headers.forEach((String name, List<String> values) {
@@ -72,17 +85,23 @@ Map<String, String> parseResponseHeaders(HttpClientResponse response) {
   return headers;
 }
 
+/// Get the response status from the [HttpClientResponse].
 int parseResponseStatus(HttpClientResponse response) => response.statusCode;
 
+/// Get the response status text from the [HttpClientResponse].
 String parseResponseStatusText(HttpClientResponse response) =>
     response.reasonPhrase;
 
+/// Get the response data from the [HttpClientResponse] stream
+/// by reducing it into a single [List].
 Future<Object> parseResponseData(HttpClientResponse response, int total,
     StreamController<WProgress> downloadProgressController) => response
     .transform(wProgressListener(total, downloadProgressController))
     .reduce((List previous, List element) => new List.from(previous)
   ..addAll(element));
 
+/// Get the the response text from the [HttpClientResponse] stream
+/// by decoding the bytes and joining it into a single [String].
 Future<String> parseResponseText(HttpClientResponse response, Encoding encoding,
         int total, StreamController<WProgress> downloadProgressController) =>
     response
@@ -90,15 +109,20 @@ Future<String> parseResponseText(HttpClientResponse response, Encoding encoding,
         .transform(encoding.decoder)
         .join('');
 
+/// Get the response stream from the [HttpClientResponse].
 Stream parseResponseStream(HttpClientResponse response, int total,
         StreamController<WProgress> downloadProgressController) =>
     response.transform(wProgressListener(total, downloadProgressController));
 
+/// Opens a server-side HTTP request using an [HttpClient].
 Future<HttpClientRequest> openRequest(String method, Uri uri, [client]) async {
   // Attempt to open an HTTP connection
   return await client.openUrl(method, uri);
 }
 
+/// Sends a server-side HTTP request using [HttpClient], [HttpClientRequest],
+/// and [HttpClientResponse]. Upload and download progress streams are made
+/// available for monitoring.
 Future<WResponse> send(String method, WRequest wRequest,
     HttpClientRequest request,
     StreamController<WProgress> downloadProgressController,
@@ -143,12 +167,14 @@ Future<WResponse> send(String method, WRequest wRequest,
       wResponse.status == 304) {
     return wResponse;
   } else {
-    String errorMessage =
-        'Failed: $method ${wRequest.uri} ${wResponse.status} (${wResponse.statusText})';
-    throw new WHttpException(errorMessage, wRequest.uri, wRequest, wResponse);
+    throw new WHttpException(method, wRequest, wResponse);
   }
 }
 
+/// Validate the request data type. For server-side requests,
+/// [String] and [Stream] are valid types.
+///
+/// Throws an [ArgumentError] if [data] is invalid.
 void validateDataType(Object data) {
   if (data is! String && data is! Stream) {
     throw new ArgumentError('WRequest body must be a String or a Stream.');

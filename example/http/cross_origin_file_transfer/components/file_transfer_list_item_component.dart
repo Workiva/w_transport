@@ -89,7 +89,7 @@ class FileTransferListItemComponent extends react.Component {
 
   render() {
     FileTransfer transfer = this.props['transfer'];
-    if (transfer == null) return null;
+    if (transfer == null) return react.div({});
     String transferClass = '';
     if (this.state['done']) {
       transferClass = this.state['success'] ? 'success' : 'error';

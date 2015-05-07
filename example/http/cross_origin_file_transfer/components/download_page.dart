@@ -129,8 +129,6 @@ class DownloadPage extends react.Component {
   }
 
   render() {
-    if (!this.props['active']) return null;
-
     var error = '';
     if (this.state['error'] != null) {
       error = react.p({'className': 'error'}, 'Could not retrieve the remote file list from the server.');

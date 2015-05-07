@@ -65,7 +65,7 @@ class DownloadProxy extends Handler {
 
   Future<shelf.Response> get(shelf.Request request) async {
     WRequest proxyRequest = http.newRequest()
-      ..url = downloadEndpoint
+      ..uri = downloadEndpoint
       ..query = request.url.query
       ..headers = request.headers;
 

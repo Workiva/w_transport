@@ -8,12 +8,12 @@ import 'package:shelf/shelf_io.dart' as io;
 import './logger.dart';
 import './router.dart';
 
-
 class Server {
-  static start(String name, String host, int port, Router router, Logger logger) async {
+  static start(
+      String name, String host, int port, Router router, Logger logger) async {
     shelf.Handler handler = const shelf.Pipeline()
-      .addMiddleware(shelf.logRequests(logger: logger))
-      .addHandler(router.route);
+        .addMiddleware(shelf.logRequests(logger: logger))
+        .addHandler(router.route);
 
     try {
       await io.serve(handler, host, port);

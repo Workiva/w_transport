@@ -24,16 +24,17 @@ import 'package:w_transport/w_http_client.dart';
 import './service.dart' as service;
 import './status.dart' as status;
 
-
 /// Update the authentication status in the DOM.
 void updateAuthenticationStatus() {
   Element containerElement = querySelector('.status-container');
   Element statusElement = querySelector('.status');
   if (status.authenticated) {
-    containerElement.className = containerElement.className.replaceFirst('unauthenticated', 'authenticated');
+    containerElement.className = containerElement.className.replaceFirst(
+        'unauthenticated', 'authenticated');
     statusElement.text = 'Authenticated';
   } else {
-    containerElement.className = containerElement.className.replaceFirst('authenticated', 'unauthenticated');
+    containerElement.className = containerElement.className.replaceFirst(
+        'authenticated', 'unauthenticated');
     statusElement.text = 'Unauthenticated';
   }
 }

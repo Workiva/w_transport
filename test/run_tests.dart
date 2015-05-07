@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:ansicolor/ansicolor.dart' show AnsiPen;
 import 'package:args/args.dart';
 
-
 typedef String _Pen(String);
 
 _Pen _greenPen = new AnsiPen()..green(bold: true);
@@ -14,14 +13,17 @@ _Pen _redPen = new AnsiPen()..red(bold: true);
 const String testSuccessMessage = 'All tests passed!';
 const String testFailureMessage = 'Some tests failed.';
 
-
 class TestRunException implements Exception {}
 
-Future waitFor(Process process, {String successPattern, String failurePattern, bool verbose: false}) {
+Future waitFor(Process process,
+    {String successPattern, String failurePattern, bool verbose: false}) {
   Completer completer = new Completer();
 
   void listenTo(Stream ioStream) {
-    ioStream.transform(new Utf8Decoder()).transform(new LineSplitter()).listen((String line) {
+    ioStream
+        .transform(new Utf8Decoder())
+        .transform(new LineSplitter())
+        .listen((String line) {
       if (verbose) {
         print(line);
       }
@@ -71,8 +73,10 @@ main(List<String> args) async {
 
   try {
     // Start the server (necessary for integration tests).
-    server = await Process.start('dart', ['--checked', 'tool/server/run.dart', '--no-proxy']);
-    await waitFor(server, successPattern: 'ready - listening', verbose: env['verbose']);
+    server = await Process.start(
+        'dart', ['--checked', 'tool/server/run.dart', '--no-proxy']);
+    await waitFor(server,
+        successPattern: 'ready - listening', verbose: env['verbose']);
 
     // If generating coverage, we run the tests differently
     // TODO: Hopefully clean this up when test package adds support for coverage
@@ -85,7 +89,10 @@ main(List<String> args) async {
       coverage = await Process.start('pub', coverageArgs);
 
       // Wait for coverage to complete.
-      print(await waitFor(coverage, successPattern: 'Coverage generated', failurePattern: 'failed', verbose: env['verbose']));
+      print(await waitFor(coverage,
+          successPattern: 'Coverage generated',
+          failurePattern: 'failed',
+          verbose: env['verbose']));
     } else {
       // Start the test runs.
       List testArgs = ['run', 'test'];
@@ -98,7 +105,10 @@ main(List<String> args) async {
       tests = await Process.start('pub', testArgs);
 
       // Wait for test runs to complete.
-      print(await waitFor(tests, successPattern: testSuccessMessage, failurePattern: testFailureMessage, verbose: env['verbose']));
+      print(await waitFor(tests,
+          successPattern: testSuccessMessage,
+          failurePattern: testFailureMessage,
+          verbose: env['verbose']));
     }
 
     // Kill the server now that we're done.
@@ -109,13 +119,16 @@ main(List<String> args) async {
     int coverageEC = coverage != null ? await coverage.exitCode : 0;
     int testsEC = tests != null ? await tests.exitCode : 0;
 
-    if (serverEC > 0 || coverageEC > 0 || testsEC > 0) throw new Exception('Testing failed.');
+    if (serverEC > 0 ||
+        coverageEC > 0 ||
+        testsEC > 0) throw new Exception('Testing failed.');
 
     // Success!
     print('Success!');
     exit(0);
   } on TestRunException catch (e) {
-    print('Unexpected error running tests. Try running again with -v for more info.');
+    print(
+        'Unexpected error running tests. Try running again with -v for more info.');
     shutdown([server, coverage, tests]);
   } catch (e, stackTrace) {
     print('$e\n$stackTrace');

@@ -10,7 +10,6 @@ import 'package:w_transport/w_http_server.dart';
 import './w_http_common_tests.dart' as common_tests;
 import './w_http_utils.dart';
 
-
 void main() {
   // Almost all of the integration tests are identical regardless of client/server usage.
   // So, we run them from a common location.
@@ -50,7 +49,8 @@ void main() {
       setReqPath(req, '/test/http/reflect');
       WStreamedResponse response = store(await req.trace());
       expect(response.status, equals(200));
-      expect(JSON.decode(await response.transform(new Utf8Decoder()).join(''))['method'], equals('TRACE'));
+      expect(JSON.decode(await response.transform(new Utf8Decoder()).join(''))[
+          'method'], equals('TRACE'));
     }));
 
     test('should allow a String data payload', () {

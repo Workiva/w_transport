@@ -24,7 +24,6 @@ import './dom.dart' as dom;
 import './service.dart' as service;
 import './status.dart' as status;
 
-
 /// Setup the example application.
 main() async {
   react_client.setClientConfiguration();

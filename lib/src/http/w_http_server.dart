@@ -24,19 +24,23 @@ import 'package:fluri/fluri.dart';
 
 import './w_http.dart';
 
-
 /// Server-side implementation of an HTTP transport.
 /// Uses dart:io.HttpClient and dart:io.HttpClientRequest.
 class WRequest extends WTransportRequest with FluriMixin {
   HttpClientRequest _request;
 
   /// Create a WRequest that will use its own, new HttpClient instance.
-  WRequest() : super(), _client = new HttpClient(), encoding = UTF8;
+  WRequest()
+      : super(),
+        _client = new HttpClient(),
+        encoding = UTF8;
 
   /// Create a WRequest with a pre-existing HttpClient instance.
   /// The given HttpClient instance will be used instead of a new one.
   /// WHttpClient uses this constructor.
-  WRequest._withClient(HttpClient client) : super(), _client = client;
+  WRequest._withClient(HttpClient client)
+      : super(),
+        _client = client;
 
   /// HttpClient used to send the request.
   HttpClient _client;
@@ -63,12 +67,15 @@ class WRequest extends WTransportRequest with FluriMixin {
   /// dart:io.HttpClientRequest instance. If the [configureRequest] callback returns
   /// a Future, the request will not be sent until the returned Future completes.
   Function _configure;
-  void configure(configure(HttpRequest request)) { _configure = configure; }
+  void configure(configure(HttpRequest request)) {
+    _configure = configure;
+  }
 
   /// Cancel the request. If the request has already finished, this will do nothing.
   void abort() {
     if (_request == null) {
-      throw new StateError('Can\'t cancel a request that has not yet been opened.');
+      throw new StateError(
+          'Can\'t cancel a request that has not yet been opened.');
     }
     _request.close();
   }
@@ -122,7 +129,9 @@ class WRequest extends WTransportRequest with FluriMixin {
       this.data = data;
     }
 
-    if (this.uri == null || this.uri.toString() == null || this.uri.toString() == '') {
+    if (this.uri == null ||
+        this.uri.toString() == null ||
+        this.uri.toString() == '') {
       throw new StateError('WRequest: Cannot send a request without a URL.');
     }
 
@@ -158,18 +167,19 @@ class WRequest extends WTransportRequest with FluriMixin {
 
     // Close the request now that data (if any) has been sent and wait for the response
     HttpClientResponse response = await _request.close();
-    WStreamedResponse streamedResponse = new _WStreamedResponse.fromHttpClientResponse(response);
+    WStreamedResponse streamedResponse =
+        new _WStreamedResponse.fromHttpClientResponse(response);
     if ((response.statusCode >= 200 && response.statusCode < 300) ||
-        response.statusCode == 0 || response.statusCode == 304) {
+        response.statusCode == 0 ||
+        response.statusCode == 304) {
       return streamedResponse;
     } else {
-      String errorMessage = 'Failed: $method ${this.uri} ${response.statusCode} (${response.reasonPhrase})';
+      String errorMessage =
+          'Failed: $method ${this.uri} ${response.statusCode} (${response.reasonPhrase})';
       throw new WHttpException(errorMessage, this.uri, streamedResponse);
     }
   }
-
 }
-
 
 /// HTTP client capable of sending many HTTP requests and maintaining
 /// persistent connections.
@@ -178,24 +188,26 @@ class WHttp implements WTransportHttp {
   HttpClient _client;
   WHttp() : _client = new HttpClient();
   WRequest newRequest() => new WRequest._withClient(_client);
-  void close() { _client.close(); }
+  void close() {
+    _client.close();
+  }
 }
-
 
 /// Response to a server-side HTTP request.
 /// Note that this is a streamed response because server-side HTTP requests
 /// receive responses that may be broken up into chunks of bytes.
-abstract class WStreamedResponse implements Stream<List<int>>, WTransportResponse {
+abstract class WStreamedResponse
+    implements Stream<List<int>>, WTransportResponse {
   /// Decode the response to text.
   Future<String> asText({Encoding encoding: UTF8});
 }
-
 
 /// Internal implementation of a response to a server-side HTTP request.
 /// By making the above abstract class public and this implementation private,
 /// the class structure can be public without exposing the constructor, since
 /// it will only be used internally.
-class _WStreamedResponse extends Stream<List<int>> implements WStreamedResponse {
+class _WStreamedResponse extends Stream<List<int>>
+    implements WStreamedResponse {
   Map<String, String> _headers;
   HttpClientResponse _response;
 
@@ -210,20 +222,18 @@ class _WStreamedResponse extends Stream<List<int>> implements WStreamedResponse 
 
   /// Forward the stream from the HttpClientResponse.
   StreamSubscription<List<int>> listen(void onData(List<int> event),
-                                      { Function onError,
-                                        void onDone(),
-                                        bool cancelOnError}) {
-    return _response.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+      {Function onError, void onDone(), bool cancelOnError}) {
+    return _response.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
-
-  Future<String> asText({Encoding encoding: UTF8}) => encoding.decodeStream(this);
+  Future<String> asText({Encoding encoding: UTF8}) =>
+      encoding.decodeStream(this);
 
   Map<String, String> get headers => _headers;
   int get status => _response.statusCode;
   String get statusText => _response.reasonPhrase;
 }
-
 
 /// An exception that is raised when a response to a request returns
 /// with an unsuccessful status code.

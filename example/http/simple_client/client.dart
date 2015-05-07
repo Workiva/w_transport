@@ -25,7 +25,6 @@ import 'package:w_transport/w_http_client.dart';
 import '../../common/global_example_menu_component.dart';
 import '../../common/loading_component.dart';
 
-
 /// Handle clicks on file names.
 /// Sends a GET request to retrieve the file contents,
 /// then displays the contents in the response pane.
@@ -55,7 +54,6 @@ Future<String> requestFile(String filePath) async {
 void showFileContents(String contents) {
   querySelector('#response').text = contents;
 }
-
 
 void main() {
   react_client.setClientConfiguration();

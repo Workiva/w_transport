@@ -10,7 +10,6 @@ import 'package:w_transport/w_http_client.dart';
 import './w_http_common_tests.dart' as common_tests;
 import './w_http_utils.dart';
 
-
 void main() {
   // Almost all of the integration tests are identical regardless of client/server usage.
   // So, we run them from a common location.

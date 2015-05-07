@@ -5,11 +5,9 @@ import 'dart:io';
 
 import 'package:shelf/shelf.dart' as shelf;
 
-
 /// Base request handler class that enables CORS by default.
 /// Should be subclassed and the handleRequest() method must be implemented.
 abstract class Handler {
-
   List<String> _allowedMethods;
   String _allowedOrigin;
   bool _credentialsAllowed;
@@ -22,15 +20,32 @@ abstract class Handler {
   Future<shelf.Response> processRequest(shelf.Request request) async {
     Function handler;
     switch (request.method) {
-      case 'DELETE': handler = delete; break;
-      case 'GET': handler = get; break;
-      case 'HEAD': handler = head; break;
-      case 'OPTIONS': handler = options; break;
-      case 'PATCH': handler = options; break;
-      case 'POST': handler = post; break;
-      case 'PUT': handler = post; break;
-      case 'TRACE': handler = trace; break;
-      default: return new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
+      case 'DELETE':
+        handler = delete;
+        break;
+      case 'GET':
+        handler = get;
+        break;
+      case 'HEAD':
+        handler = head;
+        break;
+      case 'OPTIONS':
+        handler = options;
+        break;
+      case 'PATCH':
+        handler = options;
+        break;
+      case 'POST':
+        handler = post;
+        break;
+      case 'PUT':
+        handler = post;
+        break;
+      case 'TRACE':
+        handler = trace;
+        break;
+      default:
+        return new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
     }
     shelf.Response response = await handler(request);
     if (_corsEnabled) {
@@ -44,16 +59,9 @@ abstract class Handler {
   void enableCors({bool credentials, List<String> methods, String origin}) {
     _corsEnabled = true;
     _credentialsAllowed = (credentials == true) ? true : false;
-    _allowedMethods = (methods != null) ? methods : [
-      'DELETE',
-      'GET',
-      'HEAD',
-      'OPTIONS',
-      'PATCH',
-      'POST',
-      'PUT',
-      'TRACE'
-    ];
+    _allowedMethods = (methods != null)
+        ? methods
+        : ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'TRACE'];
     _allowedOrigin = (origin != null) ? origin : null;
   }
 
@@ -63,7 +71,8 @@ abstract class Handler {
     Map<String, String> headers = {};
 
     // Use given allow origin, but default to allowing every origin (by using origin of request)
-    String origin = _allowedOrigin != null ? _allowedOrigin : request.headers['Origin'];
+    String origin =
+        _allowedOrigin != null ? _allowedOrigin : request.headers['Origin'];
     headers['Access-Control-Allow-Origin'] = origin;
 
     // Allow all headers (by using the requested headers)
@@ -84,13 +93,20 @@ abstract class Handler {
   }
 
   /// RESTful method handlers. Override as necessary.
-  Future<shelf.Response> delete(shelf.Request request) async => new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> get(shelf.Request request) async => new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> head(shelf.Request request) async => new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> patch(shelf.Request request) async => new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> post(shelf.Request request) async => new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> put(shelf.Request request) async => new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> trace(shelf.Request request) async => new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
+  Future<shelf.Response> delete(shelf.Request request) async =>
+      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
+  Future<shelf.Response> get(shelf.Request request) async =>
+      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
+  Future<shelf.Response> head(shelf.Request request) async =>
+      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
+  Future<shelf.Response> patch(shelf.Request request) async =>
+      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
+  Future<shelf.Response> post(shelf.Request request) async =>
+      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
+  Future<shelf.Response> put(shelf.Request request) async =>
+      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
+  Future<shelf.Response> trace(shelf.Request request) async =>
+      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
 
   /// Handler for the OPTIONS request. For convenience, this returns
   /// 200 OK by default if CORS support has been enabled.

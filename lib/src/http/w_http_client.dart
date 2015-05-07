@@ -24,7 +24,6 @@ import 'package:fluri/fluri.dart';
 
 import './w_http.dart';
 
-
 /// Client-side implementation of an HTTP transport.
 /// Uses dart:html.HttpRequest (XMLHttpRequest).
 class WRequest extends WTransportRequest with FluriMixin {
@@ -34,8 +33,12 @@ class WRequest extends WTransportRequest with FluriMixin {
   dynamic _data;
   dynamic get data => _data;
   void set data(Object data) {
-    if (data is! ByteBuffer && data is! Document && data is! String && data is! FormData) {
-      throw new ArgumentError('WRequest body must be a String, FormData, ByteBuffer, or Document.');
+    if (data is! ByteBuffer &&
+        data is! Document &&
+        data is! String &&
+        data is! FormData) {
+      throw new ArgumentError(
+          'WRequest body must be a String, FormData, ByteBuffer, or Document.');
     }
     _data = data;
   }
@@ -47,24 +50,30 @@ class WRequest extends WTransportRequest with FluriMixin {
   bool withCredentials = false;
 
   /// dart:html.ProgressEvent stream for this HTTP request's upload.
-  StreamController<ProgressEvent> _uploadProgressController = new StreamController<ProgressEvent>();
+  StreamController<ProgressEvent> _uploadProgressController =
+      new StreamController<ProgressEvent>();
   Stream<ProgressEvent> get uploadProgress => _uploadProgressController.stream;
 
   /// dart:html.ProgressEvent stream for this HTTP request's download.
-  StreamController<ProgressEvent> _downloadProgressController = new StreamController<ProgressEvent>();
-  Stream<ProgressEvent> get downloadProgress => _downloadProgressController.stream;
+  StreamController<ProgressEvent> _downloadProgressController =
+      new StreamController<ProgressEvent>();
+  Stream<ProgressEvent> get downloadProgress =>
+      _downloadProgressController.stream;
 
   /// Register a callback that will be called after opening, but prior to sending,
   /// the request. The supplied [configure] callback will be called with the
   /// dart:html.HttpRequest instance. If the [configure] callback returns a
   /// Future, the request will not be sent until the returned Future completes.
   Function _configure;
-  void configure(configure(HttpRequest request)) { _configure = configure; }
+  void configure(configure(HttpRequest request)) {
+    _configure = configure;
+  }
 
   /// Cancel the request. If the request has already finished, this will do nothing.
   void abort() {
     if (_request == null) {
-      throw new StateError('Can\'t cancel a request that has not yet been opened.');
+      throw new StateError(
+          'Can\'t cancel a request that has not yet been opened.');
     }
     _request.abort();
   }
@@ -113,7 +122,9 @@ class WRequest extends WTransportRequest with FluriMixin {
       this.data = data;
     }
 
-    if (this.uri == null || this.uri.toString() == null || this.uri.toString() == '') {
+    if (this.uri == null ||
+        this.uri.toString() == null ||
+        this.uri.toString() == '') {
       throw new StateError('WRequest: Cannot send a request without a URL.');
     }
 
@@ -142,11 +153,14 @@ class WRequest extends WTransportRequest with FluriMixin {
     _request.onLoad.listen((ProgressEvent e) {
       WResponse response = new _WResponse.fromHttpRequest(_request);
       if ((_request.status >= 200 && _request.status < 300) ||
-          _request.status == 0 || _request.status == 304) {
+          _request.status == 0 ||
+          _request.status == 304) {
         completer.complete(response);
       } else {
-        String errorMessage = 'Failed: $method ${this.uri} ${response.status} (${response.statusText})';
-        completer.completeError(new WHttpException(errorMessage, this.uri, response));
+        String errorMessage =
+            'Failed: $method ${this.uri} ${response.status} (${response.statusText})';
+        completer.completeError(
+            new WHttpException(errorMessage, this.uri, response));
       }
     });
     _request.onError.listen(completer.completeError);
@@ -165,9 +179,7 @@ class WRequest extends WTransportRequest with FluriMixin {
 
     return await completer.future;
   }
-
 }
-
 
 /// Response to a client-side HTTP request.
 abstract class WResponse implements WTransportResponse {
@@ -185,7 +197,6 @@ abstract class WResponse implements WTransportResponse {
   /// The data received as a response from the request in String format.
   String get text;
 }
-
 
 /// Internal implementation of a response to a client-side HTTP request.
 /// By making the above abstract class public and this implementation private,
@@ -205,7 +216,6 @@ class _WResponse implements WResponse {
   dynamic get data => _request.response;
   String get text => _request.responseText;
 }
-
 
 /// An exception that is raised when a response to a request returns
 /// with an unsuccessful status code.

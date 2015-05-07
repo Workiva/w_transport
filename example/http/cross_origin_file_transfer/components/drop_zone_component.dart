@@ -23,7 +23,6 @@ import 'package:react/react.dart' as react;
 
 import '../services/file_transfer.dart';
 
-
 /// File drop zone. Listens to drag and drop events and accepts
 /// one or many dropped files. Uploads each dropped file to a
 /// server via a POST request with a FormData payload.
@@ -41,11 +40,7 @@ class DropZoneComponent extends react.Component {
   }
 
   Map getDefaultProps() {
-    return {
-      'onNewUploads': (_) {},
-      'onDragStart': () {},
-      'onDragEnd': () {},
-    };
+    return {'onNewUploads': (_) {}, 'onDragStart': () {}, 'onDragEnd': () {},};
   }
 
   void componentWillMount() {
@@ -110,10 +105,7 @@ class DropZoneComponent extends react.Component {
     this.props['onNewUploads'](newUploads);
     this.props['onDragEnd']();
 
-    this.setState({
-      'overDropZone': false,
-      'overDropTarget': false,
-    });
+    this.setState({'overDropZone': false, 'overDropTarget': false});
   }
 
   render() {
@@ -128,9 +120,7 @@ class DropZoneComponent extends react.Component {
       dropTargetClass += ' over';
     }
 
-    var dropZoneProps = {
-      'className': dropZoneClass,
-    };
+    var dropZoneProps = {'className': dropZoneClass};
     var dropTargetProps = {
       'className': dropTargetClass,
       'onDragOver': enlargeDropTarget,
@@ -138,6 +128,7 @@ class DropZoneComponent extends react.Component {
       'onDrop': uploadFiles,
     };
 
-    return react.div(dropZoneProps, react.div(dropTargetProps, 'Drop Here to Upload'));
+    return react.div(
+        dropZoneProps, react.div(dropTargetProps, 'Drop Here to Upload'));
   }
 }

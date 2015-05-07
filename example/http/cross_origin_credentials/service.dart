@@ -21,19 +21,17 @@ import 'dart:convert';
 
 import 'package:w_transport/w_http_client.dart';
 
-
 /// URLs for this cross origin credentials example.
 Uri authenticationServerUrl = Uri.parse('http://localhost:8024');
 String pathPrefix = '/example/http/cross_origin_credentials';
 Uri sessionUrl = authenticationServerUrl.replace(path: '$pathPrefix/session');
-Uri credentialedEndpointUrl = authenticationServerUrl.replace(path: '$pathPrefix/credentialed');
-
+Uri credentialedEndpointUrl =
+    authenticationServerUrl.replace(path: '$pathPrefix/credentialed');
 
 /// Send a request to the /session endpoint to check authentication status.
 /// Returns true if authenticated, false otherwise.
 Future<bool> checkStatus() async {
-  WRequest req = new WRequest()
-    ..withCredentials = true;
+  WRequest req = new WRequest()..withCredentials = true;
 
   try {
     WResponse response = await req.get(sessionUrl);
@@ -74,8 +72,7 @@ Future<bool> logout() async {
 /// means the session HTTP cookie (if set) will be included.
 /// Thus, if authenticated, this request should succeed.
 Future<String> makeCredentialedRequest() async {
-  WRequest req = new WRequest()
-    ..withCredentials = true;
+  WRequest req = new WRequest()..withCredentials = true;
 
   WResponse response;
   response = await req.get(credentialedEndpointUrl);

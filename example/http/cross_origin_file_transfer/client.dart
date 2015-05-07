@@ -25,7 +25,6 @@ import '../../common/global_example_menu_component.dart';
 import '../../common/loading_component.dart';
 import './components/app_component.dart';
 
-
 void main() {
   // Setup and bootstrap the react app
   react_client.setClientConfiguration();

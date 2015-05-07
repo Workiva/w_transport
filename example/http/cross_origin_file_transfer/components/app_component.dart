@@ -22,16 +22,12 @@ import './download_page.dart';
 import './upload_page.dart';
 import '../services/proxy.dart' as proxy;
 
-
 /// Main application component.
 /// Sets up the file drop zone, file upload, and file download components.
 var appComponent = react.registerComponent(() => new AppComponent());
 class AppComponent extends react.Component {
-
   Map getInitialState() {
-    return {
-      'page': 'upload',
-    };
+    return {'page': 'upload',};
   }
 
   void _goToUploadPage(e) {
@@ -52,15 +48,22 @@ class AppComponent extends react.Component {
     String page = this.state['page'];
 
     return react.div({}, [
-      react.p({},
-        react.label({'htmlFor': 'proxy'}, [
-          react.input({'type': 'checkbox', 'id': 'proxy', 'onChange': _toggleProxy}),
-          ' Use Proxy Server',
-        ])
-      ),
+      react.p({}, react.label({'htmlFor': 'proxy'}, [
+        react.input(
+            {'type': 'checkbox', 'id': 'proxy', 'onChange': _toggleProxy}),
+        ' Use Proxy Server',
+      ])),
       react.div({'className': 'app-nav'}, [
-        react.a({'href': '#', 'className': page == 'upload' ? 'active' : '', 'onClick': _goToUploadPage}, 'Upload'),
-        react.a({'href': '#', 'className': page == 'download' ? 'active' : '',  'onClick': _goToDownloadPage}, 'Download'),
+        react.a({
+          'href': '#',
+          'className': page == 'upload' ? 'active' : '',
+          'onClick': _goToUploadPage
+        }, 'Upload'),
+        react.a({
+          'href': '#',
+          'className': page == 'download' ? 'active' : '',
+          'onClick': _goToDownloadPage
+        }, 'Download'),
       ]),
       uploadPage({'active': page == 'upload'}),
       downloadPage({'active': page == 'download'}),

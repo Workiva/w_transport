@@ -25,7 +25,6 @@ import 'package:w_transport/w_http_client.dart';
 import './proxy.dart';
 import './remote_files.dart';
 
-
 // Counter used to create unique upload IDs.
 int _transferNum = 0;
 
@@ -36,17 +35,16 @@ final int _concurrentFileTransferSizeLimit = math.pow(2, 20) * 75; // 75 MB
 // Current number of bytes in memory from concurrent file transfers.
 int _concurrentFileTransferSize = 0;
 
-
 /// Encapsulates the file upload to or file download from the server.
 class FileTransfer {
   WRequest _http;
   bool _cancelled;
 
-  FileTransfer(this.name) : id = 'fileTransfer${_transferNum++}',
-                              _cancelled = false,
-                              _doneCompleter = new Completer(),
-                              _percentComplete = 0.0 {
-  }
+  FileTransfer(this.name)
+      : id = 'fileTransfer${_transferNum++}',
+        _cancelled = false,
+        _doneCompleter = new Completer(),
+        _percentComplete = 0.0 {}
 
   /// Unique file transfer identifier.
   final String id;
@@ -82,7 +80,6 @@ class FileTransfer {
   }
 }
 
-
 /// Encapsulates the upload of a file from the client to the server.
 class Upload extends FileTransfer {
   /// Start a new file upload. This will begin the upload to the server immediately.
@@ -108,12 +105,11 @@ class Upload extends FileTransfer {
 
     // Send the request.
     _http
-      .post()
-      .then((_) => _doneCompleter.complete())
-      .catchError((error) => _doneCompleter.completeError(error));
+        .post()
+        .then((_) => _doneCompleter.complete())
+        .catchError((error) => _doneCompleter.completeError(error));
   }
 }
-
 
 class Download extends FileTransfer {
   /// Start a new file download. This will begin the download from the server immediately.
@@ -145,7 +141,8 @@ class Download extends FileTransfer {
         // When dealing with large (or many) files, it's possible that
         // we can run out of memory. Cancel requests after a certain threshold.
         if (_concurrentFileTransferSize > _concurrentFileTransferSizeLimit) {
-          cancel('Maximum concurrent file transfer size exceeded. Large files cannot be loaded into memory.');
+          cancel(
+              'Maximum concurrent file transfer size exceeded. Large files cannot be loaded into memory.');
         }
 
         _bytesLoaded = event.loaded;
@@ -153,9 +150,7 @@ class Download extends FileTransfer {
     });
 
     // Send the request.
-    _http
-      .get()
-      .then((WResponse response) {
+    _http.get().then((WResponse response) {
       _doneCompleter.complete();
     }, onError: (error) {
       _doneCompleter.completeError(error);

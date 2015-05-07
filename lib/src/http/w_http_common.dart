@@ -27,9 +27,9 @@ bool _configurationSet = false;
 void verifyWHttpConfigurationIsSet() {
   if (!_configurationSet) throw new StateError(
       'w_transport configuration must be set prior to use. ' +
-      'Import \'package:w_transport/w_transport_client.dart\' ' +
-      'or \'package:w_transport/w_transport_server.dart\' and call ' +
-      'configureWTransportForBrowser() or configureWTransportForServer()');
+          'Import \'package:w_transport/w_transport_client.dart\' ' +
+          'or \'package:w_transport/w_transport_server.dart\' and call ' +
+          'configureWTransportForBrowser() or configureWTransportForServer()');
 }
 
 void abort(request) {

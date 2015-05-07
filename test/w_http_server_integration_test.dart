@@ -22,7 +22,8 @@ import 'dart:convert';
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_http.dart';
-import 'package:w_transport/w_transport_server.dart' show configureWTransportForServer;
+import 'package:w_transport/w_transport_server.dart'
+    show configureWTransportForServer;
 
 import './w_http_common_tests.dart' as common_tests;
 import './w_http_utils.dart';

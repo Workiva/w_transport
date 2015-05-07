@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cross Origin Credentialed Requests | HTTP Example</title>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loading-overlay"><div class="loading">Loading...</div></div>
+
+    <div class="container">
+        <h1>Cross Origin Credentials</h1>
+        <div class="actions">
+            <p class="status-container unauthenticated">
+                Status: <strong class="status">Unauthenticated</strong>
+            </p>
+            <button id="toggle-auth">Login</button><br>
+            <button id="make-credentialed-request">Send Request (with credentials)</button><br>
+            <button id="make-uncredentialed-request">Send Request (without credentials)</button><br>
+        </div>
+        <div class="content">
+            <div id="response"></div>
+        </div>
+    </div>
+
+    <script src="packages/react/react.js"></script>
+    <script type="application/dart" src="client.dart"></script>
+    <script src="packages/browser/dart.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+.hidden {
+    display: none;
+}
+.app-nav {
+    width: 100%;
+    background-color: #e6e6e6;
+}
+.app-nav > a {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 18px;
+    color: #009bff;
+    text-decoration: none;
+}
+.app-nav > a:hover {
+    text-decoration: underline;
+}
+.app-nav > a.active {
+    font-weight: bold;
+}
+.no-pointer-events {
+    pointer-events: none;
+}
+.drop-zone {
+    visibility: hidden;
+    position: fixed;
+    width: 100%;
+    top: 48px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+.drop-zone.active {
+    visibility: visible;
+}
+.drop-target {
+    visibility: hidden;
+    position: fixed;
+    z-index: 1000;
+    top: 100px;
+    left: 50%;
+    margin-left: -150px;
+    width: 300px;
+    height: 300px;
+    line-height: 300px;
+    text-align: center;
+    font-size: 20px;
+    color: #333333;
+    border-radius: 50%;
+    background-color: #e6e6e6;
+    transition: width .5s, height .5s, top .5s, margin-left .5s, line-height .5s;
+}
+.drop-target.show {
+    visibility: visible;
+}
+.drop-target.over {
+    top: 80px;
+    margin-left: -170px;
+    width: 340px;
+    height: 340px;
+    line-height: 340px;
+    color: #fff;
+    background-color: #1499d3;
+}
+.transfers {
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
+}
+.transfers > li {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    background-color: #eff0ed;
+    opacity: 1;
+    transition: background-color 0.5s ease, opacity 2s ease;
+}
+.transfers > li > .name {
+    float: left;
+    width: 400px;
+    height: 25px;
+    line-height: 25px;
+    padding: 0 20px;
+}
+.transfers > li > .progress {
+    margin-left: 420px;
+    height: 25px;
+    background-color: #cbcbcb;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+.transfers > li > .progress > .progress-bar {
+    height: 25px;
+    background-color: #66cc00;
+    transition: width 0.5s ease;
+}
+.transfers > li.done > .progress {
+    opacity: 0;
+}
+.transfers > li.success {
+    background-color: #e5efd9;
+}
+.transfers > li.error {
+    background-color: #ffa29b;
+}
+.transfers > li.hide {
+    opacity: 0;
+}
+.file {
+    float: left;
+    width: 31%;
+    margin-right: 2%;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: #ecf6f9;
+    border: 1px solid #ecf6f9;
+}
+.file:hover {
+    border-color: #b9c4cb;
+}
+.file > .file-name {
+    display: inline-block;
+    text-overflow: ellipsis;
+    width: 80%;
+    color: #333;
+}
+.file > .file-size {
+    display: inline-block;
+    width: 20%;
+    text-align: right;
+    color: #8a8a8a;
+    font-size: 14px;
+}

@@ -1,0 +1,142 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700,300);
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #444;
+    margin: 0;
+    padding: 40px 0 0;
+}
+
+p {
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 24px;
+}
+
+p.note {
+    padding: 4px 10px;
+    border-left: 3px solid #979797;
+    background-color: #f3f3f3;
+    font-size: 14px;
+    color: #666;
+}
+
+p.success {
+    padding: 4px 10px;
+    border-left: 3px solid #0f7f40;
+    background-color: #e5efd9;
+    font-size: 14px;
+    color: #333;
+}
+
+p.warning {
+    padding: 4px 10px;
+    border-left: 3px solid #fbad17;
+    background-color: #f9efc7;
+    font-size: 14px;
+    color: #333;
+}
+
+p.error {
+    padding: 4px 10px;
+    border-left: 3px solid #a71b19;
+    background-color: #ff5547;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.muted {
+    font-size: 16px;
+    color: #979797;
+}
+
+.clear:after  {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.container {
+    width: 90%;
+    margin: 15px auto 0;
+}
+
+.loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-top: 100px;
+    background-color: #fff;
+    color: #999;
+    text-align: center;
+    font-style: italic;
+}
+
+.loading.done {
+    display: none;
+}
+
+.global-example-menu {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 40px;
+    background-color: #f2f2f2;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.global-example-menu > .container {
+    margin-top: 0;
+}
+
+.global-example-menu a {
+    float: left;
+    margin-right: 50px;
+    font-size: 16px;
+    line-height: 40px;
+    color: #888;
+    text-decoration: none;
+}
+
+.global-example-menu a:hover {
+    color: #009bff;
+    text-decoration: underline;
+}
+
+.global-example-menu .server-status {
+    float: left;
+    margin-right: 35px;
+    color: #ee2724;
+    font-size: 16px;
+}
+
+.global-example-menu .server-status.online {
+    color: #66cc00;
+}
+
+.global-example-menu .server-status > .server-status-light {
+    float: left;
+    margin-right: 6px;
+    font-size: 46px;
+    line-height: 40px;
+}
+
+.global-example-menu .server-status > .server-status-desc {
+    float: left;
+    line-height: 40px;
+}
+
+.global-example-menu .server-status-tip {
+    line-height: 40px;
+}

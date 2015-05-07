@@ -1,0 +1,17 @@
+.files {
+    float: left;
+    width: 200px;
+}
+.content {
+    margin-left: 220px;
+}
+#response {
+    width: 100%;
+    padding: 10px;
+    min-height: 400px;
+    border: 1px solid #aaa;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    line-height: 18px;
+    overflow: auto;
+}

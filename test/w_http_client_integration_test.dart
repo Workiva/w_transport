@@ -1,31 +1,27 @@
 @TestOn('browser || content-shell')
 library w_transport.test.integration.w_http_client_test;
 
-import 'dart:async';
 import 'dart:html';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_http_client.dart';
+import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_http_client.dart' show configureWHttpForBrowser;
 
 import './w_http_common_tests.dart' as common_tests;
 import './w_http_utils.dart';
 
 void main() {
+  configureWHttpForBrowser();
+
   // Almost all of the integration tests are identical regardless of client/server usage.
   // So, we run them from a common location.
-  common_tests.run('Client', () => new WRequest(), (WResponse resp) {
-    return new Future.value(resp.text);
-  });
-
-  void setReqPath(WRequest req, String path) {
-    req.uri = Uri.parse('http://localhost:8024').replace(path: path);
-  }
+  common_tests.run('Client');
 
   group('WRequest (Client)', () {
-    WRequest req;
+    WRequest request;
 
     setUp(() {
-      req = new WRequest()..uri = Uri.parse('http://localhost:8024');
+      request = new WRequest()..uri = Uri.parse('http://localhost:8024');
     });
 
     // The following two tests are unique from a client consumer.
@@ -36,20 +32,20 @@ void main() {
     test('should support a HEAD method', httpTest((store) async {
       // HEAD requests cannot return a body, but we can use that to
       // verify that this was actually a HEAD request
-      setReqPath(req, '/test/http/reflect');
-      WResponse response = store(await req.head());
+      request.path = '/test/http/reflect';
+      WResponse response = store(await request.head());
       expect(response.status, equals(200));
-      expect(response.text, equals(''));
+      expect(await response.text, equals(''));
     }));
 
     test('should support a FormData payload', httpTest((store) async {
-      setReqPath(req, '/test/http/reflect');
+      request.path = '/test/http/reflect';
       FormData data = new FormData();
       Blob blob = new Blob(['blob']);
       data.appendBlob('blob', blob);
       data.append('text', 'text');
-      req.data = data;
-      store(await req.post());
+      request.data = data;
+      store(await request.post());
     }));
   });
 }

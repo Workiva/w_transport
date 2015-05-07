@@ -20,7 +20,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:react/react.dart' as react;
-import 'package:w_transport/w_http_client.dart';
+import 'package:w_transport/w_http.dart';
 
 const int _pollingInterval = 4; // 4 seconds
 
@@ -39,9 +39,9 @@ void renderGlobalExampleMenu(
 
 Future<bool> _ping(Uri uri) async {
   try {
-    WResponse response = await new WRequest().get(uri);
+    WResponse response = await WHttp.get(uri);
     return response.status == 200;
-  } catch (e) {
+  } on WHttpException catch (e) {
     return false;
   }
 }

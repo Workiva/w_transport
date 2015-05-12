@@ -338,9 +338,7 @@ class WRequest extends Object with FluriMixin {
       this.data = data;
     }
 
-    if (this.uri == null ||
-        this.uri.toString() == null ||
-        this.uri.toString() == '') {
+    if (this.uri == null || this.uri.toString() == '') {
       throw new StateError('WRequest: Cannot send a request without a URL.');
     }
 

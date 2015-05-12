@@ -26,9 +26,100 @@ import './w_http_utils.dart';
 /// These are HTTP integration tests that should work from client or server.
 /// These will not pass if run on their own!
 void run(String usage) {
-  void setReqPath(WRequest req, String path) {
-    req.uri = Uri.parse('http://localhost:8024').replace(path: path);
-  }
+  group('WHttp ($usage) static methods', () {
+    Uri uri;
+
+    setUp(() {
+      uri = Uri.parse('http://localhost:8024/test/http/reflect');
+    });
+
+    test('should be able to send a DELETE request', () async {
+      WResponse response = await WHttp.delete(uri);
+      expect(response.status, equals(200));
+      Map data = JSON.decode(await response.text);
+      expect(data['method'], equals('DELETE'));
+    });
+
+    test('should be able to send a GET request', () async {
+      WResponse response = await WHttp.get(uri);
+      expect(response.status, equals(200));
+      Map data = JSON.decode(await response.text);
+      expect(data['method'], equals('GET'));
+    });
+
+    test('should be able to send a HEAD request', () async {
+      WResponse response = await WHttp.head(uri);
+      expect(response.status, equals(200));
+    });
+
+    test('should be able to send a OPTIONS request', () async {
+      WResponse response = await WHttp.options(uri);
+      expect(response.status, equals(200));
+      Map data = JSON.decode(await response.text);
+      expect(data['method'], equals('OPTIONS'));
+    });
+
+    test('should be able to send a PATCH request', () async {
+      WResponse response = await WHttp.patch(uri);
+      expect(response.status, equals(200));
+      Map data = JSON.decode(await response.text);
+      expect(data['method'], equals('PATCH'));
+    });
+
+    test('should be able to send a POST request', () async {
+      WResponse response = await WHttp.post(uri);
+      expect(response.status, equals(200));
+      Map data = JSON.decode(await response.text);
+      expect(data['method'], equals('POST'));
+    });
+
+    test('should be able to send a PUT request', () async {
+      WResponse response = await WHttp.put(uri);
+      expect(response.status, equals(200));
+      Map data = JSON.decode(await response.text);
+      expect(data['method'], equals('PUT'));
+    });
+  });
+
+  group('WHttp ($usage)', () {
+    WHttp http;
+
+    setUp(() {
+      http = new WHttp();
+    });
+
+    test('should be able to create new requests', () async {
+      expect(http.newRequest() is WRequest, isTrue);
+      expect(http.newRequest() != http.newRequest(), isTrue);
+    });
+
+    test('should be able to close the client', () {
+      http.close();
+    });
+
+    test('should throw if new request created after client is closed', () {
+      http.close();
+      expect(() {
+        http.newRequest();
+      }, throwsStateError);
+    });
+  });
+
+  group('WHttpException ($usage)', () {
+    test('should be thrown on failed requests', () async {
+      Uri uri = Uri.parse('http://localhost:8024/test/http/404');
+      WHttpException exception;
+      try {
+        await WHttp.get(uri);
+      } on WHttpException catch (e) {
+        exception = e;
+      }
+      expect(exception, isNotNull);
+      expect(exception.method, equals('GET'));
+      expect(exception.uri, equals(uri));
+      expect(exception.toString().contains('WHttpException: '), isTrue);
+    });
+  });
 
   group('WRequest ($usage)', () {
     WRequest request;
@@ -42,6 +133,25 @@ void run(String usage) {
       var response = store(await request.get());
       expect(response.status, equals(200));
     }));
+
+    test('should be able to supply a URI and data when sending', () async {
+      WResponse response = await request.post(
+          request.uri.replace(path: '/test/http/reflect'), 'data');
+      expect(response.status, equals(200));
+      Map data = JSON.decode(await response.text);
+      expect(data['body'], equals('data'));
+    });
+
+    test('should throw if no URI supplied', () async {
+      Error error;
+      try {
+        await new WRequest().get();
+      } catch (e) {
+        error = e;
+      }
+      expect(error, isNotNull);
+      expect(error is StateError, isTrue);
+    });
 
     group('request methods', () {
       setUp(() {
@@ -179,6 +289,36 @@ void run(String usage) {
         expect(responseJson['headers']['authorization'], equals('test'));
         expect(responseJson['headers']['x-tokens'], equals('token1, token2'));
       }));
+    });
+
+    test('should allow request cancellation', () async {
+      try {
+        await request.get();
+      } catch (e) {}
+      request.abort();
+    });
+  });
+
+  group('WResponse ($usage)', () {
+    WResponse response;
+
+    setUp(() async {
+      response =
+          await WHttp.get(Uri.parse('http://localhost:8024/test/http/reflect'));
+    });
+
+    test('data should be available as a Future', () async {
+      Object data = await response.data;
+      expect(data is List<int> || data is String, isTrue);
+    });
+
+    test('data should be available decoded to text', () async {
+      String text = await response.text;
+      expect(text.isNotEmpty, isTrue);
+    });
+
+    test('data should be available as a Stream', () async {
+      expect((await response.stream.length) > 0, isTrue);
     });
   });
 }

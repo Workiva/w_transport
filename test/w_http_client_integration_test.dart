@@ -17,6 +17,7 @@
 @TestOn('browser || content-shell')
 library w_transport.test.w_http_client_integration_test;
 
+import 'dart:convert';
 import 'dart:html';
 
 import 'package:test/test.dart';
@@ -24,7 +25,7 @@ import 'package:w_transport/w_http.dart';
 import 'package:w_transport/w_transport_client.dart'
     show configureWTransportForBrowser;
 
-import './w_http_common_tests.dart' as common_tests;
+import './w_http_common_integration_tests.dart' as common_tests;
 import './w_http_utils.dart';
 
 void main() {
@@ -64,5 +65,46 @@ void main() {
       request.data = data;
       store(await request.post());
     }));
+
+    test('should have an upload progress stream', () async {
+      bool uploadProgressListenedTo = false;
+      request.path = '/test/http/reflect';
+      FormData data = new FormData();
+      data.append('file1', 'file1');
+      data.append('file2', 'file2');
+      data.append('file3', 'file3');
+      request.data = data;
+      request.uploadProgress.listen((WProgress progress) {
+        if (progress.percent > 0) {
+          uploadProgressListenedTo = true;
+        }
+      });
+      WResponse response = await request.post();
+      await response.stream.drain();
+      expect(uploadProgressListenedTo, isTrue);
+    });
+
+    test('should have a download progress stream', () async {
+      bool downloadProgressListenedTo = false;
+      request.path = '/test/http/download';
+      request.downloadProgress.listen((WProgress progress) {
+        if (progress.percent > 0) {
+          downloadProgressListenedTo = true;
+        }
+      });
+      WResponse response = await request.get();
+      await response.stream.drain();
+      expect(downloadProgressListenedTo, isTrue);
+    });
+
+    test('should be able to configure the HttpRequest', () async {
+      request.path = '/test/http/reflect';
+      request.configure((HttpRequest xhr) async {
+        xhr.setRequestHeader('x-configured', 'true');
+      });
+      WResponse response = await request.get();
+      Map data = JSON.decode(await response.text);
+      expect(data['headers']['x-configured'], equals('true'));
+    });
   });
 }

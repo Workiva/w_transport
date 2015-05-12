@@ -14,18 +14,20 @@
  *  limitations under the License.
  */
 
-library w_transport.tool.server.handlers.test.http.routes;
+library w_transport.tool.server.handlers.test.http.fourzerofour_handler;
 
-import '../../../router.dart';
-import './404_handler.dart';
-import './download.dart';
-import './ping_handler.dart';
-import './reflect_handler.dart';
+import 'dart:async';
 
-String pathPrefix = 'test/http';
-List<Route> testHttpIntegrationRoutes = [
-  new Route('$pathPrefix/404', new FourzerofourHandler()),
-  new Route('$pathPrefix/download', new DownloadHandler()),
-  new Route('$pathPrefix/ping', new PingHandler()),
-  new Route('$pathPrefix/reflect', new ReflectHandler()),
-];
+import 'package:shelf/shelf.dart' as shelf;
+
+import '../../../handler.dart';
+
+/// Always responds with a 404 Not Found.
+class FourzerofourHandler extends Handler {
+  FourzerofourHandler() : super() {
+    enableCors();
+  }
+  Future<shelf.Response> get(shelf.Request request) async {
+    return new shelf.Response.notFound('');
+  }
+}

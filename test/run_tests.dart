@@ -82,6 +82,7 @@ main(List<String> args) async {
   ArgParser parser = new ArgParser()
     ..addOption('platform', abbr: 'p', allowMultiple: true)
     ..addFlag('coverage', negatable: false)
+    ..addFlag('server', defaultsTo: true)
     ..addFlag('verbose', abbr: 'v', negatable: false);
   ArgResults env = parser.parse(args);
 
@@ -90,11 +91,13 @@ main(List<String> args) async {
   Process tests;
 
   try {
-    // Start the server (necessary for integration tests).
-    server = await Process.start(
-        'dart', ['--checked', 'tool/server/run.dart', '--no-proxy']);
-    await waitFor(server,
-        successPattern: 'ready - listening', verbose: env['verbose']);
+    if (env['server']) {
+      // Start the server (necessary for integration tests).
+      server = await Process.start(
+          'dart', ['--checked', 'tool/server/run.dart', '--no-proxy']);
+      await waitFor(server,
+          successPattern: 'ready - listening', verbose: env['verbose']);
+    }
 
     // If generating coverage, we run the tests differently
     // TODO: Hopefully clean this up when test package adds support for coverage
@@ -108,9 +111,7 @@ main(List<String> args) async {
 
       // Wait for coverage to complete.
       print(await waitFor(coverage,
-          successPattern: 'Coverage generated',
-          failurePattern: 'failed',
-          verbose: env['verbose']));
+          successPattern: 'Coverage generated', verbose: env['verbose']));
     } else {
       // Start the test runs.
       List testArgs = ['run', 'test'];
@@ -130,10 +131,12 @@ main(List<String> args) async {
     }
 
     // Kill the server now that we're done.
-    server.kill(ProcessSignal.SIGINT);
+    if (server != null) {
+      server.kill(ProcessSignal.SIGINT);
+    }
 
     // Verify success of all processes
-    int serverEC = await server.exitCode;
+    int serverEC = server != null ? await server.exitCode : 0;
     int coverageEC = coverage != null ? await coverage.exitCode : 0;
     int testsEC = tests != null ? await tests.exitCode : 0;
 

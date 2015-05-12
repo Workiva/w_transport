@@ -37,7 +37,7 @@ void configureWHttpForServer() {
 /// a data stream instead of actually transforming it. The returned
 /// stream is identical to the input stream, but [progressController]
 /// will be populated with a stream of [WProgress] instances as long
-/// as the data stream progress is calculable.
+/// as the data stream progress is computable.
 StreamTransformer wProgressListener(
     int total, StreamController<WProgress> progressController) {
   int loaded = 0;
@@ -51,10 +51,10 @@ StreamTransformer wProgressListener(
           loaded += (data as List<int>).length;
           progressController.add(new WProgress(loaded, total));
         }
-      },
-          onError: controller.addError,
-          onDone: controller.close,
-          cancelOnError: cancelOnError);
+      }, onError: controller.addError, onDone: () {
+        controller.close();
+        progressController.close();
+      }, cancelOnError: cancelOnError);
     }, onPause: () {
       subscription.pause();
     }, onResume: () {
@@ -97,8 +97,9 @@ String parseResponseStatusText(HttpClientResponse response) =>
 Future<Object> parseResponseData(HttpClientResponse response, int total,
     StreamController<WProgress> downloadProgressController) => response
     .transform(wProgressListener(total, downloadProgressController))
-    .reduce((List previous, List element) => new List.from(previous)
-  ..addAll(element));
+    .reduce((List previous, List element) {
+  return new List.from(previous)..addAll(element);
+});
 
 /// Get the the response text from the [HttpClientResponse] stream
 /// by decoding the bytes and joining it into a single [String].

@@ -142,7 +142,9 @@ Future<WResponse> send(String method, WRequest wRequest, HttpRequest request,
       completer.completeError(new WHttpException(method, wRequest, response));
     }
   });
-  request.onError.listen(completer.completeError);
+  request.onError.listen((error) {
+    completer.completeError(new WHttpException(method, wRequest, null, error));
+  });
 
   // Allow the caller to configure the request.
   dynamic configurationResult;

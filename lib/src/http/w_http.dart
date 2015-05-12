@@ -114,18 +114,26 @@ class WHttp {
   static Future<WResponse> trace(Uri uri) => new WRequest().trace(uri);
 
   dynamic _client;
+  bool _closed;
 
   /// Construct a new WHttp instance. If used on the server,
   /// an underlying [HttpClient] instance will be used to cache
   /// network connections.
-  WHttp() : _client = common.getNewHttpClient();
+  WHttp()
+      : _client = common.getNewHttpClient(),
+        _closed = false;
 
   /// Generates a new [WRequest] instance that will use this client
   /// to send the request.
-  WRequest newRequest() => new WRequest._withClient(_client);
+  WRequest newRequest() {
+    if (_closed) throw new StateError(
+        'WHttp client has been closed, can\'t create a new request.');
+    return new WRequest._withClient(_client);
+  }
 
   /// Closes the client, cancelling or closing any outstanding connections.
   void close() {
+    _closed = true;
     if (_client != null) {
       _client.close();
     }
@@ -136,8 +144,17 @@ class WHttp {
 /// an unsuccessful status code.
 class WHttpException implements Exception {
   /// Descriptive error message that includes the request method & URL and the response status.
-  String get message =>
-      'WHttpException: $method ${response.status} ${response.statusText} $uri';
+  String get message {
+    String msg = 'WHttpException: $method';
+    if (response != null) {
+      msg += ' ${response.status} ${response.statusText}';
+    }
+    msg += ' $uri';
+    if (_error != null) {
+      msg += '\n\t$_error';
+    }
+    return msg;
+  }
 
   /// HTTP method.
   final String method;
@@ -151,7 +168,11 @@ class WHttpException implements Exception {
   /// URL of the attempted/unsuccessful request.
   Uri get uri => request.uri;
 
-  WHttpException(this.method, this.request, this.response);
+  var _error;
+
+  WHttpException(this.method, this.request, this.response, [this._error]);
+
+  String toString() => message;
 }
 
 /// A class for creating and sending HTTP requests.
@@ -177,15 +198,19 @@ class WHttpException implements Exception {
 ///       print(await response.text);
 ///     }
 class WRequest extends Object with FluriMixin {
-  dynamic _request;
+  bool _cancelled;
   dynamic _client;
+  dynamic _request;
+  bool _single;
 
   /// Create a new [WRequest] ready to be modified, opened, and sent.
   WRequest()
       : super(),
-        _client = common.getNewHttpClient(),
-        encoding = UTF8 {
+        encoding = UTF8,
+        _cancelled = false,
+        _single = true {
     common.verifyWHttpConfigurationIsSet();
+    _client = common.getNewHttpClient();
   }
 
   /// Create a [WRequest] with a pre-existing [HttpClient] instance.
@@ -193,7 +218,8 @@ class WRequest extends Object with FluriMixin {
   /// [WHttp] uses this constructor.
   WRequest._withClient(client)
       : super(),
-        _client = client;
+        _client = client,
+        _single = false;
 
   /// Gets and sets the content length of the request. If the size of
   /// the request is not known in advance set content length to -1.
@@ -250,9 +276,10 @@ class WRequest extends Object with FluriMixin {
 
   /// Cancel this request. If the request has already finished, this will do nothing.
   void abort() {
-    if (_request == null) throw new StateError(
-        'Can\'t cancel a request that has not yet been opened.');
-    common.abort(_request);
+    if (_request != null) {
+      common.abort(_request);
+    }
+    _cancelled = true;
   }
 
   /// Sends a DELETE request to the given [uri].
@@ -302,6 +329,8 @@ class WRequest extends Object with FluriMixin {
   }
 
   Future<WResponse> _send(String method, [Uri uri, Object data]) async {
+    if (_cancelled) return new Completer().future;
+
     if (uri != null) {
       this.uri = uri;
     }
@@ -315,9 +344,23 @@ class WRequest extends Object with FluriMixin {
       throw new StateError('WRequest: Cannot send a request without a URL.');
     }
 
-    _request = await common.openRequest(method, this.uri, _client);
-    return common.send(method, this, _request, _downloadProgressController,
-        _uploadProgressController, _configure);
+    void cleanUp() {
+      if (_single && _client != null) {
+        _client.close();
+      }
+    }
+
+    WResponse response;
+    try {
+      _request = await common.openRequest(method, this.uri, _client);
+      response = await common.send(method, this, _request,
+          _downloadProgressController, _uploadProgressController, _configure);
+    } catch (e) {
+      cleanUp();
+      throw e;
+    }
+    cleanUp();
+    return response;
   }
 }
 

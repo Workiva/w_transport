@@ -32,84 +32,58 @@ void verifyWHttpConfigurationIsSet() {
           'configureWTransportForBrowser() or configureWTransportForServer()');
 }
 
-void abort(request) {
-  verifyWHttpConfigurationIsSet();
-  _abort(request);
-}
+void abort(request) => _abort(request);
 typedef void RequestAborter(request);
 RequestAborter _abort;
 
-getNewHttpClient() {
-  verifyWHttpConfigurationIsSet();
-  return _getNewHttpClient();
-}
+getNewHttpClient() => _getNewHttpClient();
 typedef HttpClientFactory();
 HttpClientFactory _getNewHttpClient;
 
-Map<String, String> parseResponseHeaders(response) {
-  verifyWHttpConfigurationIsSet();
-  return _parseResponseHeaders(response);
-}
+Map<String, String> parseResponseHeaders(response) =>
+    _parseResponseHeaders(response);
 typedef Map<String, String> ResponseHeadersParser(response);
 ResponseHeadersParser _parseResponseHeaders;
 
-int parseResponseStatus(response) {
-  verifyWHttpConfigurationIsSet();
-  return _parseResponseStatus(response);
-}
+int parseResponseStatus(response) => _parseResponseStatus(response);
 typedef int ResponseStatusParser(response);
 ResponseStatusParser _parseResponseStatus;
 
-String parseResponseStatusText(response) {
-  verifyWHttpConfigurationIsSet();
-  return _parseResponseStatusText(response);
-}
+String parseResponseStatusText(response) => _parseResponseStatusText(response);
 typedef String ResponseStatusTextParser(response);
 ResponseStatusTextParser _parseResponseStatusText;
 
 Future<Object> parseResponseData(response, int total,
-    StreamController<WProgress> downloadProgressController) {
-  verifyWHttpConfigurationIsSet();
-  return _parseResponseData(response, total, downloadProgressController);
-}
+        StreamController<WProgress> downloadProgressController) =>
+    _parseResponseData(response, total, downloadProgressController);
 typedef Future<Object> ResponseDataParser(response, int total,
     StreamController<WProgress> downloadProgressController);
 ResponseDataParser _parseResponseData;
 
 Future<String> parseResponseText(response, Encoding encoding, int total,
-    StreamController<WProgress> downloadProgressController) {
-  verifyWHttpConfigurationIsSet();
-  return _parseResponseText(
-      response, encoding, total, downloadProgressController);
-}
+        StreamController<WProgress> downloadProgressController) =>
+    _parseResponseText(response, encoding, total, downloadProgressController);
 typedef Future<String> ResponseTextParser(response, Encoding encoding,
     int total, StreamController<WProgress> downloadProgressController);
 ResponseTextParser _parseResponseText;
 
 Stream parseResponseStream(response, int total,
-    StreamController<WProgress> downloadProgressController) {
-  verifyWHttpConfigurationIsSet();
-  return _parseResponseStream(response, total, downloadProgressController);
-}
+        StreamController<WProgress> downloadProgressController) =>
+    _parseResponseStream(response, total, downloadProgressController);
 typedef Stream ResponseStreamParser(response, int total,
     StreamController<WProgress> downloadProgressController);
 ResponseStreamParser _parseResponseStream;
 
-Future openRequest(String method, Uri uri, [client]) {
-  verifyWHttpConfigurationIsSet();
-  return _openRequest(method, uri, client);
-}
+Future openRequest(String method, Uri uri, [client]) =>
+    _openRequest(method, uri, client);
 typedef Future RequestOpener(String method, Uri uri, [client]);
 RequestOpener _openRequest;
 
 Future<WResponse> send(String method, WRequest wRequest, request,
     StreamController<WProgress> downloadProgressController,
     StreamController<WProgress> uploadProgressController,
-    [RequestConfigurer configure]) async {
-  verifyWHttpConfigurationIsSet();
-  return _send(method, wRequest, request, downloadProgressController,
-      uploadProgressController, configure);
-}
+    [RequestConfigurer configure]) async => _send(method, wRequest, request,
+        downloadProgressController, uploadProgressController, configure);
 typedef RequestConfigurer(request);
 typedef Future<WResponse> RequestSender(String method, WRequest wRequest,
     request, StreamController<WProgress> downloadProgressController,
@@ -117,10 +91,7 @@ typedef Future<WResponse> RequestSender(String method, WRequest wRequest,
     [RequestConfigurer configure]);
 RequestSender _send;
 
-void validateDataType(Object data) {
-  verifyWHttpConfigurationIsSet();
-  _validateDataType(data);
-}
+void validateDataType(Object data) => _validateDataType(data);
 typedef void DataTypeValidator(Object data);
 DataTypeValidator _validateDataType;
 

@@ -134,6 +134,12 @@ void run(String usage) {
       expect(response.status, equals(200));
     }));
 
+    test('should make the method property available', () async {
+      request.path = '/test/http/ping';
+      await request.get();
+      expect(request.method, equals('GET'));
+    });
+
     test('should be able to supply a URI and data when sending', () async {
       WResponse response = await request.post(
           request.uri.replace(path: '/test/http/reflect'), 'data');

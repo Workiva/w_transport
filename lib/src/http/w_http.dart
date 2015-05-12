@@ -250,6 +250,10 @@ class WRequest extends Object with FluriMixin {
   /// Headers to send with the HTTP request.
   Map<String, String> headers = {};
 
+  /// HTTP method ('GET', 'POST', etc).
+  String get method => _method;
+  String _method;
+
   /// Whether or not to send the request with credentials.
   bool withCredentials = false;
 
@@ -329,6 +333,7 @@ class WRequest extends Object with FluriMixin {
   }
 
   Future<WResponse> _send(String method, [Uri uri, Object data]) async {
+    _method = method;
     if (_cancelled) return new Completer().future;
 
     if (uri != null) {

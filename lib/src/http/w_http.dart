@@ -198,16 +198,24 @@ class WHttpException implements Exception {
 ///       print(await response.text);
 ///     }
 class WRequest extends Object with FluriMixin {
-  bool _cancelled;
+  /// Whether or not the request has been cancelled by the caller.
+  bool _cancelled = false;
+
+  /// HTTP client (if any) used to send requests.
   dynamic _client;
+
+  /// Underlying HTTP request object. Either an instance of
+  /// [HttpRequest] or [HttpClientRequest].
   dynamic _request;
+
+  /// Whether or not this request is the only request that will be
+  /// sent by its HTTP client. If that is the case, the client
+  /// will have to be closed immediately after sending.
   bool _single;
 
   /// Create a new [WRequest] ready to be modified, opened, and sent.
   WRequest()
       : super(),
-        encoding = UTF8,
-        _cancelled = false,
         _single = true {
     common.verifyWHttpConfigurationIsSet();
     _client = common.getNewHttpClient();

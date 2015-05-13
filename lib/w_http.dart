@@ -14,7 +14,11 @@
  *  limitations under the License.
  */
 
-library w_transport.example.http.cross_origin_credentials.status;
+/// A fluent-style, platform-agnostic HTTP request library.
+/// Supports simple request construction and response handling,
+/// with the option to configure the outgoing request for more
+/// advanced use cases.
+library w_transport.w_http;
 
-/// Whether or not the client is authenticated with the server.
-bool authenticated = false;
+export 'src/http/w_http.dart'
+    show WHttp, WHttpException, WProgress, WRequest, WResponse;

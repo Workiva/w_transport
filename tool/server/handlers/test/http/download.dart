@@ -14,21 +14,26 @@
  *  limitations under the License.
  */
 
-library w_transport.tool.server.handlers.ping_handler;
+library w_transport.tool.server.handlers.test.http.download_handler;
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:shelf/shelf.dart' as shelf;
 
-import '../handler.dart';
+import '../../../handler.dart';
 
-/// Always responds with a 200 OK.
-class PingHandler extends Handler {
-  PingHandler() : super() {
+/// Always responds with a 200 OK and send a large
+/// file in the response body to simulate a download.
+class DownloadHandler extends Handler {
+  DownloadHandler() : super() {
     enableCors();
   }
 
   Future<shelf.Response> get(shelf.Request request) async {
-    return new shelf.Response.ok('');
+    File file = new File('tool/server/handlers/test/http/file.txt');
+    Stream downloadStream = file.openRead();
+    return new shelf.Response.ok(downloadStream,
+        headers: {'Content-Length': file.lengthSync().toString()});
   }
 }

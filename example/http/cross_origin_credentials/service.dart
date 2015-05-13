@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Workiva Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ library w_transport.example.http.cross_origin_credentials.service;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:w_transport/w_http_client.dart';
+import 'package:w_transport/w_http.dart';
 
 /// URLs for this cross origin credentials example.
 Uri authenticationServerUrl = Uri.parse('http://localhost:8024');
@@ -35,7 +35,7 @@ Future<bool> checkStatus() async {
 
   try {
     WResponse response = await req.get(sessionUrl);
-    return JSON.decode(response.text)['authenticated'];
+    return JSON.decode(await response.text)['authenticated'];
   } catch (error) {
     // Server probably isn't running
     return false;
@@ -52,7 +52,8 @@ Future<bool> login() async {
   } catch (e) {
     return false;
   }
-  return response.status == 200 && JSON.decode(response.text)['authenticated'];
+  return response.status == 200 &&
+      JSON.decode(await response.text)['authenticated'];
 }
 
 /// Logout by sending a request to the /logout endpoint.
@@ -64,7 +65,8 @@ Future<bool> logout() async {
   } catch (e) {
     return false;
   }
-  return response.status == 200 && !JSON.decode(response.text)['authenticated'];
+  return response.status == 200 &&
+      !JSON.decode(await response.text)['authenticated'];
 }
 
 /// Attempt to make a request that requires credentials.
@@ -84,9 +86,6 @@ Future<String> makeCredentialedRequest() async {
 /// This request should fail regardless of authentication.
 Future<String> makeUncredentialedRequest() async {
   // withCredentials is unset by default, so no need to do anything special here
-  WRequest req = new WRequest();
-
-  WResponse response;
-  response = await req.get(credentialedEndpointUrl);
+  WResponse response = await WHttp.get(credentialedEndpointUrl);
   return response.text;
 }

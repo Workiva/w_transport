@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Workiva Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,9 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:react/react_client.dart' as react_client;
-import 'package:w_transport/w_http_client.dart';
+import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport_client.dart'
+    show configureWTransportForBrowser;
 
 import '../../common/global_example_menu_component.dart';
 import '../../common/loading_component.dart';
@@ -46,7 +48,7 @@ handleFileClick(MouseEvent event) async {
 
 /// Requests the contents of a file using WRequest.
 Future<String> requestFile(String filePath) async {
-  WResponse response = await new WRequest().get(Uri.parse(filePath));
+  WResponse response = await WHttp.get(Uri.parse(filePath));
   return response.text;
 }
 
@@ -57,6 +59,8 @@ void showFileContents(String contents) {
 
 void main() {
   react_client.setClientConfiguration();
+  configureWTransportForBrowser();
+
   renderGlobalExampleMenu();
 
   // Wire all anchors up to the file click handler

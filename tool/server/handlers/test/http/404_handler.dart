@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Workiva Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,20 @@
  *  limitations under the License.
  */
 
-library w_transport.w_http_server;
+library w_transport.tool.server.handlers.test.http.fourzerofour_handler;
 
-export 'src/http/w_http_server.dart';
+import 'dart:async';
+
+import 'package:shelf/shelf.dart' as shelf;
+
+import '../../../handler.dart';
+
+/// Always responds with a 404 Not Found.
+class FourzerofourHandler extends Handler {
+  FourzerofourHandler() : super() {
+    enableCors();
+  }
+  Future<shelf.Response> get(shelf.Request request) async {
+    return new shelf.Response.notFound('');
+  }
+}

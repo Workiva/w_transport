@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2015 Workiva Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,8 @@
 library w_transport.example.http.cross_origin_credentials.client;
 
 import 'package:react/react_client.dart' as react_client;
+import 'package:w_transport/w_transport_client.dart'
+    show configureWTransportForBrowser;
 
 import '../../common/global_example_menu_component.dart';
 import '../../common/loading_component.dart';
@@ -27,6 +29,7 @@ import './status.dart' as status;
 /// Setup the example application.
 main() async {
   react_client.setClientConfiguration();
+  configureWTransportForBrowser();
   renderGlobalExampleMenu(serverStatus: true);
   dom.setupControlBindings();
   removeLoadingOverlay();

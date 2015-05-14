@@ -1,7 +1,12 @@
 name: w_transport
 version: 0.0.1
-author: Workiva
-description: Ready to use transport abstractions over HttpRequest and HttpClientRequest.
+description: A fluent-style, platform-agnostic library with ready to use transport classes for sending and receiving data over HTTP.
+authors:
+  - Workiva Client Platform Team <clientplatform@workiva.com>
+  - Evan Weible <evan.weible@workiva.com>
+  - Max Peterson <maxwell.peterson@workiva.com>
+  - Trent Grover <trent.grover@workiva.com>
+homepage: https://github.com/Workiva/w_transport
 dependencies:
   fluri: '>=1.0.0 <2.0.0'
 dev_dependencies:

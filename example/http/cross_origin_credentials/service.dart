@@ -35,7 +35,7 @@ Future<bool> checkStatus() async {
 
   try {
     WResponse response = await req.get(sessionUrl);
-    return JSON.decode(await response.text)['authenticated'];
+    return JSON.decode(await response.asText())['authenticated'];
   } catch (error) {
     // Server probably isn't running
     return false;
@@ -53,7 +53,7 @@ Future<bool> login() async {
     return false;
   }
   return response.status == 200 &&
-      JSON.decode(await response.text)['authenticated'];
+      JSON.decode(await response.asText())['authenticated'];
 }
 
 /// Logout by sending a request to the /logout endpoint.
@@ -66,7 +66,7 @@ Future<bool> logout() async {
     return false;
   }
   return response.status == 200 &&
-      !JSON.decode(await response.text)['authenticated'];
+      !JSON.decode(await response.asText())['authenticated'];
 }
 
 /// Attempt to make a request that requires credentials.
@@ -78,7 +78,7 @@ Future<String> makeCredentialedRequest() async {
 
   WResponse response;
   response = await req.get(credentialedEndpointUrl);
-  return response.text;
+  return response.asText();
 }
 
 /// Attempt to make a request that requires credentials,
@@ -87,5 +87,5 @@ Future<String> makeCredentialedRequest() async {
 Future<String> makeUncredentialedRequest() async {
   // withCredentials is unset by default, so no need to do anything special here
   WResponse response = await WHttp.get(credentialedEndpointUrl);
-  return response.text;
+  return response.asText();
 }

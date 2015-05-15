@@ -49,7 +49,7 @@ handleFileClick(MouseEvent event) async {
 /// Requests the contents of a file using WRequest.
 Future<String> requestFile(String filePath) async {
   WResponse response = await WHttp.get(Uri.parse(filePath));
-  return response.text;
+  return response.asText();
 }
 
 /// Displays the file contents in the response pane.

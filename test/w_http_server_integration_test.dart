@@ -46,7 +46,7 @@ void main() {
     test('should be able to send a TRACE request', () async {
       WResponse response = await WHttp.trace(uri);
       expect(response.status, equals(200));
-      Map data = JSON.decode(await response.text);
+      Map data = JSON.decode(await response.asText());
       expect(data['method'], equals('TRACE'));
     });
   });
@@ -70,7 +70,7 @@ void main() {
       request.path = '/test/http/reflect';
       WResponse response = store(await request.head());
       expect(response.status, equals(200));
-      expect(await response.stream.length, equals(0));
+      expect(await response.asStream().length, equals(0));
     }));
 
     // Unlike the browser environment, a server app has fewer security restrictions
@@ -79,7 +79,7 @@ void main() {
       request.path = '/test/http/reflect';
       WResponse response = store(await request.trace());
       expect(response.status, equals(200));
-      expect(JSON.decode(await response.text)['method'], equals('TRACE'));
+      expect(JSON.decode(await response.asText())['method'], equals('TRACE'));
     }));
 
     test('should allow a String data payload', () {
@@ -120,7 +120,7 @@ void main() {
         }
       });
       WResponse response = await request.post();
-      await response.stream.drain();
+      await response.asStream().drain();
       expect(uploadProgressListenedTo, isTrue);
     });
 
@@ -133,7 +133,7 @@ void main() {
         }
       });
       WResponse response = await request.get();
-      await response.stream.drain();
+      await response.asStream().drain();
       expect(downloadProgressListenedTo, isTrue);
     });
 
@@ -143,7 +143,7 @@ void main() {
         req.headers.set('x-configured', 'true');
       });
       WResponse response = await request.get();
-      Map data = JSON.decode(await response.text);
+      Map data = JSON.decode(await response.asText());
       expect(data['headers']['x-configured'], equals('true'));
     });
   });

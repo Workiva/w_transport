@@ -148,25 +148,20 @@ void main() {
     });
 
     test(
-        'parseResponseData() should return response data from HttpClientResponse (async)',
+        'parseResponseData() should return response data from the stream (async)',
         () async {
-      var data = [[10, 48, 28, 30], [999, 394, 1, 2], [239, 0, 20, 88],];
-      HttpClientResponse response =
-          new MockHttpClientResponseFromStream(new Stream.fromIterable(data));
-      expect(await w_http_server.parseResponseData(
-              response, 0, new StreamController()),
-          equals([10, 48, 28, 30, 999, 394, 1, 2, 239, 0, 20, 88]));
+      var data = [[10, 48, 28, 30], [999, 394, 1, 2], [239, 0, 20, 88]];
+      Stream stream = new Stream.fromIterable(data);
+      expect(await w_http_server.parseResponseData(stream), equals(data.reduce(
+          (previous, value) => new List.from(previous)..addAll(value))));
     });
 
     test(
-        'parseResponseText() should return response text from HttpRequest (async)',
+        'parseResponseText() should return response text from the stream (async)',
         () async {
-      Stream dataStream = new Stream.fromIterable(
-          [UTF8.encode('chunk1'), UTF8.encode('chunk2')]);
-      HttpClientResponse response =
-          new MockHttpClientResponseFromStream(dataStream);
-      expect(await w_http_server.parseResponseText(
-          response, UTF8, 0, new StreamController()), equals('chunk1chunk2'));
+      Stream dataStream = new Stream.fromIterable(['chunk1', 'chunk2']);
+      expect(await w_http_server.parseResponseText(dataStream),
+          equals('chunk1chunk2'));
     });
 
     test(

@@ -53,7 +53,7 @@ void main() {
       request.path = '/test/http/reflect';
       WResponse response = store(await request.head());
       expect(response.status, equals(200));
-      expect(await response.text, equals(''));
+      expect(await response.asText(), equals(''));
     }));
 
     test('should support a FormData payload', httpTest((store) async {
@@ -80,7 +80,7 @@ void main() {
         }
       });
       WResponse response = await request.post();
-      await response.stream.drain();
+      await response.asStream().drain();
       expect(uploadProgressListenedTo, isTrue);
     });
 
@@ -93,7 +93,7 @@ void main() {
         }
       });
       WResponse response = await request.get();
-      await response.stream.drain();
+      await response.asStream().drain();
       expect(downloadProgressListenedTo, isTrue);
     });
 
@@ -103,7 +103,7 @@ void main() {
         xhr.setRequestHeader('x-configured', 'true');
       });
       WResponse response = await request.get();
-      Map data = JSON.decode(await response.text);
+      Map data = JSON.decode(await response.asText());
       expect(data['headers']['x-configured'], equals('true'));
     });
   });

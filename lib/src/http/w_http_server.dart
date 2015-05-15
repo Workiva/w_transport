@@ -94,21 +94,14 @@ String parseResponseStatusText(HttpClientResponse response) =>
 
 /// Get the response data from the [HttpClientResponse] stream
 /// by reducing it into a single [List].
-Future<Object> parseResponseData(HttpClientResponse response, int total,
-    StreamController<WProgress> downloadProgressController) => response
-    .transform(wProgressListener(total, downloadProgressController))
+Future<Object> parseResponseData(Stream stream) => stream
     .reduce((List previous, List element) {
   return new List.from(previous)..addAll(element);
 });
 
 /// Get the the response text from the [HttpClientResponse] stream
 /// by decoding the bytes and joining it into a single [String].
-Future<String> parseResponseText(HttpClientResponse response, Encoding encoding,
-        int total, StreamController<WProgress> downloadProgressController) =>
-    response
-        .transform(wProgressListener(total, downloadProgressController))
-        .transform(encoding.decoder)
-        .join('');
+Future<String> parseResponseText(Stream stream) => stream.join('');
 
 /// Get the response stream from the [HttpClientResponse].
 Stream parseResponseStream(HttpClientResponse response, int total,
@@ -161,7 +154,7 @@ Future<WResponse> send(String method, WRequest wRequest,
 
   // Close the request now that data (if any) has been sent and wait for the response
   HttpClientResponse response = await request.close();
-  WResponse wResponse = new WResponse(response, wRequest.encoding,
+  WResponse wResponse = wResponseFactory(response, wRequest.encoding,
       response.contentLength, downloadProgressController);
   if ((wResponse.status >= 200 && wResponse.status < 300) ||
       wResponse.status == 0 ||

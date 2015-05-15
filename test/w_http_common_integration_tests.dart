@@ -16,6 +16,7 @@
 
 library w_transport.test.w_http_common_tests;
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:w_transport/w_http.dart';
@@ -36,14 +37,14 @@ void run(String usage) {
     test('should be able to send a DELETE request', () async {
       WResponse response = await WHttp.delete(uri);
       expect(response.status, equals(200));
-      Map data = JSON.decode(await response.text);
+      Map data = JSON.decode(await response.asText());
       expect(data['method'], equals('DELETE'));
     });
 
     test('should be able to send a GET request', () async {
       WResponse response = await WHttp.get(uri);
       expect(response.status, equals(200));
-      Map data = JSON.decode(await response.text);
+      Map data = JSON.decode(await response.asText());
       expect(data['method'], equals('GET'));
     });
 
@@ -55,28 +56,28 @@ void run(String usage) {
     test('should be able to send a OPTIONS request', () async {
       WResponse response = await WHttp.options(uri);
       expect(response.status, equals(200));
-      Map data = JSON.decode(await response.text);
+      Map data = JSON.decode(await response.asText());
       expect(data['method'], equals('OPTIONS'));
     });
 
     test('should be able to send a PATCH request', () async {
       WResponse response = await WHttp.patch(uri);
       expect(response.status, equals(200));
-      Map data = JSON.decode(await response.text);
+      Map data = JSON.decode(await response.asText());
       expect(data['method'], equals('PATCH'));
     });
 
     test('should be able to send a POST request', () async {
       WResponse response = await WHttp.post(uri);
       expect(response.status, equals(200));
-      Map data = JSON.decode(await response.text);
+      Map data = JSON.decode(await response.asText());
       expect(data['method'], equals('POST'));
     });
 
     test('should be able to send a PUT request', () async {
       WResponse response = await WHttp.put(uri);
       expect(response.status, equals(200));
-      Map data = JSON.decode(await response.text);
+      Map data = JSON.decode(await response.asText());
       expect(data['method'], equals('PUT'));
     });
   });
@@ -144,7 +145,7 @@ void run(String usage) {
       WResponse response = await request.post(
           request.uri.replace(path: '/test/http/reflect'), 'data');
       expect(response.status, equals(200));
-      Map data = JSON.decode(await response.text);
+      Map data = JSON.decode(await response.asText());
       expect(data['body'], equals('data'));
     });
 
@@ -167,37 +168,39 @@ void run(String usage) {
       test('should support a DELETE method', httpTest((store) async {
         var response = store(await request.delete());
         expect(response.status, equals(200));
-        expect(JSON.decode(await response.text)['method'], equals('DELETE'));
+        expect(
+            JSON.decode(await response.asText())['method'], equals('DELETE'));
       }));
 
       test('should support a GET method', httpTest((store) async {
         var response = store(await request.get());
         expect(response.status, equals(200));
-        expect(JSON.decode(await response.text)['method'], equals('GET'));
+        expect(JSON.decode(await response.asText())['method'], equals('GET'));
       }));
 
       test('should support a OPTIONS method', httpTest((store) async {
         var response = store(await request.options());
         expect(response.status, equals(200));
-        expect(JSON.decode(await response.text)['method'], equals('OPTIONS'));
+        expect(
+            JSON.decode(await response.asText())['method'], equals('OPTIONS'));
       }));
 
       test('should support a PATCH method', httpTest((store) async {
         var response = store(await request.patch());
         expect(response.status, equals(200));
-        expect(JSON.decode(await response.text)['method'], equals('PATCH'));
+        expect(JSON.decode(await response.asText())['method'], equals('PATCH'));
       }));
 
       test('should support a POST method', httpTest((store) async {
         var response = store(await request.post());
         expect(response.status, equals(200));
-        expect(JSON.decode(await response.text)['method'], equals('POST'));
+        expect(JSON.decode(await response.asText())['method'], equals('POST'));
       }));
 
       test('should support a PUT method', httpTest((store) async {
         var response = store(await request.put());
         expect(response.status, equals(200));
-        expect(JSON.decode(await response.text)['method'], equals('PUT'));
+        expect(JSON.decode(await response.asText())['method'], equals('PUT'));
       }));
     });
 
@@ -210,19 +213,19 @@ void run(String usage) {
       test('should be supported on a PATCH request', httpTest((store) async {
         var response = store(await request.patch());
         expect(response.status, equals(200));
-        expect(JSON.decode(await response.text)['body'], equals('data'));
+        expect(JSON.decode(await response.asText())['body'], equals('data'));
       }));
 
       test('should be supported on a POST request', httpTest((store) async {
         var response = store(await request.post());
         expect(response.status, equals(200));
-        expect(JSON.decode(await response.text)['body'], equals('data'));
+        expect(JSON.decode(await response.asText())['body'], equals('data'));
       }));
 
       test('should be supported on a PUT request', httpTest((store) async {
         var response = store(await request.put());
         expect(response.status, equals(200));
-        expect(JSON.decode(await response.text)['body'], equals('data'));
+        expect(JSON.decode(await response.asText())['body'], equals('data'));
       }));
     });
 
@@ -239,7 +242,7 @@ void run(String usage) {
       test('should be supported on a DELETE request', httpTest((store) async {
         var response = store(await request.delete());
         expect(response.status, equals(200));
-        Map responseJson = JSON.decode(await response.text);
+        Map responseJson = JSON.decode(await response.asText());
         expect(responseJson['headers']['content-type'],
             equals('application/json'));
         expect(responseJson['headers']['authorization'], equals('test'));
@@ -249,7 +252,7 @@ void run(String usage) {
       test('should be supported on a GET request', httpTest((store) async {
         var response = store(await request.get());
         expect(response.status, equals(200));
-        Map responseJson = JSON.decode(await response.text);
+        Map responseJson = JSON.decode(await response.asText());
         expect(responseJson['headers']['content-type'],
             equals('application/json'));
         expect(responseJson['headers']['authorization'], equals('test'));
@@ -259,7 +262,7 @@ void run(String usage) {
       test('should be supported on a OPTIONS request', httpTest((store) async {
         var response = store(await request.options());
         expect(response.status, equals(200));
-        Map responseJson = JSON.decode(await response.text);
+        Map responseJson = JSON.decode(await response.asText());
         expect(responseJson['headers']['content-type'],
             equals('application/json'));
         expect(responseJson['headers']['authorization'], equals('test'));
@@ -269,7 +272,7 @@ void run(String usage) {
       test('should be supported on a PATCH request', httpTest((store) async {
         var response = store(await request.patch());
         expect(response.status, equals(200));
-        Map responseJson = JSON.decode(await response.text);
+        Map responseJson = JSON.decode(await response.asText());
         expect(responseJson['headers']['content-type'],
             equals('application/json'));
         expect(responseJson['headers']['authorization'], equals('test'));
@@ -279,7 +282,7 @@ void run(String usage) {
       test('should be supported on a POST request', httpTest((store) async {
         var response = store(await request.post());
         expect(response.status, equals(200));
-        Map responseJson = JSON.decode(await response.text);
+        Map responseJson = JSON.decode(await response.asText());
         expect(responseJson['headers']['content-type'],
             equals('application/json'));
         expect(responseJson['headers']['authorization'], equals('test'));
@@ -289,7 +292,7 @@ void run(String usage) {
       test('should be supported on a PUT request', httpTest((store) async {
         var response = store(await request.put());
         expect(response.status, equals(200));
-        Map responseJson = JSON.decode(await response.text);
+        Map responseJson = JSON.decode(await response.asText());
         expect(responseJson['headers']['content-type'],
             equals('application/json'));
         expect(responseJson['headers']['authorization'], equals('test'));
@@ -314,17 +317,32 @@ void run(String usage) {
     });
 
     test('data should be available as a Future', () async {
-      Object data = await response.data;
+      Object data = await response.asFuture();
       expect(data is List<int> || data is String, isTrue);
     });
 
     test('data should be available decoded to text', () async {
-      String text = await response.text;
+      String text = await response.asText();
       expect(text.isNotEmpty, isTrue);
     });
 
     test('data should be available as a Stream', () async {
-      expect((await response.stream.length) > 0, isTrue);
+      expect((await response.asStream().length) > 0, isTrue);
+    });
+
+    test('should cache data to allow multiple accesses', () async {
+      Object data = await response.asFuture();
+      expect(data is List<int> || data is String, isTrue);
+      String text = await response.asText();
+      expect(text.isNotEmpty, isTrue);
+      expect((await response.asStream().length) > 0, isTrue);
+    });
+
+    test('should be able to update the data source', () async {
+      response.update(new Stream.fromIterable([UTF8.encode('updated1')]));
+      expect(await response.asText(), equals('updated1'));
+      response.update('updated2');
+      expect(await response.asText(), equals('updated2'));
     });
   });
 }

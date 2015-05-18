@@ -1,4 +1,4 @@
-w_transport
+w_transport [![Build Status](https://travis-ci.org/Workiva/w_transport.svg?branch=travis-ci)](https://travis-ci.org/Workiva/w_transport)
 ===========
 
 > A fluent-style, platform-agnostic library with ready to use transport classes for sending and receiving data over HTTP.

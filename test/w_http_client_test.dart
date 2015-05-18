@@ -128,21 +128,17 @@ void main() {
     });
 
     test(
-        'parseResponseData() should return response data from HttpRequest (async)',
+        'parseResponseData() should return response data from the stream (async)',
         () async {
-      HttpRequest request = new MockHttpRequest();
-      when(request.response).thenReturn('data');
-      expect(await w_http_client.parseResponseData(request, null, null),
-          equals('data'));
+      Stream stream = new Stream.fromIterable(['data']);
+      expect(await w_http_client.parseResponseData(stream), equals('data'));
     });
 
     test(
-        'parseResponseText() should return response text from HttpRequest (async)',
+        'parseResponseText() should return response text from the stream (async)',
         () async {
-      HttpRequest request = new MockHttpRequest();
-      when(request.responseText).thenReturn('data');
-      expect(await w_http_client.parseResponseText(request, null, null, null),
-          equals('data'));
+      Stream stream = new Stream.fromIterable(['data']);
+      expect(await w_http_client.parseResponseText(stream), equals('data'));
     });
 
     test(

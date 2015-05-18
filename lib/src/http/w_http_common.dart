@@ -53,18 +53,12 @@ String parseResponseStatusText(response) => _parseResponseStatusText(response);
 typedef String ResponseStatusTextParser(response);
 ResponseStatusTextParser _parseResponseStatusText;
 
-Future<Object> parseResponseData(response, int total,
-        StreamController<WProgress> downloadProgressController) =>
-    _parseResponseData(response, total, downloadProgressController);
-typedef Future<Object> ResponseDataParser(response, int total,
-    StreamController<WProgress> downloadProgressController);
+Future<Object> parseResponseData(Stream stream) => _parseResponseData(stream);
+typedef Future<Object> ResponseDataParser(Stream stream);
 ResponseDataParser _parseResponseData;
 
-Future<String> parseResponseText(response, Encoding encoding, int total,
-        StreamController<WProgress> downloadProgressController) =>
-    _parseResponseText(response, encoding, total, downloadProgressController);
-typedef Future<String> ResponseTextParser(response, Encoding encoding,
-    int total, StreamController<WProgress> downloadProgressController);
+Future<String> parseResponseText(Stream stream) => _parseResponseText(stream);
+typedef Future<String> ResponseTextParser(Stream stream);
 ResponseTextParser _parseResponseText;
 
 Stream parseResponseStream(response, int total,

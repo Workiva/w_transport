@@ -375,14 +375,56 @@ class WRequest extends Object with FluriMixin {
   }
 }
 
+WResponse wResponseFactory(response, Encoding encoding,
+    [int total = 1, StreamController<WProgress> downloadProgressController]) {
+  return new WResponse._(response, encoding, total, downloadProgressController);
+}
+
+StreamTransformer decodeAttempt(Encoding encoding) {
+  return new StreamTransformer((Stream input, bool cancelOnError) {
+    StreamController controller;
+    StreamSubscription subscription;
+    controller = new StreamController(onListen: () {
+      subscription = input.listen((data) {
+        try {
+          data = encoding.decode(data);
+        } catch (e) {}
+        controller.add(data);
+      }, onError: controller.addError, onDone: () {
+        controller.close();
+      }, cancelOnError: cancelOnError);
+    }, onPause: () {
+      subscription.pause();
+    }, onResume: () {
+      subscription.resume();
+    }, onCancel: () {
+      subscription.cancel();
+    });
+    return controller.stream.listen(null);
+  });
+}
+
 /// Content of and meta data about a response to an HTTP request.
 /// All meta data (headers, status, statusText) are available immediately.
 /// Response content (data, text, or stream) is available asynchronously.
 class WResponse {
+  WResponse._(response, this._encoding,
+      [this._total = -1, this._downloadProgressController])
+      : headers = common.parseResponseHeaders(response),
+        status = common.parseResponseStatus(response),
+        statusText = common.parseResponseStatusText(response) {
+    _source = common.parseResponseStream(
+        response, _total, _downloadProgressController);
+    _source = _source.transform(_cache());
+  }
+
   final Encoding _encoding;
-  final dynamic _response;
   final int _total;
   final StreamController<WProgress> _downloadProgressController;
+
+  bool _cached = false;
+  List<Object> _cachedResponse = [];
+  Stream _source;
 
   /// Headers sent with the response to the HTTP request.
   final Map<String, String> headers;
@@ -407,23 +449,55 @@ class WResponse {
   /// On the server side, the type of data will be:
   ///
   ///   - `List<int>`
-  Future<Object> get data =>
-      common.parseResponseData(_response, _total, _downloadProgressController);
+  Future<Object> asFuture() => common.parseResponseData(_getSourceStream());
 
   /// The data received as a response from the request in String format.
-  Future<String> get text => common.parseResponseText(
-      _response, _encoding, _total, _downloadProgressController);
+  Future<String> asText() => common.parseResponseText(
+      _getSourceStream().transform(decodeAttempt(_encoding)));
 
   /// The data stream received as a response from the request.
-  Stream get stream => common.parseResponseStream(
-      _response, _total, _downloadProgressController);
+  Stream asStream() => _getSourceStream();
 
-  WResponse(response, this._encoding,
-      [this._total = -1, this._downloadProgressController])
-      : _response = response,
-        headers = common.parseResponseHeaders(response),
-        status = common.parseResponseStatus(response),
-        statusText = common.parseResponseStatusText(response);
+  /// Update the underlying response data source.
+  /// [asFuture], [asText], and [asStream] all use this data source.
+  void update(dynamic dataSource) {
+    if (dataSource is! Stream) {
+      dataSource = new Stream.fromIterable([dataSource]);
+    }
+    _cached = false;
+    _cachedResponse = [];
+    _source = (dataSource as Stream).transform(_cache());
+  }
+
+  /// Caches the response data stream to enable multiple accesses.
+  StreamTransformer<Object, Object> _cache() =>
+      new StreamTransformer<Object, Object>((Stream<Object> input,
+          bool cancelOnError) {
+    StreamController<Object> controller;
+    StreamSubscription<Object> subscription;
+    controller = new StreamController<Object>(onListen: () {
+      _cached = true;
+      subscription = input.listen((Object value) {
+        controller.add(value);
+        _cachedResponse.add(value);
+      },
+          onError: controller.addError,
+          onDone: controller.close,
+          cancelOnError: cancelOnError);
+    }, onPause: () {
+      subscription.pause();
+    }, onResume: () {
+      subscription.resume();
+    }, onCancel: () {
+      subscription.cancel();
+    });
+    return controller.stream.listen(null);
+  });
+
+  /// Gets the response data source stream. Returns a new stream from
+  /// the cache if available, returns the original stream otherwise.
+  Stream _getSourceStream() =>
+      _cached ? new Stream.fromIterable(_cachedResponse) : _source;
 }
 
 /// A representation of a progress event at a specific point in time

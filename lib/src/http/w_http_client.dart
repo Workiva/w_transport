@@ -82,13 +82,13 @@ int parseResponseStatus(HttpRequest request) => request.status;
 String parseResponseStatusText(HttpRequest request) => request.statusText;
 
 /// Get the response data from the [HttpRequest].
-Future<Object> parseResponseData(HttpRequest request, _, __) async =>
-    request.response;
+Future<Object> parseResponseData(Stream stream) async => stream.first;
 
 /// Get the the response text from the [HttpRequest].
-Future<String> parseResponseText(
-        HttpRequest request, Encoding encoding, _, __) async =>
-    request.responseText;
+Future<String> parseResponseText(Stream stream) async {
+  Object data = await stream.first;
+  return data != null ? data.toString() : null;
+}
 
 /// Create a response stream from an [Iterable] with one element,
 /// the response data from [HttpRequest].
@@ -133,7 +133,7 @@ Future<WResponse> send(String method, WRequest wRequest, HttpRequest request,
 
   // Listen for request completion/errors.
   request.onLoad.listen((ProgressEvent e) {
-    WResponse response = new WResponse(request, wRequest.encoding);
+    WResponse response = wResponseFactory(request, wRequest.encoding);
     if ((request.status >= 200 && request.status < 300) ||
         request.status == 0 ||
         request.status == 304) {

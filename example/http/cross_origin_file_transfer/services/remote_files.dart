@@ -82,7 +82,7 @@ class RemoteFiles {
       WResponse response = await WHttp.get(getFilesEndpointUrl());
 
       // Parse the file list from the response
-      List results = JSON.decode(await response.text)['results'];
+      List results = JSON.decode(await response.asText())['results'];
       List<RemoteFileDescription> files = results
           .map((Map file) =>
               new RemoteFileDescription(file['name'], file['size']))

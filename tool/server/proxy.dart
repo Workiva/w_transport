@@ -54,7 +54,7 @@ class FilesProxy extends Handler {
       ..headers = request.headers;
 
     WResponse proxyResponse = await proxyRequest.get(filesEndpoint);
-    return new shelf.Response.ok(proxyResponse.stream,
+    return new shelf.Response.ok(proxyResponse.asStream(),
         headers: proxyResponse.headers);
   }
 
@@ -63,7 +63,7 @@ class FilesProxy extends Handler {
       ..headers = request.headers;
 
     WResponse proxyResponse = await proxyRequest.delete(filesEndpoint);
-    return new shelf.Response.ok(proxyResponse.stream,
+    return new shelf.Response.ok(proxyResponse.asStream(),
         headers: proxyResponse.headers);
   }
 }
@@ -84,7 +84,7 @@ class UploadProxy extends Handler {
     });
 
     WResponse proxyResponse = await proxyRequest.post(uploadEndpoint);
-    return new shelf.Response.ok(proxyResponse.stream,
+    return new shelf.Response.ok(proxyResponse.asStream(),
         headers: proxyResponse.headers);
   }
 }
@@ -106,7 +106,7 @@ class DownloadProxy extends Handler {
     });
 
     WResponse proxyResponse = await proxyRequest.get();
-    return new shelf.Response.ok(proxyResponse.stream,
+    return new shelf.Response.ok(proxyResponse.asStream(),
         headers: proxyResponse.headers);
   }
 }

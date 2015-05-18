@@ -1,0 +1,9 @@
+language: dart
+dart:
+  - stable
+with_content_shell: true
+before_install:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+script:
+  - dart --checked test/run_tests.dart -p vm -p content-shell --verbose

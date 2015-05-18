@@ -41,10 +41,9 @@ void main() {
 
   group('WHttpException', () {
     test('should include the original error if given', () {
-      WRequest request = new MockWRequest();
-      WHttpException exception =
-          new WHttpException('GET', request, null, new Exception('original'));
-      expect(exception.toString().contains('origina'), isTrue);
+      WHttpException exception = new WHttpException(
+          'GET', null, null, null, new Exception('original'));
+      expect(exception.toString().contains('original'), isTrue);
     });
   });
 }

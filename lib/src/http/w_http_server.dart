@@ -161,7 +161,7 @@ Future<WResponse> send(String method, WRequest wRequest,
       wResponse.status == 304) {
     return wResponse;
   } else {
-    throw new WHttpException(method, wRequest, wResponse);
+    throw new WHttpException(method, wRequest.uri, wRequest, wResponse);
   }
 }
 

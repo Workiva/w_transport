@@ -1,10 +1,18 @@
 #!/bin/sh
 
-if [ -d "./lcov_report" ]; then
-    rm -rf ./lcov_report
+# Clean out old coverage artifacts
+if [ -d "./coverage_report" ]; then
+    rm -rf ./coverage_report
 fi
-if [ -f "./lcov_coverage.lcov" ]; then
-    rm ./lcov_coverage.lcov
+if [ -f "./coverage.lcov" ]; then
+    rm ./coverage.lcov
 fi
 
-./tool/test.sh --coverage "$@"
+# Collect coverage and generate report
+pub get
+pub run dart_codecov_generator --report-on=lib/ "$@" test/unit/
+
+# Open HTML report if successful
+if [ $? -eq 0 ]; then
+    open coverage_report/index.html
+fi

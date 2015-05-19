@@ -139,11 +139,13 @@ Future<WResponse> send(String method, WRequest wRequest, HttpRequest request,
         request.status == 304) {
       completer.complete(response);
     } else {
-      completer.completeError(new WHttpException(method, wRequest, response));
+      completer.completeError(
+          new WHttpException(method, wRequest.uri, wRequest, response));
     }
   });
   request.onError.listen((error) {
-    completer.completeError(new WHttpException(method, wRequest, null, error));
+    completer.completeError(
+        new WHttpException(method, wRequest.uri, wRequest, null, error));
   });
 
   // Allow the caller to configure the request.

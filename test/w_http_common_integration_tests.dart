@@ -22,6 +22,7 @@ import 'dart:convert';
 import 'package:w_transport/w_http.dart';
 import 'package:test/test.dart';
 
+import './utils.dart';
 import './w_http_utils.dart';
 
 /// These are HTTP integration tests that should work from client or server.
@@ -300,11 +301,33 @@ void run(String usage) {
       }));
     });
 
-    test('should allow request cancellation', () async {
-      try {
-        await request.get();
-      } catch (e) {}
-      request.abort();
+    group('request cancellation', () {
+      test('should be supported', () async {
+        try {
+          await request.get();
+        } catch (e) {}
+        request.abort();
+      });
+
+      test('should cause request to fail', () async {
+        Exception exception = await expectThrowsAsync(() async {
+          Future future = request.get();
+          request.abort();
+          await future;
+        });
+        expect(exception is WHttpException, isTrue);
+        expect(exception.toString().contains('cancelled'), isTrue);
+      });
+
+      test('should allow a custom exception', () async {
+        Exception exception = await expectThrowsAsync(() async {
+          Future future = request.get();
+          request.abort(new Exception('Custom cancellation.'));
+          await future;
+        });
+        expect(exception is WHttpException, isTrue);
+        expect(exception.toString().contains('Custom cancellation'), isTrue);
+      });
     });
   });
 

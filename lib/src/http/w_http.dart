@@ -166,11 +166,12 @@ class WHttpException implements Exception {
   final WResponse response;
 
   /// URL of the attempted/unsuccessful request.
-  Uri get uri => request.uri;
+  final Uri uri;
 
   var _error;
 
-  WHttpException(this.method, this.request, this.response, [this._error]);
+  WHttpException(this.method, this.uri, this.request, this.response,
+      [this._error]);
 
   String toString() => message;
 }
@@ -198,21 +199,6 @@ class WHttpException implements Exception {
 ///       print(await response.text);
 ///     }
 class WRequest extends Object with FluriMixin {
-  /// Whether or not the request has been cancelled by the caller.
-  bool _cancelled = false;
-
-  /// HTTP client (if any) used to send requests.
-  dynamic _client;
-
-  /// Underlying HTTP request object. Either an instance of
-  /// [HttpRequest] or [HttpClientRequest].
-  dynamic _request;
-
-  /// Whether or not this request is the only request that will be
-  /// sent by its HTTP client. If that is the case, the client
-  /// will have to be closed immediately after sending.
-  bool _single;
-
   /// Create a new [WRequest] ready to be modified, opened, and sent.
   WRequest()
       : super(),
@@ -252,6 +238,11 @@ class WRequest extends Object with FluriMixin {
   Object get data => _data;
   Object _data;
 
+  /// [WProgress] stream for this HTTP request's download.
+  Stream<WProgress> get downloadProgress => _downloadProgressController.stream;
+  StreamController<WProgress> _downloadProgressController =
+      new StreamController<WProgress>();
+
   /// Encoding to use on the request data.
   Encoding encoding = UTF8;
 
@@ -262,18 +253,31 @@ class WRequest extends Object with FluriMixin {
   String get method => _method;
   String _method;
 
-  /// Whether or not to send the request with credentials.
-  bool withCredentials = false;
-
   /// [WProgress] stream for this HTTP request's upload.
   Stream<WProgress> get uploadProgress => _uploadProgressController.stream;
   StreamController<WProgress> _uploadProgressController =
       new StreamController<WProgress>();
 
-  /// [WProgress] stream for this HTTP request's download.
-  Stream<WProgress> get downloadProgress => _downloadProgressController.stream;
-  StreamController<WProgress> _downloadProgressController =
-      new StreamController<WProgress>();
+  /// Whether or not to send the request with credentials.
+  bool withCredentials = false;
+
+  /// Error associated with a cancellation.
+  Object _cancellationError;
+
+  /// Whether or not the request has been cancelled by the caller.
+  bool _cancelled = false;
+
+  /// HTTP client (if any) used to send requests.
+  dynamic _client;
+
+  /// Underlying HTTP request object. Either an instance of
+  /// [HttpRequest] or [HttpClientRequest].
+  dynamic _request;
+
+  /// Whether or not this request is the only request that will be
+  /// sent by its HTTP client. If that is the case, the client
+  /// will have to be closed immediately after sending.
+  bool _single;
 
   /// Allows more advanced configuration of this request prior to sending.
   /// The supplied callback [configureRequest] should be called after opening,
@@ -287,11 +291,12 @@ class WRequest extends Object with FluriMixin {
   Function _configure;
 
   /// Cancel this request. If the request has already finished, this will do nothing.
-  void abort() {
+  void abort([Object error]) {
     if (_request != null) {
       common.abort(_request);
     }
     _cancelled = true;
+    _cancellationError = error;
   }
 
   /// Sends a DELETE request to the given [uri].
@@ -342,17 +347,15 @@ class WRequest extends Object with FluriMixin {
 
   Future<WResponse> _send(String method, [Uri uri, Object data]) async {
     _method = method;
-    if (_cancelled) return new Completer().future;
-
     if (uri != null) {
       this.uri = uri;
     }
-    if (data != null) {
-      this.data = data;
-    }
-
     if (this.uri == null || this.uri.toString() == '') {
       throw new StateError('WRequest: Cannot send a request without a URL.');
+    }
+    _checkForCancellation();
+    if (data != null) {
+      this.data = data;
     }
 
     void cleanUp() {
@@ -364,14 +367,25 @@ class WRequest extends Object with FluriMixin {
     WResponse response;
     try {
       _request = await common.openRequest(method, this.uri, _client);
+      _checkForCancellation();
       response = await common.send(method, this, _request,
           _downloadProgressController, _uploadProgressController, _configure);
+      _checkForCancellation(response: response);
     } catch (e) {
       cleanUp();
       throw e;
     }
     cleanUp();
     return response;
+  }
+
+  void _checkForCancellation({WResponse response}) {
+    if (_cancelled) {
+      throw new WHttpException(_method, this.uri, this, response,
+          _cancellationError != null
+              ? _cancellationError
+              : new Exception('Request cancelled.'));
+    }
   }
 }
 

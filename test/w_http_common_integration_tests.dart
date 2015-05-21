@@ -19,7 +19,7 @@ library w_transport.test.w_http_common_tests;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 import 'package:test/test.dart';
 
 import './utils.dart';

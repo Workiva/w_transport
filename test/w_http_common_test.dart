@@ -18,7 +18,7 @@ library w_transport.test.w_http_common_test;
 
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 
 class MockWRequest extends Mock implements WRequest {}
 

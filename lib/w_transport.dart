@@ -14,10 +14,13 @@
  *  limitations under the License.
  */
 
-/// A fluent-style, platform-agnostic HTTP request library.
-/// Supports simple request construction and response handling,
-/// with the option to configure the outgoing request for more
-/// advanced use cases.
+/// A fluent-style, platform-agnostic transport library.
+/// Currently supports HTTP with plans to support WebSocket
+/// soon.
+///
+/// HTTP API features simple request construction and response
+/// handling, with the option to configure the outgoing request
+/// for more advanced use cases.
 library w_transport.w_http;
 
 export 'src/http/w_http.dart'

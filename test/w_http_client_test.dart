@@ -23,7 +23,7 @@ import 'dart:html';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/src/http/w_http_client.dart' as w_http_client;
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 
 class MockProgressEvent extends Mock implements ProgressEvent {
   final bool lengthComputable;

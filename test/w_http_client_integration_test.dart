@@ -21,7 +21,7 @@ import 'dart:convert';
 import 'dart:html';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_client.dart'
     show configureWTransportForBrowser;
 

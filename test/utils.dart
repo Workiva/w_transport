@@ -2,8 +2,6 @@ library w_transport.test.utils;
 
 import 'dart:async';
 
-import 'package:test/test.dart';
-
 Future<Object> expectThrowsAsync(Future f()) async {
   var exception;
   try {

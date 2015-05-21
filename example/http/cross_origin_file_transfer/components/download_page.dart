@@ -17,7 +17,6 @@
 library w_transport.example.http.cross_origin_file_transfer.components.download_page;
 
 import 'dart:async';
-import 'dart:html';
 import 'dart:math' as math;
 
 import 'package:react/react.dart' as react;

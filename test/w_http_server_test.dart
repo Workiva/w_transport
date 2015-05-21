@@ -24,7 +24,7 @@ import 'dart:io';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/src/http/w_http_server.dart' as w_http_server;
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 
 class MockHttpClientRequest extends Mock implements HttpClientRequest {}
 class MockHttpClientResponse extends Mock implements HttpClientResponse {}

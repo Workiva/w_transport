@@ -22,7 +22,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_server.dart'
     show configureWTransportForServer;
 

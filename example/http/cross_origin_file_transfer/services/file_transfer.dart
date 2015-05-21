@@ -20,7 +20,7 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:math' as math;
 
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 
 import './proxy.dart';
 import './remote_files.dart';

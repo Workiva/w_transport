@@ -19,7 +19,7 @@ library w_transport.example.http.cross_origin_credentials.dom;
 import 'dart:async';
 import 'dart:html';
 
-import 'package:w_transport/w_http.dart' show WHttpException;
+import 'package:w_transport/w_transport.dart' show WHttpException;
 
 import './service.dart' as service;
 import './status.dart' as status;

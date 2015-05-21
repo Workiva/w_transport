@@ -18,7 +18,6 @@
 library w_transport.lib.src.http.w_http_common;
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'w_http.dart';
 

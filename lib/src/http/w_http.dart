@@ -35,7 +35,7 @@ import 'w_http_common.dart' as common;
 ///
 /// For simple requests, use the static methods on [WHttp]:
 ///
-///     import 'package:w_transport/w_http.dart';
+///     import 'package:w_transport/w_transport.dart';
 ///
 ///     void main() {
 ///       Uri uri = Uri.parse('example.com');
@@ -54,7 +54,7 @@ import 'w_http_common.dart' as common;
 /// instance and use it to create and send requests.
 ///
 ///     import 'dart:async';
-///     import 'package:w_transport/w_http.dart';
+///     import 'package:w_transport/w_transport.dart';
 ///
 ///     WHttp http;
 ///     Timer timer;
@@ -80,7 +80,7 @@ import 'w_http_common.dart' as common;
 /// This shuts down the underlying [HttpClient] and closes idle network
 /// connections.
 ///
-///     import 'package:w_transport/w_http.dart';
+///     import 'package:w_transport/w_transport.dart';
 ///
 ///     void main() {
 ///       WHttp http = new WHttp();
@@ -179,7 +179,7 @@ class WHttpException implements Exception {
 /// A class for creating and sending HTTP requests.
 ///
 ///     import 'dart:convert';
-///     import 'package:w_transport/w_http.dart';
+///     import 'package:w_transport/w_transport.dart';
 ///
 ///     main() async {
 ///       var data = ...;

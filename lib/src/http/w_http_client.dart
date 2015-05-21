@@ -19,14 +19,13 @@
 library w_transport.src.http.w_http_client;
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:html';
 import 'dart:typed_data';
 
 import './w_http.dart';
 import './w_http_common.dart' as common;
 
-/// Configure w_transport/w_http library for use in the browser.
+/// Configure w_transport/w_transport HTTP library for use in the browser.
 void configureWHttpForBrowser() {
   common.configureWHttp(abort, getNewHttpClient, parseResponseHeaders,
       parseResponseStatus, parseResponseStatusText, parseResponseData,

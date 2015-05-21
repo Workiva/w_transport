@@ -19,7 +19,7 @@ library w_transport.example.http.cross_origin_file_transfer.services.remote_file
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 
 import './proxy.dart';
 

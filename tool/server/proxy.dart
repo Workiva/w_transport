@@ -19,7 +19,7 @@ library w_transport.tool.server.proxy;
 import 'dart:async';
 
 import 'package:shelf/shelf.dart' as shelf;
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_server.dart'
     show configureWTransportForServer;
 

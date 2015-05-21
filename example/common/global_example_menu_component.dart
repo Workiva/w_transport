@@ -20,7 +20,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:react/react.dart' as react;
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 
 const int _pollingInterval = 4; // 4 seconds
 

@@ -19,7 +19,7 @@ library w_transport.example.http.cross_origin_credentials.service;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 
 /// URLs for this cross origin credentials example.
 Uri authenticationServerUrl = Uri.parse('http://localhost:8024');

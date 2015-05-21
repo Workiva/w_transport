@@ -6,8 +6,8 @@ w_transport [![Build Status](https://travis-ci.org/Workiva/w_transport.svg?branc
 ---
 
 ## Platform Agnostic
-The main library (`w_transport/w_http.dart`) depends on neither `dart:html` nor `dart:io`, making it platform agnostic.
-This means you can use the `w_http` library to build components, libraries, or APIs that will be reusable in the browser
+The main library (`w_transport/w_transport.dart`) depends on neither `dart:html` nor `dart:io`, making it platform agnostic.
+This means you can use the `w_transport` library to build components, libraries, or APIs that will be reusable in the browser
 AND on the server.
 
 The end consumer will make the decision between client and server, most likely in a main() block.
@@ -33,9 +33,6 @@ void main() {
 ---
 
 ## HTTP
-There is one entry point for HTTP usage:
-
-- `w_transport/w_http.dart`: platform-agnostic HTTP classes.
 
 All standard HTTP methods are supported:
 

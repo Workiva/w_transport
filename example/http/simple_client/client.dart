@@ -20,7 +20,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:react/react_client.dart' as react_client;
-import 'package:w_transport/w_http.dart';
+import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_client.dart'
     show configureWTransportForBrowser;
 

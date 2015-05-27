@@ -180,5 +180,9 @@ void main() {
         w_http_client.validateDataType(new Stream.fromIterable([]));
       }, throwsArgumentError);
     });
+
+    test('validateDataType() should not throw an ArgumentError on null data', () {
+      w_http_client.validateDataType(null);
+    });
   });
 }

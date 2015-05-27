@@ -9,8 +9,7 @@ if [ -f "./coverage.lcov" ]; then
 fi
 
 # Collect coverage and generate report
-pub get
-pub run dart_codecov_generator --report-on=lib/ "$@" test/unit/
+./tool/test.sh --coverage "$@"
 
 # Open HTML report if successful
 if [ $? -eq 0 ]; then

@@ -170,7 +170,8 @@ void validateDataType(Object data) {
   if (data is! ByteBuffer &&
       data is! Document &&
       data is! FormData &&
-      data is! String) {
+      data is! String &&
+      data != null) {
     throw new ArgumentError(
         'WRequest body must be a String, FormData, ByteBuffer, or Document.');
   }

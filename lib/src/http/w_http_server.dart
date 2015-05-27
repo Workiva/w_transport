@@ -169,7 +169,7 @@ Future<WResponse> send(String method, WRequest wRequest,
 ///
 /// Throws an [ArgumentError] if [data] is invalid.
 void validateDataType(Object data) {
-  if (data is! String && data is! Stream) {
+  if (data is! String && data is! Stream && data != null) {
     throw new ArgumentError('WRequest body must be a String or a Stream.');
   }
 }

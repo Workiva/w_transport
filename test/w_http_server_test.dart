@@ -147,6 +147,10 @@ void main() {
       }, throwsArgumentError);
     });
 
+    test('validateDataType() should not throw an ArgumentError on null data', () {
+      w_http_server.validateDataType(null);
+    });
+
     test(
         'parseResponseData() should return response data from the stream (async)',
         () async {

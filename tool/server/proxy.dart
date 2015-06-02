@@ -17,6 +17,7 @@
 library w_transport.tool.server.proxy;
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:w_transport/w_transport.dart';
@@ -83,9 +84,15 @@ class UploadProxy extends Handler {
       print('Uploading: ${progress.percent}%');
     });
 
-    WResponse proxyResponse = await proxyRequest.post(uploadEndpoint);
-    return new shelf.Response.ok(proxyResponse.asStream(),
-        headers: proxyResponse.headers);
+    WResponse proxyResponse;
+    try {
+      proxyResponse = await proxyRequest.post(uploadEndpoint);
+      return new shelf.Response.ok(proxyResponse.asStream(),
+      headers: proxyResponse.headers);
+    } on HttpException catch (e) {
+      proxyRequest.abort(e);
+      return new shelf.Response.internalServerError();
+    }
   }
 }
 
@@ -105,9 +112,15 @@ class DownloadProxy extends Handler {
           'Downloading ${request.url.queryParameters['file']}: ${progress.percent}%');
     });
 
-    WResponse proxyResponse = await proxyRequest.get();
-    return new shelf.Response.ok(proxyResponse.asStream(),
-        headers: proxyResponse.headers);
+    WResponse proxyResponse;
+    try {
+      proxyResponse = await proxyRequest.get();
+      return new shelf.Response.ok(proxyResponse.asStream(),
+      headers: proxyResponse.headers);
+    } on HttpException catch (e) {
+      proxyRequest.abort(e);
+      return new shelf.Response.internalServerError();
+    }
   }
 }
 

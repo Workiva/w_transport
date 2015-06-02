@@ -67,8 +67,7 @@ class FileTransfer {
   /// Cancel the request (will do nothing if the request has already finished).
   void cancel(String reason) {
     _cancelled = true;
-    _request.abort();
-    _doneCompleter.completeError(reason != null ? new Exception(reason) : null);
+    _request.abort(reason != null ? new Exception(reason) : null);
   }
 
   void _progressListener(WProgress progress) {

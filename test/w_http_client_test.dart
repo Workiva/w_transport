@@ -164,6 +164,7 @@ void main() {
       when(xhr.onLoad)
           .thenReturn(new Stream.fromIterable([new MockProgressEvent(false)]));
       when(xhr.onError).thenReturn(new Stream.fromIterable([]));
+      when(xhr.onAbort).thenReturn(new Stream.fromIterable([]));
 
       await w_http_client.send(
           'GET', request, xhr, new StreamController(), new StreamController());

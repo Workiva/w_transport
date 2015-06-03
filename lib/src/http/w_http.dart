@@ -370,12 +370,13 @@ class WRequest extends Object with FluriMixin {
       _checkForCancellation();
       response = await common.send(method, this, _request,
           _downloadProgressController, _uploadProgressController, _configure);
-      _checkForCancellation(response: response);
     } catch (e) {
       cleanUp();
+      _checkForCancellation(response: response);
       throw e;
     }
     cleanUp();
+    _checkForCancellation(response: response);
     return response;
   }
 

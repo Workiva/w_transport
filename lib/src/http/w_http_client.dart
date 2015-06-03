@@ -132,19 +132,28 @@ Future<WResponse> send(String method, WRequest wRequest, HttpRequest request,
 
   // Listen for request completion/errors.
   request.onLoad.listen((ProgressEvent e) {
-    WResponse response = wResponseFactory(request, wRequest.encoding);
-    if ((request.status >= 200 && request.status < 300) ||
-        request.status == 0 ||
-        request.status == 304) {
-      completer.complete(response);
-    } else {
-      completer.completeError(
-          new WHttpException(method, wRequest.uri, wRequest, response));
+    if (!completer.isCompleted) {
+      WResponse response = wResponseFactory(request, wRequest.encoding);
+      if ((request.status >= 200 && request.status < 300) ||
+      request.status == 0 ||
+      request.status == 304) {
+        completer.complete(response);
+      } else {
+        completer.completeError(
+            new WHttpException(method, wRequest.uri, wRequest, response));
+      }
     }
   });
   request.onError.listen((error) {
-    completer.completeError(
-        new WHttpException(method, wRequest.uri, wRequest, null, error));
+    if (!completer.isCompleted) {
+      completer.completeError(
+          new WHttpException(method, wRequest.uri, wRequest, null, error));
+    }
+  });
+  request.onAbort.listen((error) {
+    if (!completer.isCompleted) {
+      completer.completeError(new WHttpException(method, wRequest.uri, wRequest, null, error));
+    }
   });
 
   // Allow the caller to configure the request.

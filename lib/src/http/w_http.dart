@@ -113,7 +113,12 @@ class WHttp {
   /// **Note:** For security reasons, TRACE requests are forbidden in the browser.
   static Future<WResponse> trace(Uri uri) => new WRequest().trace(uri);
 
+  /// HTTP client used to create and send HTTP requests.
+  /// In the browser, this will be unnecessary.
+  /// On the server, this will be an instance of [HttpClient].
   dynamic _client;
+
+  /// Whether or not the HTTP client has been closed.
   bool _closed;
 
   /// Construct a new WHttp instance. If used on the server,
@@ -123,14 +128,6 @@ class WHttp {
       : _client = common.getNewHttpClient(),
         _closed = false;
 
-  /// Generates a new [WRequest] instance that will use this client
-  /// to send the request.
-  WRequest newRequest() {
-    if (_closed) throw new StateError(
-        'WHttp client has been closed, can\'t create a new request.');
-    return new WRequest._withClient(_client);
-  }
-
   /// Closes the client, cancelling or closing any outstanding connections.
   void close() {
     _closed = true;
@@ -138,11 +135,39 @@ class WHttp {
       _client.close();
     }
   }
+
+  /// Generates a new [WRequest] instance that will use this client
+  /// to send the request.
+  WRequest newRequest() {
+    if (_closed) throw new StateError(
+        'WHttp client has been closed, can\'t create a new request.');
+    return new WRequest._withClient(_client);
+  }
 }
 
 /// An exception that is raised when a response to a request returns with
 /// an unsuccessful status code.
 class WHttpException implements Exception {
+  /// HTTP method.
+  final String method;
+
+  /// Failed request.
+  final WRequest request;
+
+  /// Response to the failed request (some of the properties may be unavailable).
+  final WResponse response;
+
+  /// URL of the attempted/unsuccessful request.
+  final Uri uri;
+
+  /// Original error, if any.
+  var _error;
+
+  /// Construct a new instance of [WHttpException] using information from
+  /// an HTTP request and response.
+  WHttpException(this.method, this.uri, this.request, this.response,
+      [this._error]);
+
   /// Descriptive error message that includes the request method & URL and the response status.
   String get message {
     String msg = 'WHttpException: $method';
@@ -156,23 +181,7 @@ class WHttpException implements Exception {
     return msg;
   }
 
-  /// HTTP method.
-  final String method;
-
-  /// Failed request.
-  final WRequest request;
-
-  /// Response to the failed request (some of the properties may be unavailable).
-  final WResponse response;
-
-  /// URL of the attempted/unsuccessful request.
-  final Uri uri;
-
-  var _error;
-
-  WHttpException(this.method, this.uri, this.request, this.response,
-      [this._error]);
-
+  @override
   String toString() => message;
 }
 
@@ -199,6 +208,51 @@ class WHttpException implements Exception {
 ///       print(await response.text);
 ///     }
 class WRequest extends Object with FluriMixin {
+  /// Gets and sets the content length of the request. If the size of
+  /// the request is not known in advance set content length to -1.
+  int contentLength;
+
+  /// Encoding to use on the request data.
+  Encoding encoding = UTF8;
+
+  /// Headers to send with the HTTP request.
+  Map<String, String> headers = {};
+
+  /// Whether or not to send the request with credentials.
+  bool withCredentials = false;
+
+  /// Error associated with a cancellation.
+  Object _cancellationError;
+
+  /// Whether or not the request has been cancelled by the caller.
+  bool _cancelled = false;
+
+  /// HTTP client (if any) used to send requests.
+  dynamic _client;
+
+  /// Data to send on the HTTP request.
+  Object _data;
+
+  /// [WProgress] stream controller for this HTTP request's download.
+  StreamController<WProgress> _downloadProgressController =
+      new StreamController<WProgress>();
+
+  /// HTTP method ('GET', 'POST', etc).
+  String _method;
+
+  /// Underlying HTTP request object. Either an instance of
+  /// [HttpRequest] or [HttpClientRequest].
+  dynamic _request;
+
+  /// [WProgress] stream controller for this HTTP request's upload.
+  StreamController<WProgress> _uploadProgressController =
+      new StreamController<WProgress>();
+
+  /// Whether or not this request is the only request that will be
+  /// sent by its HTTP client. If that is the case, the client
+  /// will have to be closed immediately after sending.
+  bool _single;
+
   /// Create a new [WRequest] ready to be modified, opened, and sent.
   WRequest()
       : super(),
@@ -214,10 +268,6 @@ class WRequest extends Object with FluriMixin {
       : super(),
         _client = client,
         _single = false;
-
-  /// Gets and sets the content length of the request. If the size of
-  /// the request is not known in advance set content length to -1.
-  int contentLength;
 
   /// Data to send on the HTTP request.
   /// On the client side, data type can be one of:
@@ -236,48 +286,24 @@ class WRequest extends Object with FluriMixin {
     _data = data;
   }
   Object get data => _data;
-  Object _data;
 
   /// [WProgress] stream for this HTTP request's download.
   Stream<WProgress> get downloadProgress => _downloadProgressController.stream;
-  StreamController<WProgress> _downloadProgressController =
-      new StreamController<WProgress>();
-
-  /// Encoding to use on the request data.
-  Encoding encoding = UTF8;
-
-  /// Headers to send with the HTTP request.
-  Map<String, String> headers = {};
 
   /// HTTP method ('GET', 'POST', etc).
   String get method => _method;
-  String _method;
 
   /// [WProgress] stream for this HTTP request's upload.
   Stream<WProgress> get uploadProgress => _uploadProgressController.stream;
-  StreamController<WProgress> _uploadProgressController =
-      new StreamController<WProgress>();
 
-  /// Whether or not to send the request with credentials.
-  bool withCredentials = false;
-
-  /// Error associated with a cancellation.
-  Object _cancellationError;
-
-  /// Whether or not the request has been cancelled by the caller.
-  bool _cancelled = false;
-
-  /// HTTP client (if any) used to send requests.
-  dynamic _client;
-
-  /// Underlying HTTP request object. Either an instance of
-  /// [HttpRequest] or [HttpClientRequest].
-  dynamic _request;
-
-  /// Whether or not this request is the only request that will be
-  /// sent by its HTTP client. If that is the case, the client
-  /// will have to be closed immediately after sending.
-  bool _single;
+  /// Cancel this request. If the request has already finished, this will do nothing.
+  void abort([Object error]) {
+    if (_request != null) {
+      common.abort(_request);
+    }
+    _cancelled = true;
+    _cancellationError = error;
+  }
 
   /// Allows more advanced configuration of this request prior to sending.
   /// The supplied callback [configureRequest] should be called after opening,
@@ -289,15 +315,6 @@ class WRequest extends Object with FluriMixin {
     _configure = configure;
   }
   Function _configure;
-
-  /// Cancel this request. If the request has already finished, this will do nothing.
-  void abort([Object error]) {
-    if (_request != null) {
-      common.abort(_request);
-    }
-    _cancelled = true;
-    _cancellationError = error;
-  }
 
   /// Sends a DELETE request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
@@ -345,6 +362,15 @@ class WRequest extends Object with FluriMixin {
     return _send('TRACE', uri);
   }
 
+  void _checkForCancellation({WResponse response}) {
+    if (_cancelled) {
+      throw new WHttpException(_method, this.uri, this, response,
+          _cancellationError != null
+              ? _cancellationError
+              : new Exception('Request cancelled.'));
+    }
+  }
+
   Future<WResponse> _send(String method, [Uri uri, Object data]) async {
     _method = method;
     if (uri != null) {
@@ -379,68 +405,12 @@ class WRequest extends Object with FluriMixin {
     _checkForCancellation(response: response);
     return response;
   }
-
-  void _checkForCancellation({WResponse response}) {
-    if (_cancelled) {
-      throw new WHttpException(_method, this.uri, this, response,
-          _cancellationError != null
-              ? _cancellationError
-              : new Exception('Request cancelled.'));
-    }
-  }
-}
-
-WResponse wResponseFactory(response, Encoding encoding,
-    [int total = 1, StreamController<WProgress> downloadProgressController]) {
-  return new WResponse._(response, encoding, total, downloadProgressController);
-}
-
-StreamTransformer decodeAttempt(Encoding encoding) {
-  return new StreamTransformer((Stream input, bool cancelOnError) {
-    StreamController controller;
-    StreamSubscription subscription;
-    controller = new StreamController(onListen: () {
-      subscription = input.listen((data) {
-        try {
-          data = encoding.decode(data);
-        } catch (e) {}
-        controller.add(data);
-      }, onError: controller.addError, onDone: () {
-        controller.close();
-      }, cancelOnError: cancelOnError);
-    }, onPause: () {
-      subscription.pause();
-    }, onResume: () {
-      subscription.resume();
-    }, onCancel: () {
-      subscription.cancel();
-    });
-    return controller.stream.listen(null);
-  });
 }
 
 /// Content of and meta data about a response to an HTTP request.
 /// All meta data (headers, status, statusText) are available immediately.
 /// Response content (data, text, or stream) is available asynchronously.
 class WResponse {
-  WResponse._(response, this._encoding,
-      [this._total = -1, this._downloadProgressController])
-      : headers = common.parseResponseHeaders(response),
-        status = common.parseResponseStatus(response),
-        statusText = common.parseResponseStatusText(response) {
-    _source = common.parseResponseStream(
-        response, _total, _downloadProgressController);
-    _source = _source.transform(_cache());
-  }
-
-  final Encoding _encoding;
-  final int _total;
-  final StreamController<WProgress> _downloadProgressController;
-
-  bool _cached = false;
-  List<Object> _cachedResponse = [];
-  Stream _source;
-
   /// Headers sent with the response to the HTTP request.
   final Map<String, String> headers;
 
@@ -451,6 +421,35 @@ class WResponse {
   /// Status text of the response to the HTTP request.
   /// 'OK', 'Not Found', etc.
   final String statusText;
+
+  /// Whether or not the response has been cached.
+  bool _cached = false;
+
+  /// The list of cached response chunks, if the response has been cached.
+  List<Object> _cachedResponse = [];
+
+  /// Controls the stream of download progress events.
+  final StreamController<WProgress> _downloadProgressController;
+
+  /// Encoding to use when decoding the response into text.
+  /// Inherited from the the [WRequest] instance.
+  final Encoding _encoding;
+
+  /// Source for the response body.
+  Stream _source;
+
+  /// Total size of the response body, if known.
+  final int _total;
+
+  WResponse._(response, this._encoding,
+      [this._total = -1, this._downloadProgressController])
+      : headers = common.parseResponseHeaders(response),
+        status = common.parseResponseStatus(response),
+        statusText = common.parseResponseStatusText(response) {
+    _source = common.parseResponseStream(
+        response, _total, _downloadProgressController);
+    _source = _source.transform(_cache());
+  }
 
   /// The data received as a response from the request.
   ///
@@ -466,12 +465,12 @@ class WResponse {
   ///   - `List<int>`
   Future<Object> asFuture() => common.parseResponseData(_getSourceStream());
 
+  /// The data stream received as a response from the request.
+  Stream asStream() => _getSourceStream();
+
   /// The data received as a response from the request in String format.
   Future<String> asText() => common.parseResponseText(
       _getSourceStream().transform(decodeAttempt(_encoding)));
-
-  /// The data stream received as a response from the request.
-  Stream asStream() => _getSourceStream();
 
   /// Update the underlying response data source.
   /// [asFuture], [asText], and [asStream] all use this data source.
@@ -519,10 +518,6 @@ class WResponse {
 /// either for an HTTP request upload or download. Based on [ProgressEvent]
 /// but with an additional [percent] property for convenience.
 class WProgress {
-  /// Indicates whether or not the progress is measurable.
-  bool get lengthComputable => _lengthComputable;
-  bool _lengthComputable;
-
   /// Amount of work already done.
   final int loaded;
 
@@ -530,12 +525,49 @@ class WProgress {
   /// itself, not headers and other overhead.
   final int total;
 
+  /// Indicates whether or not the progress is measurable.
+  bool _lengthComputable;
+
   /// Percentage of work done.
-  double get percent => _percent;
   double _percent;
 
   WProgress([this.loaded = 0, this.total = -1]) {
     _lengthComputable = total > -1;
     _percent = lengthComputable ? loaded * 100.0 / total : 0.0;
   }
+
+  /// Indicates whether or not the progress is measurable.
+  bool get lengthComputable => _lengthComputable;
+
+  /// Percentage of work done.
+  double get percent => _percent;
+}
+
+StreamTransformer decodeAttempt(Encoding encoding) {
+  return new StreamTransformer((Stream input, bool cancelOnError) {
+    StreamController controller;
+    StreamSubscription subscription;
+    controller = new StreamController(onListen: () {
+      subscription = input.listen((data) {
+        try {
+          data = encoding.decode(data);
+        } catch (e) {}
+        controller.add(data);
+      }, onError: controller.addError, onDone: () {
+        controller.close();
+      }, cancelOnError: cancelOnError);
+    }, onPause: () {
+      subscription.pause();
+    }, onResume: () {
+      subscription.resume();
+    }, onCancel: () {
+      subscription.cancel();
+    });
+    return controller.stream.listen(null);
+  });
+}
+
+WResponse wResponseFactory(response, Encoding encoding,
+    [int total = 1, StreamController<WProgress> downloadProgressController]) {
+  return new WResponse._(response, encoding, total, downloadProgressController);
 }

@@ -147,7 +147,8 @@ void main() {
       }, throwsArgumentError);
     });
 
-    test('validateDataType() should not throw an ArgumentError on null data', () {
+    test('validateDataType() should not throw an ArgumentError on null data',
+        () {
       w_http_server.validateDataType(null);
     });
 

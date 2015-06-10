@@ -82,6 +82,7 @@ main(List<String> args) async {
   ArgParser parser = new ArgParser()
     ..addOption('platform', abbr: 'p', allowMultiple: true)
     ..addFlag('coverage', negatable: false)
+    ..addFlag('only-lcov', negatable: false)
     ..addFlag('server', defaultsTo: true)
     ..addFlag('verbose', abbr: 'v', negatable: false);
   ArgResults env = parser.parse(args);
@@ -106,6 +107,9 @@ main(List<String> args) async {
       List coverageArgs = ['run', 'dart_codecov_generator', '--report-on=lib/'];
       if (env['verbose']) {
         coverageArgs.add('-v');
+      }
+      if (env['only-lcov']) {
+        coverageArgs.add('--no-html');
       }
       coverage = await Process.start('pub', coverageArgs);
 

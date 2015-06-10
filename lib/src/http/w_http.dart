@@ -27,7 +27,7 @@ import 'dart:convert';
 
 import 'package:fluri/fluri.dart';
 
-import 'w_http_common.dart' as common;
+import 'package:w_transport/src/http/w_http_common.dart' as common;
 
 /// An HTTP client useful for quickly sending HTTP requests.
 /// If used on the server side, an [HttpClient] is used internally, allowing

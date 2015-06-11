@@ -281,11 +281,7 @@ class WRequest extends Object with FluriMixin {
   ///
   ///   - `Stream`
   ///   - `String`
-  void set data(Object data) {
-    common.validateDataType(data);
-    _data = data;
-  }
-  Object get data => _data;
+  Object data;
 
   /// [WProgress] stream for this HTTP request's download.
   Stream<WProgress> get downloadProgress => _downloadProgressController.stream;
@@ -383,6 +379,7 @@ class WRequest extends Object with FluriMixin {
     if (data != null) {
       this.data = data;
     }
+    common.validateDataType(this.data);
 
     void cleanUp() {
       if (_single && _client != null) {

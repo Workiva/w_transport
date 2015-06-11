@@ -94,11 +94,17 @@ void main() {
       expect(await (req.data as Stream).join(''), equals('data'));
     });
 
-    test('should throw on invalid data payload', () {
+    test('should throw on invalid data payload', () async {
       WRequest req = new WRequest();
-      expect(() {
-        req.data = 10;
-      }, throwsArgumentError);
+      req.data = 10;
+      req.uri = Uri.parse('/');
+      var error;
+      try {
+        await req.get();
+      } catch (e) {
+        error = e;
+      }
+      expect(error, isArgumentError);
     });
 
     test('should have an upload progress stream', () async {

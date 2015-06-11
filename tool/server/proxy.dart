@@ -88,7 +88,7 @@ class UploadProxy extends Handler {
     try {
       proxyResponse = await proxyRequest.post(uploadEndpoint);
       return new shelf.Response.ok(proxyResponse.asStream(),
-      headers: proxyResponse.headers);
+          headers: proxyResponse.headers);
     } on HttpException catch (e) {
       proxyRequest.abort(e);
       return new shelf.Response.internalServerError();
@@ -116,7 +116,7 @@ class DownloadProxy extends Handler {
     try {
       proxyResponse = await proxyRequest.get();
       return new shelf.Response.ok(proxyResponse.asStream(),
-      headers: proxyResponse.headers);
+          headers: proxyResponse.headers);
     } on HttpException catch (e) {
       proxyRequest.abort(e);
       return new shelf.Response.internalServerError();

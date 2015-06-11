@@ -23,5 +23,5 @@
 /// for more advanced use cases.
 library w_transport.w_http;
 
-export 'src/http/w_http.dart'
+export 'package:w_transport/src/http/w_http.dart'
     show WHttp, WHttpException, WProgress, WRequest, WResponse;

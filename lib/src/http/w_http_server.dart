@@ -21,8 +21,8 @@ library w_transport.src.http.w_http_server;
 import 'dart:async';
 import 'dart:io';
 
-import './w_http.dart';
-import './w_http_common.dart' as common;
+import 'package:w_transport/src/http/w_http.dart';
+import 'package:w_transport/src/http/w_http_common.dart' as common;
 
 /// Configure w_transport/w_transport HTTP library for use on the server.
 void configureWHttpForServer() {

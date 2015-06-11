@@ -7,3 +7,6 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 script:
   - dart --checked test/run_tests.dart -p vm -p content-shell --verbose
+  - dart --checked test/run_tests.dart -p vm -p content-shell --verbose --coverage --only-lcov
+  - pub run dart_codecov coverage.lcov
+  - ./tool/analyze.sh

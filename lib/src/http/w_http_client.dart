@@ -22,8 +22,8 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
-import './w_http.dart';
-import './w_http_common.dart' as common;
+import 'package:w_transport/src/http/w_http.dart';
+import 'package:w_transport/src/http/w_http_common.dart' as common;
 
 /// Configure w_transport/w_transport HTTP library for use in the browser.
 void configureWHttpForBrowser() {
@@ -135,8 +135,8 @@ Future<WResponse> send(String method, WRequest wRequest, HttpRequest request,
     if (!completer.isCompleted) {
       WResponse response = wResponseFactory(request, wRequest.encoding);
       if ((request.status >= 200 && request.status < 300) ||
-      request.status == 0 ||
-      request.status == 304) {
+          request.status == 0 ||
+          request.status == 304) {
         completer.complete(response);
       } else {
         completer.completeError(
@@ -152,7 +152,8 @@ Future<WResponse> send(String method, WRequest wRequest, HttpRequest request,
   });
   request.onAbort.listen((error) {
     if (!completer.isCompleted) {
-      completer.completeError(new WHttpException(method, wRequest.uri, wRequest, null, error));
+      completer.completeError(
+          new WHttpException(method, wRequest.uri, wRequest, null, error));
     }
   });
 

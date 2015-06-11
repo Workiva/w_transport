@@ -19,7 +19,7 @@ library w_transport.lib.src.http.w_http_common;
 
 import 'dart:async';
 
-import 'w_http.dart';
+import 'package:w_transport/src/http/w_http.dart';
 
 bool _configurationSet = false;
 

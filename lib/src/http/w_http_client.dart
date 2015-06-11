@@ -22,8 +22,8 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
-import './w_http.dart';
-import './w_http_common.dart' as common;
+import 'package:w_transport/src/http/w_http.dart';
+import 'package:w_transport/src/http/w_http_common.dart' as common;
 
 /// Configure w_transport/w_transport HTTP library for use in the browser.
 void configureWHttpForBrowser() {

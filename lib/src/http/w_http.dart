@@ -224,8 +224,8 @@ class WRequest extends Object with FluriMixin {
   /// Error associated with a cancellation.
   Object _cancellationError;
 
-  /// Whether or not the request has been cancelled by the caller.
-  bool _cancelled = false;
+  /// Whether or not the request has been canceled by the caller.
+  bool _canceled = false;
 
   /// HTTP client (if any) used to send requests.
   dynamic _client;
@@ -297,7 +297,7 @@ class WRequest extends Object with FluriMixin {
     if (_request != null) {
       common.abort(_request);
     }
-    _cancelled = true;
+    _canceled = true;
     _cancellationError = error;
   }
 
@@ -359,11 +359,11 @@ class WRequest extends Object with FluriMixin {
   }
 
   void _checkForCancellation({WResponse response}) {
-    if (_cancelled) {
+    if (_canceled) {
       throw new WHttpException(_method, this.uri, this, response,
           _cancellationError != null
               ? _cancellationError
-              : new Exception('Request cancelled.'));
+              : new Exception('Request canceled.'));
     }
   }
 

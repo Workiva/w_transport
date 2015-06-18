@@ -145,7 +145,7 @@ class DownloadPage extends react.Component {
       react.h2({}, 'File Downloads'),
       react.p({
         'className': 'note'
-      }, 'Note: Loading large files into memory will crash the browser tab. For this reason, downloads will be cancelled automatically if a concurrent file transfer size of 75 MB is exceeded.'),
+      }, 'Note: Loading large files into memory will crash the browser tab. For this reason, downloads will be canceled automatically if a concurrent file transfer size of 75 MB is exceeded.'),
       fileTransferListComponent({
         'transfers': this.state['downloads'],
         'onTransferDone': _removeDownload

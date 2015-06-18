@@ -38,11 +38,11 @@ int _concurrentFileTransferSize = 0;
 /// Encapsulates the file upload to or file download from the server.
 class FileTransfer {
   WRequest _request;
-  bool _cancelled;
+  bool _canceled;
 
   FileTransfer(this.name)
       : id = 'fileTransfer${_transferNum++}',
-        _cancelled = false,
+        _canceled = false,
         _doneCompleter = new Completer(),
         _percentComplete = 0.0 {}
 
@@ -66,12 +66,12 @@ class FileTransfer {
 
   /// Cancel the request (will do nothing if the request has already finished).
   void cancel(String reason) {
-    _cancelled = true;
+    _canceled = true;
     _request.abort(reason != null ? new Exception(reason) : null);
   }
 
   void _progressListener(WProgress progress) {
-    if (_cancelled) return;
+    if (_canceled) return;
     _percentComplete = progress.percent;
   }
 }
@@ -128,7 +128,7 @@ class Download extends FileTransfer {
     _progressStream.listen(_progressListener);
 
     _progressStream.listen((WProgress progress) {
-      if (_cancelled) return;
+      if (_canceled) return;
 
       if (progress.lengthComputable) {
         int delta = progress.loaded - _bytesLoaded;

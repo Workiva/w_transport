@@ -52,7 +52,7 @@ class FileTransferListItemComponent extends react.Component {
   void _cancelTransfer(e) {
     e.preventDefault();
     if (this.props['transfer'] == null || this.state['done']) return;
-    this.props['transfer'].cancel('User cancelled the file transfer.');
+    this.props['transfer'].cancel('User canceled the file transfer.');
     this.setState({'done': true, 'success': false});
   }
 

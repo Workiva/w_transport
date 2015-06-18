@@ -67,7 +67,7 @@ class DropZoneComponent extends react.Component {
   }
 
   void hideDropTarget(e) {
-    // Delay this action slightly to allow it to be cancelled.
+    // Delay this action slightly to allow it to be canceled.
     // This helps prevent a flicker when moving from the drop zone
     // to the drop target.
     _hideDropTargetTimer = new Timer(new Duration(milliseconds: 100), () {

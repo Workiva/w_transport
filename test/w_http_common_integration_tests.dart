@@ -316,7 +316,7 @@ void run(String usage) {
           await future;
         });
         expect(exception is WHttpException, isTrue);
-        expect(exception.toString().contains('cancelled'), isTrue);
+        expect(exception.toString().contains('canceled'), isTrue);
       });
 
       test('should allow a custom exception', () async {

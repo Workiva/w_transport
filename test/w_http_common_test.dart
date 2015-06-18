@@ -20,7 +20,11 @@ import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 
-class MockWRequest extends Mock implements WRequest {}
+class MockWRequest extends Mock implements WRequest {
+  // this tells Dart analyzer you meant not to implement all methods,
+  // and not to hint/warn that methods are missing
+  noSuchMethod(i) => super.noSuchMethod(i);
+}
 
 void main() {
   group('WHttp', () {

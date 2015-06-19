@@ -26,8 +26,18 @@ import 'package:test/test.dart';
 import 'package:w_transport/src/http/w_http_server.dart' as w_http_server;
 import 'package:w_transport/w_transport.dart';
 
-class MockHttpClientRequest extends Mock implements HttpClientRequest {}
-class MockHttpClientResponse extends Mock implements HttpClientResponse {}
+class MockHttpClientRequest extends Mock implements HttpClientRequest {
+  // this tells Dart analyzer you meant not to implement all methods,
+  // and not to hint/warn that methods are missing
+  noSuchMethod(i) => super.noSuchMethod(i);
+}
+
+class MockHttpClientResponse extends Mock implements HttpClientResponse {
+  // this tells Dart analyzer you meant not to implement all methods,
+  // and not to hint/warn that methods are missing
+  noSuchMethod(i) => super.noSuchMethod(i);
+}
+
 class MockHttpClientResponseFromStream extends Stream
     implements HttpClientResponse {
   Stream _stream;
@@ -37,6 +47,9 @@ class MockHttpClientResponseFromStream extends Stream
     return _stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
+  // this tells Dart analyzer you meant not to implement all methods,
+  // and not to hint/warn that methods are missing
+  noSuchMethod(i) => super.noSuchMethod(i);
 }
 
 void main() {

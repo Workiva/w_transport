@@ -30,11 +30,23 @@ class MockProgressEvent extends Mock implements ProgressEvent {
   final int loaded;
   final int total;
   MockProgressEvent(this.lengthComputable, [this.loaded, this.total]);
+
+  // this tells Dart analyzer you meant not to implement all methods,
+  // and not to hint/warn that methods are missing
+  noSuchMethod(i) => super.noSuchMethod(i);
 }
 
-class MockHttpRequest extends Mock implements HttpRequest {}
+class MockHttpRequest extends Mock implements HttpRequest {
+  // this tells Dart analyzer you meant not to implement all methods,
+  // and not to hint/warn that methods are missing
+  noSuchMethod(i) => super.noSuchMethod(i);
+}
 
-class MockHttpRequestUpload extends Mock implements HttpRequestUpload {}
+class MockHttpRequestUpload extends Mock implements HttpRequestUpload {
+  // this tells Dart analyzer you meant not to implement all methods,
+  // and not to hint/warn that methods are missing
+  noSuchMethod(i) => super.noSuchMethod(i);
+}
 
 void main() {
   group('w_http_client', () {

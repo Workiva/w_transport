@@ -119,14 +119,15 @@ class WHttp {
   dynamic _client;
 
   /// Whether or not the HTTP client has been closed.
-  bool _closed;
+  bool _closed = false;
 
   /// Construct a new WHttp instance. If used on the server,
   /// an underlying [HttpClient] instance will be used to cache
   /// network connections.
-  WHttp()
-      : _client = common.getNewHttpClient(),
-        _closed = false;
+  WHttp() {
+    common.verifyWHttpConfigurationIsSet();
+    _client = common.getNewHttpClient();
+  }
 
   /// Closes the client, cancelling or closing any outstanding connections.
   void close() {

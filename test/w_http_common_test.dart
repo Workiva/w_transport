@@ -28,7 +28,13 @@ class MockWRequest extends Mock implements WRequest {
 
 void main() {
   group('WHttp', () {
-    test('should throw if configuration has not been set', () {
+    test('constructor should throw if configuration has not been set', () {
+      expect(() {
+        new WHttp();
+      }, throwsStateError);
+    });
+
+    test('static methods should throw if configuration has not been set', () {
       expect(() {
         WHttp.get(Uri.parse('/'));
       }, throwsStateError);
@@ -36,7 +42,7 @@ void main() {
   });
 
   group('WRequest', () {
-    test('should throw if configuration has not been set', () {
+    test('constructor should throw if configuration has not been set', () {
       expect(() {
         new WRequest();
       }, throwsStateError);

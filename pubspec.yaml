@@ -1,5 +1,5 @@
 name: w_transport
-version: 1.0.0
+version: 1.0.1
 description: A fluent-style, platform-agnostic library with ready to use transport classes for sending and receiving data over HTTP.
 authors:
   - Workiva Client Platform Team <clientplatform@workiva.com>

@@ -13,18 +13,6 @@ dev_dependencies:
   ansicolor: '>=0.0.9 <0.1.0'
   args: '>=0.12.1 <0.14.0'
   browser: any
-  coverage:
-    git:
-      url: https://github.com/ekweible/coverage.git
-      ref: 796a265
-  dart_codecov:
-    git:
-      url: https://github.com/ekweible/dart_codecov.git
-      ref: 0.1.0
-  dart_codecov_generator:
-    git:
-      url: https://github.com/ekweible/dart_codecov_generator.git
-      ref: content-shell
   dart_style: '>=0.1.8 <0.2.0'
   http_server: '>=0.9.5+1 <0.10.0'
   mime: '>=0.9.3 <0.10.0'

@@ -3,7 +3,8 @@ library w_transport.test.mock_w_request_test;
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart' show WHttpException, WRequest, WResponse;
+import 'package:w_transport/w_transport.dart'
+    show WHttpException, WRequest, WResponse;
 import 'package:w_transport/mocks.dart' show MockWRequest, MockWResponse;
 
 void main() {
@@ -11,11 +12,11 @@ void main() {
     MockWRequest request;
 
     setUp(() {
-      request = new MockWRequest()
-        ..path = '/test/';
+      request = new MockWRequest()..path = '/test/';
     });
 
-    test('complete() should complete the request with a 200 OK by default', () async {
+    test('complete() should complete the request with a 200 OK by default',
+        () async {
       request.complete();
       WResponse response = await request.get();
       expect(response.status, equals(200));

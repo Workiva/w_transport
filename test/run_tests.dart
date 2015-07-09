@@ -122,7 +122,7 @@ main(List<String> args) async {
       if (env['platform'].length > 0) {
         testArgs.addAll((env['platform'] as List).map((p) => '--platform=$p'));
       } else {
-        testArgs.addAll(['-p', 'vm', '-p', 'dartium']);
+        testArgs.addAll(['-p', 'vm', '-p', 'content-shell']);
       }
       print('pub ${testArgs.join(' ')}');
       tests = await Process.start('pub', testArgs);

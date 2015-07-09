@@ -213,6 +213,20 @@ class WRequest extends Object with FluriMixin {
   /// the request is not known in advance set content length to -1.
   int contentLength;
 
+  /// Data to send on the HTTP request.
+  /// On the client side, data type can be one of:
+  ///
+  ///   - `ByteBuffer`
+  ///   - `Document`
+  ///   - `FormData`
+  ///   - `String`
+  ///
+  /// On the server side, data type can be one of:
+  ///
+  ///   - `Stream`
+  ///   - `String`
+  Object data;
+
   /// Encoding to use on the request data.
   Encoding encoding = UTF8;
 
@@ -230,6 +244,10 @@ class WRequest extends Object with FluriMixin {
 
   /// HTTP client (if any) used to send requests.
   dynamic _client;
+
+  /// Configuration callback for advanced request configuration.
+  /// See [configure].
+  Function _configure;
 
   /// Data to send on the HTTP request.
   Object _data;
@@ -270,20 +288,6 @@ class WRequest extends Object with FluriMixin {
         _client = client,
         _single = false;
 
-  /// Data to send on the HTTP request.
-  /// On the client side, data type can be one of:
-  ///
-  ///   - `ByteBuffer`
-  ///   - `Document`
-  ///   - `FormData`
-  ///   - `String`
-  ///
-  /// On the server side, data type can be one of:
-  ///
-  ///   - `Stream`
-  ///   - `String`
-  Object data;
-
   /// [WProgress] stream for this HTTP request's download.
   Stream<WProgress> get downloadProgress => _downloadProgressController.stream;
 
@@ -296,7 +300,7 @@ class WRequest extends Object with FluriMixin {
   /// Cancel this request. If the request has already finished, this will do nothing.
   void abort([Object error]) {
     if (_request != null) {
-      common.abort(_request);
+      _abortRequest(_request);
     }
     _canceled = true;
     _cancellationError = error;
@@ -311,7 +315,6 @@ class WRequest extends Object with FluriMixin {
   void configure(configure(request)) {
     _configure = configure;
   }
-  Function _configure;
 
   /// Sends a DELETE request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
@@ -359,6 +362,10 @@ class WRequest extends Object with FluriMixin {
     return _send('TRACE', uri);
   }
 
+  void _abortRequest(request) {
+    common.abort(_request);
+  }
+
   void _checkForCancellation({WResponse response}) {
     if (_canceled) {
       throw new WHttpException(_method, this.uri, this, response,
@@ -368,26 +375,13 @@ class WRequest extends Object with FluriMixin {
     }
   }
 
-  Future<WResponse> _send(String method, [Uri uri, Object data]) async {
-    _method = method;
-    if (uri != null) {
-      this.uri = uri;
+  void _cleanUp() {
+    if (_single && _client != null) {
+      _client.close();
     }
-    if (this.uri == null || this.uri.toString() == '') {
-      throw new StateError('WRequest: Cannot send a request without a URL.');
-    }
-    _checkForCancellation();
-    if (data != null) {
-      this.data = data;
-    }
-    common.validateDataType(this.data);
+  }
 
-    void cleanUp() {
-      if (_single && _client != null) {
-        _client.close();
-      }
-    }
-
+  Future<WResponse> _getResponse() async {
     WResponse response;
     try {
       _request = await common.openRequest(method, this.uri, _client);
@@ -395,13 +389,33 @@ class WRequest extends Object with FluriMixin {
       response = await common.send(method, this, _request,
           _downloadProgressController, _uploadProgressController, _configure);
     } catch (e) {
-      cleanUp();
+      _cleanUp();
       _checkForCancellation(response: response);
       throw e;
     }
-    cleanUp();
+    _cleanUp();
     _checkForCancellation(response: response);
     return response;
+  }
+
+  void _initializeRequestInfo(String method, [Uri uri, Object data]) {
+    _method = method;
+    if (uri != null) {
+      this.uri = uri;
+    }
+    if (this.uri == null || this.uri.toString() == '') {
+      throw new StateError('WRequest: Cannot send a request without a URL.');
+    }
+    if (data != null) {
+      this.data = data;
+    }
+  }
+
+  Future<WResponse> _send(String method, [Uri uri, Object data]) async {
+    _initializeRequestInfo(method, uri, data);
+    _checkForCancellation();
+    common.validateDataType(this.data);
+    return _getResponse();
   }
 }
 
@@ -461,14 +475,13 @@ class WResponse {
   /// On the server side, the type of data will be:
   ///
   ///   - `List<int>`
-  Future<Object> asFuture() => common.parseResponseData(_getSourceStream());
+  Future<Object> asFuture() => _getFuture();
 
   /// The data stream received as a response from the request.
-  Stream asStream() => _getSourceStream();
+  Stream asStream() => _getStream();
 
   /// The data received as a response from the request in String format.
-  Future<String> asText() => common.parseResponseText(
-      _getSourceStream().transform(decodeAttempt(_encoding)));
+  Future<String> asText() => _getText();
 
   /// Update the underlying response data source.
   /// [asFuture], [asText], and [asStream] all use this data source.
@@ -506,10 +519,17 @@ class WResponse {
     return controller.stream.listen(null);
   });
 
+  /// Gets the response data as an untyped object.
+  Future<Object> _getFuture() => common.parseResponseData(_getStream());
+
   /// Gets the response data source stream. Returns a new stream from
   /// the cache if available, returns the original stream otherwise.
-  Stream _getSourceStream() =>
+  Stream _getStream() =>
       _cached ? new Stream.fromIterable(_cachedResponse) : _source;
+
+  /// Gets the response data in String format.
+  Future<String> _getText() => common
+      .parseResponseText(_getStream().transform(decodeAttempt(_encoding)));
 }
 
 /// A representation of a progress event at a specific point in time

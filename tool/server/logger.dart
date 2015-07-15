@@ -50,4 +50,8 @@ class Logger {
       print(_pen('$_name\t$msg'));
     }
   }
+
+  void withTime(String msg, [bool isError = false]) {
+    this('${new DateTime.now()}  $msg', isError);
+  }
 }

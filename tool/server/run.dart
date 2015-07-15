@@ -18,7 +18,7 @@ library w_transport.tool.server.run;
 
 import 'package:args/args.dart';
 
-import './proxy.dart';
+import './proxy.dart' show startProxyServer;
 import './handlers/example/http/cross_origin_credentials_handlers.dart'
     show exampleHttpCrossOriginCredentialsRoutes;
 import './handlers/example/http/cross_origin_file_transfer_handlers.dart'
@@ -28,8 +28,9 @@ import './handlers/test/http/routes.dart' show testHttpIntegrationRoutes;
 import './logger.dart';
 import './router.dart';
 import './server.dart';
+import './web_socket_handler.dart';
 
-void startServer() {
+void startHttpServer() {
   List<List<Route>> routeLists = [
     /// META Endpoints
 
@@ -52,18 +53,37 @@ void startServer() {
   routeLists.forEach((list) => routes.addAll(list));
 
   Router router = new Router(routes);
-  Logger logger = new Logger('Server', cyan: true);
-  Server.start('Server', 'localhost', 8024, router, logger);
+  Logger httpLogger = new Logger('HTTP\t', cyan: true);
+  Server.startHttp('localhost', 8024, router, httpLogger);
+}
+
+void startWebSocketServer() {
+  WebSocketHandler webSocketHandler = new WebSocketHandler();
+  Logger webSocketLogger = new Logger('WS\t', magenta: true);
+  Server.startWebSocket('localhost', 8026, webSocketHandler, webSocketLogger);
 }
 
 void main(List<String> args) {
   ArgParser parser = new ArgParser();
-  parser.addFlag('proxy', abbr: 'p');
+  parser.addFlag('http');
+  parser.addFlag('proxy');
+  parser.addFlag('web-socket');
+
   var parsedArgs = parser.parse(args);
+  bool http = parsedArgs['http'];
+  bool proxy = parsedArgs['proxy'];
+  bool webSocket = parsedArgs['web-socket'];
+  if (!http && !proxy && !webSocket) {
+    http = proxy = webSocket = true;
+  }
 
-  startServer();
-
-  if (parsedArgs['proxy']) {
-    startProxy();
+  if (http) {
+    startHttpServer();
+  }
+  if (proxy) {
+    startProxyServer();
+  }
+  if (webSocket) {
+    startWebSocketServer();
   }
 }

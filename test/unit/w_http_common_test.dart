@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-library w_transport.test.w_http_common_test;
+library w_transport.test.unit.w_http_common_test;
 
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';

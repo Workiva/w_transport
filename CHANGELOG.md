@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+**Features:**
+
+- **Add support for WebSockets!**
+- `WSocket` class is now available when you import the `w_transport` package.
+
 ## 1.0.1
 **Bug Fixes:**
 

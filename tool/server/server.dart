@@ -23,19 +23,50 @@ import 'package:shelf/shelf_io.dart' as io;
 
 import './logger.dart';
 import './router.dart';
+import './web_socket_handler.dart';
 
 class Server {
-  static start(
-      String name, String host, int port, Router router, Logger logger) async {
+  static startHttp(String host, int port, Router router, Logger logger) async {
     shelf.Handler handler = const shelf.Pipeline()
         .addMiddleware(shelf.logRequests(logger: logger))
         .addHandler(router.route);
 
     try {
       await io.serve(handler, host, port);
-      logger('ready - listening on http://$host:$port');
+      logger('ready - HTTP listening on http://$host:$port');
     } catch (e) {
-      logger('failed to start - port 8024 already taken.');
+      logger('failed to start HTTP server - port $port may already be taken.');
+      exit(1);
+    }
+  }
+
+  static startWebSocket(String host, int port, WebSocketHandler handler, Logger logger) async {
+    try {
+      HttpServer server = await HttpServer.bind(host, port);
+      server.listen((request) async {
+        if (request.uri.path == '/ping') {
+          request.response.statusCode = HttpStatus.OK;
+          request.response.close();
+          logger.withTime('200  GET  /ping');
+        } else {
+          try {
+            WebSocket webSocket = await WebSocketTransformer.upgrade(request);
+            WebSocketListener listener = handler.newWebSocketListener(webSocket, logger);
+            webSocket.listen(listener,
+            onError: (error) {
+              logger.withTime('WebSocket error: $error', true);
+            }, onDone: () {
+              logger.withTime('WebSocket closed: ${webSocket.closeCode} ${webSocket.closeReason} (serviced ${listener.numMessages} messages)');
+            }, cancelOnError: true);
+            logger.withTime('WebSocket opened\tGET\t[101]');
+          } catch (e) {
+            logger.withTime('$e', true);
+          }
+        }
+      });
+      logger('ready - WebSocket listening on ws://$host:$port');
+    } catch (e) {
+      logger('failed to start WebSocket server - port $port may already be taken.');
       exit(1);
     }
   }

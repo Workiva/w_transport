@@ -19,8 +19,8 @@
 /// to make HTTP requests.
 library w_transport.w_transport_client;
 
-import 'package:w_transport/src/http/w_http_client.dart'
-    show configureWHttpForBrowser;
+import 'package:w_transport/src/configuration/configuration_client.dart'
+    show configureForBrowser;
 
 /// Configure w_transport for use in the browser.
 ///
@@ -33,5 +33,5 @@ import 'package:w_transport/src/http/w_http_client.dart'
 ///       configureWTransportForBrowser();
 ///     }
 void configureWTransportForBrowser() {
-  configureWHttpForBrowser();
+  configureForBrowser();
 }

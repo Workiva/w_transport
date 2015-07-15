@@ -18,7 +18,7 @@
 /// single, platform-agnostic API to make client and server usage easy.
 ///
 /// If possible, APIs built using these classes should also avoid
-/// importing `dart:html` or `dart:io` in order to remain platform-agnostic,
+/// importing `dart:html` and `dart:io` in order to remain platform-agnostic,
 /// as it provides a much greater reuse value.
 library w_transport.src.http.w_http;
 
@@ -27,6 +27,8 @@ import 'dart:convert';
 
 import 'package:fluri/fluri.dart';
 
+import 'package:w_transport/src/configuration/configuration.dart'
+    show verifyWHttpConfigurationIsSet;
 import 'package:w_transport/src/http/w_http_common.dart' as common;
 
 /// An HTTP client useful for quickly sending HTTP requests.
@@ -125,7 +127,7 @@ class WHttp {
   /// an underlying [HttpClient] instance will be used to cache
   /// network connections.
   WHttp() {
-    common.verifyWHttpConfigurationIsSet();
+    verifyWHttpConfigurationIsSet();
     _client = common.getNewHttpClient();
   }
 
@@ -258,7 +260,7 @@ class WRequest extends Object with FluriMixin {
   WRequest()
       : super(),
         _single = true {
-    common.verifyWHttpConfigurationIsSet();
+    verifyWHttpConfigurationIsSet();
     _client = common.getNewHttpClient();
   }
 

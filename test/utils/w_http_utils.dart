@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-library w_transport.test.w_http_utils;
+library w_transport.test.utils.w_http_utils;
 
 import 'dart:async';
 import 'dart:convert';

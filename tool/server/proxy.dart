@@ -124,7 +124,7 @@ class DownloadProxy extends Handler {
   }
 }
 
-void startProxy() {
+void startProxyServer() {
   configureWTransportForServer();
   Router router = new Router([
     new Route('download', new DownloadProxy()),
@@ -132,10 +132,10 @@ void startProxy() {
     new Route('ping', new PingHandler()),
     new Route('upload', new UploadProxy()),
   ]);
-  Logger logger = new Logger('Proxy', yellow: true);
-  Server.start('Proxy', 'localhost', 8025, router, logger);
+  Logger logger = new Logger('HTTP Proxy', yellow: true);
+  Server.startHttp('localhost', 8025, router, logger);
 }
 
 void main() {
-  startProxy();
+  startProxyServer();
 }

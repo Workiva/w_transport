@@ -87,17 +87,25 @@ main(List<String> args) async {
     ..addFlag('verbose', abbr: 'v', negatable: false);
   ArgResults env = parser.parse(args);
 
-  Process server;
   Process coverage;
+  Process httpServer;
   Process tests;
+  Process webSocketServer;
 
   try {
     if (env['server']) {
-      // Start the server (necessary for integration tests).
-      server = await Process.start(
-          'dart', ['--checked', 'tool/server/run.dart', '--no-proxy']);
-      await waitFor(server,
-          successPattern: 'ready - listening', verbose: env['verbose']);
+      // Start the HTTP server (necessary for HTTP integration tests).
+      httpServer = await Process.start(
+          'dart', ['--checked', 'tool/server/run.dart', '--http']);
+      await waitFor(httpServer,
+          successPattern: 'ready - HTTP listening', verbose: env['verbose']);
+
+      // Start the WebSocket server (necessary for WebSocket integration tests).
+      webSocketServer = await Process.start(
+          'dart', ['--checked', 'tool/server/run.dart', '--web-socket']);
+      await waitFor(webSocketServer,
+          successPattern: 'ready - WebSocket listening',
+          verbose: env['verbose']);
     }
 
     // If generating coverage, we run the tests differently
@@ -134,19 +142,25 @@ main(List<String> args) async {
           verbose: env['verbose']));
     }
 
-    // Kill the server now that we're done.
-    if (server != null) {
-      server.kill(ProcessSignal.SIGINT);
+    // Kill the servers now that we're done.
+    if (httpServer != null) {
+      httpServer.kill(ProcessSignal.SIGINT);
+    }
+    if (webSocketServer != null) {
+      webSocketServer.kill(ProcessSignal.SIGINT);
     }
 
     // Verify success of all processes
-    int serverEC = server != null ? await server.exitCode : 0;
     int coverageEC = coverage != null ? await coverage.exitCode : 0;
+    int httpServerEC = httpServer != null ? await httpServer.exitCode : 0;
     int testsEC = tests != null ? await tests.exitCode : 0;
+    int webSocketServerEC =
+        webSocketServer != null ? await webSocketServer.exitCode : 0;
 
-    if (serverEC > 0 ||
-        coverageEC > 0 ||
-        testsEC > 0) throw new Exception('Testing failed.');
+    if (coverageEC > 0 ||
+        httpServerEC > 0 ||
+        testsEC > 0 ||
+        webSocketServerEC > 0) throw new Exception('Testing failed.');
 
     // Success!
     print('Success!');
@@ -154,9 +168,9 @@ main(List<String> args) async {
   } on TestRunException catch (e) {
     print(
         'Unexpected error running tests. Try running again with -v for more info.');
-    shutdown([server, coverage, tests]);
+    shutdown([coverage, httpServer, tests, webSocketServer]);
   } catch (e, stackTrace) {
     print('$e\n$stackTrace');
-    shutdown([server, coverage, tests]);
+    shutdown([coverage, httpServer, tests, webSocketServer]);
   }
 }

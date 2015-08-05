@@ -16,16 +16,16 @@
 
 library w_transport.tool.server.handlers.test.http.routes;
 
-import '../../../router.dart';
+import '../../../handler.dart';
 import './404_handler.dart';
 import './download.dart';
 import './ping_handler.dart';
 import './reflect_handler.dart';
 
-String pathPrefix = 'test/http';
-List<Route> testHttpIntegrationRoutes = [
-  new Route('$pathPrefix/404', new FourzerofourHandler()),
-  new Route('$pathPrefix/download', new DownloadHandler()),
-  new Route('$pathPrefix/ping', new PingHandler()),
-  new Route('$pathPrefix/reflect', new ReflectHandler()),
-];
+String pathPrefix = '/test/http';
+Map<String, Handler> testHttpIntegrationRoutes = {
+  '$pathPrefix/404': new FourzerofourHandler(),
+  '$pathPrefix/download': new DownloadHandler(),
+  '$pathPrefix/ping': new PingHandler(),
+  '$pathPrefix/reflect': new ReflectHandler()
+};

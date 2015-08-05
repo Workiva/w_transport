@@ -1,20 +1,23 @@
 library w_transport.test.integration.w_socket_common;
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart' show WSocket;
+import 'package:w_transport/w_transport.dart' show WSocket, WSocketException;
 
 /// These are WebSocket integration tests that should work from client or server.
 /// These will not pass if run on their own!
 void run(String usage) {
   group('WSocket ($usage)', () {
-    Uri uri;
     WSocket socket;
+    Uri closeUri;
+    Uri echoUri;
+    Uri pingUri;
 
     setUp(() {
-      uri = Uri.parse('ws://localhost:8026');
+      closeUri = Uri.parse('ws://localhost:8024/test/ws/close');
+      echoUri = Uri.parse('ws://localhost:8024/test/ws/echo');
+      pingUri = Uri.parse('ws://localhost:8024/test/ws/ping');
     });
 
     tearDown(() {
@@ -30,26 +33,26 @@ void run(String usage) {
 
     group('add()', () {
       test('should be able to send a message', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         WSHelper helper = new WSHelper(socket);
 
-        socket.add(_echo('message'));
+        socket.add('message');
         await helper.messagesReceived(1);
-        expect(helper.echos.single, equals('message'));
+        expect(helper.messages.single, equals('message'));
       });
 
       test('should be able to send multiple messages', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         WSHelper helper = new WSHelper(socket);
 
-        socket.add(_echo('message1'));
-        socket.add(_echo('message2'));
+        socket.add('message1');
+        socket.add('message2');
         await helper.messagesReceived(2);
-        expect(helper.echos, unorderedEquals(['message1', 'message2']));
+        expect(helper.messages, unorderedEquals(['message1', 'message2']));
       });
 
       test('should throw after sink has been closed', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         await socket.close();
         expect(() {
           socket.add('too late');
@@ -68,42 +71,38 @@ void run(String usage) {
 
     group('addStream()', () {
       test('should be able to send a Stream', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         WSHelper helper = new WSHelper(socket);
 
-        var stream =
-            new Stream.fromIterable([_echo('message1'), _echo('message2')]);
+        var stream = new Stream.fromIterable(['message1', 'message2']);
         socket.addStream(stream);
         await helper.messagesReceived(2);
-        expect(helper.echos, unorderedEquals(['message1', 'message2']));
+        expect(helper.messages, unorderedEquals(['message1', 'message2']));
       });
 
       test('should be able to add multiple Streams serially', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         WSHelper helper = new WSHelper(socket);
 
-        var stream1 =
-            new Stream.fromIterable([_echo('message1a'), _echo('message2a')]);
-        var stream2 =
-            new Stream.fromIterable([_echo('message1b'), _echo('message2b')]);
+        var stream1 = new Stream.fromIterable(['message1a', 'message2a']);
+        var stream2 = new Stream.fromIterable(['message1b', 'message2b']);
         await socket.addStream(stream1);
         await socket.addStream(stream2);
         await helper.messagesReceived(4);
-        expect(helper.echos, unorderedEquals(
+        expect(helper.messages, unorderedEquals(
             ['message1a', 'message1b', 'message2a', 'message2b']));
       });
 
       test('should not be able to add multiple Streams concurrently', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
 
-        var stream =
-            new Stream.fromIterable([_echo('message1'), _echo('message2')]);
+        var stream = new Stream.fromIterable(['message1', 'message2']);
         socket.addStream(stream);
         expect(socket.addStream(stream), throwsStateError);
       });
 
       test('should throw after sink has been closed', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         await socket.close();
         expect(socket.addStream(new Stream.fromIterable(['too late'])),
             throwsStateError);
@@ -112,17 +111,17 @@ void run(String usage) {
 
     group('listen()', () {
       test('should be able to listen to incoming messages', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(pingUri);
         WSHelper helper = new WSHelper(socket);
 
-        socket.add(_ping(2));
+        socket.add('ping2');
         await helper.messagesReceived(2);
 
         expect(helper.messages, unorderedEquals(['pong', 'pong']));
       });
 
       test('should not allow multiple listeners by default', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         socket.listen((_) {});
         expect(() {
           socket.listen((_) {});
@@ -131,15 +130,15 @@ void run(String usage) {
 
       test('should not miss messages if a listener is registered late',
           () async {
-        socket = await WSocket.connect(uri);
-        socket.add(_ping(3));
+        socket = await WSocket.connect(pingUri);
+        socket.add('ping3');
         await new Future.delayed(new Duration(milliseconds: 200));
         expect(socket.toList(), completion(equals(['pong', 'pong', 'pong'])));
         socket.close();
       });
 
       test('should call onDone() when socket closes', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
 
         Completer c = new Completer();
         socket.listen((_) {}, onDone: () {
@@ -153,20 +152,20 @@ void run(String usage) {
       test(
           'should have the close code and reason available in onDone() callback',
           () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
 
         Completer c = new Completer();
         socket.listen((_) {}, onDone: () {
           expect(socket.closeCode, equals(4001));
 
-          // TODO: Bug with Dart's WebSocket server prevents the closeReason from being set properly
-          // See: http://stackoverflow.com/questions/31434394/support-websocket-close-reason-with-a-dart-websocket-server
+          // TODO: Dart's WebSocket server did not previously set the closeReason
+          // See: https://github.com/dart-lang/sdk/issues/23964
           // expect(socket.closeReason, equals('Closed.'));
 
           c.complete();
         });
 
-        socket.add(_echo('echo'));
+        socket.add('echo');
 
         new Timer(new Duration(seconds: 1), () {
           socket.close(4001, 'oops');
@@ -176,7 +175,7 @@ void run(String usage) {
       });
 
       test('should work as a broadcast stream', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(pingUri);
         Stream stream = socket.asBroadcastStream();
 
         Completer c1 = new Completer();
@@ -189,7 +188,7 @@ void run(String usage) {
           c2.complete();
         });
 
-        socket.add(_ping());
+        socket.add('ping');
 
         await c1.future;
         await c2.future;
@@ -199,35 +198,51 @@ void run(String usage) {
     group('closing', () {
       test('should have the close code and reason available after closing',
           () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         await socket.close(4001, 'Closed.');
         expect(socket.closeCode, equals(4001));
 
-        // TODO: Bug with Dart's WebSocket server prevents the closeReason from being set properly
-        // See: http://stackoverflow.com/questions/31434394/support-websocket-close-reason-with-a-dart-websocket-server
+        // TODO: Dart's WebSocket server did not previously set the closeReason
+        // See: https://github.com/dart-lang/sdk/issues/23964
         // expect(socket.closeReason, equals('Closed.'));
       });
 
       test(
           'should close and properly drain stream even if no listeners were registered',
           () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         await socket.close();
       });
 
       test('should handle the server closing the connection', () async {
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(closeUri);
         socket.add(_closeRequest());
         await socket.done;
+      });
+
+      test(
+          'should report the close code and reason that the server used when closing the connection',
+          () async {
+        socket = await WSocket.connect(closeUri);
+        socket.add(_closeRequest(4001, 'Closed by server.'));
+        await socket.done;
+        expect(socket.closeCode, equals(4001));
+        expect(socket.closeReason, equals('Closed by server.'));
       });
     });
   });
 }
 
-String _closeRequest() => JSON.encode({'action': 'close'});
-String _echo(message) => JSON.encode({'action': 'echo', 'message': message});
-String _ping([int numPongs = 1]) =>
-    JSON.encode({'action': 'ping', 'pongs': numPongs});
+String _closeRequest([int closeCode, String closeReason]) {
+  var c = 'close';
+  if (closeCode != null) {
+    c = '$c:$closeCode';
+    if (closeReason != null) {
+      c = '$c:$closeReason';
+    }
+  }
+  return c;
+}
 
 class WSHelper {
   WSocket socket;
@@ -245,18 +260,6 @@ class WSHelper {
     });
   }
 
-  Iterable<String> get echos => _messages.where((m) {
-    bool jsonDecodable = true;
-    try {
-      JSON.decode(m);
-    } catch (e) {
-      jsonDecodable = false;
-    }
-    return jsonDecodable;
-  })
-      .map((m) => JSON.decode(m))
-      .where((m) => m['action'] == 'echo')
-      .map((m) => m['message']);
   Iterable<String> get messages => _messages;
 
   Future messagesReceived(int numMessages) async {

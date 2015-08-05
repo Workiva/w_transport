@@ -18,10 +18,14 @@ void main() {
 
   group('WSocket (Client)', () {
     WSocket socket;
-    Uri uri;
+    Uri closeUri;
+    Uri echoUri;
+    Uri pingUri;
 
     setUp(() {
-      uri = Uri.parse('ws://localhost:8026');
+      closeUri = Uri.parse('ws://localhost:8024/test/ws/close');
+      echoUri = Uri.parse('ws://localhost:8024/test/ws/echo');
+      pingUri = Uri.parse('ws://localhost:8024/test/ws/ping');
     });
 
     tearDown(() {
@@ -33,19 +37,19 @@ void main() {
     group('data validation', () {
       test('should support Blob', () async {
         Blob blob = new Blob(['one', 'two']);
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         socket.add(blob);
       });
 
       test('should support String', () async {
         String data = 'data';
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         socket.add(data);
       });
 
       test('should support TypedData', () async {
         TypedData data = new Uint16List.fromList([1, 2, 3]);
-        socket = await WSocket.connect(uri);
+        socket = await WSocket.connect(echoUri);
         socket.add(data);
       });
     });

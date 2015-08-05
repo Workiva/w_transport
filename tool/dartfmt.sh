@@ -10,7 +10,7 @@ done
 
 # By default, run the formatter with -w to actually change files.
 if [ "$set_exit_code" == "false" ]; then
-  pub run dart_style:format example lib test -w
+  pub run dart_style:format example lib test tool/server -w
   exit "0"
 fi
 

@@ -23,10 +23,13 @@ import 'dart:io';
 import 'package:ansicolor/ansicolor.dart' show AnsiPen;
 import 'package:args/args.dart';
 
+import '../tool/server/server.dart';
+
 typedef String _Pen(String);
 
-_Pen _greenPen = new AnsiPen()..green(bold: true);
-_Pen _redPen = new AnsiPen()..red(bold: true);
+_Pen _blue = new AnsiPen()..blue();
+_Pen _green = new AnsiPen()..green(bold: true);
+_Pen _red = new AnsiPen()..red(bold: true);
 
 const String testSuccessMessage = 'All tests passed!';
 const String testFailureMessage = 'Some tests failed.';
@@ -68,12 +71,14 @@ Future waitFor(Process process,
   return completer.future;
 }
 
-void shutdown(List<Process> processesToKill) {
-  processesToKill.forEach((p) {
-    if (p != null) {
-      p.kill(ProcessSignal.SIGINT);
+shutdown(List processesToKill) async {
+  for (int i = 0; i < processesToKill.length; i++) {
+    if (processesToKill[i] is Process) {
+      processesToKill[i].kill(ProcessSignal.SIGINT);
+    } else if (processesToKill[i] is Server) {
+      await processesToKill[i].stop();
     }
-  });
+  }
   print('Testing failed.');
   exit(1);
 }
@@ -88,24 +93,18 @@ main(List<String> args) async {
   ArgResults env = parser.parse(args);
 
   Process coverage;
-  Process httpServer;
+  Server server;
   Process tests;
-  Process webSocketServer;
 
   try {
     if (env['server']) {
       // Start the HTTP server (necessary for HTTP integration tests).
-      httpServer = await Process.start(
-          'dart', ['--checked', 'tool/server/run.dart', '--http']);
-      await waitFor(httpServer,
-          successPattern: 'ready - HTTP listening', verbose: env['verbose']);
+      server = new Server();
+      await server.start();
 
-      // Start the WebSocket server (necessary for WebSocket integration tests).
-      webSocketServer = await Process.start(
-          'dart', ['--checked', 'tool/server/run.dart', '--web-socket']);
-      await waitFor(webSocketServer,
-          successPattern: 'ready - WebSocket listening',
-          verbose: env['verbose']);
+      if (env['verbose']) {
+        server.output.listen((m) => print(_blue('Server\t $m')));
+      }
     }
 
     // If generating coverage, we run the tests differently
@@ -143,24 +142,15 @@ main(List<String> args) async {
     }
 
     // Kill the servers now that we're done.
-    if (httpServer != null) {
-      httpServer.kill(ProcessSignal.SIGINT);
-    }
-    if (webSocketServer != null) {
-      webSocketServer.kill(ProcessSignal.SIGINT);
+    if (server != null) {
+      await server.stop();
     }
 
     // Verify success of all processes
     int coverageEC = coverage != null ? await coverage.exitCode : 0;
-    int httpServerEC = httpServer != null ? await httpServer.exitCode : 0;
     int testsEC = tests != null ? await tests.exitCode : 0;
-    int webSocketServerEC =
-        webSocketServer != null ? await webSocketServer.exitCode : 0;
 
-    if (coverageEC > 0 ||
-        httpServerEC > 0 ||
-        testsEC > 0 ||
-        webSocketServerEC > 0) throw new Exception('Testing failed.');
+    if (coverageEC > 0 || testsEC > 0) throw new Exception('Testing failed.');
 
     // Success!
     print('Success!');
@@ -168,9 +158,9 @@ main(List<String> args) async {
   } on TestRunException catch (e) {
     print(
         'Unexpected error running tests. Try running again with -v for more info.');
-    shutdown([coverage, httpServer, tests, webSocketServer]);
+    await shutdown([server, coverage, tests]);
   } catch (e, stackTrace) {
     print('$e\n$stackTrace');
-    shutdown([coverage, httpServer, tests, webSocketServer]);
+    await shutdown([server, coverage, tests]);
   }
 }

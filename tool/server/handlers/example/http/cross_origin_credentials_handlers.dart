@@ -20,18 +20,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:shelf/shelf.dart' as shelf;
 import 'package:uuid/uuid.dart';
 
 import '../../../handler.dart';
-import '../../../router.dart';
 
-String pathPrefix = 'example/http/cross_origin_credentials';
+String pathPrefix = '/example/http/cross_origin_credentials';
 
-List<Route> exampleHttpCrossOriginCredentialsRoutes = [
-  new Route('$pathPrefix/session', new SessionHandler()),
-  new Route('$pathPrefix/credentialed', new CredentialedRequestHandler())
-];
+Map<String, Handler> exampleHttpCrossOriginCredentialsRoutes = {
+  '$pathPrefix/session': new SessionHandler(),
+  '$pathPrefix/credentialed': new CredentialedRequestHandler()
+};
 
 String session;
 String generateSessionCookie() {
@@ -39,22 +37,18 @@ String generateSessionCookie() {
   return session;
 }
 
-bool isValidSession(shelf.Request request) {
+bool isValidSession(HttpRequest request) {
   if (session == null) {
     return false;
   }
   bool validSession = false;
-  String cookieStr = request.headers['cookie'];
-  if (cookieStr != null) {
-    cookieStr.split('; ').forEach((String cookie) {
-      List<String> parts = cookie.split('=');
-      if (parts[0] == 'session') {
-        if (parts[1] == session) {
-          validSession = true;
-        }
+  request.cookies.forEach((Cookie cookie) {
+    if (cookie.name == 'session') {
+      if (cookie.value == session) {
+        validSession = true;
       }
-    });
-  }
+    }
+  });
   return validSession;
 }
 
@@ -70,22 +64,32 @@ class SessionHandler extends Handler {
     return {'set-cookie': sessionCookie.toString()};
   }
 
-  Future<shelf.Response> get(shelf.Request request) async {
-    return new shelf.Response.ok(
-        JSON.encode({'authenticated': isValidSession(request)}));
+  Future get(HttpRequest request) async {
+    request.response.statusCode = HttpStatus.OK;
+    setCorsHeaders(request);
+    request.response
+        .write(JSON.encode({'authenticated': isValidSession(request)}));
   }
 
-  Future<shelf.Response> post(shelf.Request request) async {
+  Future post(HttpRequest request) async {
+    request.response.statusCode = HttpStatus.OK;
+    setCorsHeaders(request);
     Map<String, String> headers = createSessionHeaders(generateSessionCookie());
-    return new shelf.Response.ok(JSON.encode({'authenticated': true}),
-        headers: headers);
+    headers.forEach((h, v) {
+      request.response.headers.set(h, v);
+    });
+    request.response.write(JSON.encode({'authenticated': true}));
   }
 
-  Future<shelf.Response> delete(shelf.Request request) async {
+  Future delete(HttpRequest request) async {
     session = null;
+    request.response.statusCode = HttpStatus.OK;
+    setCorsHeaders(request);
     Map<String, String> headers = createSessionHeaders('deleted');
-    return new shelf.Response.ok(JSON.encode({'authenticated': false}),
-        headers: headers);
+    headers.forEach((h, v) {
+      request.response.headers.set(h, v);
+    });
+    request.response.write(JSON.encode({'authenticated': false}));
   }
 }
 
@@ -94,14 +98,17 @@ class CredentialedRequestHandler extends Handler {
     enableCors(credentials: true);
   }
 
-  Future<shelf.Response> get(shelf.Request request) async {
+  Future get(HttpRequest request) async {
     // Verify the request has a valid session cookie
     if (isValidSession(request)) {
-      return new shelf.Response.ok(
-          'Session verified, credentialed request successful!');
+      request.response.statusCode = HttpStatus.OK;
+      setCorsHeaders(request);
+      request.response
+          .write('Session verified, credentialed request successful!');
     } else {
-      return new shelf.Response(HttpStatus.UNAUTHORIZED,
-          body: 'Invalid session, credentialed request failed!');
+      request.response.statusCode = HttpStatus.UNAUTHORIZED;
+      setCorsHeaders(request);
+      request.response.write('Invalid session, credentialed request failed!');
     }
   }
 }

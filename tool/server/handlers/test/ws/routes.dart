@@ -14,21 +14,17 @@
  *  limitations under the License.
  */
 
-library w_transport.tool.server.handlers.ping_handler;
+library w_transport.tool.server.handlers.test.ws.routes;
 
-import 'dart:async';
-import 'dart:io';
+import '../../../handler.dart';
+import '../../../logger.dart';
+import 'close_handler.dart';
+import 'echo_handler.dart';
+import 'ping_handler.dart';
 
-import '../handler.dart';
-
-/// Always responds with a 200 OK.
-class PingHandler extends Handler {
-  PingHandler() : super() {
-    enableCors();
-  }
-
-  Future get(HttpRequest request) async {
-    request.response.statusCode = HttpStatus.OK;
-    setCorsHeaders(request);
-  }
-}
+String pathPrefix = '/test/ws';
+Map<String, Handler> getTestWebSocketIntegrationRoutes(Logger logger) => {
+  '$pathPrefix/close': new CloseHandler(logger),
+  '$pathPrefix/echo': new EchoHandler(logger),
+  '$pathPrefix/ping': new PingHandler(logger)
+};

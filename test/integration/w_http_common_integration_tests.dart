@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-library w_transport.test.w_http_common_tests;
+library w_transport.test.integration.w_http_common_tests;
 
 import 'dart:async';
 import 'dart:convert';
@@ -22,8 +22,8 @@ import 'dart:convert';
 import 'package:w_transport/w_transport.dart';
 import 'package:test/test.dart';
 
-import './utils.dart';
-import './w_http_utils.dart';
+import '../utils/utils.dart';
+import '../utils/w_http_utils.dart';
 
 /// These are HTTP integration tests that should work from client or server.
 /// These will not pass if run on their own!

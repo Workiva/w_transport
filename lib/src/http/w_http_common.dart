@@ -15,21 +15,11 @@
  */
 
 /// Common HTTP logic pieces.
-library w_transport.lib.src.http.w_http_common;
+library w_transport.src.http.w_http_common;
 
 import 'dart:async';
 
 import 'package:w_transport/src/http/w_http.dart';
-
-bool _configurationSet = false;
-
-void verifyWHttpConfigurationIsSet() {
-  if (!_configurationSet) throw new StateError(
-      'w_transport configuration must be set prior to use. ' +
-          'Import \'package:w_transport/w_transport_client.dart\' ' +
-          'or \'package:w_transport/w_transport_server.dart\' and call ' +
-          'configureWTransportForBrowser() or configureWTransportForServer()');
-}
 
 void abort(request) => _abort(request);
 typedef void RequestAborter(request);
@@ -98,8 +88,6 @@ void configureWHttp(RequestAborter abort, HttpClientFactory getNewHttpClient,
     ResponseDataParser parseResponseData, ResponseTextParser parseResponseText,
     ResponseStreamParser parseResponseStream, RequestOpener openRequest,
     RequestSender send, DataTypeValidator validateDataType) {
-  _configurationSet = true;
-
   _abort = abort;
   _getNewHttpClient = getNewHttpClient;
   _parseResponseHeaders = parseResponseHeaders;

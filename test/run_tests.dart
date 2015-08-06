@@ -23,10 +23,13 @@ import 'dart:io';
 import 'package:ansicolor/ansicolor.dart' show AnsiPen;
 import 'package:args/args.dart';
 
+import '../tool/server/server.dart';
+
 typedef String _Pen(String);
 
-_Pen _greenPen = new AnsiPen()..green(bold: true);
-_Pen _redPen = new AnsiPen()..red(bold: true);
+_Pen _blue = new AnsiPen()..blue();
+_Pen _green = new AnsiPen()..green(bold: true);
+_Pen _red = new AnsiPen()..red(bold: true);
 
 const String testSuccessMessage = 'All tests passed!';
 const String testFailureMessage = 'Some tests failed.';
@@ -68,12 +71,14 @@ Future waitFor(Process process,
   return completer.future;
 }
 
-void shutdown(List<Process> processesToKill) {
-  processesToKill.forEach((p) {
-    if (p != null) {
-      p.kill(ProcessSignal.SIGINT);
+shutdown(List processesToKill) async {
+  for (int i = 0; i < processesToKill.length; i++) {
+    if (processesToKill[i] is Process) {
+      processesToKill[i].kill(ProcessSignal.SIGINT);
+    } else if (processesToKill[i] is Server) {
+      await processesToKill[i].stop();
     }
-  });
+  }
   print('Testing failed.');
   exit(1);
 }
@@ -87,17 +92,19 @@ main(List<String> args) async {
     ..addFlag('verbose', abbr: 'v', negatable: false);
   ArgResults env = parser.parse(args);
 
-  Process server;
   Process coverage;
+  Server server;
   Process tests;
 
   try {
     if (env['server']) {
-      // Start the server (necessary for integration tests).
-      server = await Process.start(
-          'dart', ['--checked', 'tool/server/run.dart', '--no-proxy']);
-      await waitFor(server,
-          successPattern: 'ready - listening', verbose: env['verbose']);
+      // Start the HTTP server (necessary for HTTP integration tests).
+      server = new Server();
+      await server.start();
+
+      if (env['verbose']) {
+        server.output.listen((m) => print(_blue('Server\t $m')));
+      }
     }
 
     // If generating coverage, we run the tests differently
@@ -134,19 +141,16 @@ main(List<String> args) async {
           verbose: env['verbose']));
     }
 
-    // Kill the server now that we're done.
+    // Kill the servers now that we're done.
     if (server != null) {
-      server.kill(ProcessSignal.SIGINT);
+      await server.stop();
     }
 
     // Verify success of all processes
-    int serverEC = server != null ? await server.exitCode : 0;
     int coverageEC = coverage != null ? await coverage.exitCode : 0;
     int testsEC = tests != null ? await tests.exitCode : 0;
 
-    if (serverEC > 0 ||
-        coverageEC > 0 ||
-        testsEC > 0) throw new Exception('Testing failed.');
+    if (coverageEC > 0 || testsEC > 0) throw new Exception('Testing failed.');
 
     // Success!
     print('Success!');
@@ -154,9 +158,9 @@ main(List<String> args) async {
   } on TestRunException catch (e) {
     print(
         'Unexpected error running tests. Try running again with -v for more info.');
-    shutdown([server, coverage, tests]);
+    await shutdown([server, coverage, tests]);
   } catch (e, stackTrace) {
     print('$e\n$stackTrace');
-    shutdown([server, coverage, tests]);
+    await shutdown([server, coverage, tests]);
   }
 }

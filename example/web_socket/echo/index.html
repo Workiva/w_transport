@@ -17,35 +17,27 @@ limitations under the License.
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Examples | w_transport</title>
+    <title>Echo | WebSocket Example</title>
+    <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="loading-overlay"><div class="loading">Loading...</div></div>
 
     <div class="container">
-        <h1>w_transport Examples</h1>
+        <h1>Echo</h1>
+        <p>Connect to a WebSocket and send messages that will be echoed.</p>
 
-        <p>
-            Most of the examples require a server component, and some offer the option to proxy requests through an intermediary proxy server.
-            The menu/status bar at the top displays the status of these servers.
-        </p>
+        <form id="prompt-form">
+            <label for="prompt">Message</label>
+            <input id="prompt" type="text">
+        </form>
 
-        <h3>HTTP</h3>
-        <ul>
-            <li><a href="http/simple_client/">Simple Client File Browser</a></li>
-            <li><a href="http/cross_origin_credentials/">Cross Origin Credentials</a></li>
-            <li><a href="http/cross_origin_file_transfer/">Cross Origin File Transfer</a></li>
-        </ul>
-
-        <h3>WebSocket</h3>
-        <ul>
-            <li><a href="web_socket/echo/">Echo</a></li>
-        </ul>
+        <pre id="logs"></pre>
     </div>
 
     <script src="packages/react/react.js"></script>
-    <script type="application/dart" src="index.dart"></script>
+    <script type="application/dart" src="client.dart"></script>
     <script src="packages/browser/dart.js"></script>
 </body>
 </html>

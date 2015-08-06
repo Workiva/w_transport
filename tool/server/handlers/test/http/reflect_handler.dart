@@ -18,8 +18,7 @@ library w_transport.tool.server.handlers.test.http.reflect_handler;
 
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:shelf/shelf.dart' as shelf;
+import 'dart:io';
 
 import '../../../handler.dart';
 
@@ -32,25 +31,29 @@ class ReflectHandler extends Handler {
     enableCors();
   }
 
-  Future<shelf.Response> reflect(shelf.Request request) async {
+  Future reflect(HttpRequest request) async {
+    Map<String, String> headers = {};
+    request.headers.forEach((name, values) {
+      headers[name] = values.join(', ');
+    });
     Map reflection = {
       'method': request.method,
-      'path': request.url.path,
-      'headers': request.headers,
-      'body': await request.readAsString(),
+      'path': request.uri.path,
+      'headers': headers,
+      'body': await UTF8.decodeStream(request),
     };
 
-    return new shelf.Response.ok(JSON.encode(reflection));
+    request.response.statusCode = HttpStatus.OK;
+    setCorsHeaders(request);
+    request.response.write(JSON.encode(reflection));
   }
 
-  Future<shelf.Response> delete(shelf.Request request) async =>
-      reflect(request);
-  Future<shelf.Response> get(shelf.Request request) async => reflect(request);
-  Future<shelf.Response> head(shelf.Request request) async => reflect(request);
-  Future<shelf.Response> options(shelf.Request request) async =>
-      reflect(request);
-  Future<shelf.Response> patch(shelf.Request request) async => reflect(request);
-  Future<shelf.Response> post(shelf.Request request) async => reflect(request);
-  Future<shelf.Response> put(shelf.Request request) async => reflect(request);
-  Future<shelf.Response> trace(shelf.Request request) async => reflect(request);
+  Future delete(HttpRequest request) async => reflect(request);
+  Future get(HttpRequest request) async => reflect(request);
+  Future head(HttpRequest request) async => reflect(request);
+  Future options(HttpRequest request) async => reflect(request);
+  Future patch(HttpRequest request) async => reflect(request);
+  Future post(HttpRequest request) async => reflect(request);
+  Future put(HttpRequest request) async => reflect(request);
+  Future trace(HttpRequest request) async => reflect(request);
 }

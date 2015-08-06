@@ -17,8 +17,7 @@
 library w_transport.tool.server.handlers.test.http.fourzerofour_handler;
 
 import 'dart:async';
-
-import 'package:shelf/shelf.dart' as shelf;
+import 'dart:io';
 
 import '../../../handler.dart';
 
@@ -27,7 +26,8 @@ class FourzerofourHandler extends Handler {
   FourzerofourHandler() : super() {
     enableCors();
   }
-  Future<shelf.Response> get(shelf.Request request) async {
-    return new shelf.Response.notFound('');
+  Future get(HttpRequest request) async {
+    request.response.statusCode = HttpStatus.NOT_FOUND;
+    setCorsHeaders(request);
   }
 }

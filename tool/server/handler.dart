@@ -19,8 +19,6 @@ library w_transport.tool.server.handler;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:shelf/shelf.dart' as shelf;
-
 /// Base request handler class that enables CORS by default.
 /// Should be subclassed and the handleRequest() method must be implemented.
 abstract class Handler {
@@ -33,7 +31,7 @@ abstract class Handler {
 
   /// Main entry point for request handling.
   /// Sub-classes should implement only the necessary REST method handlers.
-  Future<shelf.Response> processRequest(shelf.Request request) async {
+  Future processRequest(HttpRequest request) async {
     Function handler;
     switch (request.method) {
       case 'DELETE':
@@ -61,13 +59,10 @@ abstract class Handler {
         handler = trace;
         break;
       default:
-        return new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
+        request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
     }
-    shelf.Response response = await handler(request);
-    if (_corsEnabled) {
-      response = response.change(headers: _getCorsHeaders(request));
-    }
-    return response;
+    await handler(request);
+    request.response.close();
   }
 
   /// Enable Cross Origin Resource Sharing support.
@@ -83,51 +78,68 @@ abstract class Handler {
 
   /// Creates and returns a map of Access-Control headers based
   /// on the CORS settings configured in the call to [enableCors].
-  Map<String, String> _getCorsHeaders(shelf.Request request) {
-    Map<String, String> headers = {};
-
+  void setCorsHeaders(HttpRequest request) {
     // Use given allow origin, but default to allowing every origin (by using origin of request)
-    String origin =
-        _allowedOrigin != null ? _allowedOrigin : request.headers['Origin'];
-    headers['Access-Control-Allow-Origin'] = origin;
+    String origin = _allowedOrigin != null
+        ? _allowedOrigin
+        : request.headers.value('Origin');
+    request.response.headers.set('Access-Control-Allow-Origin', origin);
 
     // Allow all headers (by using the requested headers)
-    String requestHeaders = request.headers['Access-Control-Request-Headers'];
+    List<String> requestHeaders =
+        request.headers['Access-Control-Request-Headers'];
     if (requestHeaders != null) {
-      headers['Access-Control-Allow-Headers'] = requestHeaders;
+      requestHeaders.forEach((h) {
+        request.response.headers.add('Access-Control-Allow-Headers', h);
+      });
     }
 
     // Use given allow methods, but default to allowing all methods
-    headers['Access-Control-Allow-Methods'] = _allowedMethods.join(', ');
+    _allowedMethods.forEach((m) {
+      request.response.headers.add('Access-Control-Allow-Methods', m);
+    });
 
     // Optionally allow credentials
     if (_credentialsAllowed) {
-      headers['Access-Control-Allow-Credentials'] = 'true';
+      request.response.headers.set('Access-Control-Allow-Credentials', 'true');
     }
-
-    return headers;
   }
 
   /// RESTful method handlers. Override as necessary.
-  Future<shelf.Response> delete(shelf.Request request) async =>
-      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> get(shelf.Request request) async =>
-      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> head(shelf.Request request) async =>
-      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> patch(shelf.Request request) async =>
-      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> post(shelf.Request request) async =>
-      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> put(shelf.Request request) async =>
-      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
-  Future<shelf.Response> trace(shelf.Request request) async =>
-      new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
+  Future delete(HttpRequest request) async =>
+      request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
+  Future get(HttpRequest request) async =>
+      request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
+  Future head(HttpRequest request) async =>
+      request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
+  Future patch(HttpRequest request) async =>
+      request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
+  Future post(HttpRequest request) async =>
+      request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
+  Future put(HttpRequest request) async =>
+      request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
+  Future trace(HttpRequest request) async =>
+      request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
 
   /// Handler for the OPTIONS request. For convenience, this returns
   /// 200 OK by default if CORS support has been enabled.
-  Future<shelf.Response> options(shelf.Request request) async {
-    if (_corsEnabled) return new shelf.Response.ok('');
-    return new shelf.Response(HttpStatus.METHOD_NOT_ALLOWED);
+  Future options(HttpRequest request) async {
+    if (_corsEnabled) {
+      request.response.statusCode = HttpStatus.OK;
+      setCorsHeaders(request);
+    } else {
+      request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
+      setCorsHeaders(request);
+    }
   }
+}
+
+abstract class WebSocketHandler extends Handler {
+  @override
+  Future processRequest(HttpRequest request) async {
+    WebSocket webSocket = await WebSocketTransformer.upgrade(request);
+    onConnection(webSocket);
+  }
+
+  void onConnection(WebSocket webSocket);
 }

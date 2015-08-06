@@ -15,7 +15,7 @@
  */
 
 @TestOn('vm')
-library w_transport.test.w_http_server_test;
+library w_transport.test.unit.w_http_server_test;
 
 import 'dart:async';
 import 'dart:convert';

@@ -1,4 +1,4 @@
-library w_transport.test.utils;
+library w_transport.test.utils.utils;
 
 import 'dart:async';
 

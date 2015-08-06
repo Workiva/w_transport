@@ -15,7 +15,7 @@
  */
 
 @TestOn('browser || content-shell')
-library w_transport.test.w_http_client_integration_test;
+library w_transport.test.integration.w_http_client_integration_test;
 
 import 'dart:convert';
 import 'dart:html';
@@ -26,7 +26,7 @@ import 'package:w_transport/w_transport_client.dart'
     show configureWTransportForBrowser;
 
 import './w_http_common_integration_tests.dart' as common_tests;
-import './w_http_utils.dart';
+import '../utils/w_http_utils.dart';
 
 void main() {
   configureWTransportForBrowser();

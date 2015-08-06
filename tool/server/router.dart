@@ -10,6 +10,7 @@ import 'handlers/example/http/cross_origin_file_transfer_handlers.dart'
     show exampleHttpCrossOriginFileTransferRoutes;
 import 'handlers/example/http/proxy_cross_origin_file_transfer_handlers.dart'
     show proxyExampleHttpCrossOriginFileTransferRoutes;
+import 'handlers/example/ws/routes.dart' show getExampleWsRoutes;
 import 'handlers/ping_handler.dart' show PingHandler;
 import 'handlers/test/http/routes.dart' show testHttpIntegrationRoutes;
 import 'handlers/test/ws/routes.dart' show getTestWebSocketIntegrationRoutes;
@@ -24,6 +25,7 @@ class Router implements Function {
     routes = {'/ping': new PingHandler()}
       ..addAll(exampleHttpCrossOriginCredentialsRoutes)
       ..addAll(exampleHttpCrossOriginFileTransferRoutes)
+      ..addAll(getExampleWsRoutes(_logger))
       ..addAll(proxyExampleHttpCrossOriginFileTransferRoutes)
       ..addAll(testHttpIntegrationRoutes)
       ..addAll(getTestWebSocketIntegrationRoutes(_logger));

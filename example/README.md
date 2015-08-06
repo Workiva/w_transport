@@ -1,11 +1,17 @@
 Examples
 --------
 
-> There are 3 examples that demonstrate a wide range of use cases fulfilled by this library.
+> There are several examples that demonstrate a wide range of use cases fulfilled by this library.
+
+**HTTP**
 
 - [Simple File Browser Client](http/simple_client)
 - [Cross Origin Credentials](http/cross_origin_credentials)
 - [Cross Origin Upload](http/cross_origin_file_transfer)
+
+**WebSocket**
+
+- [Echo](web_socket/echo)
 
 
 ### Building & Serving

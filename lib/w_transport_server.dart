@@ -19,8 +19,8 @@
 /// [HttpClientRequest], and [HttpClientResponse] to make HTTP requests.
 library w_transport.w_transport_server;
 
-import 'package:w_transport/src/http/w_http_server.dart'
-    show configureWHttpForServer;
+import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/server_adapter.dart';
 
 /// Configure w_transport for use on the server.
 ///
@@ -33,5 +33,5 @@ import 'package:w_transport/src/http/w_http_server.dart'
 ///       configureWTransportForServer();
 ///     }
 void configureWTransportForServer() {
-  configureWHttpForServer();
+  adapter = new ServerAdapter();
 }

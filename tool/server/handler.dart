@@ -72,9 +72,9 @@ abstract class Handler {
 
   /// Enable Cross Origin Resource Sharing support.
   /// Call this in the sub-class constructor.
-  void enableCors({bool credentials, List<String> methods, String origin}) {
+  void enableCors({bool credentials: true, List<String> methods, String origin}) {
     _corsEnabled = true;
-    _credentialsAllowed = (credentials == true) ? true : false;
+    _credentialsAllowed = credentials == true;
     _allowedMethods = (methods != null)
         ? methods
         : ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'TRACE'];

@@ -21,7 +21,10 @@
 /// HTTP API features simple request construction and response
 /// handling, with the option to configure the outgoing request
 /// for more advanced use cases.
-library w_transport.w_http;
+library w_transport;
 
-export 'package:w_transport/src/http/w_http.dart'
-    show WHttp, WHttpException, WProgress, WRequest, WResponse;
+export 'package:w_transport/src/http/w_http.dart' show WHttp;
+export 'package:w_transport/src/http/w_http_exception.dart' show WHttpException;
+export 'package:w_transport/src/http/w_progress.dart' show WProgress;
+export 'package:w_transport/src/http/w_request.dart' show WRequest;
+export 'package:w_transport/src/http/w_response.dart' show WResponse;

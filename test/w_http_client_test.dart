@@ -18,12 +18,17 @@
 library w_transport.test.w_http_client_test;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:html';
 
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-import 'package:w_transport/src/http/w_http_client.dart' as w_http_client;
 import 'package:w_transport/w_transport.dart';
+
+import 'package:w_transport/src/http/client/util.dart' as client_util;
+import 'package:w_transport/src/http/client/w_http.dart';
+import 'package:w_transport/src/http/client/w_request.dart';
+import 'package:w_transport/src/http/client/w_response.dart';
 
 class MockProgressEvent extends Mock implements ProgressEvent {
   final bool lengthComputable;
@@ -49,7 +54,7 @@ class MockHttpRequestUpload extends Mock implements HttpRequestUpload {
 }
 
 void main() {
-  group('w_http_client', () {
+  group('Http Utils (Client)', () {
     group('wProgressTransformer', () {
       test('should convert ProgressEvent stream to WProgress stream', () async {
         Stream<ProgressEvent> input = new Stream.fromIterable([
@@ -58,7 +63,7 @@ void main() {
           new MockProgressEvent(true, 100, 100),
         ]);
         Stream<WProgress> output =
-            input.transform(w_http_client.wProgressTransformer);
+            input.transform(client_util.wProgressTransformer);
         var percentages = [];
         await for (var progress in output) {
           expect(progress is WProgress, isTrue);
@@ -73,7 +78,7 @@ void main() {
         Stream<ProgressEvent> input = new Stream.fromIterable(
             [new MockProgressEvent(false), new MockProgressEvent(false),]);
         Stream<WProgress> output =
-            input.transform(w_http_client.wProgressTransformer);
+            input.transform(client_util.wProgressTransformer);
         var percentages = [];
         await for (var progress in output) {
           expect(progress is WProgress, isTrue);
@@ -88,7 +93,7 @@ void main() {
             new StreamController<ProgressEvent>();
         int c = 0;
         StreamSubscription sub = inputController.stream
-            .transform(w_http_client.wProgressTransformer)
+            .transform(client_util.wProgressTransformer)
             .listen((progress) {
           c++;
         }, onDone: () {
@@ -103,100 +108,90 @@ void main() {
         return completer.future;
       });
     });
+  });
 
-    test('abort() should call `abort()` on the HttpRequest instance', () {
-      HttpRequest request = new MockHttpRequest();
-      w_http_client.abort(request);
-      verify(request.abort()).called(1);
+  group('WHttp (Client)', () {
+    test('should not be associated with an http client', () {
+      expect(new ClientWHttp().client, isNull);
     });
+  });
 
-    test('getNewHttpClient() should return null', () {
-      expect(w_http_client.getNewHttpClient(), isNull);
-    });
-
+  group('WRequest (Client)', () {
     test(
-        'parseResponseHeaders() should return response headers from HttpRequest',
+        'validateDataType() should throw an ArgumentError on invalid data type',
+        () {
+      var req = new ClientWRequest();
+
+      req.data = document;
+      req.validateDataType();
+
+      req.data = new FormData();
+      req.validateDataType();
+
+      req.data = 'data';
+      req.validateDataType();
+
+      expect(() {
+        req.data = new Stream.fromIterable([]);
+        req.validateDataType();
+      }, throwsArgumentError);
+    });
+
+    test('validateDataType() should not throw an ArgumentError on null data',
+        () {
+      var req = new ClientWRequest();
+      req.validateDataType();
+    });
+  });
+
+  group('wResponse (Client)', () {
+    test('parseResponseStatus() should return status info from HttpRequest',
         () {
       HttpRequest request = new MockHttpRequest();
-      var headers = {
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-      };
-      when(request.responseHeaders).thenReturn(headers);
-      expect(w_http_client.parseResponseHeaders(request), equals(headers));
-    });
-
-    test('parseResponseStatus() should return status from HttpRequest', () {
-      HttpRequest request = new MockHttpRequest();
       when(request.status).thenReturn(200);
-      expect(w_http_client.parseResponseStatus(request), equals(200));
+      when(request.statusText).thenReturn('OK');
+      var response = new ClientWResponse(request, UTF8);
+      expect(response.status, equals(200));
+      expect(response.statusText, equals('OK'));
     });
 
     test('parseResponseStatusText() should return status text from HttpRequest',
         () {
       HttpRequest request = new MockHttpRequest();
       when(request.statusText).thenReturn('OK');
-      expect(w_http_client.parseResponseStatusText(request), equals('OK'));
+    });
+
+    test('should return response headers from HttpRequest', () {
+      HttpRequest request = new MockHttpRequest();
+      var headers = {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      };
+      when(request.responseHeaders).thenReturn(headers);
+      expect(new ClientWResponse(request, UTF8).headers, equals(headers));
+    });
+
+    test('should return response data from the request (async)', () async {
+      HttpRequest request = new MockHttpRequest();
+      when(request.response).thenReturn('data');
+      var response = new ClientWResponse(request, UTF8);
+      expect(await response.asFuture(), equals('data'));
+    });
+
+    test('should return response text from the request (async)', () async {
+      HttpRequest request = new MockHttpRequest();
+      when(request.response).thenReturn('data');
+      var response = new ClientWResponse(request, UTF8);
+      expect(await response.asText(), equals('data'));
     });
 
     test(
-        'parseResponseData() should return response data from the stream (async)',
-        () async {
-      Stream stream = new Stream.fromIterable(['data']);
-      expect(await w_http_client.parseResponseData(stream), equals('data'));
-    });
-
-    test(
-        'parseResponseText() should return response text from the stream (async)',
-        () async {
-      Stream stream = new Stream.fromIterable(['data']);
-      expect(await w_http_client.parseResponseText(stream), equals('data'));
-    });
-
-    test(
-        'parseResponseStream() should return a stream with the response data as the only element (async)',
+        'should return a stream with the response data as the only element (async)',
         () async {
       HttpRequest request = new MockHttpRequest();
       when(request.response).thenReturn('data');
-      expect(
-          await w_http_client.parseResponseStream(request, null, null).single,
-          equals('data'));
-    });
-
-    test('send() should set the withCredentials flag correctly', () async {
-      w_http_client.configureWHttpForBrowser();
-      WRequest request = new WRequest();
-      request.withCredentials = true;
-      HttpRequest xhr = new MockHttpRequest();
-      HttpRequestUpload xhrUpload = new MockHttpRequestUpload();
-      when(xhr.status).thenReturn(200);
-      when(xhr.onProgress).thenReturn(new Stream.fromIterable([]));
-      when(xhr.upload).thenReturn(xhrUpload);
-      when(xhrUpload.onProgress).thenReturn(new Stream.fromIterable([]));
-      when(xhr.onLoad)
-          .thenReturn(new Stream.fromIterable([new MockProgressEvent(false)]));
-      when(xhr.onError).thenReturn(new Stream.fromIterable([]));
-      when(xhr.onAbort).thenReturn(new Stream.fromIterable([]));
-
-      await w_http_client.send(
-          'GET', request, xhr, new StreamController(), new StreamController());
-      verify(xhr.withCredentials = true);
-    });
-
-    test(
-        'validateDataType() should throw an ArgumentError on invalid data type',
-        () {
-      w_http_client.validateDataType(document);
-      w_http_client.validateDataType(new FormData());
-      w_http_client.validateDataType('data');
-      expect(() {
-        w_http_client.validateDataType(new Stream.fromIterable([]));
-      }, throwsArgumentError);
-    });
-
-    test('validateDataType() should not throw an ArgumentError on null data',
-        () {
-      w_http_client.validateDataType(null);
+      var response = new ClientWResponse(request, UTF8);
+      expect(await response.asStream().single, equals('data'));
     });
   });
 }

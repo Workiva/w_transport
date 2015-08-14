@@ -106,5 +106,27 @@ void main() {
       Map data = JSON.decode(await response.asText());
       expect(data['headers']['x-configured'], equals('true'));
     });
+
+    group('should set the withCredentials flag', () {
+      test('to true', () async {
+        request.path = '/test/http/ping';
+        request.withCredentials = true;
+        request.configure((HttpRequest xhr) async {
+          expect(xhr.withCredentials, isTrue);
+        });
+        var response = await request.get();
+        await response.asText();
+      });
+
+      test('to false', () async {
+        request.path = '/test/http/ping';
+        request.withCredentials = false;
+        request.configure((HttpRequest xhr) async {
+          expect(xhr.withCredentials, isFalse);
+        });
+        var response = await request.get();
+        await response.asText();
+      });
+    });
   });
 }

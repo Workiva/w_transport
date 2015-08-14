@@ -25,9 +25,9 @@ import '../services/file_transfer.dart';
 import '../services/remote_files.dart';
 import './file_transfer_list_component.dart';
 
-final double _gb = math.pow(2, 30);
-final double _mb = math.pow(2, 20);
-final double _kb = math.pow(2, 10);
+final num _gb = math.pow(2, 30);
+final num _mb = math.pow(2, 20);
+final num _kb = math.pow(2, 10);
 
 var downloadPage = react.registerComponent(() => new DownloadPage());
 class DownloadPage extends react.Component {

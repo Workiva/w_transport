@@ -17,8 +17,7 @@
 library w_transport.tool.server.handlers.ping_handler;
 
 import 'dart:async';
-
-import 'package:shelf/shelf.dart' as shelf;
+import 'dart:io';
 
 import '../handler.dart';
 
@@ -28,7 +27,8 @@ class PingHandler extends Handler {
     enableCors();
   }
 
-  Future<shelf.Response> get(shelf.Request request) async {
-    return new shelf.Response.ok('');
+  Future get(HttpRequest request) async {
+    request.response.statusCode = HttpStatus.OK;
+    setCorsHeaders(request);
   }
 }

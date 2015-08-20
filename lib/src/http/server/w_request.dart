@@ -65,8 +65,8 @@ class ServerWRequest extends CommonWRequest implements WRequest {
         data = new Stream.fromIterable([encoding.encode(data)]);
       }
       _request.contentLength = contentLength != null ? contentLength : -1;
-      await _request.addStream((data as Stream).transform(util
-          .wProgressListener(
+      await _request.addStream((data as Stream).transform(
+          util.wProgressListener(
               _request.contentLength, uploadProgressController)));
     } else {
       _request.contentLength = 0;

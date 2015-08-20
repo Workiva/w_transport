@@ -11,9 +11,9 @@ import 'package:w_transport/src/http/w_response.dart';
 class ClientWResponse extends CommonWResponse implements WResponse {
   Encoding _encoding;
 
-  ClientWResponse(HttpRequest request, Encoding this._encoding) : super(
-          request.status, request.statusText, request.responseHeaders,
-          new Stream.fromIterable([request.response]));
+  ClientWResponse(HttpRequest request, Encoding this._encoding)
+      : super(request.status, request.statusText, request.responseHeaders,
+            new Stream.fromIterable([request.response]));
 
   Future<Object> asFuture() => asStream().first;
   Stream asStream() => source;

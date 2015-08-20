@@ -19,8 +19,6 @@ library w_transport.tool.server.handlers.test.http.download_handler;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:shelf/shelf.dart' as shelf;
-
 import '../../../handler.dart';
 
 /// Always responds with a 200 OK and send a large
@@ -30,10 +28,13 @@ class DownloadHandler extends Handler {
     enableCors();
   }
 
-  Future<shelf.Response> get(shelf.Request request) async {
+  Future get(HttpRequest request) async {
     File file = new File('tool/server/handlers/test/http/file.txt');
     Stream downloadStream = file.openRead();
-    return new shelf.Response.ok(downloadStream,
-        headers: {'Content-Length': file.lengthSync().toString()});
+    request.response.statusCode = HttpStatus.OK;
+    request.response.headers
+        .set('Content-Length', file.lengthSync().toString());
+    setCorsHeaders(request);
+    await request.response.addStream(downloadStream);
   }
 }

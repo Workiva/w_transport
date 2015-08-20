@@ -25,16 +25,20 @@ StreamTransformer wProgressListener(
     StreamController controller;
     StreamSubscription subscription;
     controller = new StreamController(onListen: () {
-      subscription = input.listen((data) {
-        controller.add(data);
-        if (data is List<int>) {
-          loaded += (data as List<int>).length;
-          progressController.add(new WProgress(loaded, total));
-        }
-      }, onError: controller.addError, onDone: () {
-        controller.close();
-        progressController.close();
-      }, cancelOnError: cancelOnError);
+      subscription = input.listen(
+          (data) {
+            controller.add(data);
+            if (data is List<int>) {
+              loaded += (data as List<int>).length;
+              progressController.add(new WProgress(loaded, total));
+            }
+          },
+          onError: controller.addError,
+          onDone: () {
+            controller.close();
+            progressController.close();
+          },
+          cancelOnError: cancelOnError);
     }, onPause: () {
       subscription.pause();
     }, onResume: () {

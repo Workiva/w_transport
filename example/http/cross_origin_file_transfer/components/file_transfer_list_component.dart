@@ -24,6 +24,7 @@ import './file_transfer_list_item_component.dart';
 /// List of all file uploads.
 var fileTransferListComponent =
     react.registerComponent(() => new FileUploadListComponent());
+
 class FileUploadListComponent extends react.Component {
   Map getDefaultProps() {
     return {

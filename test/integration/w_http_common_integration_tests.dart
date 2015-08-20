@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-library w_transport.test.w_http_common_tests;
+library w_transport.test.integration.w_http_common_tests;
 
 import 'dart:async';
 import 'dart:convert';
@@ -22,8 +22,7 @@ import 'dart:convert';
 import 'package:w_transport/w_transport.dart';
 import 'package:test/test.dart';
 
-import './utils.dart';
-import './w_http_utils.dart';
+import '../utils.dart';
 
 /// These are HTTP integration tests that should work from client or server.
 /// These will not pass if run on their own!
@@ -310,23 +309,33 @@ void run(String usage) {
       });
 
       test('should cause request to fail', () async {
-        Exception exception = await expectThrowsAsync(() async {
-          Future future = request.get();
-          request.abort();
-          await future;
-        });
-        expect(exception is WHttpException, isTrue);
-        expect(exception.toString().contains('canceled'), isTrue);
+        expect(
+            () async {
+              Future future = request.get();
+              request.abort();
+              try {
+                await future;
+              } catch (e) {
+                expect(e.toString().contains('canceled'), isTrue);
+                throw e;
+              }
+            }(),
+            throwsA(new isInstanceOf<WHttpException>()));
       });
 
       test('should allow a custom exception', () async {
-        Exception exception = await expectThrowsAsync(() async {
-          Future future = request.get();
-          request.abort(new Exception('Custom cancellation.'));
-          await future;
-        });
-        expect(exception is WHttpException, isTrue);
-        expect(exception.toString().contains('Custom cancellation'), isTrue);
+        expect(
+            () async {
+              Future future = request.get();
+              request.abort(new Exception('Custom cancellation.'));
+              try {
+                await future;
+              } catch (e) {
+                expect(e.toString().contains('Custom cancellation'), isTrue);
+                throw e;
+              }
+            }(),
+            throwsA(new isInstanceOf<WHttpException>()));
       });
     });
   });

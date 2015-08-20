@@ -29,12 +29,12 @@ void updateAuthenticationStatus() {
   Element containerElement = querySelector('.status-container');
   Element statusElement = querySelector('.status');
   if (status.authenticated) {
-    containerElement.className = containerElement.className.replaceFirst(
-        'unauthenticated', 'authenticated');
+    containerElement.className = containerElement.className
+        .replaceFirst('unauthenticated', 'authenticated');
     statusElement.text = 'Authenticated';
   } else {
-    containerElement.className = containerElement.className.replaceFirst(
-        'authenticated', 'unauthenticated');
+    containerElement.className = containerElement.className
+        .replaceFirst('authenticated', 'unauthenticated');
     statusElement.text = 'Unauthenticated';
   }
 }

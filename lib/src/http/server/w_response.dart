@@ -15,10 +15,12 @@ class ServerWResponse extends CommonWResponse implements WResponse {
 
   ServerWResponse(HttpClientResponse response, Encoding this._encoding,
       int total, StreamController<WProgress> downloadProgressController)
-      : super(response.statusCode, response.reasonPhrase,
-          server_util.parseHeaders(response.headers), response.transform(
-              server_util.wProgressListener(
-                  total, downloadProgressController)));
+      : super(
+            response.statusCode,
+            response.reasonPhrase,
+            server_util.parseHeaders(response.headers),
+            response.transform(server_util.wProgressListener(
+                total, downloadProgressController)));
 
   Future<Object> asFuture() => asStream()
       .reduce((previous, element) => new List.from(previous)..addAll(element));

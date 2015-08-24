@@ -14,8 +14,8 @@
  *  limitations under the License.
  */
 
-@TestOn('browser || content-shell')
-library w_transport.test.w_http_client_test;
+@TestOn('browser')
+library w_transport.test.unit.w_http_client_test;
 
 import 'dart:async';
 import 'dart:convert';

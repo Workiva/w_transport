@@ -24,16 +24,15 @@ import 'package:w_transport/w_transport.dart';
 
 const int _pollingInterval = 4; // 4 seconds
 
-void renderGlobalExampleMenu(
-    {nav: true, serverStatus: false, proxyStatus: false}) {
+void renderGlobalExampleMenu({nav: true, serverStatus: false}) {
   // Insert a container div within which we will mount the global example menu.
   var container = document.createElement('div');
   container.id = 'global-example-menu';
   document.body.insertBefore(container, document.body.firstChild);
 
   // Use react to render the menu.
-  var menu = globalExampleMenuComponent(
-      {'nav': nav, 'serverStatus': serverStatus, 'proxyStatus': proxyStatus});
+  var menu =
+      globalExampleMenuComponent({'nav': nav, 'serverStatus': serverStatus});
   react.render(menu, container);
 }
 
@@ -41,43 +40,26 @@ Future<bool> _ping(Uri uri) async {
   try {
     WResponse response = await WHttp.get(uri);
     return response.status == 200;
-  } on WHttpException catch (e) {
+  } on WHttpException {
     return false;
   }
 }
 
 Future<bool> _pingServer() async =>
     _ping(Uri.parse('http://localhost:8024/ping'));
-Future<bool> _pingProxy() async =>
-    _ping(Uri.parse('http://localhost:8025/ping'));
-
-Stream _poll(Future ping(), [StreamController controller]) {
-  if (controller = null) {
-    controller = new StreamController();
-  }
-
-  ping().then((bool status) {
-    controller.add(status);
-    new Timer(new Duration(seconds: _pollingInterval), () {
-      _poll(ping, controller);
-    });
-  });
-
-  return controller.stream;
-}
 
 var globalExampleMenuComponent =
     react.registerComponent(() => new GlobalExampleMenuComponent());
+
 class GlobalExampleMenuComponent extends react.Component {
   Timer serverPolling;
-  Timer proxyPolling;
 
   Map getDefaultProps() {
-    return {'nav': true, 'serverStatus': false, 'proxyStatus': false,};
+    return {'nav': true, 'serverStatus': false};
   }
 
   Map getInitialState() {
-    return {'serverOnline': false, 'proxyOnline': false,};
+    return {'serverOnline': false};
   }
 
   void componentWillMount() {
@@ -85,21 +67,10 @@ class GlobalExampleMenuComponent extends react.Component {
       _pingServer().then((bool status) {
         this.setState({'serverOnline': status});
       });
-      serverPolling = new Timer.periodic(new Duration(seconds: 4),
-          (Timer timer) async {
+      serverPolling =
+          new Timer.periodic(new Duration(seconds: 4), (Timer timer) async {
         bool status = await _pingServer();
         this.setState({'serverOnline': status});
-      });
-    }
-
-    if (this.props['proxyStatus']) {
-      _pingProxy().then((bool status) {
-        this.setState({'proxyOnline': status});
-      });
-      proxyPolling = new Timer.periodic(new Duration(seconds: 4),
-          (Timer timer) async {
-        bool status = await _pingProxy();
-        this.setState({'proxyOnline': status});
       });
     }
   }
@@ -107,9 +78,6 @@ class GlobalExampleMenuComponent extends react.Component {
   void componentWillUnmount() {
     if (serverPolling != null) {
       serverPolling.cancel();
-    }
-    if (proxyPolling != null) {
-      proxyPolling.cancel();
     }
   }
 
@@ -121,7 +89,9 @@ class GlobalExampleMenuComponent extends react.Component {
       statusDesc = '$name online';
     }
 
-    return react.div({'className': statusClass}, [
+    return react.div({
+      'className': statusClass
+    }, [
       react.div({'className': 'server-status-light'}, '\u2022'),
       react.div({'className': 'server-status-desc'}, statusDesc),
     ]);
@@ -139,26 +109,20 @@ class GlobalExampleMenuComponent extends react.Component {
           _buildServerStatusComponent('Server', this.state['serverOnline']);
     }
 
-    var proxyStatus;
-    if (this.props['proxyStatus']) {
-      proxyStatus =
-          _buildServerStatusComponent('Proxy', this.state['proxyOnline']);
-    }
-
     var serverTip;
-    bool serverTipNeeded = (this.props['serverStatus'] &&
-            !this.state['serverOnline']) ||
-        (this.props['proxyStatus'] && !this.state['proxyOnline']);
+    bool serverTipNeeded =
+        this.props['serverStatus'] && !this.state['serverOnline'];
     if (serverTipNeeded) {
-      serverTip = react.div({'className': 'server-status-tip muted'}, [
-        react.span({}, 'Run '),
-        react.code({}, './tool/server.sh'),
-        react.span({}, ' to start both the server and the proxy server.'),
+      serverTip = react.div({
+        'className': 'server-status-tip muted'
+      }, [
+        react.span({}, 'Run `'),
+        react.code({}, 'pub run dart_dev examples'),
+        react.span({}, '` to serve examples with the server.'),
       ]);
     }
 
-    return react.div({'className': 'global-example-menu'}, react.div({
-      'className': 'container'
-    }, [nav, serverStatus, proxyStatus, serverTip]));
+    return react.div({'className': 'global-example-menu'},
+        react.div({'className': 'container'}, [nav, serverStatus, serverTip]));
   }
 }

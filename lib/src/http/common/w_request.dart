@@ -92,39 +92,46 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
   Future<WResponse> delete([Uri uri]) {
     return send('DELETE', uri);
   }
+
   /// Sends a GET request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
   Future<WResponse> get([Uri uri]) {
     return send('GET', uri);
   }
+
   /// Sends a HEAD request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
   Future<WResponse> head([Uri uri]) {
     return send('HEAD', uri);
   }
+
   /// Sends an OPTIONS request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
   Future<WResponse> options([Uri uri]) {
     return send('OPTIONS', uri);
   }
+
   /// Sends a PATCH request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
   /// Attaches [data], if given, or uses the data from this [WRequest].
   Future<WResponse> patch([Uri uri, Object data]) {
     return send('PATCH', uri, data);
   }
+
   /// Sends a POST request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
   /// Attaches [data], if given, or uses the data from this [WRequest].
   Future<WResponse> post([Uri uri, Object data]) {
     return send('POST', uri, data);
   }
+
   /// Sends a PUT request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
   /// Attaches [data], if given, or uses the data from this [WRequest].
   Future<WResponse> put([Uri uri, Object data]) {
     return send('PUT', uri, data);
   }
+
   /// Sends a TRACE request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
   ///
@@ -135,7 +142,11 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
 
   void checkForCancellation({WResponse response}) {
     if (isCanceled) {
-      throw new WHttpException(_method, this.uri, this, response,
+      throw new WHttpException(
+          _method,
+          this.uri,
+          this,
+          response,
           cancellationError != null
               ? cancellationError
               : new Exception('Request canceled.'));

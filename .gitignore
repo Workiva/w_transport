@@ -4,8 +4,7 @@ packages
 pubspec.lock
 
 # Coverage
-coverage.lcov
-coverage_report/
+coverage/
 
 # Docs
 dartdoc-viewer

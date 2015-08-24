@@ -15,7 +15,7 @@
  */
 
 @TestOn('vm')
-library w_transport.test.w_transport_server_integration_test;
+library w_transport.test.integration.w_http_server_integration_test;
 
 import 'dart:async';
 import 'dart:convert';
@@ -26,8 +26,8 @@ import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_server.dart'
     show configureWTransportForServer;
 
-import './w_http_common_integration_tests.dart' as common_tests;
-import './w_http_utils.dart';
+import 'w_http_common_integration_tests.dart' as common_tests;
+import '../utils.dart';
 
 void main() {
   configureWTransportForServer();

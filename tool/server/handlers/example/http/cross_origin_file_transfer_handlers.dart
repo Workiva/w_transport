@@ -22,18 +22,16 @@ import 'dart:io';
 
 import 'package:http_server/http_server.dart';
 import 'package:mime/mime.dart';
-import 'package:shelf/shelf.dart' as shelf;
 
 import '../../../handler.dart';
-import '../../../router.dart';
 
-String pathPrefix = 'example/http/cross_origin_file_transfer';
+String pathPrefix = '/example/http/cross_origin_file_transfer';
 
-List<Route> exampleHttpCrossOriginFileTransferRoutes = [
-  new Route('$pathPrefix/files/', new FilesHandler()),
-  new Route('$pathPrefix/download', new DownloadHandler()),
-  new Route('$pathPrefix/upload', new UploadHandler()),
-];
+Map<String, Handler> exampleHttpCrossOriginFileTransferRoutes = {
+  '$pathPrefix/files/': new FilesHandler(),
+  '$pathPrefix/download': new DownloadHandler(),
+  '$pathPrefix/upload': new UploadHandler()
+};
 
 Directory filesDirectory =
     new Directory('example/http/cross_origin_file_transfer/files');
@@ -117,15 +115,17 @@ class UploadHandler extends Handler {
     enableCors();
   }
 
-  Future<shelf.Response> post(shelf.Request request) async {
+  Future post(HttpRequest request) async {
     if (request.headers['content-type'] == null) {
-      return new shelf.Response(HttpStatus.BAD_REQUEST);
+      request.response.statusCode = HttpStatus.BAD_REQUEST;
+      setCorsHeaders(request);
+      return;
     }
+
     ContentType contentType =
-        ContentType.parse(request.headers['content-type']);
+        ContentType.parse(request.headers.value('content-type'));
     String boundary = contentType.parameters['boundary'];
     Stream stream = request
-        .read()
         .transform(new MimeMultipartTransformer(boundary))
         .map(HttpMultipartFormData.parse);
 
@@ -144,7 +144,8 @@ class UploadHandler extends Handler {
       }
     }
 
-    return new shelf.Response(HttpStatus.OK);
+    request.response.statusCode = HttpStatus.OK;
+    setCorsHeaders(request);
   }
 }
 
@@ -156,26 +157,28 @@ class FilesHandler extends Handler {
     enableCors();
   }
 
-  Future<shelf.Response> get(shelf.Request request) async {
+  Future get(HttpRequest request) async {
     List<Map> filesPayload = fw.files
         .where(
             (FileSystemEntity entity) => entity is File && entity.existsSync())
-        .map((File entity) {
-      return {
-        'name': Uri.parse(entity.path).pathSegments.last,
-        'size': entity.lengthSync()
-      };
-    }).toList();
-    return new shelf.Response.ok(JSON.encode({'results': filesPayload}));
+        .map((File entity) => {
+              'name': Uri.parse(entity.path).pathSegments.last,
+              'size': entity.lengthSync()
+            })
+        .toList();
+    request.response.statusCode = HttpStatus.OK;
+    setCorsHeaders(request);
+    request.response.write(JSON.encode({'results': filesPayload}));
   }
 
-  Future<shelf.Response> delete(shelf.Request request) async {
+  Future delete(HttpRequest request) async {
     fw.files
         .where((FileSystemEntity entity) => entity is File)
         .forEach((File entity) {
       entity.deleteSync();
     });
-    return new shelf.Response.ok('');
+    request.response.statusCode = HttpStatus.OK;
+    setCorsHeaders(request);
   }
 }
 
@@ -184,20 +187,30 @@ class DownloadHandler extends Handler {
     enableCors();
   }
 
-  Future<shelf.Response> get(shelf.Request request) async {
-    if (request.url.queryParameters['file'] ==
-        null) return new shelf.Response.notFound('');
+  Future get(HttpRequest request) async {
+    if (request.uri.queryParameters['file'] == null) {
+      request.response.statusCode = HttpStatus.NOT_FOUND;
+      setCorsHeaders(request);
+      return;
+    }
     String requestedFile =
-        Uri.parse(request.url.queryParameters['file']).pathSegments.last;
-    if (requestedFile == '' ||
-        requestedFile == null) return new shelf.Response.notFound('');
+        Uri.parse(request.uri.queryParameters['file']).pathSegments.last;
+    if (requestedFile == '' || requestedFile == null) {
+      request.response.statusCode = HttpStatus.NOT_FOUND;
+      setCorsHeaders(request);
+      return;
+    }
 
-    bool shouldForceDownload = request.url.queryParameters['dl'] == '1';
+    bool shouldForceDownload = request.uri.queryParameters['dl'] == '1';
 
     Uri fileUri = Uri
         .parse('example/http/cross_origin_file_transfer/files/$requestedFile');
     File file = new File.fromUri(fileUri);
-    if (!file.existsSync()) return new shelf.Response.notFound('');
+    if (!file.existsSync()) {
+      request.response.statusCode = HttpStatus.NOT_FOUND;
+      setCorsHeaders(request);
+      return;
+    }
 
     Map headers = {
       'content-length': file.lengthSync().toString(),
@@ -208,6 +221,11 @@ class DownloadHandler extends Handler {
       headers['content-disposition'] = 'attachment; filename=$requestedFile';
     }
 
-    return new shelf.Response.ok(file.openRead(), headers: headers);
+    request.response.statusCode = HttpStatus.OK;
+    setCorsHeaders(request);
+    headers.forEach((h, v) {
+      request.response.headers.set(h, v);
+    });
+    await request.response.addStream(file.openRead());
   }
 }

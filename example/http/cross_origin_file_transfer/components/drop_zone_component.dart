@@ -27,6 +27,7 @@ import '../services/file_transfer.dart';
 /// one or many dropped files. Uploads each dropped file to a
 /// server via a POST request with a FormData payload.
 var dropZoneComponent = react.registerComponent(() => new DropZoneComponent());
+
 class DropZoneComponent extends react.Component {
   Timer _hideDropTargetTimer;
 

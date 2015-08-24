@@ -26,7 +26,6 @@ import './proxy.dart';
 int _remoteFilePollingInterval = 3; // 3 seconds
 
 class RemoteFiles {
-
   /// Establish a connection with the remote files server.
   static RemoteFiles connect() {
     return new RemoteFiles._();

@@ -25,6 +25,7 @@ import '../services/proxy.dart' as proxy;
 /// Main application component.
 /// Sets up the file drop zone, file upload, and file download components.
 var appComponent = react.registerComponent(() => new AppComponent());
+
 class AppComponent extends react.Component {
   Map getInitialState() {
     return {'page': 'upload',};
@@ -48,12 +49,18 @@ class AppComponent extends react.Component {
     String page = this.state['page'];
 
     return react.div({}, [
-      react.p({}, react.label({'htmlFor': 'proxy'}, [
-        react.input(
-            {'type': 'checkbox', 'id': 'proxy', 'onChange': _toggleProxy}),
-        ' Use Proxy Server',
-      ])),
-      react.div({'className': 'app-nav'}, [
+      react.p(
+          {},
+          react.label({
+            'htmlFor': 'proxy'
+          }, [
+            react.input(
+                {'type': 'checkbox', 'id': 'proxy', 'onChange': _toggleProxy}),
+            ' Use Proxy Server',
+          ])),
+      react.div({
+        'className': 'app-nav'
+      }, [
         react.a({
           'href': '#',
           'className': page == 'upload' ? 'active' : '',

@@ -23,6 +23,7 @@ import './drop_zone_component.dart';
 import './file_transfer_list_component.dart';
 
 var uploadPage = react.registerComponent(() => new UploadPage());
+
 class UploadPage extends react.Component {
   Map getDefaultProps() {
     return {'active': true,};
@@ -65,7 +66,9 @@ class UploadPage extends react.Component {
   }
 
   render() {
-    return react.div({'className': this.props['active'] ? '' : 'hidden'}, [
+    return react.div({
+      'className': this.props['active'] ? '' : 'hidden'
+    }, [
       react.h2({}, 'Uploads'),
       dropZoneComponent({
         'onNewUploads': _newUploads,

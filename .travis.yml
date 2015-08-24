@@ -6,6 +6,8 @@ before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 script:
-  - dart --checked test/run_tests.dart -p vm -p content-shell --verbose
-  - ./tool/analyze.sh
-  - ./tool/dartfmt.sh -e
+  - pub run dart_dev format --check
+  - pub run dart_dev analyze
+  - pub run dart_dev test --integration
+  - pub run dart_dev coverage --integration --no-html
+  - bash <(curl -s https://codecov.io/bash) -f coverage/coverage.lcov

@@ -15,7 +15,7 @@
  */
 
 @TestOn('vm')
-library w_transport.test.w_http_server_test;
+library w_transport.test.unit.w_http_server_test;
 
 import 'dart:async';
 import 'dart:convert';
@@ -57,9 +57,11 @@ class MockHttpClientResponseFromStream extends Mock
     return _stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
+
   Stream transform(StreamTransformer transformer) {
     return _stream.transform(transformer);
   }
+
   // this tells Dart analyzer you meant not to implement all methods,
   // and not to hint/warn that methods are missing
   noSuchMethod(i) => super.noSuchMethod(i);
@@ -172,15 +174,21 @@ void main() {
     });
 
     test('should return response data from the stream (async)', () async {
-      var data = [[10, 48, 28, 30], [999, 394, 1, 2], [239, 0, 20, 88]];
+      var data = [
+        [10, 48, 28, 30],
+        [999, 394, 1, 2],
+        [239, 0, 20, 88]
+      ];
       Stream stream = new Stream.fromIterable(data);
       HttpClientResponse response =
           new MockHttpClientResponseFromStream(stream);
       when(response.headers).thenReturn(new MockHttpHeaders());
       var wResponse =
           new ServerWResponse(response, UTF8, -1, new StreamController());
-      expect(await wResponse.asFuture(), equals(data.reduce(
-          (previous, value) => new List.from(previous)..addAll(value))));
+      expect(
+          await wResponse.asFuture(),
+          equals(data.reduce(
+              (previous, value) => new List.from(previous)..addAll(value))));
     });
 
     test('should return response text from the stream (async)', () async {

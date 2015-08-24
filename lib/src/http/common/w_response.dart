@@ -64,26 +64,26 @@ abstract class CommonWResponse {
 
   /// Caches the response data stream to enable multiple accesses.
   StreamTransformer<Object, Object> _cache() =>
-      new StreamTransformer<Object, Object>((Stream<Object> input,
-          bool cancelOnError) {
-    StreamController<Object> controller;
-    StreamSubscription<Object> subscription;
-    controller = new StreamController<Object>(onListen: () {
-      _isCached = true;
-      subscription = input.listen((Object value) {
-        controller.add(value);
-        _cachedResponse.add(value);
-      },
-          onError: controller.addError,
-          onDone: controller.close,
-          cancelOnError: cancelOnError);
-    }, onPause: () {
-      subscription.pause();
-    }, onResume: () {
-      subscription.resume();
-    }, onCancel: () {
-      subscription.cancel();
-    });
-    return controller.stream.listen(null);
-  });
+      new StreamTransformer<Object, Object>(
+          (Stream<Object> input, bool cancelOnError) {
+        StreamController<Object> controller;
+        StreamSubscription<Object> subscription;
+        controller = new StreamController<Object>(onListen: () {
+          _isCached = true;
+          subscription = input.listen((Object value) {
+            controller.add(value);
+            _cachedResponse.add(value);
+          },
+              onError: controller.addError,
+              onDone: controller.close,
+              cancelOnError: cancelOnError);
+        }, onPause: () {
+          subscription.pause();
+        }, onResume: () {
+          subscription.resume();
+        }, onCancel: () {
+          subscription.cancel();
+        });
+        return controller.stream.listen(null);
+      });
 }

@@ -8,14 +8,18 @@ StreamTransformer decodeAttempt(Encoding encoding) {
     StreamController controller;
     StreamSubscription subscription;
     controller = new StreamController(onListen: () {
-      subscription = input.listen((data) {
-        try {
-          data = encoding.decode(data);
-        } catch (e) {}
-        controller.add(data);
-      }, onError: controller.addError, onDone: () {
-        controller.close();
-      }, cancelOnError: cancelOnError);
+      subscription = input.listen(
+          (data) {
+            try {
+              data = encoding.decode(data);
+            } catch (e) {}
+            controller.add(data);
+          },
+          onError: controller.addError,
+          onDone: () {
+            controller.close();
+          },
+          cancelOnError: cancelOnError);
     }, onPause: () {
       subscription.pause();
     }, onResume: () {

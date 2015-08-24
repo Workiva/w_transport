@@ -24,11 +24,9 @@ void toggleProxy({enabled: false}) {
 }
 
 String getServerUrl() {
-  if (proxyEnabled) {
-    return 'http://localhost:8025';
-  } else {
-    return 'http://localhost:8024/example/http/cross_origin_file_transfer';
-  }
+  String base =
+      proxyEnabled ? 'http://localhost:8024/proxy' : 'http://localhost:8024';
+  return '$base/example/http/cross_origin_file_transfer';
 }
 
 Uri getDownloadEndpointUrl(String name) {

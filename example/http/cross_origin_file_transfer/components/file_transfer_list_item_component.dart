@@ -29,6 +29,7 @@ const int _transferCompleteFadeoutDuration = 2; // 2 seconds
 /// and a control that allows cancellation of the upload or download.
 var fileTransferListItemComponent =
     react.registerComponent(() => new FileTransferListItemComponent());
+
 class FileTransferListItemComponent extends react.Component {
   Map getInitialState() {
     return {'done': false, 'success': false, 'will-remove': false,};
@@ -101,12 +102,16 @@ class FileTransferListItemComponent extends react.Component {
       ]);
     }
 
-    return react.li({'className': transferClass}, [
+    return react.li({
+      'className': transferClass
+    }, [
       react.div({'className': 'name'}, label),
-      react.div({'className': 'progress'}, react.div({
-        'className': 'progress-bar',
-        'style': {'width': '${transfer.percentComplete}%'}
-      })),
+      react.div(
+          {'className': 'progress'},
+          react.div({
+            'className': 'progress-bar',
+            'style': {'width': '${transfer.percentComplete}%'}
+          })),
     ]);
   }
 }

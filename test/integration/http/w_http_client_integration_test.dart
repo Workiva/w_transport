@@ -13,7 +13,7 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.integration.w_http_client_integration_test;
+library w_transport.test.integration.http.w_http_client_integration_test;
 
 import 'dart:convert';
 import 'dart:html';
@@ -24,7 +24,7 @@ import 'package:w_transport/w_transport_client.dart'
     show configureWTransportForBrowser;
 
 import 'w_http_common_integration_tests.dart' as common_tests;
-import '../utils.dart';
+import '../../utils.dart';
 
 void main() {
   configureWTransportForBrowser();

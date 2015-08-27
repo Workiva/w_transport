@@ -24,18 +24,24 @@ import 'handlers/example/http/cross_origin_file_transfer_handlers.dart'
     show exampleHttpCrossOriginFileTransferRoutes;
 import 'handlers/example/http/proxy_cross_origin_file_transfer_handlers.dart'
     show proxyExampleHttpCrossOriginFileTransferRoutes;
+import 'handlers/example/ws/routes.dart' show getExampleWsRoutes;
 import 'handlers/ping_handler.dart' show PingHandler;
 import 'handlers/test/http/routes.dart' show testHttpIntegrationRoutes;
+import 'handlers/test/ws/routes.dart' show getTestWebSocketIntegrationRoutes;
+import 'logger.dart';
 
 class Router implements Function {
+  Logger logger;
   Map<String, Handler> routes;
 
-  Router() {
+  Router(Logger this.logger) {
     routes = {'/ping': new PingHandler()}
       ..addAll(exampleHttpCrossOriginCredentialsRoutes)
       ..addAll(exampleHttpCrossOriginFileTransferRoutes)
+      ..addAll(getExampleWsRoutes(logger))
       ..addAll(proxyExampleHttpCrossOriginFileTransferRoutes)
-      ..addAll(testHttpIntegrationRoutes);
+      ..addAll(testHttpIntegrationRoutes)
+      ..addAll(getTestWebSocketIntegrationRoutes(logger));
   }
 
   Future call(HttpRequest request) async {

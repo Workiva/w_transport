@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.w_http_common_tests;
+library w_transport.test.integration.http.w_http_common_tests;
 
 import 'dart:async';
 import 'dart:convert';
@@ -20,7 +20,7 @@ import 'dart:convert';
 import 'package:w_transport/w_transport.dart';
 import 'package:test/test.dart';
 
-import '../utils.dart';
+import '../../utils.dart';
 
 /// These are HTTP integration tests that should work from client or server.
 /// These will not pass if run on their own!

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 @TestOn('vm')
-library w_transport.test.integration.w_http_server_integration_test;
+library w_transport.test.integration.http.w_http_server_integration_test;
 
 import 'dart:async';
 import 'dart:convert';
@@ -25,7 +25,7 @@ import 'package:w_transport/w_transport_server.dart'
     show configureWTransportForServer;
 
 import 'w_http_common_integration_tests.dart' as common_tests;
-import '../utils.dart';
+import '../../utils.dart';
 
 void main() {
   configureWTransportForServer();

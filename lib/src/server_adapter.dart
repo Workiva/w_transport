@@ -14,13 +14,20 @@
 
 library w_transport.src.server_adapter;
 
+import 'dart:async';
+
 import 'package:w_transport/src/http/server/w_http.dart';
 import 'package:w_transport/src/http/server/w_request.dart';
 import 'package:w_transport/src/http/w_http.dart';
 import 'package:w_transport/src/http/w_request.dart';
 import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/web_socket/w_socket.dart';
+import 'package:w_transport/src/web_socket/server/w_socket.dart';
 
 class ServerAdapter implements PlatformAdapter {
   WHttp newWHttp() => new ServerWHttp();
   WRequest newWRequest() => new ServerWRequest();
+  Future<WSocket> newWSocket(Uri uri,
+          {Iterable<String> protocols, Map<String, dynamic> headers}) =>
+      ServerWSocket.connect(uri, protocols: protocols, headers: headers);
 }

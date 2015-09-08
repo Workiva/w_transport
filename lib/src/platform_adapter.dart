@@ -14,8 +14,11 @@
 
 library w_transport.src.platform_adapter;
 
+import 'dart:async';
+
 import 'package:w_transport/src/http/w_http.dart';
 import 'package:w_transport/src/http/w_request.dart';
+import 'package:w_transport/src/web_socket/w_socket.dart';
 
 PlatformAdapter adapter;
 
@@ -30,4 +33,6 @@ abstract class PlatformAdapter {
 
   WHttp newWHttp();
   WRequest newWRequest();
+  Future<WSocket> newWSocket(Uri uri,
+      {Iterable<String> protocols, Map<String, dynamic> headers});
 }

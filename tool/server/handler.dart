@@ -132,3 +132,13 @@ abstract class Handler {
     }
   }
 }
+
+abstract class WebSocketHandler extends Handler {
+  @override
+  Future processRequest(HttpRequest request) async {
+    WebSocket webSocket = await WebSocketTransformer.upgrade(request);
+    onConnection(webSocket);
+  }
+
+  void onConnection(WebSocket webSocket);
+}

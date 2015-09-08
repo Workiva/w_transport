@@ -47,7 +47,7 @@ class Server {
   Stream get output => _logger.stream;
 
   Future start() async {
-    var router = new Router();
+    var router = new Router(_logger);
 
     try {
       _server = await HttpServer.bind(host, port);

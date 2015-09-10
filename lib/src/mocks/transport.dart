@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.http.routes;
+library w_transport.src.mocks.transport;
 
-import '../../../handler.dart';
-import './404_handler.dart';
-import './download.dart';
-import './ping_handler.dart';
-import './reflect_handler.dart';
-import './timeout_handler.dart';
+import 'package:w_transport/src/mocks/http.dart';
+import 'package:w_transport/src/mocks/web_socket.dart';
 
-String pathPrefix = '/test/http';
-Map<String, Handler> testHttpIntegrationRoutes = {
-  '$pathPrefix/404': new FourzerofourHandler(),
-  '$pathPrefix/download': new DownloadHandler(),
-  '$pathPrefix/ping': new PingHandler(),
-  '$pathPrefix/reflect': new ReflectHandler(),
-  '$pathPrefix/timeout': new TimeoutHandler(),
-};
+class MockTransports {
+  static const MockHttp http = const MockHttp();
+  static const MockWebSocket webSocket = const MockWebSocket();
+
+  static void reset() {
+    http.reset();
+    webSocket.reset();
+  }
+
+  static void verifyNoOutstandingExceptions() {
+    http.verifyNoOutstandingExceptions();
+  }
+}

@@ -19,7 +19,7 @@ import 'dart:io';
 
 import 'package:w_transport/src/http/w_progress.dart';
 
-Map<String, String> parseHeaders(HttpHeaders httpHeaders) {
+Map<String, String> parseServerHeaders(HttpHeaders httpHeaders) {
   Map<String, String> headers = {};
   httpHeaders.forEach((String name, List<String> values) {
     headers[name] = values.join(',');
@@ -32,7 +32,7 @@ Map<String, String> parseHeaders(HttpHeaders httpHeaders) {
 /// stream is identical to the input stream, but [progressController]
 /// will be populated with a stream of [WProgress] instances as long
 /// as the data stream progress is computable.
-StreamTransformer wProgressListener(
+StreamTransformer progressListener(
     int total, StreamController<WProgress> progressController) {
   int loaded = 0;
   return new StreamTransformer((Stream input, bool cancelOnError) {

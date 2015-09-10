@@ -12,20 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.http.routes;
+library w_transport.src.http.mock.w_http;
 
-import '../../../handler.dart';
-import './404_handler.dart';
-import './download.dart';
-import './ping_handler.dart';
-import './reflect_handler.dart';
-import './timeout_handler.dart';
+import 'package:w_transport/src/http/common/w_http.dart';
+import 'package:w_transport/src/http/mock/w_request.dart';
+import 'package:w_transport/src/http/w_http.dart';
 
-String pathPrefix = '/test/http';
-Map<String, Handler> testHttpIntegrationRoutes = {
-  '$pathPrefix/404': new FourzerofourHandler(),
-  '$pathPrefix/download': new DownloadHandler(),
-  '$pathPrefix/ping': new PingHandler(),
-  '$pathPrefix/reflect': new ReflectHandler(),
-  '$pathPrefix/timeout': new TimeoutHandler(),
-};
+class MockWHttp extends CommonWHttp implements WHttp {
+  MockWRequest newRequest() {
+    verifyNotClosed();
+    return new MockWRequest();
+  }
+}

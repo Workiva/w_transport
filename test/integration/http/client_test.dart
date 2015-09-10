@@ -13,60 +13,56 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.integration.http.w_http_client_integration_test;
+library w_transport.test.integration.http.client_test;
 
 import 'dart:convert';
 import 'dart:html';
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_client.dart'
-    show configureWTransportForBrowser;
+import 'package:w_transport/w_transport_client.dart';
 
-import 'w_http_common_integration_tests.dart' as common_tests;
-import '../../utils.dart';
+import 'common.dart';
 
 void main() {
   configureWTransportForBrowser();
 
-  // Almost all of the integration tests are identical regardless of client/server usage.
-  // So, we run them from a common location.
-  common_tests.run('Client');
-
-  group('WRequest (Client)', () {
-    WRequest request;
-
-    setUp(() {
-      request = new WRequest()..uri = Uri.parse('http://localhost:8024');
-    });
-
-    // The following two tests are unique from a client consumer.
+  HttpIntegrationConfig config =
+      new HttpIntegrationConfig('Client', Uri.parse('http://localhost:8024'));
+  group(config.title, () {
+    runCommonHttpIntegrationTests(config);
 
     // When sending an HTTP request within a client app, the response will always
     // be a string. As such, the HttpRequest response data will be an empty string
     // if the response body is empty, as is the case with a HEAD request.
-    test('should support a HEAD method', httpTest((store) async {
+    test('should support HEAD request', () async {
       // HEAD requests cannot return a body, but we can use that to
       // verify that this was actually a HEAD request
-      request.path = '/test/http/reflect';
-      WResponse response = store(await request.head());
+      WResponse response = await WHttp.head(config.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(await response.asText(), equals(''));
-    }));
+    });
 
-    test('should support a FormData payload', httpTest((store) async {
-      request.path = '/test/http/reflect';
+    test('should support a FormData payload', () async {
+      WRequest request = new WRequest()..uri = config.reflectEndpointUri;
       FormData data = new FormData();
       Blob blob = new Blob(['blob']);
       data.appendBlob('blob', blob);
       data.append('text', 'text');
       request.data = data;
-      store(await request.post());
-    }));
+      await request.post();
+    });
+
+    test('should throw if data type is invalid', () async {
+      WRequest request = new WRequest()
+        ..uri = config.reflectEndpointUri
+        ..data = true;
+      expect(request.post(), throwsArgumentError);
+    });
 
     test('should have an upload progress stream', () async {
       bool uploadProgressListenedTo = false;
-      request.path = '/test/http/reflect';
+      WRequest request = new WRequest()..uri = config.reflectEndpointUri;
       FormData data = new FormData();
       data.append('file1', 'file1');
       data.append('file2', 'file2');
@@ -84,6 +80,7 @@ void main() {
 
     test('should have a download progress stream', () async {
       bool downloadProgressListenedTo = false;
+      WRequest request = new WRequest()..uri = config.downloadEndpointUri;
       request.path = '/test/http/download';
       request.downloadProgress.listen((WProgress progress) {
         if (progress.percent > 0) {
@@ -96,7 +93,7 @@ void main() {
     });
 
     test('should be able to configure the HttpRequest', () async {
-      request.path = '/test/http/reflect';
+      WRequest request = new WRequest()..uri = config.reflectEndpointUri;
       request.configure((HttpRequest xhr) async {
         xhr.setRequestHeader('x-configured', 'true');
       });
@@ -107,7 +104,7 @@ void main() {
 
     group('should set the withCredentials flag', () {
       test('to true', () async {
-        request.path = '/test/http/ping';
+        WRequest request = new WRequest()..uri = config.pingEndpointUri;
         request.withCredentials = true;
         request.configure((HttpRequest xhr) async {
           expect(xhr.withCredentials, isTrue);
@@ -117,7 +114,7 @@ void main() {
       });
 
       test('to false', () async {
-        request.path = '/test/http/ping';
+        WRequest request = new WRequest()..uri = config.pingEndpointUri;
         request.withCredentials = false;
         request.configure((HttpRequest xhr) async {
           expect(xhr.withCredentials, isFalse);

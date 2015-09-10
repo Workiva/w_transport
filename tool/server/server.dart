@@ -62,6 +62,7 @@ class Server {
 
       _logger('HTTP server ready - listening on http://$host:$port');
     } catch (e) {
+      print('Failed to start HTTP server - port $port may already be taken.');
       _logger.logError(
           'Failed to start HTTP server - port $port may already be taken.');
       exit(1);

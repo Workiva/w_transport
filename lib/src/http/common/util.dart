@@ -17,7 +17,14 @@ library w_transport.src.http.common.util;
 import 'dart:async';
 import 'dart:convert';
 
-StreamTransformer decodeAttempt(Encoding encoding) {
+StreamTransformer decodeAttempt(Encoding encoding) =>
+    _attemptToApplyEncoding(encoding, decode: true);
+
+StreamTransformer encodeAttempt(Encoding encoding) =>
+    _attemptToApplyEncoding(encoding, encode: true);
+
+StreamTransformer _attemptToApplyEncoding(Encoding encoding,
+    {bool encode: false, bool decode: false}) {
   return new StreamTransformer((Stream input, bool cancelOnError) {
     StreamController controller;
     StreamSubscription subscription;
@@ -25,7 +32,11 @@ StreamTransformer decodeAttempt(Encoding encoding) {
       subscription = input.listen(
           (data) {
             try {
-              data = encoding.decode(data);
+              if (encode) {
+                data = encoding.encode(data);
+              } else if (decode) {
+                data = encoding.decode(data);
+              }
             } catch (e) {}
             controller.add(data);
           },

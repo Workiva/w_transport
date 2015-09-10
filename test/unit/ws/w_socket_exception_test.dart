@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+@TestOn('vm || browser')
 library w_transport.test.unit.ws.w_socket_exception_test;
 
 import 'package:test/test.dart';

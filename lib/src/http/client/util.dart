@@ -21,7 +21,7 @@ import 'package:w_transport/src/http/w_progress.dart';
 
 /// Transforms an [ProgressEvent] stream from an [HttpRequest] into
 /// a [WProgress] stream.
-StreamTransformer<ProgressEvent, WProgress> wProgressTransformer =
+StreamTransformer<ProgressEvent, WProgress> transformProgressEvents =
     new StreamTransformer<ProgressEvent, WProgress>(
         (Stream<ProgressEvent> input, bool cancelOnError) {
   StreamController<WProgress> controller;

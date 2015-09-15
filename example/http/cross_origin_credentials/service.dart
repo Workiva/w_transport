@@ -32,7 +32,7 @@ Future<bool> checkStatus() async {
   WRequest req = new WRequest()..withCredentials = true;
 
   try {
-    WResponse response = await req.get(sessionUrl);
+    WResponse response = await req.get(uri: sessionUrl);
     return JSON.decode(await response.asText())['authenticated'];
   } catch (error) {
     // Server probably isn't running
@@ -46,7 +46,7 @@ Future<bool> login() async {
   WRequest req = new WRequest()..withCredentials = true;
   WResponse response;
   try {
-    response = await req.post(sessionUrl);
+    response = await req.post(uri: sessionUrl);
   } catch (e) {
     return false;
   }
@@ -59,7 +59,7 @@ Future<bool> logout() async {
   WRequest req = new WRequest()..withCredentials = true;
   WResponse response;
   try {
-    response = await req.delete(sessionUrl);
+    response = await req.delete(uri: sessionUrl);
   } catch (e) {
     return false;
   }
@@ -75,7 +75,7 @@ Future<String> makeCredentialedRequest() async {
   WRequest req = new WRequest()..withCredentials = true;
 
   WResponse response;
-  response = await req.get(credentialedEndpointUrl);
+  response = await req.get(uri: credentialedEndpointUrl);
   return response.asText();
 }
 

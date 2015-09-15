@@ -70,6 +70,9 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
   /// Whether or not to send the request with credentials.
   bool withCredentials = false;
 
+  /// Completes only when a request is canceled.
+  Completer _cancellationCompleter = new Completer();
+
   /// HTTP method ('GET', 'POST', etc).
   String _method;
 
@@ -87,6 +90,7 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
     abortRequest();
     isCanceled = true;
     cancellationError = error;
+    _cancellationCompleter.complete();
   }
 
   void abortRequest();
@@ -103,55 +107,63 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
 
   /// Sends a DELETE request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> delete([Uri uri]) {
-    return send('DELETE', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> delete({Uri uri, Map<String, String> headers}) {
+    return send('DELETE', uri, headers);
   }
 
   /// Sends a GET request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> get([Uri uri]) {
-    return send('GET', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> get({Uri uri, Map<String, String> headers}) {
+    return send('GET', uri, headers);
   }
 
   /// Sends a HEAD request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> head([Uri uri]) {
-    return send('HEAD', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> head({Uri uri, Map<String, String> headers}) {
+    return send('HEAD', uri, headers);
   }
 
   /// Sends an OPTIONS request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> options([Uri uri]) {
-    return send('OPTIONS', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> options({Uri uri, Map<String, String> headers}) {
+    return send('OPTIONS', uri, headers);
   }
 
   /// Sends a PATCH request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
   /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> patch([Uri uri, Object data]) {
-    return send('PATCH', uri, data);
+  Future<WResponse> patch({Uri uri, Map<String, String> headers, Object data}) {
+    return send('PATCH', uri, headers, data);
   }
 
   /// Sends a POST request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
   /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> post([Uri uri, Object data]) {
-    return send('POST', uri, data);
+  Future<WResponse> post({Uri uri, Map<String, String> headers, Object data}) {
+    return send('POST', uri, headers, data);
   }
 
   /// Sends a PUT request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
   /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> put([Uri uri, Object data]) {
-    return send('PUT', uri, data);
+  Future<WResponse> put({Uri uri, Map<String, String> headers, Object data}) {
+    return send('PUT', uri, headers, data);
   }
 
   /// Sends a TRACE request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
   ///
   /// **Note:** For security reasons, TRACE requests are forbidden in the browser.
-  Future<WResponse> trace([Uri uri]) {
-    return send('TRACE', uri);
+  Future<WResponse> trace({Uri uri, Map<String, String> headers}) {
+    return send('TRACE', uri, headers);
   }
 
   void checkForCancellation({WResponse response}) {
@@ -173,13 +185,17 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
 
   Future openRequest();
 
-  Future<WResponse> send(String method, [Uri uri, Object data]) async {
+  Future<WResponse> send(String method,
+      [Uri uri, Map<String, String> headers, Object data]) async {
     _method = method;
     if (uri != null) {
       this.uri = uri;
     }
     if (this.uri == null || this.uri.toString() == '') {
       throw new StateError('WRequest: Cannot send a request without a URL.');
+    }
+    if (headers != null) {
+      this.headers = headers;
     }
     if (data != null) {
       this.data = data;
@@ -191,14 +207,43 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
     try {
       await openRequest();
       checkForCancellation();
-      response = await fetchResponse();
+      Completer<WResponse> responseCompleter = new Completer();
+
+      // Attempt to fetch the response.
+      fetchResponse().then((response) {
+        if (!responseCompleter.isCompleted) {
+          responseCompleter.complete(response);
+        }
+      }, onError: (error) {
+        if (!responseCompleter.isCompleted) {
+          responseCompleter.completeError(error);
+        }
+      });
+
+      // Listen for cancellation and break out of the response fetching early
+      // if cancellation occurs before the request has finished.
+      _cancellationCompleter.future.then((_) {
+        if (!responseCompleter.isCompleted) {
+          responseCompleter.complete();
+        }
+      });
+
+      response = await responseCompleter.future;
+      checkForCancellation(response: response);
+
+      if (response.status != 0 &&
+          response.status != 304 &&
+          !(response.status >= 200 && response.status < 300)) {
+        throw new WHttpException(_method, this.uri, this, response);
+      }
     } catch (e) {
+      var error = e;
       cleanUp();
       checkForCancellation(response: response);
-      if (e is! WHttpException) {
-        e = new WHttpException(_method, this.uri, this, response, e);
+      if (error is! WHttpException) {
+        error = new WHttpException(_method, this.uri, this, response, error);
       }
-      throw e;
+      throw error;
     }
     cleanUp();
     checkForCancellation(response: response);

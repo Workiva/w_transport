@@ -17,10 +17,10 @@ library w_transport.src.http.server.w_request;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:w_transport/src/http/common/util.dart' show encodeAttempt;
 import 'package:w_transport/src/http/common/w_request.dart';
-import 'package:w_transport/src/http/server/util.dart' as util;
+import 'package:w_transport/src/http/server/util.dart' show progressListener;
 import 'package:w_transport/src/http/server/w_response.dart';
-import 'package:w_transport/src/http/w_http_exception.dart';
 import 'package:w_transport/src/http/w_request.dart';
 import 'package:w_transport/src/http/w_response.dart';
 
@@ -74,29 +74,25 @@ class ServerWRequest extends CommonWRequest implements WRequest {
     }
 
     // If supplied, convert request data to a stream and send.
+    Stream dataStream;
     if (data != null) {
       if (data is String) {
-        data = new Stream.fromIterable([encoding.encode(data)]);
+        dataStream = new Stream.fromIterable([encoding.encode(data)]);
+      } else {
+        dataStream = (data as Stream).transform(encodeAttempt(encoding));
       }
+
       _request.contentLength = contentLength != null ? contentLength : -1;
-      await _request.addStream((data as Stream).transform(
-          util.wProgressListener(
-              _request.contentLength, uploadProgressController)));
+      await _request.addStream(dataStream.transform(
+          progressListener(_request.contentLength, uploadProgressController)));
     } else {
       _request.contentLength = 0;
     }
 
-    // Close the request now that data (if any) has been sent and wait for the response.
+    // Close the request now that data has been sent and wait for the response.
     HttpClientResponse response = await _request.close();
-    WResponse wResponse = new ServerWResponse(
+    return new ServerWResponse(
         response, encoding, response.contentLength, downloadProgressController);
-    if ((response.statusCode >= 200 && response.statusCode < 300) ||
-        response.statusCode == 0 ||
-        response.statusCode == 304) {
-      return wResponse;
-    } else {
-      throw new WHttpException(method, uri, this, wResponse);
-    }
   }
 
   void validateDataType() {

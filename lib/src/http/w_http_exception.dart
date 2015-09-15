@@ -42,7 +42,7 @@ class WHttpException implements Exception {
 
   /// Descriptive error message that includes the request method & URL and the response status.
   String get message {
-    String msg = 'WHttpException: $method';
+    String msg = '$method';
     if (response != null) {
       msg += ' ${response.status} ${response.statusText}';
     }
@@ -54,5 +54,5 @@ class WHttpException implements Exception {
   }
 
   @override
-  String toString() => message;
+  String toString() => 'WHttpException: $message';
 }

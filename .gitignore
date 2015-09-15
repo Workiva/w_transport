@@ -1,13 +1,14 @@
 # Dart
+.packages
 .pub
 packages
 pubspec.lock
 
 # Coverage
-coverage/
+/coverage/
 
 # Docs
-dartdoc-viewer
+/doc/api/
 
 # Examples
-example/http/cross_origin_file_transfer/files/
+/example/http/cross_origin_file_transfer/files/

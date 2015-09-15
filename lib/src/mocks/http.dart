@@ -16,6 +16,7 @@ library w_transport.src.mocks.http;
 
 import 'dart:async';
 
+import 'package:collection/equality.dart' as equality;
 import 'package:w_transport/src/http/mock/w_request.dart';
 import 'package:w_transport/src/http/mock/w_response.dart';
 
@@ -35,8 +36,14 @@ void cancelMockRequest(MockWRequest request) {
 }
 
 handleMockRequest(MockWRequest request) {
-  Iterable matchingExpectations = _expectations
-      .where((e) => e.method == request.method && e.uri == request.uri);
+  var mapEquality = new equality.MapEquality();
+
+  Iterable matchingExpectations = _expectations.where((e) =>
+      e.method == request.method &&
+          e.uri == request.uri &&
+          (e.headers == null && request.headers.isEmpty ||
+              mapEquality.equals(e.headers, request.headers)));
+
   if (matchingExpectations.isNotEmpty) {
     /// If this request was expected, resolve it as planned.
     _RequestExpectation expectation = matchingExpectations.first;
@@ -94,14 +101,15 @@ class MockHttp {
   }
 
   void expect(String method, Uri uri,
-      {Object failWith, WResponse respondWith}) {
+      {Map<String, String> headers, Object failWith, WResponse respondWith}) {
     if (failWith != null && respondWith != null) {
       throw new ArgumentError('Use failWith OR respondWith, but not both.');
     }
     if (failWith == null && respondWith == null) {
       respondWith = new MockWResponse.ok();
     }
-    _expectations.add(new _RequestExpectation(method, uri,
+
+    _expectations.add(new _RequestExpectation(method, uri, headers,
         failWith: failWith, respondWith: respondWith));
   }
 
@@ -159,7 +167,8 @@ class _RequestExpectation {
   final String method;
   WResponse respondWith;
   final Uri uri;
+  final Map<String, String> headers;
 
-  _RequestExpectation(String this.method, Uri this.uri,
+  _RequestExpectation(String this.method, Uri this.uri, this.headers,
       {Object this.failWith, WResponse this.respondWith});
 }

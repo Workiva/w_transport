@@ -107,55 +107,63 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
 
   /// Sends a DELETE request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> delete([Uri uri]) {
-    return send('DELETE', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> delete({Uri uri, Map<String, String> headers}) {
+    return send('DELETE', uri, headers);
   }
 
   /// Sends a GET request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> get([Uri uri]) {
-    return send('GET', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> get({Uri uri, Map<String, String> headers}) {
+    return send('GET', uri, headers);
   }
 
   /// Sends a HEAD request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> head([Uri uri]) {
-    return send('HEAD', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> head({Uri uri, Map<String, String> headers}) {
+    return send('HEAD', uri, headers);
   }
 
   /// Sends an OPTIONS request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> options([Uri uri]) {
-    return send('OPTIONS', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> options({Uri uri, Map<String, String> headers}) {
+    return send('OPTIONS', uri, headers);
   }
 
   /// Sends a PATCH request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
   /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> patch([Uri uri, Object data]) {
-    return send('PATCH', uri, data);
+  Future<WResponse> patch({Uri uri, Map<String, String> headers, Object data}) {
+    return send('PATCH', uri, headers, data);
   }
 
   /// Sends a POST request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
   /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> post([Uri uri, Object data]) {
-    return send('POST', uri, data);
+  Future<WResponse> post({Uri uri, Map<String, String> headers, Object data}) {
+    return send('POST', uri, headers, data);
   }
 
   /// Sends a PUT request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
   /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> put([Uri uri, Object data]) {
-    return send('PUT', uri, data);
+  Future<WResponse> put({Uri uri, Map<String, String> headers, Object data}) {
+    return send('PUT', uri, headers, data);
   }
 
   /// Sends a TRACE request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
   ///
   /// **Note:** For security reasons, TRACE requests are forbidden in the browser.
-  Future<WResponse> trace([Uri uri]) {
-    return send('TRACE', uri);
+  Future<WResponse> trace({Uri uri, Map<String, String> headers}) {
+    return send('TRACE', uri, headers);
   }
 
   void checkForCancellation({WResponse response}) {
@@ -177,13 +185,17 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
 
   Future openRequest();
 
-  Future<WResponse> send(String method, [Uri uri, Object data]) async {
+  Future<WResponse> send(String method,
+      [Uri uri, Map<String, String> headers, Object data]) async {
     _method = method;
     if (uri != null) {
       this.uri = uri;
     }
     if (this.uri == null || this.uri.toString() == '') {
       throw new StateError('WRequest: Cannot send a request without a URL.');
+    }
+    if (headers != null) {
+      this.headers = headers;
     }
     if (data != null) {
       this.data = data;

@@ -18,7 +18,8 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
-import 'package:w_transport/src/http/client/util.dart' as util;
+import 'package:w_transport/src/http/client/util.dart'
+    show transformProgressEvents;
 import 'package:w_transport/src/http/client/w_response.dart';
 import 'package:w_transport/src/http/common/w_request.dart';
 import 'package:w_transport/src/http/w_http_exception.dart';
@@ -53,23 +54,16 @@ class ClientWRequest extends CommonWRequest implements WRequest {
 
     // Pipe onProgress events to the progress controllers.
     _request.onProgress
-        .transform(util.wProgressTransformer)
+        .transform(transformProgressEvents)
         .pipe(downloadProgressController);
     _request.upload.onProgress
-        .transform(util.wProgressTransformer)
+        .transform(transformProgressEvents)
         .pipe(uploadProgressController);
 
     // Listen for request completion/errors.
     _request.onLoad.listen((event) {
       if (!c.isCompleted) {
-        WResponse response = new ClientWResponse(_request, encoding);
-        if ((_request.status >= 200 && _request.status < 300) ||
-            _request.status == 0 ||
-            _request.status == 304) {
-          c.complete(response);
-        } else {
-          c.completeError(new WHttpException(method, uri, this, response));
-        }
+        c.complete(new ClientWResponse(_request, encoding));
       }
     });
     void onError(error) {

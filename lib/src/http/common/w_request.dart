@@ -70,6 +70,9 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
   /// Whether or not to send the request with credentials.
   bool withCredentials = false;
 
+  /// Completes only when a request is canceled.
+  Completer _cancellationCompleter = new Completer();
+
   /// HTTP method ('GET', 'POST', etc).
   String _method;
 
@@ -87,6 +90,7 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
     abortRequest();
     isCanceled = true;
     cancellationError = error;
+    _cancellationCompleter.complete();
   }
 
   void abortRequest();
@@ -191,14 +195,43 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
     try {
       await openRequest();
       checkForCancellation();
-      response = await fetchResponse();
+      Completer<WResponse> responseCompleter = new Completer();
+
+      // Attempt to fetch the response.
+      fetchResponse().then((response) {
+        if (!responseCompleter.isCompleted) {
+          responseCompleter.complete(response);
+        }
+      }, onError: (error) {
+        if (!responseCompleter.isCompleted) {
+          responseCompleter.completeError(error);
+        }
+      });
+
+      // Listen for cancellation and break out of the response fetching early
+      // if cancellation occurs before the request has finished.
+      _cancellationCompleter.future.then((_) {
+        if (!responseCompleter.isCompleted) {
+          responseCompleter.complete();
+        }
+      });
+
+      response = await responseCompleter.future;
+      checkForCancellation(response: response);
+
+      if (response.status != 0 &&
+          response.status != 304 &&
+          !(response.status >= 200 && response.status < 300)) {
+        throw new WHttpException(_method, this.uri, this, response);
+      }
     } catch (e) {
+      var error = e;
       cleanUp();
       checkForCancellation(response: response);
-      if (e is! WHttpException) {
-        e = new WHttpException(_method, this.uri, this, response, e);
+      if (error is! WHttpException) {
+        error = new WHttpException(_method, this.uri, this, response, error);
       }
-      throw e;
+      throw error;
     }
     cleanUp();
     checkForCancellation(response: response);

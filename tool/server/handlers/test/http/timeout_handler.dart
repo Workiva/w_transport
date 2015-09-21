@@ -12,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.http.routes;
+library w_transport.tool.server.handlers.ping_handler;
+
+import 'dart:async';
+import 'dart:io';
 
 import '../../../handler.dart';
-import './404_handler.dart';
-import './download.dart';
-import './ping_handler.dart';
-import './reflect_handler.dart';
-import './timeout_handler.dart';
 
-String pathPrefix = '/test/http';
-Map<String, Handler> testHttpIntegrationRoutes = {
-  '$pathPrefix/404': new FourzerofourHandler(),
-  '$pathPrefix/download': new DownloadHandler(),
-  '$pathPrefix/ping': new PingHandler(),
-  '$pathPrefix/reflect': new ReflectHandler(),
-  '$pathPrefix/timeout': new TimeoutHandler(),
-};
+/// Never closes the request.
+class TimeoutHandler extends Handler {
+  TimeoutHandler() : super() {
+    enableCors();
+  }
+
+  Future get(HttpRequest request) async => new Completer().future;
+}

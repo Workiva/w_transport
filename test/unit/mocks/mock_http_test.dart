@@ -33,7 +33,7 @@ void main() {
     test('causeFailureOnOpen() should cause request to throw', () async {
       WRequest request = new WRequest();
       MockTransports.http.causeFailureOnOpen(request);
-      expect(request.get(requestUri), throws);
+      expect(request.get(uri: requestUri), throws);
     });
 
     test('verifies that requests are mock requests before controlling them',
@@ -50,14 +50,14 @@ void main() {
       test('completes a request with 200 OK by default', () async {
         WRequest request = new WRequest();
         MockTransports.http.completeRequest(request);
-        expect((await request.get(requestUri)).status, equals(200));
+        expect((await request.get(uri: requestUri)).status, equals(200));
       });
 
       test('can complete a request with custom response', () async {
         WRequest request = new WRequest();
         WResponse response = new MockWResponse(202);
         MockTransports.http.completeRequest(request, response: response);
-        expect((await request.get(requestUri)).status, equals(202));
+        expect((await request.get(uri: requestUri)).status, equals(202));
       });
     });
 
@@ -96,20 +96,25 @@ void main() {
               failWith: new Exception(), respondWith: new MockWResponse.ok());
         }, throwsArgumentError);
       });
+
+      test('expected request should match on empty headers', () async {
+        MockTransports.http.expect('GET', requestUri, headers: {});
+        await WHttp.get(requestUri, headers: {});
+      });
     });
 
     group('failRequest()', () {
       test('causes request to throw', () async {
         WRequest request = new WRequest();
         MockTransports.http.failRequest(request);
-        expect(request.get(requestUri), throws);
+        expect(request.get(uri: requestUri), throws);
       });
 
       test('can include a custom exception', () async {
         WRequest request = new WRequest();
         MockTransports.http
             .failRequest(request, error: new Exception('Custom exception'));
-        expect(request.get(requestUri), throwsA(predicate((error) {
+        expect(request.get(uri: requestUri), throwsA(predicate((error) {
           return error.toString().contains('Custom exception');
         })));
       });
@@ -118,7 +123,7 @@ void main() {
         WRequest request = new WRequest();
         WResponse response = new MockWResponse.internalServerError();
         MockTransports.http.failRequest(request, response: response);
-        expect(request.get(requestUri), throwsA(predicate((error) {
+        expect(request.get(uri: requestUri), throwsA(predicate((error) {
           return error is WHttpException && error.response.status == 500;
         })));
       });
@@ -131,7 +136,7 @@ void main() {
           .when(requestUri, (req) async => new MockWResponse.ok());
       MockTransports.http.expect('GET', Uri.parse('/expected'));
       MockWRequest request = new MockWRequest();
-      request.get(Uri.parse('/other'));
+      request.get(uri: Uri.parse('/other'));
       await request.onSent;
       expect(MockTransports.http.numPendingRequests, equals(1));
 
@@ -139,12 +144,12 @@ void main() {
 
       // Would have been handled by our handler, but should no longer be:
       MockWRequest request2 = new MockWRequest();
-      request2.delete(requestUri);
+      request2.delete(uri: requestUri);
       await request2.onSent;
 
       // Would have been expected, but should no longer be:
       MockWRequest request3 = new MockWRequest();
-      request3.get(Uri.parse('/expected'));
+      request3.get(uri: Uri.parse('/expected'));
       await request3.onSent;
 
       expect(MockTransports.http.numPendingRequests, equals(2));
@@ -159,7 +164,7 @@ void main() {
 
       test('throws if requests are pending', () async {
         MockWRequest request = new MockWRequest();
-        request.get(requestUri);
+        request.get(uri: requestUri);
         await request.onSent;
         expect(() {
           MockTransports.http.verifyNoOutstandingExceptions();

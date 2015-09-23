@@ -58,7 +58,7 @@ class FilesProxy extends Handler {
     });
     WRequest proxyRequest = getHttpClient().newRequest()..headers = headers;
 
-    WResponse proxyResponse = await proxyRequest.get(filesEndpoint);
+    WResponse proxyResponse = await proxyRequest.get(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
@@ -74,7 +74,7 @@ class FilesProxy extends Handler {
     });
     WRequest proxyRequest = getHttpClient().newRequest()..headers = headers;
 
-    WResponse proxyResponse = await proxyRequest.delete(filesEndpoint);
+    WResponse proxyResponse = await proxyRequest.delete(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
@@ -105,7 +105,7 @@ class UploadProxy extends Handler {
 
     WResponse proxyResponse;
     try {
-      proxyResponse = await proxyRequest.post(uploadEndpoint);
+      proxyResponse = await proxyRequest.post(uri: uploadEndpoint);
       request.response.statusCode = HttpStatus.OK;
       setCorsHeaders(request);
       proxyResponse.headers.forEach((h, v) {

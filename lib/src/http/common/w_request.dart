@@ -18,6 +18,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:fluri/fluri.dart';
+import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
 
 import 'package:w_transport/src/http/w_http_exception.dart';
 import 'package:w_transport/src/http/w_progress.dart';
@@ -58,7 +59,7 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
   Encoding encoding = UTF8;
 
   /// Headers to send with the HTTP request.
-  Map<String, String> headers = {};
+  CaseInsensitiveMap _headers = new CaseInsensitiveMap();
 
   /// Whether or not the request has been canceled by the caller.
   bool isCanceled = false;
@@ -79,11 +80,17 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
   /// [WProgress] stream for this HTTP request's download.
   Stream<WProgress> get downloadProgress => downloadProgressController.stream;
 
+  CaseInsensitiveMap get headers => _headers;
+
   /// HTTP method ('GET', 'POST', etc).
   String get method => _method;
 
   /// [WProgress] stream for this HTTP request's upload.
   Stream<WProgress> get uploadProgress => uploadProgressController.stream;
+
+  void set headers(Map<String, String> headers) {
+    _headers = new CaseInsensitiveMap.from(headers);
+  }
 
   /// Cancel this request. If the request has already finished, this will do nothing.
   void abort([Object error]) {
@@ -107,55 +114,60 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
 
   /// Sends a DELETE request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> delete([Uri uri]) {
-    return send('DELETE', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> delete({Map<String, String> headers, Uri uri}) {
+    return send('DELETE', headers: headers, uri: uri);
   }
 
   /// Sends a GET request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> get([Uri uri]) {
-    return send('GET', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> get({Map<String, String> headers, Uri uri}) {
+    return send('GET', headers: headers, uri: uri);
   }
 
   /// Sends a HEAD request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> head([Uri uri]) {
-    return send('HEAD', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> head({Map<String, String> headers, Uri uri}) {
+    return send('HEAD', headers: headers, uri: uri);
   }
 
   /// Sends an OPTIONS request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> options([Uri uri]) {
-    return send('OPTIONS', uri);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> options({Map<String, String> headers, Uri uri}) {
+    return send('OPTIONS', headers: headers, uri: uri);
   }
 
   /// Sends a PATCH request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> patch([Uri uri, Object data]) {
-    return send('PATCH', uri, data);
+  /// Attaches [data], [headers], if given, or uses the data, headers from this [WRequest].
+  Future<WResponse> patch({Object data, Map<String, String> headers, Uri uri}) {
+    return send('PATCH', data: data, headers: headers, uri: uri);
   }
 
   /// Sends a POST request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> post([Uri uri, Object data]) {
-    return send('POST', uri, data);
+  /// Attaches [data], [headers], if given, or uses the data, headers from this [WRequest].
+  Future<WResponse> post({Object data, Map<String, String> headers, Uri uri}) {
+    return send('POST', data: data, headers: headers, uri: uri);
   }
 
   /// Sends a PUT request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> put([Uri uri, Object data]) {
-    return send('PUT', uri, data);
+  /// Attaches [data], [headers], if given, or uses the data, headers from this [WRequest].
+  Future<WResponse> put({Object data, Map<String, String> headers, Uri uri}) {
+    return send('PUT', data: data, headers: headers, uri: uri);
   }
 
   /// Sends a TRACE request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
   ///
   /// **Note:** For security reasons, TRACE requests are forbidden in the browser.
-  Future<WResponse> trace([Uri uri]) {
-    return send('TRACE', uri);
+  Future<WResponse> trace({Map<String, String> headers, Uri uri}) {
+    return send('TRACE', headers: headers, uri: uri);
   }
 
   void checkForCancellation({WResponse response}) {
@@ -177,7 +189,8 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
 
   Future openRequest();
 
-  Future<WResponse> send(String method, [Uri uri, Object data]) async {
+  Future<WResponse> send(String method,
+      {Object data, Map<String, String> headers, Uri uri}) async {
     _method = method;
     if (uri != null) {
       this.uri = uri;
@@ -187,6 +200,9 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
     }
     if (data != null) {
       this.data = data;
+    }
+    if (headers != null) {
+      this.headers.addAll(new CaseInsensitiveMap.from(headers));
     }
     checkForCancellation();
     validateDataType();

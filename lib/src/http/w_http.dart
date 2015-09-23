@@ -24,36 +24,49 @@ import 'package:w_transport/src/platform_adapter.dart';
 /// send HTTP requests or for sending multiple HTTP requests.
 abstract class WHttp {
   /// Sends a DELETE request to the given [uri].
-  static Future<WResponse> delete(Uri uri) => new WRequest().delete(uri);
+  /// Attaches [headers], if given.
+  static Future<WResponse> delete(Uri uri, {Map<String, String> headers}) =>
+      new WRequest().delete(headers: headers, uri: uri);
 
   /// Sends a GET request to the given [uri].
-  static Future<WResponse> get(Uri uri) => new WRequest().get(uri);
+  /// Attaches [headers], if given.
+  static Future<WResponse> get(Uri uri, {Map<String, String> headers}) =>
+      new WRequest().get(headers: headers, uri: uri);
 
   /// Sends a HEAD request to the given [uri].
-  static Future<WResponse> head(Uri uri) => new WRequest().head(uri);
+  /// Attaches [headers], if given.
+  static Future<WResponse> head(Uri uri, {Map<String, String> headers}) =>
+      new WRequest().head(headers: headers, uri: uri);
 
   /// Sends an OPTIONS request to the given [uri].
-  static Future<WResponse> options(Uri uri) => new WRequest().options(uri);
+  /// Attaches [headers], if given.
+  static Future<WResponse> options(Uri uri, {Map<String, String> headers}) =>
+      new WRequest().options(headers: headers, uri: uri);
 
   /// Sends a PATCH request to the given [uri].
-  /// Attaches [data], if given.
-  static Future<WResponse> patch(Uri uri, [Object data]) =>
-      new WRequest().patch(uri, data);
+  /// Attaches [data], [headers], if given.
+  static Future<WResponse> patch(Uri uri,
+          {Object data, Map<String, String> headers}) =>
+      new WRequest().patch(data: data, headers: headers, uri: uri);
 
   /// Sends a POST request to the given [uri].
-  /// Attaches [data], if given.
-  static Future<WResponse> post(Uri uri, [Object data]) =>
-      new WRequest().post(uri, data);
+  /// Attaches [data], [headers], if given.
+  static Future<WResponse> post(Uri uri,
+          {Object data, Map<String, String> headers}) =>
+      new WRequest().post(data: data, headers: headers, uri: uri);
 
   /// Sends a PUT request to the given [uri].
-  /// Attaches [data], if given.
-  static Future<WResponse> put(Uri uri, [Object data]) =>
-      new WRequest().put(uri, data);
+  /// Attaches [data], [headers], if given.
+  static Future<WResponse> put(Uri uri,
+          {Object data, Map<String, String> headers}) =>
+      new WRequest().put(data: data, headers: headers, uri: uri);
 
   /// Sends a TRACE request to the given [uri].
+  /// Attaches [headers], if given.
   ///
   /// **Note:** For security reasons, TRACE requests are forbidden in the browser.
-  static Future<WResponse> trace(Uri uri) => new WRequest().trace(uri);
+  static Future<WResponse> trace(Uri uri, {Map<String, String> headers}) =>
+      new WRequest().trace(headers: headers, uri: uri);
 
   factory WHttp() => PlatformAdapter.retrieve().newWHttp();
 

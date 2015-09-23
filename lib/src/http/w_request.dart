@@ -45,9 +45,6 @@ abstract class WRequest implements FluriMixin {
   /// Encoding to use on the request data.
   Encoding encoding = UTF8;
 
-  /// Headers to send with the HTTP request.
-  Map<String, String> headers = {};
-
   /// Whether or not to send the request with credentials.
   bool withCredentials = false;
 
@@ -56,11 +53,17 @@ abstract class WRequest implements FluriMixin {
   /// [WProgress] stream for this HTTP request's download.
   Stream<WProgress> get downloadProgress;
 
+  /// Map of HTTP request headers
+  Map<String, String> get headers;
+
   /// HTTP method ('GET', 'POST', etc).
   String get method;
 
   /// [WProgress] stream for this HTTP request's upload.
   Stream<WProgress> get uploadProgress;
+
+  /// Set HTTP request headers
+  void set headers(Map<String, String> headers);
 
   /// Cancel this request. If the request has already finished, this will do nothing.
   void abort([Object error]);
@@ -75,38 +78,43 @@ abstract class WRequest implements FluriMixin {
 
   /// Sends a DELETE request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> delete([Uri uri]);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> delete({Map<String, String> headers, Uri uri});
 
   /// Sends a GET request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> get([Uri uri]);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> get({Map<String, String> headers, Uri uri});
 
   /// Sends a HEAD request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> head([Uri uri]);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> head({Map<String, String> headers, Uri uri});
 
   /// Sends an OPTIONS request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  Future<WResponse> options([Uri uri]);
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
+  Future<WResponse> options({Map<String, String> headers, Uri uri});
 
   /// Sends a PATCH request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> patch([Uri uri, Object data]);
+  /// Attaches [data], [headers], if given, or uses the data, headers from this [WRequest].
+  Future<WResponse> patch({Object data, Map<String, String> headers, Uri uri});
 
   /// Sends a POST request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> post([Uri uri, Object data]);
+  /// Attaches [data], [headers], if given, or uses the data, headers from this [WRequest].
+  Future<WResponse> post({Object data, Map<String, String> headers, Uri uri});
 
   /// Sends a PUT request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
-  /// Attaches [data], if given, or uses the data from this [WRequest].
-  Future<WResponse> put([Uri uri, Object data]);
+  /// Attaches [data], [headers], if given, or uses the data, headers from this [WRequest].
+  Future<WResponse> put({Object data, Map<String, String> headers, Uri uri});
 
   /// Sends a TRACE request to the given [uri].
   /// If [uri] is null, the uri on this [WRequest] will be used.
+  /// Attaches [headers], if given, or uses the headers from this [WRequest].
   ///
   /// **Note:** For security reasons, TRACE requests are forbidden in the browser.
-  Future<WResponse> trace([Uri uri]);
+  Future<WResponse> trace({Map<String, String> headers, Uri uri});
 }

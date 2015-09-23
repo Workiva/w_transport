@@ -83,5 +83,55 @@ void main() {
       http.close();
       expect(http.newRequest, throwsStateError);
     });
+
+    group('with headers', () {
+      test('DELETE', () async {
+        MockTransports.http
+            .expect('DELETE', requestUri, headers: {'content-type': 'json'});
+        await WHttp.delete(requestUri, headers: {'content-type': 'json'});
+      });
+
+      test('GET', () async {
+        MockTransports.http
+            .expect('GET', requestUri, headers: {'content-type': 'json'});
+        await WHttp.get(requestUri, headers: {'content-type': 'json'});
+      });
+
+      test('HEAD', () async {
+        MockTransports.http
+            .expect('HEAD', requestUri, headers: {'content-type': 'json'});
+        await WHttp.head(requestUri, headers: {'content-type': 'json'});
+      });
+
+      test('OPTIONS', () async {
+        MockTransports.http
+            .expect('OPTIONS', requestUri, headers: {'content-type': 'json'});
+        await WHttp.options(requestUri, headers: {'content-type': 'json'});
+      });
+
+      test('PATCH', () async {
+        MockTransports.http
+            .expect('PATCH', requestUri, headers: {'content-type': 'json'});
+        await WHttp.patch(requestUri, headers: {'content-type': 'json'});
+      });
+
+      test('POST', () async {
+        MockTransports.http
+            .expect('POST', requestUri, headers: {'content-type': 'json'});
+        await WHttp.post(requestUri, headers: {'content-type': 'json'});
+      });
+
+      test('PUT', () async {
+        MockTransports.http
+            .expect('PUT', requestUri, headers: {'content-type': 'json'});
+        await WHttp.put(requestUri, headers: {'content-type': 'json'});
+      });
+
+      test('TRACE', () async {
+        MockTransports.http
+            .expect('TRACE', requestUri, headers: {'content-type': 'json'});
+        await WHttp.trace(requestUri, headers: {'content-type': 'json'});
+      });
+    });
   });
 }

@@ -208,13 +208,13 @@ void runCommonHttpIntegrationTests(HttpIntegrationConfig config) {
   test('should support multiple requests from a single WHttp client', () async {
     WHttp http = new WHttp();
     List<Future<WResponse>> requests = [
-      http.newRequest().delete(config.reflectEndpointUri),
-      http.newRequest().get(config.reflectEndpointUri),
-      http.newRequest().head(config.reflectEndpointUri),
-      http.newRequest().options(config.reflectEndpointUri),
-      http.newRequest().patch(config.reflectEndpointUri),
-      http.newRequest().post(config.reflectEndpointUri),
-      http.newRequest().put(config.reflectEndpointUri),
+      http.newRequest().delete(uri: config.reflectEndpointUri),
+      http.newRequest().get(uri: config.reflectEndpointUri),
+      http.newRequest().head(uri: config.reflectEndpointUri),
+      http.newRequest().options(uri: config.reflectEndpointUri),
+      http.newRequest().patch(uri: config.reflectEndpointUri),
+      http.newRequest().post(uri: config.reflectEndpointUri),
+      http.newRequest().put(uri: config.reflectEndpointUri),
     ];
     await Future.wait(requests);
     for (int i = 0; i < requests.length; i++) {

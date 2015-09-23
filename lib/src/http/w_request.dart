@@ -18,7 +18,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:fluri/fluri.dart';
-import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
 
 import 'package:w_transport/src/http/w_response.dart';
 import 'package:w_transport/src/http/w_progress.dart';
@@ -55,7 +54,7 @@ abstract class WRequest implements FluriMixin {
   Stream<WProgress> get downloadProgress;
 
   /// Map of HTTP request headers
-  CaseInsensitiveMap get headers;
+  Map<String, String> get headers;
 
   /// HTTP method ('GET', 'POST', etc).
   String get method;

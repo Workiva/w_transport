@@ -101,6 +101,12 @@ void main() {
         MockTransports.http.expect('GET', requestUri, headers: {});
         await WHttp.get(requestUri, headers: {});
       });
+
+      test('succeeds without specifying headers in expect()', () async {
+        MockTransports.http.expect('GET', requestUri);
+        await WHttp.get(requestUri,
+            headers: {'content-type': 'application/json'});
+      });
     });
 
     group('failRequest()', () {

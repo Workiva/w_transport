@@ -80,7 +80,7 @@ abstract class CommonWRequest extends FluriMixin implements WRequest {
   /// [WProgress] stream for this HTTP request's download.
   Stream<WProgress> get downloadProgress => downloadProgressController.stream;
 
-  CaseInsensitiveMap get headers => _headers;
+  Map<String, String> get headers => _headers;
 
   /// HTTP method ('GET', 'POST', etc).
   String get method => _method;

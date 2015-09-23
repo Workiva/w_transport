@@ -118,14 +118,9 @@ class MockHttp {
     if (failWith == null && respondWith == null) {
       respondWith = new MockWResponse.ok();
     }
-    _expectations.add(new _RequestExpectation(
-        headers == null
-            ? new CaseInsensitiveMap()
-            : new CaseInsensitiveMap.from(headers),
-        method,
-        uri,
-        failWith: failWith,
-        respondWith: respondWith));
+    _expectations.add(new _RequestExpectation(method, uri,
+        headers == null ? null : new CaseInsensitiveMap.from(headers),
+        failWith: failWith, respondWith: respondWith));
   }
 
   void failRequest(WRequest request, {Object error, WResponse response}) {
@@ -179,12 +174,12 @@ class MockHttp {
 
 class _RequestExpectation {
   Object failWith;
-  final CaseInsensitiveMap headers;
+  final Map<String, String> headers;
   final String method;
   WResponse respondWith;
   final Uri uri;
 
   _RequestExpectation(
-      CaseInsensitiveMap this.headers, String this.method, Uri this.uri,
+      String this.method, Uri this.uri, Map<String, String> this.headers,
       {Object this.failWith, WResponse this.respondWith});
 }

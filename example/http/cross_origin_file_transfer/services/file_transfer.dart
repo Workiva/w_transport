@@ -18,10 +18,11 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:math' as math;
 
+import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:w_transport/w_transport.dart';
 
-import './proxy.dart';
-import './remote_files.dart';
+import 'proxy.dart';
+import 'remote_files.dart';
 
 // Counter used to create unique upload IDs.
 int _transferNum = 0;
@@ -35,7 +36,7 @@ int _concurrentFileTransferSize = 0;
 
 /// Encapsulates the file upload to or file download from the server.
 class FileTransfer {
-  WRequest _request;
+  BaseRequest _request;
   bool _canceled;
 
   FileTransfer(this.name)
@@ -51,8 +52,8 @@ class FileTransfer {
   final String name;
 
   /// Stream of ProgressEvents that may be used to monitor upload progress.
-  Stream<WProgress> get progressStream => _progressStream;
-  Stream<WProgress> _progressStream;
+  Stream<RequestProgress> get progressStream => _progressStream;
+  Stream<RequestProgress> _progressStream;
 
   /// Current completion percentage.
   double get percentComplete => _percentComplete;
@@ -68,7 +69,7 @@ class FileTransfer {
     _request.abort(reason != null ? new Exception(reason) : null);
   }
 
-  void _progressListener(WProgress progress) {
+  void _progressListener(RequestProgress progress) {
     if (_canceled) return;
     _percentComplete = progress.percent;
   }
@@ -83,14 +84,11 @@ class Upload extends FileTransfer {
 
   /// Construct a new file upload.
   Upload._fromFile(File file) : super(file.name) {
-    // Create the payload.
-    FormData data = new FormData();
-    data.appendBlob('file', file);
-
     // Prepare the upload request.
-    _request = new WRequest()
+    _request = new MultipartRequest()
       ..uri = getUploadEndpointUrl()
-      ..data = data;
+      ..fields['datetime'] = new DateTime.now().toIso8601String()
+      ..files['file'] = file;
 
     // Convert the progress stream into a broadcast stream to
     // allow multiple listeners.
@@ -101,7 +99,7 @@ class Upload extends FileTransfer {
     _request
         .post()
         .then((_) => _doneCompleter.complete())
-        .catchError((error) => _doneCompleter.completeError(error));
+        .catchError((error, sT) => _doneCompleter.completeError(error, sT));
   }
 }
 
@@ -118,14 +116,14 @@ class Download extends FileTransfer {
     _bytesLoaded = 0;
 
     // Prepare the download request.
-    _request = new WRequest()..uri = getDownloadEndpointUrl(rfd.name);
+    _request = new Request()..uri = getDownloadEndpointUrl(rfd.name);
 
     // Convert the progress stream into a broadcast stream to
     // allow multiple listeners.
     _progressStream = _request.downloadProgress.asBroadcastStream();
     _progressStream.listen(_progressListener);
 
-    _progressStream.listen((WProgress progress) {
+    _progressStream.listen((RequestProgress progress) {
       if (_canceled) return;
 
       if (progress.lengthComputable) {
@@ -144,7 +142,7 @@ class Download extends FileTransfer {
     });
 
     // Send the request.
-    _request.get().then((WResponse response) {
+    _request.get().then((Response response) {
       _doneCompleter.complete();
     }, onError: (error) {
       _doneCompleter.completeError(error);

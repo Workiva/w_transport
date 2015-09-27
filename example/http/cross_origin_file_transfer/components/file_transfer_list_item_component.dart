@@ -43,7 +43,7 @@ class FileTransferListItemComponent extends react.Component {
       transfer.progressStream.listen((_) => this.redraw());
       transfer.done
           .then((_) => _transferSucceeded())
-          .catchError((error) => _transferFailed());
+          .catchError((error, sT) => _transferFailed(error, sT));
     }
   }
 
@@ -60,7 +60,11 @@ class FileTransferListItemComponent extends react.Component {
     _fadeTransferOut().then((_) => _removeTransfer());
   }
 
-  void _transferFailed() {
+  void _transferFailed(error, [StackTrace sT]) {
+    print('Transfer failed: $error');
+    if (sT != null) {
+      print('$sT');
+    }
     this.setState({'done': true, 'success': false});
     _fadeTransferOut().then((_) => _removeTransfer());
   }

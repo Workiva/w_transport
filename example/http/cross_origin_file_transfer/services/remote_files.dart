@@ -15,13 +15,12 @@
 library w_transport.example.http.cross_origin_file_transfer.services.remote_files;
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:w_transport/w_transport.dart';
 
 import './proxy.dart';
 
-int _remoteFilePollingInterval = 3; // 3 seconds
+int _remoteFilePollingInterval = 10; // 10 seconds
 
 class RemoteFiles {
   /// Establish a connection with the remote files server.
@@ -30,7 +29,7 @@ class RemoteFiles {
   }
 
   static void deleteAll() {
-    WHttp.delete(getFilesEndpointUrl());
+    Http.delete(getFilesEndpointUrl());
   }
 
   /// Close the connection with the remote files server.
@@ -43,7 +42,7 @@ class RemoteFiles {
   Stream<List<RemoteFileDescription>> get stream => _fileStream;
 
   /// Stream of errors that may occur when trying to communicate with the proxy file server.
-  Stream<WHttpException> get errorStream => _errorStream;
+  Stream<RequestException> get errorStream => _errorStream;
 
   bool _connected;
   StreamController _errorStreamController;
@@ -76,10 +75,10 @@ class RemoteFiles {
   Future _poll() async {
     if (!_connected) return;
     try {
-      WResponse response = await WHttp.get(getFilesEndpointUrl());
+      Response response = await Http.get(getFilesEndpointUrl());
 
       // Parse the file list from the response
-      List results = JSON.decode(await response.asText())['results'];
+      List results = response.body.asJson()['results'];
       List<RemoteFileDescription> files = results
           .map((Map file) =>
               new RemoteFileDescription(file['name'], file['size']))

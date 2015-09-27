@@ -21,12 +21,12 @@ import 'dart:io';
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_server.dart';
+import 'package:w_transport/w_transport_vm.dart';
 
 import 'common.dart';
 
 void main() {
-  configureWTransportForServer();
+  configureWTransportForVM();
 
   HttpIntegrationConfig config =
       new HttpIntegrationConfig('Server', Uri.parse('http://localhost:8024'));
@@ -40,85 +40,83 @@ void main() {
     test('should support a HEAD method', () async {
       // HEAD requests cannot return a body, but we can use that to
       // verify that this was actually a HEAD request
-      WResponse response = await WHttp.head(config.reflectEndpointUri);
+      Response response = await Http.head(config.reflectEndpointUri);
       expect(response.status, equals(200));
-      expect(await response.asStream().length, equals(0));
+//      expect(response.body.asBytes(), isEmpty);
     });
 
     // Unlike the browser environment, a server app has fewer security restrictions
     // and can successfully send a TRACE request.
     test('should support a TRACE method', () async {
-      WResponse response = await WHttp.trace(config.reflectEndpointUri);
+      Response response = await Http.trace(config.reflectEndpointUri);
       expect(response.status, equals(200));
-      expect(JSON.decode(await response.asText())['method'], equals('TRACE'));
+      expect(response.body.asJson()['method'], equals('TRACE'));
     });
 
-    test('should support a String data payload', () async {
-      WRequest request = new WRequest()
+    test('should support a String request body', () async {
+      Request request = new Request()
         ..uri = config.reflectEndpointUri
-        ..data = 'data';
-      expect(request.data, equals('data'));
+        ..body = 'body';
+      expect(request.body, equals('body'));
       await request.post();
     });
 
-    test('should support a Stream data payload', () async {
-      WRequest request = new WRequest()
+    test('should support a byte list request body', () async {
+      Request request = new Request()
         ..uri = config.reflectEndpointUri
-        ..data = new Stream.fromIterable(['data']);
+        ..bodyBytes = UTF8.encode('data');
       await request.post();
     });
 
-    test('should throw if data type is invalid', () async {
-      WRequest request = new WRequest()
-        ..uri = config.reflectEndpointUri
-        ..data = true;
-      expect(request.post(), throwsArgumentError);
-    });
+//    test('should throw if data type is invalid', () async {
+//      WRequest request = new WRequest()
+//        ..uri = config.reflectEndpointUri
+//        ..data = true;
+//      expect(request.post(), throwsArgumentError);
+//    });
 
     test('should have an upload progress stream', () async {
       bool uploadProgressListenedTo = false;
-      WRequest request = new WRequest()..uri = config.reflectEndpointUri;
+      StreamedRequest request = new StreamedRequest()
+        ..uri = config.reflectEndpointUri;
       List chunks = [
-        UTF8.encode('chunk1'),
-        UTF8.encode('chunk2'),
-        UTF8.encode('chunk3'),
+        request.encoding.encode('chunk1'),
+        request.encoding.encode('chunk2'),
+        request.encoding.encode('chunk3'),
       ];
-      request.data = new Stream.fromIterable(chunks);
+      request.body = new Stream.fromIterable(chunks);
       request.contentLength = 0;
       chunks.forEach((List chunk) {
         request.contentLength += chunk.length;
       });
-      request.uploadProgress.listen((WProgress progress) {
+      request.uploadProgress.listen((RequestProgress progress) {
         if (progress.percent > 0) {
           uploadProgressListenedTo = true;
         }
       });
-      WResponse response = await request.post();
-      await response.asStream().drain();
+      await request.post();
       expect(uploadProgressListenedTo, isTrue);
     });
 
     test('should have a download progress stream', () async {
       bool downloadProgressListenedTo = false;
-      WRequest request = new WRequest()..uri = config.downloadEndpointUri;
-      request.downloadProgress.listen((WProgress progress) {
+      Request request = new Request()..uri = config.downloadEndpointUri;
+      request.downloadProgress.listen((RequestProgress progress) {
         if (progress.percent > 0) {
           downloadProgressListenedTo = true;
         }
       });
-      WResponse response = await request.get();
-      await response.asStream().drain();
+      await request.get();
       expect(downloadProgressListenedTo, isTrue);
     });
 
     test('should be able to configure the HttpClientRequest', () async {
-      WRequest request = new WRequest()..uri = config.reflectEndpointUri;
+      Request request = new Request()..uri = config.reflectEndpointUri;
       request.configure((HttpClientRequest req) async {
         req.headers.set('x-configured', 'true');
       });
-      WResponse response = await request.get();
-      Map data = JSON.decode(await response.asText());
-      expect(data['headers']['x-configured'], equals('true'));
+      Response response = await request.get();
+      expect(response.body.asJson()['headers']['x-configured'], equals('true'));
     });
   });
 }

@@ -12,25 +12,89 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// A fluent-style, platform-agnostic transport library.
-/// Currently supports HTTP and WebSocket.
+/// A fluent-style, platform-agnostic transport library. Currently supports HTTP
+/// and WebSocket. All transport classes are available from the main import:
 ///
-/// The HTTP API features simple request construction and response
-/// handling, with the option to configure the outgoing request
-/// for more advanced use cases.
+///     import 'package:w_transport/w_transport.dart';
+///
+/// ## HTTP
+///
+/// To send HTTP requests, there are two options. For simple plain-text
+/// requests, the static methods on the [Http] can be used.
+///
+///     Response response = await Http.get(Uri.parse('/ping'));
+///
+/// These static methods on [Http] require a URI but also take headers and a
+/// plain-text body.
+///
+/// Alternatively, there are several request classes available that offer a
+/// greater amount of control and help with sending different types of data:
+///
+/// - Plain-text request: [Request]
+/// - JSON request: [JsonRequest]
+/// - FormRequest: [FormRequest]
+/// - MultipartRequest: [MultipartRequest]
+///
+///     // Plain-text request - supports plain-text body as a String or bytes.
+///     // content-type: text/plain
+///     Request request = new Request();
+///
+///     // JSON request - supports a Map or List as the request body.
+///     // content-type: application/json
+///     JsonRequest request = new JsonRequest();
+///
+///     // Form request - supports sending a Map of form fields
+///     // content-type: application/www-form-urlencoded
+///     FormRequest request = new FormRequest();
+///
+///     // Multipart request - supports sending a request with several parts,
+///     // consisting of text fields and/or files.
+///     MultipartRequest request = new MultipartRequest();
+///
+/// Each one of these requests shares the exact same API (see [BaseRequest]) for
+/// everything that doesn't pertain to the request body. The request body API is
+/// tailored to the type of request.
+///
+/// When sending a request, there are two options that dictate the type of
+/// response that will be returned. The default request dispatch methods
+/// (`get()`, `post()`, 'put()`, etc.) return a `Future` that resolves with an
+/// instance of [Response]. This response object provides synchronous access to
+/// the complete response body as plain-text, as bytes, or as JSON (if
+/// decodable).
+///
+/// If the response body is exceptionally large or if you'd prefer to deal with
+/// the response body in a streamed format, there are a set of request dispatch
+/// methods that will return a `Future` that resolves with an instance of
+/// [StreamedResponse]. These methods are the same as the above, with "stream"
+/// prepended (`streamGet()`, `streamPost()`, `streamPut()`, etc.). This
+/// response object provides synchronous access to the response metadata (status
+/// code, headers, etc.), but do not load the entire response body into memory.
+/// Instead, the response body is available as a stream of chunks of bytes.
+///
+/// ## WebSocket
 ///
 /// The WebSocket API mirrors the dart:io WebSocket class, but works
 /// for both client and server usage. If you've used the server-side
-/// WebSocket, this is almost exactly the same. Add items to it like
-/// a sink to send data to the server, and listen to it like a stream
-/// to receive data from the server.
+/// WebSocket, this is almost exactly the same.
+///
+/// To establish a WebSocket connection, use the static `connect()` method:
+///
+///     Uri wsUri = Uri.parse('ws://echo.websocket.org');
+///     WSocket webSocket = await WSocket.connect(wsUri);
+///
+/// Once connected, add items to the WebSocket like a sink to send data to the
+/// server, and listen to it like a stream to receive data from the server.
 library w_transport.w_http;
 
-export 'package:w_transport/src/http/w_http.dart' show WHttp;
-export 'package:w_transport/src/http/w_http_exception.dart' show WHttpException;
-export 'package:w_transport/src/http/w_progress.dart' show WProgress;
-export 'package:w_transport/src/http/w_request.dart' show WRequest;
-export 'package:w_transport/src/http/w_response.dart' show WResponse;
+export 'package:w_transport/src/http/base_request.dart' show BaseRequest;
+export 'package:w_transport/src/http/client.dart' show Client;
+export 'package:w_transport/src/http/http.dart' show Http;
+export 'package:w_transport/src/http/http_body.dart' show HttpBody, StreamedHttpBody;
+export 'package:w_transport/src/http/multipart_file.dart' show MultipartFile;
+export 'package:w_transport/src/http/request_exception.dart' show RequestException;
+export 'package:w_transport/src/http/request_progress.dart' show RequestProgress;
+export 'package:w_transport/src/http/requests.dart' show FormRequest, JsonRequest, MultipartRequest, Request, StreamedRequest;
+export 'package:w_transport/src/http/response.dart' show Response, StreamedResponse;
 
 export 'package:w_transport/src/web_socket/w_socket.dart' show WSocket;
 export 'package:w_transport/src/web_socket/w_socket_exception.dart'

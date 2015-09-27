@@ -19,9 +19,9 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart' show WProgress;
+import 'package:w_transport/w_transport.dart' show RequestProgress;
 
-import 'package:w_transport/src/http/client/util.dart'
+import 'package:w_transport/src/http/browser/utils.dart'
     show transformProgressEvents;
 
 void main() {
@@ -36,9 +36,9 @@ void main() {
         new MockProgressEvent.computable(73, 100),
         new MockProgressEvent.computable(100, 100),
       ]);
-      Stream<WProgress> wEventStream =
+      Stream<RequestProgress> requestProgressStream =
           eventStream.transform(transformProgressEvents);
-      List<WProgress> wEvents = await wEventStream.toList();
+      List<RequestProgress> wEvents = await requestProgressStream.toList();
       expect(wEvents[0].percent, equals(0.0));
       expect(wEvents[1].percent, equals(10.0));
       expect(wEvents[2].percent, equals(50.0));
@@ -54,14 +54,14 @@ void main() {
         new MockProgressEvent.nonComputable(),
       ]);
       Stream wEventStream = events.transform(transformProgressEvents);
-      List<WProgress> wEvents = await wEventStream.toList();
+      List<RequestProgress> wEvents = await wEventStream.toList();
       expect(wEvents[0].percent, equals(0.0));
       expect(wEvents[1].percent, equals(0.0));
     });
 
     test('should support pausing and resuming a subscription', () async {
       StreamController<ProgressEvent> eventController = new StreamController();
-      Stream<WProgress> wEventStream =
+      Stream<RequestProgress> wEventStream =
           eventController.stream.transform(transformProgressEvents);
 
       Completer c = new Completer();

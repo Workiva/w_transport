@@ -20,7 +20,7 @@ import 'dart:typed_data';
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_client.dart';
+import 'package:w_transport/w_transport_browser.dart';
 
 import 'common.dart';
 

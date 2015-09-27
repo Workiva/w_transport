@@ -17,12 +17,12 @@ library w_transport.test.integration.ws.server_test;
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_server.dart';
+import 'package:w_transport/w_transport_vm.dart';
 
 import 'common.dart';
 
 void main() {
-  configureWTransportForServer();
+  configureWTransportForVM();
 
   WebSocketIntegrationConfig config = new WebSocketIntegrationConfig(
       'Server', Uri.parse('ws://localhost:8024'));

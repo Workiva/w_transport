@@ -15,12 +15,11 @@
 @TestOn('browser')
 library w_transport.test.integration.http.client_test;
 
-import 'dart:convert';
 import 'dart:html';
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_client.dart';
+import 'package:w_transport/w_transport_browser.dart';
 
 import 'common.dart';
 
@@ -38,89 +37,84 @@ void main() {
     test('should support HEAD request', () async {
       // HEAD requests cannot return a body, but we can use that to
       // verify that this was actually a HEAD request
-      WResponse response = await WHttp.head(config.reflectEndpointUri);
+      Response response = await Http.head(config.reflectEndpointUri);
       expect(response.status, equals(200));
-      expect(await response.asText(), equals(''));
+      expect(response.body.asString(), equals(''));
     });
 
     test('should support a FormData payload', () async {
-      WRequest request = new WRequest()..uri = config.reflectEndpointUri;
-      FormData data = new FormData();
-      Blob blob = new Blob(['blob']);
-      data.appendBlob('blob', blob);
-      data.append('text', 'text');
-      request.data = data;
+      MultipartRequest request = new MultipartRequest()
+        ..uri = config.reflectEndpointUri
+        ..fields['text'] = 'text'
+        ..files['blob'] = new Blob(['blob']);
       await request.post();
     });
 
-    test('should throw if data type is invalid', () async {
-      WRequest request = new WRequest()
-        ..uri = config.reflectEndpointUri
-        ..data = true;
-      expect(request.post(), throwsArgumentError);
-    });
+//    test('should throw if data type is invalid', () async {
+//      Request request = new Request()
+//        ..uri = config.reflectEndpointUri
+//        ..body = true;
+//      expect(request.post(), throwsArgumentError);
+//    });
 
     test('should have an upload progress stream', () async {
       bool uploadProgressListenedTo = false;
-      WRequest request = new WRequest()..uri = config.reflectEndpointUri;
-      FormData data = new FormData();
-      data.append('file1', 'file1');
-      data.append('file2', 'file2');
-      data.append('file3', 'file3');
-      request.data = data;
-      request.uploadProgress.listen((WProgress progress) {
+      MultipartRequest request = new MultipartRequest()
+        ..uri = config.reflectEndpointUri
+        ..fields['file1'] = 'file1'
+        ..fields['file2'] = 'file2'
+        ..fields['file3'] = 'file3';
+      request.uploadProgress.listen((RequestProgress progress) {
         if (progress.percent > 0) {
           uploadProgressListenedTo = true;
         }
       });
-      WResponse response = await request.post();
-      await response.asStream().drain();
+      await request.post();
       expect(uploadProgressListenedTo, isTrue);
     });
 
     test('should have a download progress stream', () async {
       bool downloadProgressListenedTo = false;
-      WRequest request = new WRequest()..uri = config.downloadEndpointUri;
-      request.path = '/test/http/download';
-      request.downloadProgress.listen((WProgress progress) {
+      Request request = new Request()
+        ..uri = config.downloadEndpointUri
+        ..path = '/test/http/download';
+      request.downloadProgress.listen((RequestProgress progress) {
         if (progress.percent > 0) {
           downloadProgressListenedTo = true;
         }
       });
-      WResponse response = await request.get();
-      await response.asStream().drain();
+      await request.get();
       expect(downloadProgressListenedTo, isTrue);
     });
 
     test('should be able to configure the HttpRequest', () async {
-      WRequest request = new WRequest()..uri = config.reflectEndpointUri;
+      Request request = new Request()..uri = config.reflectEndpointUri;
       request.configure((HttpRequest xhr) async {
         xhr.setRequestHeader('x-configured', 'true');
       });
-      WResponse response = await request.get();
-      Map data = JSON.decode(await response.asText());
-      expect(data['headers']['x-configured'], equals('true'));
+      Response response = await request.get();
+      expect(response.body.asJson()['headers']['x-configured'], equals('true'));
     });
 
     group('should set the withCredentials flag', () {
       test('to true', () async {
-        WRequest request = new WRequest()..uri = config.pingEndpointUri;
-        request.withCredentials = true;
+        Request request = new Request()
+          ..uri = config.pingEndpointUri
+          ..withCredentials = true;
         request.configure((HttpRequest xhr) async {
           expect(xhr.withCredentials, isTrue);
         });
-        var response = await request.get();
-        await response.asText();
+        await request.get();
       });
 
       test('to false', () async {
-        WRequest request = new WRequest()..uri = config.pingEndpointUri;
-        request.withCredentials = false;
+        Request request = new Request()
+          ..uri = config.pingEndpointUri
+          ..withCredentials = false;
         request.configure((HttpRequest xhr) async {
           expect(xhr.withCredentials, isFalse);
         });
-        var response = await request.get();
-        await response.asText();
+        await request.get();
       });
     });
   });

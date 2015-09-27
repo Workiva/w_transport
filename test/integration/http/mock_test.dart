@@ -30,20 +30,31 @@ void main() {
   HttpIntegrationConfig config =
       new HttpIntegrationConfig('Mock', Uri.parse('http://mocks.com'));
 
-  MockTransports.http.when(config.fourOhFourEndpointUri,
-      (WRequest request) async => new MockWResponse.notFound());
+  MockTransports.http.when(config.downloadEndpointUri, (_) async {
+    var byteStream = new Stream.fromIterable([UTF8.encode('file')]);
+    return new MockStreamedResponse.ok(byteStream: byteStream);
+  });
 
-  MockTransports.http.when(config.reflectEndpointUri, (WRequest request) async {
+  MockTransports.http.when(config.fourOhFourEndpointUri,
+      (_) async => new MockResponse.notFound());
+
+  MockTransports.http.when(config.reflectEndpointUri, (FinalizedRequest request) async {
+    String body;
+    if (request.body is StreamedHttpBody) {
+      body = await request.body.decode();
+    } else {
+      body = (request.body as HttpBody).asString();
+    }
     Map reflection = {
       'method': request.method,
       'path': request.uri.path,
       'headers': request.headers,
-      'body': request.data,
+      'body': body,
     };
-    return new MockWResponse.ok(body: JSON.encode(reflection));
+    return new MockResponse.ok(body: JSON.encode(reflection));
   });
 
-  MockTransports.http.when(config.timeoutEndpointUri, (WRequest request) async {
+  MockTransports.http.when(config.timeoutEndpointUri, (_) async {
     return new Completer().future;
   });
 

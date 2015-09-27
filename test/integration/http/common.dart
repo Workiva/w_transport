@@ -15,7 +15,7 @@
 library w_transport.test.integration.http.common;
 
 import 'dart:async';
-import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
@@ -42,179 +42,164 @@ class HttpIntegrationConfig {
 
 void runCommonHttpIntegrationTests(HttpIntegrationConfig config) {
   test('should support DELETE request', () async {
-    WResponse response = await WHttp.delete(config.reflectEndpointUri);
+    Response response = await Http.delete(config.reflectEndpointUri);
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('DELETE'));
+    expect(response.body.asJson()['method'], equals('DELETE'));
   });
 
   test('should support DELETE request with headers', () async {
-    WRequest request = _createRequestWithHeaders(config.reflectEndpointUri);
-    WResponse response = await request.delete();
+    Request request = _createRequestWithHeaders(config.reflectEndpointUri);
+    Response response = await request.delete();
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('DELETE'));
-    expect(data['headers'],
+    expect(response.body.asJson()['method'], equals('DELETE'));
+    expect(response.body.asJson()['headers'],
         containsPair('authorization', request.headers['authorization']));
-    expect(data['headers'],
+    expect(response.body.asJson()['headers'],
         containsPair('content-type', request.headers['content-type']));
     expect(
-        data['headers'], containsPair('x-tokens', request.headers['x-tokens']));
+        response.body.asJson()['headers'], containsPair('x-tokens', request.headers['x-tokens']));
   });
 
   test('should support GET request', () async {
-    WResponse response = await WHttp.get(config.reflectEndpointUri);
+    Response response = await Http.get(config.reflectEndpointUri);
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('GET'));
+    expect(response.body.asJson()['method'], equals('GET'));
   });
 
   test('should support GET request with headers', () async {
-    WRequest request = _createRequestWithHeaders(config.reflectEndpointUri);
-    WResponse response = await request.get();
+    Request request = _createRequestWithHeaders(config.reflectEndpointUri);
+    Response response = await request.get();
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('GET'));
-    expect(data['headers'],
+    expect(response.body.asJson()['method'], equals('GET'));
+    expect(response.body.asJson()['headers'],
         containsPair('authorization', request.headers['authorization']));
-    expect(data['headers'],
+    expect(response.body.asJson()['headers'],
         containsPair('content-type', request.headers['content-type']));
     expect(
-        data['headers'], containsPair('x-tokens', request.headers['x-tokens']));
+        response.body.asJson()['headers'], containsPair('x-tokens', request.headers['x-tokens']));
   });
 
   test('should support HEAD request', () async {
-    WResponse response = await WHttp.head(config.reflectEndpointUri);
+    Response response = await Http.head(config.reflectEndpointUri);
     expect(response.status, equals(200));
   });
 
   test('should support HEAD request with headers', () async {
-    WRequest request = _createRequestWithHeaders(config.reflectEndpointUri);
-    WResponse response = await request.head();
+    Request request = _createRequestWithHeaders(config.reflectEndpointUri);
+    Response response = await request.head();
     expect(response.status, equals(200));
   });
 
   test('should support OPTIONS request', () async {
-    WResponse response = await WHttp.options(config.reflectEndpointUri);
+    Response response = await Http.options(config.reflectEndpointUri);
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('OPTIONS'));
+    expect(response.body.asJson()['method'], equals('OPTIONS'));
   });
 
   test('should support OPTIONS request with headers', () async {
-    WRequest request = _createRequestWithHeaders(config.reflectEndpointUri);
-    WResponse response = await request.options();
+    Request request = _createRequestWithHeaders(config.reflectEndpointUri);
+    Response response = await request.options();
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('OPTIONS'));
-    expect(data['headers'],
+    expect(response.body.asJson()['method'], equals('OPTIONS'));
+    expect(response.body.asJson()['headers'],
         containsPair('authorization', request.headers['authorization']));
-    expect(data['headers'],
+    expect(response.body.asJson()['headers'],
         containsPair('content-type', request.headers['content-type']));
     expect(
-        data['headers'], containsPair('x-tokens', request.headers['x-tokens']));
+        response.body.asJson()['headers'], containsPair('x-tokens', request.headers['x-tokens']));
   });
 
   test('should support PATCH request', () async {
-    WResponse response = await WHttp.patch(config.reflectEndpointUri);
+    Response response = await Http.patch(config.reflectEndpointUri);
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('PATCH'));
+    expect(response.body.asJson()['method'], equals('PATCH'));
   });
 
   test('should support PATCH request with headers', () async {
-    WRequest request = _createRequestWithHeaders(config.reflectEndpointUri);
-    WResponse response = await request.patch();
+    Request request = _createRequestWithHeaders(config.reflectEndpointUri);
+    Response response = await request.patch();
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('PATCH'));
-    expect(data['headers'],
+    expect(response.body.asJson()['method'], equals('PATCH'));
+    expect(response.body.asJson()['headers'],
         containsPair('authorization', request.headers['authorization']));
-    expect(data['headers'],
+    expect(response.body.asJson()['headers'],
         containsPair('content-type', request.headers['content-type']));
     expect(
-        data['headers'], containsPair('x-tokens', request.headers['x-tokens']));
+        response.body.asJson()['headers'], containsPair('x-tokens', request.headers['x-tokens']));
   });
 
   test('should support PATCH request with data', () async {
-    WRequest request = _createRequestWithData(config.reflectEndpointUri);
-    WResponse response = await request.patch();
+    Request request = _createRequestWithData(config.reflectEndpointUri);
+    Response response = await request.patch();
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('PATCH'));
-    expect(data['body'], equals(request.data));
+    expect(response.body.asJson()['method'], equals('PATCH'));
+    expect(response.body.asJson()['body'], equals(request.body));
   });
 
   test('should support POST request', () async {
-    WResponse response = await WHttp.post(config.reflectEndpointUri);
+    Response response = await Http.post(config.reflectEndpointUri);
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('POST'));
+    expect(response.body.asJson()['method'], equals('POST'));
   });
 
   test('should support POST request with headers', () async {
-    WRequest request = _createRequestWithHeaders(config.reflectEndpointUri);
-    WResponse response = await request.post();
+    Request request = _createRequestWithHeaders(config.reflectEndpointUri);
+    Response response = await request.post();
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('POST'));
-    expect(data['headers'],
+    expect(response.body.asJson()['method'], equals('POST'));
+    expect(response.body.asJson()['headers'],
         containsPair('authorization', request.headers['authorization']));
-    expect(data['headers'],
+    expect(response.body.asJson()['headers'],
         containsPair('content-type', request.headers['content-type']));
     expect(
-        data['headers'], containsPair('x-tokens', request.headers['x-tokens']));
+        response.body.asJson()['headers'], containsPair('x-tokens', request.headers['x-tokens']));
   });
 
   test('should support POST request with data', () async {
-    WRequest request = _createRequestWithData(config.reflectEndpointUri);
-    WResponse response = await request.post();
+    Request request = _createRequestWithData(config.reflectEndpointUri);
+    Response response = await request.post();
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('POST'));
-    expect(data['body'], equals(request.data));
+    expect(response.body.asJson()['method'], equals('POST'));
+    expect(response.body.asJson()['body'], equals(request.body));
   });
 
   test('should support PUT request', () async {
-    WResponse response = await WHttp.put(config.reflectEndpointUri);
+    Response response = await Http.put(config.reflectEndpointUri);
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('PUT'));
+    expect(response.body.asJson()['method'], equals('PUT'));
   });
 
   test('should support PUT request with headers', () async {
-    WRequest request = _createRequestWithHeaders(config.reflectEndpointUri);
-    WResponse response = await request.put();
+    Request request = _createRequestWithHeaders(config.reflectEndpointUri);
+    Response response = await request.put();
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('PUT'));
-    expect(data['headers'],
+    expect(response.body.asJson()['method'], equals('PUT'));
+    expect(response.body.asJson()['headers'],
         containsPair('authorization', request.headers['authorization']));
-    expect(data['headers'],
+    expect(response.body.asJson()['headers'],
         containsPair('content-type', request.headers['content-type']));
     expect(
-        data['headers'], containsPair('x-tokens', request.headers['x-tokens']));
+        response.body.asJson()['headers'], containsPair('x-tokens', request.headers['x-tokens']));
   });
 
   test('should support PUT request with data', () async {
-    WRequest request = _createRequestWithData(config.reflectEndpointUri);
-    WResponse response = await request.put();
+    Request request = _createRequestWithData(config.reflectEndpointUri);
+    Response response = await request.put();
     expect(response.status, equals(200));
-    Map data = JSON.decode(await response.asText());
-    expect(data['method'], equals('PUT'));
-    expect(data['body'], equals(request.data));
+    expect(response.body.asJson()['method'], equals('PUT'));
+    expect(response.body.asJson()['body'], equals(request.body));
   });
 
-  test('should support multiple requests from a single WHttp client', () async {
-    WHttp http = new WHttp();
-    List<Future<WResponse>> requests = [
-      http.newRequest().delete(config.reflectEndpointUri),
-      http.newRequest().get(config.reflectEndpointUri),
-      http.newRequest().head(config.reflectEndpointUri),
-      http.newRequest().options(config.reflectEndpointUri),
-      http.newRequest().patch(config.reflectEndpointUri),
-      http.newRequest().post(config.reflectEndpointUri),
-      http.newRequest().put(config.reflectEndpointUri),
+  test('should support multiple requests from a single Http client', () async {
+    Client client = new Client();
+    List<Future<Response>> requests = [
+      client.newRequest().delete(uri: config.reflectEndpointUri),
+      client.newRequest().get(uri: config.reflectEndpointUri),
+      client.newRequest().head(uri: config.reflectEndpointUri),
+      client.newRequest().options(uri: config.reflectEndpointUri),
+      client.newRequest().patch(uri: config.reflectEndpointUri),
+      client.newRequest().post(uri: config.reflectEndpointUri),
+      client.newRequest().put(uri: config.reflectEndpointUri),
     ];
     await Future.wait(requests);
     for (int i = 0; i < requests.length; i++) {
@@ -223,64 +208,58 @@ void runCommonHttpIntegrationTests(HttpIntegrationConfig config) {
   });
 
   test(
-      'should support closing a WHttp client, at which point new requests should throw',
+      'should support closing an HTTP client, at which point new requests should throw',
       () async {
-    WHttp http = new WHttp();
-    http.close();
-    expect(http.newRequest, throwsStateError);
+    Client client = new Client();
+    client.close();
+    expect(client.newRequest, throwsStateError);
   });
 
-  test('should make response data available as a Future', () async {
-    WResponse response = await WHttp.get(config.reflectEndpointUri);
-    Object data = await response.asFuture();
-    expect(data is List<int> || data is String, isTrue);
+  test('should make response data available as bytes', () async {
+    Response response = await Http.get(config.reflectEndpointUri);
+    expect(response.body.asBytes(), new isInstanceOf<Uint8List>());
+    expect(response.body.asBytes(), isNotEmpty);
   });
 
-  test('should make response data available decoded to text', () async {
-    WResponse response = await WHttp.get(config.reflectEndpointUri);
-    String text = await response.asText();
-    expect(text.isNotEmpty, isTrue);
+  test('should make response body available decoded to text', () async {
+    Response response = await Http.get(config.reflectEndpointUri);
+    expect(response.body.asString().isNotEmpty, isTrue);
   });
 
-  test('should make response data available as a Stream', () async {
-    WResponse response = await WHttp.get(config.reflectEndpointUri);
-    expect(await response.asStream().isEmpty, isFalse);
+  test('should make response data available as JSON', () async {
+    Response response = await Http.get(config.reflectEndpointUri);
+    expect(response.body.asJson(), new isInstanceOf<Map>());
   });
 
-  test('should cache data to allow multiple accesses', () async {
-    WResponse response = await WHttp.get(config.reflectEndpointUri);
-    Object data = await response.asFuture();
-    expect(data is List<int> || data is String, isTrue);
-    String text = await response.asText();
-    expect(text.isNotEmpty, isTrue);
-    expect(await response.asStream().isEmpty, isFalse);
+  test('should throw when trying to decode response body to JSON if not valid', () async {
+    Response response = await Http.get(config.downloadEndpointUri);
+    expect(response.body.asJson, throwsFormatException);
   });
 
-  test('should be able to update the data source', () async {
-    WResponse response = await WHttp.get(config.reflectEndpointUri);
-    response.update(new Stream.fromIterable([UTF8.encode('updated1')]));
-    expect(await response.asText(), equals('updated1'));
-    response.update('updated2');
-    expect(await response.asText(), equals('updated2'));
+  test('should allow multiple accesses', () async {
+    Response response = await Http.get(config.reflectEndpointUri);
+    expect(response.body.asBytes(), new isInstanceOf<Uint8List>());
+    expect(response.body.asString(), new isInstanceOf<String>());
+    expect(response.body.asJson(), new isInstanceOf<Map>());
   });
 
-  test('should throw WHttpException on failed requests', () async {
+  test('should throw RequestException on failed requests', () async {
     expect(
-        WHttp.get(config.fourOhFourEndpointUri),
+        Http.get(config.fourOhFourEndpointUri),
         throwsA(predicate((exception) {
           return exception != null &&
-              exception is WHttpException &&
+              exception is RequestException &&
               exception.method == 'GET' &&
               exception.uri == config.fourOhFourEndpointUri;
-        }, 'throws a WHttpException')));
+        }, 'throws a RequestException')));
   });
 
   test('request cancellation prior to dispatch should cause request to fail',
       () async {
-    WRequest request = new WRequest()..uri = config.hostUri;
+    Request request = new Request()..uri = config.hostUri;
     request.abort();
     expect(request.get(), throwsA(predicate((exception) {
-      return exception is WHttpException &&
+      return exception is RequestException &&
           exception.toString().contains('canceled');
     })));
   });
@@ -288,7 +267,7 @@ void runCommonHttpIntegrationTests(HttpIntegrationConfig config) {
   test(
       'request cancellation after dispatch but prior to resolution should cause request to fail',
       () async {
-    WRequest request = new WRequest()..uri = config.timeoutEndpointUri;
+    Request request = new Request()..uri = config.timeoutEndpointUri;
     Future future = request.get();
 
     // Wait a sufficient amount of time to allow the request to open.
@@ -297,15 +276,15 @@ void runCommonHttpIntegrationTests(HttpIntegrationConfig config) {
 
     // Abort the request now that it is in flight.
     request.abort();
-    expect(future, throwsA(new isInstanceOf<WHttpException>()));
+    expect(future, throwsA(new isInstanceOf<RequestException>()));
   });
 }
 
-WRequest _createRequestWithData(Uri uri) => new WRequest()
+Request _createRequestWithData(Uri uri) => new Request()
   ..uri = uri
-  ..data = 'data';
+  ..body = 'data';
 
-WRequest _createRequestWithHeaders(Uri uri) => new WRequest()
+Request _createRequestWithHeaders(Uri uri) => new Request()
   ..uri = uri
   ..headers = {
     'authorization': 'test',

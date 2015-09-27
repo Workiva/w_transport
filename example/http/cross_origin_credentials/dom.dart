@@ -17,10 +17,8 @@ library w_transport.example.http.cross_origin_credentials.dom;
 import 'dart:async';
 import 'dart:html';
 
-import 'package:w_transport/w_transport.dart' show WHttpException;
-
-import './service.dart' as service;
-import './status.dart' as status;
+import 'service.dart' as service;
+import 'status.dart' as status;
 
 /// Update the authentication status in the DOM.
 void updateAuthenticationStatus() {
@@ -93,8 +91,6 @@ Future setupControlBindings() async {
     try {
       String response = await service.makeCredentialedRequest();
       display(response, true);
-    } on WHttpException catch (e) {
-      display(e.message, false);
     } catch (e) {
       display(e.toString(), false);
     }
@@ -105,8 +101,6 @@ Future setupControlBindings() async {
     try {
       String response = await service.makeUncredentialedRequest();
       display(response, true);
-    } on WHttpException catch (e) {
-      display(e.message, false);
     } catch (e) {
       display(e.toString(), false);
     }

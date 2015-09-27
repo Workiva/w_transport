@@ -19,7 +19,7 @@ import 'dart:html';
 
 import 'package:react/react_client.dart' as react_client;
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_client.dart'
+import 'package:w_transport/w_transport_browser.dart'
     show configureWTransportForBrowser;
 
 import '../../common/global_example_menu_component.dart';
@@ -39,15 +39,15 @@ handleFileClick(MouseEvent event) async {
   // Send GET request instead
   try {
     showFileContents(await requestFile(filePath));
-  } on WHttpException catch (error) {
+  } on RequestException catch (error) {
     showFileContents(error.message);
   }
 }
 
 /// Requests the contents of a file using WRequest.
 Future<String> requestFile(String filePath) async {
-  WResponse response = await WHttp.get(Uri.parse(filePath));
-  return response.asText();
+  Response response = await Http.get(Uri.parse(filePath));
+  return response.body.asString();
 }
 
 /// Displays the file contents in the response pane.

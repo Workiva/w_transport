@@ -20,7 +20,7 @@ import 'dart:html';
 import 'package:react/react.dart' as react;
 import 'package:w_transport/w_transport.dart';
 
-const int _pollingInterval = 4; // 4 seconds
+const int _pollingInterval = 10; // 10 seconds
 
 void renderGlobalExampleMenu({nav: true, serverStatus: false}) {
   // Insert a container div within which we will mount the global example menu.
@@ -36,9 +36,9 @@ void renderGlobalExampleMenu({nav: true, serverStatus: false}) {
 
 Future<bool> _ping(Uri uri) async {
   try {
-    WResponse response = await WHttp.get(uri);
+    Response response = await Http.get(uri);
     return response.status == 200;
-  } on WHttpException {
+  } on RequestException {
     return false;
   }
 }

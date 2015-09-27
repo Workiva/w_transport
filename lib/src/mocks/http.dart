@@ -16,25 +16,26 @@ library w_transport.src.mocks.http;
 
 import 'dart:async';
 
-import 'package:w_transport/src/http/mock/w_request.dart';
-import 'package:w_transport/src/http/mock/w_response.dart';
+import 'package:w_transport/w_transport.dart';
 
-import 'package:w_transport/src/http/w_response.dart';
-import 'package:w_transport/src/http/w_request.dart';
+import 'package:w_transport/src/http/finalized_request.dart';
+import 'package:w_transport/src/http/mock/base_request.dart';
+import 'package:w_transport/src/http/mock/response.dart';
+import 'package:w_transport/src/http/response.dart';
 
-typedef Future<WResponse> WRequestHandler(WRequest request);
+typedef Future<BaseResponse> RequestHandler(FinalizedRequest request);
 
 List<_RequestExpectation> _expectations = [];
-Map<String, Map<String, WRequestHandler>> _handlers = {};
-List<WRequest> _pending = [];
+Map<String, Map<String, RequestHandler>> _handlers = {};
+List<MockBaseRequest> _pending = [];
 
-void cancelMockRequest(MockWRequest request) {
+void cancelMockRequest(MockBaseRequest request) {
   if (_pending.contains(request)) {
     _pending.remove(request);
   }
 }
 
-handleMockRequest(MockWRequest request) {
+handleMockRequest(MockBaseRequest request) {
   Iterable matchingExpectations = _expectations
       .where((e) => e.method == request.method && e.uri == request.uri);
   if (matchingExpectations.isNotEmpty) {
@@ -62,10 +63,12 @@ handleMockRequest(MockWRequest request) {
 
     /// If a handler was set up for this type of request, call the handler.
     if (handler != null) {
-      handler(request).then((response) {
-        request.complete(response: response);
-      }, onError: (error) {
-        request.completeError(error: error);
+      request.onSent.then((FinalizedRequest finalizedRequest) {
+        handler(finalizedRequest).then((response) {
+          request.complete(response: response);
+        }, onError: (error) {
+          request.completeError(error: error);
+        });
       });
       return;
     }
@@ -82,32 +85,32 @@ class MockHttp {
 
   int get numPendingRequests => _pending.length;
 
-  void causeFailureOnOpen(WRequest request) {
+  void causeFailureOnOpen(BaseRequest request) {
     _verifyRequestIsMock(request);
-    (request as MockWRequest).causeFailureOnOpen();
+    (request as MockBaseRequest).causeFailureOnOpen();
   }
 
-  void completeRequest(WRequest request, {WResponse response}) {
+  void completeRequest(BaseRequest request, {BaseResponse response}) {
     _verifyRequestIsMock(request);
-    (request as MockWRequest).complete(response: response);
+    (request as MockBaseRequest).complete(response: response);
     _pending.remove(request);
   }
 
   void expect(String method, Uri uri,
-      {Object failWith, WResponse respondWith}) {
+      {Object failWith, BaseResponse respondWith}) {
     if (failWith != null && respondWith != null) {
       throw new ArgumentError('Use failWith OR respondWith, but not both.');
     }
     if (failWith == null && respondWith == null) {
-      respondWith = new MockWResponse.ok();
+      respondWith = new MockResponse.ok();
     }
     _expectations.add(new _RequestExpectation(method, uri,
         failWith: failWith, respondWith: respondWith));
   }
 
-  void failRequest(WRequest request, {Object error, WResponse response}) {
+  void failRequest(BaseRequest request, {Object error, BaseResponse response}) {
     _verifyRequestIsMock(request);
-    (request as MockWRequest).completeError(error: error, response: response);
+    (request as MockBaseRequest).completeError(error: error, response: response);
     _pending.remove(request);
   }
 
@@ -134,7 +137,7 @@ class MockHttp {
     if (errorMsg.isNotEmpty) throw new StateError(errorMsg);
   }
 
-  void when(Uri uri, WRequestHandler handler, {String method}) {
+  void when(Uri uri, RequestHandler handler, {String method}) {
     String uriKey = _getUriKey(uri);
     if (!_handlers.containsKey(uriKey)) {
       _handlers[uriKey] = {};
@@ -146,10 +149,10 @@ class MockHttp {
     }
   }
 
-  void _verifyRequestIsMock(WRequest request) {
-    if (request is! MockWRequest) {
+  void _verifyRequestIsMock(BaseRequest request) {
+    if (request is! MockBaseRequest) {
       throw new ArgumentError.value(
-          'Request must be of type MockWRequest. Make sure you configured w_transport for mocking.');
+          'Request must be of type MockBaseRequest. Make sure you configured w_transport for testing.');
     }
   }
 }
@@ -157,9 +160,9 @@ class MockHttp {
 class _RequestExpectation {
   Object failWith;
   final String method;
-  WResponse respondWith;
+  BaseResponse respondWith;
   final Uri uri;
 
   _RequestExpectation(String this.method, Uri this.uri,
-      {Object this.failWith, WResponse this.respondWith});
+      {Object this.failWith, BaseResponse this.respondWith});
 }

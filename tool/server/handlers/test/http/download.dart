@@ -31,7 +31,8 @@ class DownloadHandler extends Handler {
     Stream downloadStream = file.openRead();
     request.response.statusCode = HttpStatus.OK;
     request.response.headers
-        .set('Content-Length', file.lengthSync().toString());
+        .set('content-length', file.lengthSync().toString());
+    request.response.headers.set('content-type', 'text/plain; charset=utf-8');
     setCorsHeaders(request);
     await request.response.addStream(downloadStream);
   }

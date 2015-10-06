@@ -3,8 +3,6 @@ library w_transport.src.http.client;
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 
-// TODO: abort all in-flight requests when closed
-
 abstract class Client {
   factory Client() => PlatformAdapter.retrieve().newClient();
 

@@ -41,7 +41,7 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> patch(Uri uri, {String body, Map<String, String> headers, bool withCredentials})
-      => _createRequest(uri, headers: headers, withCredentials: withCredentials).patch();
+      => _createRequest(uri, body: body, headers: headers, withCredentials: withCredentials).patch();
 
   /// Sends a POST request to [uri]. Includes request [headers] and a request
   /// [body] if given.
@@ -49,7 +49,7 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> post(Uri uri, {String body, Map<String, String> headers, bool withCredentials})
-      => _createRequest(uri, headers: headers, withCredentials: withCredentials).post();
+      => _createRequest(uri, body: body, headers: headers, withCredentials: withCredentials).post();
 
   /// Sends a PUT request to [uri]. Includes request [headers] and a request
   /// [body] if given.
@@ -57,16 +57,7 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> put(Uri uri, {String body, Map<String, String> headers, bool withCredentials})
-      => _createRequest(uri, headers: headers, withCredentials: withCredentials).put();
-
-  /// Sends a TRACE request to [uri]. Includes request [headers] if given.
-  ///
-  /// Secure cookies (credentials) will be included (in the browser) if
-  /// [withCredentials] is true.
-  ///
-  /// **Note:** TRACE requests are forbidden in the browser for security.
-  static Future<Response> trace(Uri uri, {Map<String, String> headers, bool withCredentials})
-      => _createRequest(uri, headers: headers, withCredentials: withCredentials).trace();
+      => _createRequest(uri, body: body, headers: headers, withCredentials: withCredentials).put();
 
   /// Sends a request to [uri] using the HTTP method specified by [method].
   /// Includes request [headers] and a request [body] if given.
@@ -74,7 +65,7 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> send(String method, Uri uri, {String body, Map<String, String> headers, bool withCredentials})
-      => _createRequest(uri, headers: headers, withCredentials: withCredentials).send(method);
+      => _createRequest(uri, body: body, headers: headers, withCredentials: withCredentials).send(method);
 
   static _createRequest(Uri uri, {String body, Map<String, String> headers, bool withCredentials}) {
     var request = new Request()

@@ -117,10 +117,6 @@ class StreamedHttpBody extends BaseHttpBody {
     _encoding = http_utils.parseEncodingFromContentType(contentType, fallback: fallbackEncoding);
   }
 
-  /// Converts this streamed request/response body to bytes using [toBytes] and
-  /// decodes the bytes to text using [encoding].
-  Future<String> decode() async => encoding.decode(await toBytes());
-
   /// Listens to this streamed request/response body and combines all chunks of
   /// bytes into a single list of bytes.
   Future<Uint8List> toBytes() => http_utils.reduceByteStream(byteStream);

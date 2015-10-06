@@ -1,5 +1,6 @@
 library w_transport.src.http.common.json_request;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -19,13 +20,15 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
   dynamic get body => _source;
 
   set body(dynamic json) {
+    verifyUnsent();
     // Store the source so it can be returned from the getter without having to
     // decode it again.
     _source = json;
 
-    // Encode immediately so that invalid JSON will result in an exception
-    // now rather than later.
+    // Encode immediately so that we can attempt decoding it such that invalid
+    // JSON will result in an exception now rather than later.
     _encodedJson = JSON.encode(json);
+    JSON.decode(_encodedJson);
   }
 
   @override
@@ -34,14 +37,13 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
   @override
   MediaType get defaultContentType => new MediaType('application', 'json', {'charset': encoding.name});
 
-  // TODO comment
-  // Calculate each time because body could be set incrementally, meaning we can't cache
+  // Calculate each time because body can be modified outside of the setter.
   Uint8List get _bytes => _encodedJson != null
         ? encoding.encode(_encodedJson)
         : new Uint8List.fromList([]);
 
   @override
-  HttpBody finalizeBody([body]) {
+  Future<HttpBody> finalizeBody([body]) async {
     if (body != null) {
       this.body = body;
     }

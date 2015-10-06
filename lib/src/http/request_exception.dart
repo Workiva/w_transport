@@ -27,7 +27,7 @@ class RequestException implements Exception {
   final BaseRequest request;
 
   /// Response to the failed request (some of the properties may be unavailable).
-  final Response response;
+  final BaseResponse response;
 
   /// URL of the attempted/unsuccessful request.
   final Uri uri;

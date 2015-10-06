@@ -43,7 +43,10 @@ class ReflectHandler extends Handler {
     if (request.headers.contentType == null) {
       encoding = LATIN1;
     } else {
-      MediaType contentType = new MediaType.parse(request.headers.contentType.toString());
+      MediaType contentType = new MediaType(
+        request.headers.contentType.primaryType,
+        request.headers.contentType.subType,
+        request.headers.contentType.parameters);
       encoding = http_utils.parseEncodingFromContentType(contentType, fallback: LATIN1);
     }
 
@@ -60,6 +63,7 @@ class ReflectHandler extends Handler {
     request.response.write(JSON.encode(reflection));
   }
 
+  Future copy(HttpRequest request) async => reflect(request);
   Future delete(HttpRequest request) async => reflect(request);
   Future get(HttpRequest request) async => reflect(request);
   Future head(HttpRequest request) async => reflect(request);

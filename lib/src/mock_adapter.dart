@@ -41,8 +41,7 @@ class MockAdapter implements PlatformAdapter {
 
   /// Construct a new [MockMultipartRequest] instance that implements
   /// [MultipartRequest].
-  /// TODO
-  MultipartRequest newMultipartRequest() => null;
+  MultipartRequest newMultipartRequest() => new MockMultipartRequest();
 
   /// Construct a new [MockPlainTextRequest] instance that implements
   /// [Request].

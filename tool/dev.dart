@@ -54,8 +54,11 @@ main(List<String> args) async {
   config.format.directories = directories;
 
   config.test
-    ..unitTests = ['test/unit/']
-    ..integrationTests = ['test/integration/']
+    ..unitTests = ['test/unit/browser_unit_test.dart', 'test/unit/platform_independent_unit_test.dart']
+    ..integrationTests = [
+      'test/integration/browser_integration_test.dart',
+      'test/integration/mock_integration_test.dart',
+      'test/integration/vm_integration_test.dart']
     ..platforms = ['vm', 'content-shell']
     ..before = [_startServer]
     ..after = [_stopServer];

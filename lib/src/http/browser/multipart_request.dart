@@ -1,5 +1,7 @@
 library w_transport.src.http.browser.multipart_request;
 
+import 'dart:async';
+import 'dart:convert';
 import 'dart:html';
 
 import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap, MediaType;
@@ -7,7 +9,9 @@ import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap, MediaType
 import 'package:w_transport/src/http/browser/form_data_body.dart';
 import 'package:w_transport/src/http/browser/request_mixin.dart';
 import 'package:w_transport/src/http/common/request.dart';
+import 'package:w_transport/src/http/multipart_file.dart';
 import 'package:w_transport/src/http/requests.dart';
+import 'package:w_transport/src/http/utils.dart' as http_utils;
 
 class BrowserMultipartRequest extends CommonRequest with BrowserRequestMixin implements MultipartRequest {
   BrowserMultipartRequest() : super();
@@ -37,7 +41,7 @@ class BrowserMultipartRequest extends CommonRequest with BrowserRequestMixin imp
   Map<String, String> get fields
       => isSent ? new Map.unmodifiable(_fields) : _fields;
 
-  Map<String, Blob> get files
+  Map<String, dynamic> get files
       => isSent ? new Map.unmodifiable(_files) : _files;
 
   @override
@@ -51,20 +55,41 @@ class BrowserMultipartRequest extends CommonRequest with BrowserRequestMixin imp
   }
 
   @override
-  FormDataBody finalizeBody([body]) {
+  Future<FormDataBody> finalizeBody([body]) async {
     if (body != null) {
       throw new UnsupportedError('The body of a Multipart request must be set via `fields` and/or `files`.');
     }
 
     FormData formData = new FormData();
-    fields.forEach(formData.append);
-    files.forEach((name, blob) {
-      if (blob is File) {
-        formData.appendBlob(name, blob, blob.name);
+
+    // Add each text field.
+    fields.forEach((name, value) {
+      if (http_utils.isAsciiOnly(value)) {
+        formData.append(name, value);
       } else {
+        MediaType contentType = new MediaType('text', 'plain', {'charset': UTF8.name});
+        Blob blob = new Blob([UTF8.encode(value)], contentType.toString());
         formData.appendBlob(name, blob);
       }
     });
+    fields.forEach(formData.append);
+
+    // Add each blob/file.
+    List<Future> additions = [];
+    files.forEach((name, value) {
+      additions.add(() async {
+        if (value is Blob) {
+          formData.appendBlob(name, value);
+        } else if (value is File) {
+          formData.appendBlob(name, value, value.name);
+        } else if (value is MultipartFile) {
+          String contentType = value.contentType != null ? value.contentType.toString() : null;
+          Blob blob = new Blob(await value.byteStream.toList(), contentType);
+          formData.appendBlob(name, blob, value.filename);
+        }
+      }());
+    });
+    await Future.wait(additions);
 
     return new FormDataBody(formData);
   }

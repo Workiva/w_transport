@@ -21,6 +21,7 @@ import 'package:w_transport/src/platform_adapter.dart';
 
 void main() {
   test('PlatformAdapter.retrieve() should throw if not platform set', () async {
+    adapter = null;
     expect(PlatformAdapter.retrieve, throwsStateError);
   });
 }

@@ -18,7 +18,7 @@ class RequestProgress {
   double _percent;
 
   RequestProgress([this.loaded = 0, this.total = -1]) {
-    _lengthComputable = total > -1;
+    _lengthComputable = total != null && total > -1;
     if (!_lengthComputable) {
       _percent = 0.0;
     } else if (total == 0) {

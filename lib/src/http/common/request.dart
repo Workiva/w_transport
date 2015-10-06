@@ -18,7 +18,11 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
   CommonRequest();
   CommonRequest.withClient(client) : this.client = client;
 
-  /// TODO
+  /// The underlying HTTP client instance. In the browser, this will be null
+  /// because there is no HTTP client API available. In the VM, this will be an
+  /// instance of `dart:io.HttpClient`.
+  ///
+  /// If this is not null, it should be used to open and send the HTTP request.
   dynamic client;
 
   /// Configuration callback for advanced request configuration.
@@ -82,7 +86,15 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
 
   /// Content-type of this request. Set automatically based on the body type and
   /// the [encoding].
-  MediaType get contentType => _contentType != null ? _contentType : defaultContentType;
+  MediaType get contentType {
+    if (_contentType == null) {
+      _contentType = defaultContentType;
+      if (_contentType != null) {
+        _contentType.change(parameters: {'charset': encoding.name});
+      }
+    }
+    return _contentType;
+  }
 
   /// Set the content-type of this request. Used to update the charset
   /// parameter when the encoding changes.
@@ -140,14 +152,32 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
     _withCredentials = flag;
   }
 
+  /// Abort the request using the underlying HTTP API.
+  ///
+  /// This logic is platform-specific and should be implemented by the subclass.
   void abortRequest();
 
+  /// Perform any cleanup that may be necessary after the request has completed
+  /// (either successfully or not).
   void cleanUp() {}
 
-  BaseHttpBody finalizeBody([body]);
+  /// Finalize the request body. If a body was supplied to the request dispatch
+  /// method, it will be available as [body]. Otherwise the body from this
+  /// request should be used.
+  ///
+  /// This logic is platform-specific and should be implemented by the subclass.
+  Future<BaseHttpBody> finalizeBody([body]);
 
+  /// Open the request. If [client] is given, that client should be used to open
+  /// the request.
+  ///
+  /// This logic is platform-specific and should be implemented by the subclass.
   Future openRequest([client]);
 
+  /// Send the request described in [finalizedRequest] and fetch the response.
+  /// If [streamResponse] is true, the response should be streamed.
+  ///
+  /// This logic is platform-specific and should be implemented by the subclass.
   Future<BaseResponse> sendRequestAndFetchResponse(FinalizedRequest finalizedRequest, {bool streamResponse: false});
 
   /// Cancel this request. If the request has already finished, this will do nothing.
@@ -161,7 +191,8 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
     }
   }
 
-  void checkForCancellation({Response response}) {
+  /// Check if this request has been canceled.
+  void checkForCancellation({BaseResponse response}) {
     if (isCanceled) {
       throw new RequestException(
           method,
@@ -185,7 +216,13 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
     configureFn = configure;
   }
 
+  /// Finalize the request headers, in particular the content-length and
+  /// content-type headers since they depend on the request body. The returned
+  /// map should be unmodifiable.
   Map<String, String> finalizeHeaders() {
+    if (contentLength != null) {
+      headers['content-length'] = contentLength.toString();
+    }
     headers['content-type'] = contentType.toString();
     return new Map.unmodifiable(headers);
   }
@@ -193,9 +230,9 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
   /// Freeze this request in preparation of it being sent. This freezes all
   /// fields, preventing further unexpected modification, and triggers the
   /// creation of a finalized request body.
-  FinalizedRequest finalizeRequest([body]) {
+  Future<FinalizedRequest> finalizeRequest([body]) async {
     Map<String, String> finalizedHeaders = finalizeHeaders();
-    BaseHttpBody finalizedBody = finalizeBody(body);
+    BaseHttpBody finalizedBody = await finalizeBody(body);
     FinalizedRequest finalizedRequest = new FinalizedRequest(method, uri, finalizedHeaders, finalizedBody, withCredentials);
 
     if (isSent) throw new StateError('Request (${this.toString()}) has already been sent - it cannot be sent again.');
@@ -205,7 +242,7 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
   }
 
   @override
-  String toString() => '$method $uri';
+  String toString() => '$method $uri ($contentType)';
 
   /// Verify that this request has not yet been sent. Once it has, all fields
   /// should be considered frozen. If this request has been sent, this throws
@@ -214,60 +251,47 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
     if (isSent) throw new StateError('Request (${this.toString()}) has already been sent and can no longer be modified.');
   }
 
-  /// TODO
   Future<Response> delete({Map<String, String> headers, Uri uri}) => _send('DELETE', headers: headers, uri: uri);
 
-  /// TODO
   Future<Response> get({Map<String, String> headers, Uri uri}) => _send('GET', headers: headers, uri: uri);
 
-  /// TODO
   Future<Response> head({Map<String, String> headers, Uri uri}) => _send('HEAD', headers: headers, uri: uri);
 
-  /// TODO
   Future<Response> options({Map<String, String> headers, Uri uri}) => _send('OPTIONS', headers: headers, uri: uri);
 
-  /// TODO
   Future<Response> patch({body, Map<String, String> headers, Uri uri}) => _send('PATCH', body: body, headers: headers, uri: uri);
 
-  /// TODO
   Future<Response> post({body, Map<String, String> headers, Uri uri}) => _send('POST', body: body, headers: headers, uri: uri);
 
-  /// TODO
   Future<Response> put({body, Map<String, String> headers, Uri uri}) => _send('PUT', body: body, headers: headers, uri: uri);
 
-  /// TODO
-  Future<Response> trace({Map<String, String> headers, Uri uri}) => _send('TRACE', headers: headers, uri: uri);
-
-  /// TODO
   Future<Response> send(String method, {body, Map<String, String> headers, Uri uri}) => _send(method, headers: headers, uri: uri);
 
-  /// TODO
   Future<StreamedResponse> streamDelete({Map<String, String> headers, Uri uri}) => _send('DELETE', headers: headers, streamResponse: true, uri: uri);
 
-  /// TODO
   Future<StreamedResponse> streamGet({Map<String, String> headers, Uri uri}) => _send('GET', headers: headers, streamResponse: true, uri: uri);
 
-  /// TODO
   Future<StreamedResponse> streamHead({Map<String, String> headers, Uri uri}) => _send('HEAD', headers: headers, streamResponse: true, uri: uri);
 
-  /// TODO
   Future<StreamedResponse> streamOptions({Map<String, String> headers, Uri uri}) => _send('OPTIONS', headers: headers, streamResponse: true, uri: uri);
 
-  /// TODO
   Future<StreamedResponse> streamPatch({body, Map<String, String> headers, Uri uri}) => _send('PATCH', body: body, headers: headers, streamResponse: true, uri: uri);
 
-  /// TODO
   Future<StreamedResponse> streamPost({body, Map<String, String> headers, Uri uri}) => _send('POST', body: body, headers: headers, streamResponse: true, uri: uri);
 
-  /// TODO
   Future<StreamedResponse> streamPut({body, Map<String, String> headers, Uri uri}) => _send('PUT', body: body, headers: headers, streamResponse: true, uri: uri);
 
-  /// TODO
-  Future<StreamedResponse> streamTrace({Map<String, String> headers, Uri uri}) => _send('TRACE', headers: headers, streamResponse: true, uri: uri);
-
-  /// TODO
   Future<StreamedResponse> streamSend(String method, {body, Map<String, String> headers, Uri uri}) => _send(method, body: body, headers: headers, streamResponse: true, uri: uri);
 
+  /// Send the HTTP request:
+  /// - Finalize request (method, uri, headers, and body)
+  /// - Open the request (using a client, if available)
+  /// - Send the request and fetch the response (optionally as a stream)
+  /// - Assert a successful HTTP request by checking for a 200-level status code
+  ///
+  /// During this process, we check for cancellation several times and catch any
+  /// errors that may be thrown. These errors are wrapped in a
+  /// [RequestException] and rethrown.
   Future<BaseResponse> _send(String method, {body, Map<String, String> headers, bool streamResponse, Uri uri}) async {
     this.method = method;
     if (uri != null) {
@@ -275,7 +299,7 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
     }
     if (this.uri == null || this.uri.toString().isEmpty) throw new StateError('Request: Cannot send a request without a URI.');
 
-    FinalizedRequest finalizedRequest = finalizeRequest(body);
+    FinalizedRequest finalizedRequest = await finalizeRequest(body);
     checkForCancellation();
 
     BaseResponse response;

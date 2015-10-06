@@ -7,7 +7,9 @@ import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/mock/base_request.dart';
 import 'package:w_transport/src/http/mock/response.dart';
 import 'package:w_transport/src/http/request_exception.dart';
+import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/response.dart';
+import 'package:w_transport/src/http/utils.dart' as http_utils;
 import 'package:w_transport/src/mocks/http.dart';
 
 abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
@@ -44,8 +46,18 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
 
   @override
   Future<BaseResponse> sendRequestAndFetchResponse(FinalizedRequest finalizedRequest, {bool streamResponse: false}) async {
-    _streamResponse = streamResponse != null ? _streamResponse : false;
+    _streamResponse = streamResponse == true;
     _sent.complete(finalizedRequest);
+
+    // Since the entire request body has already been sent, the upload
+    // progress stream can be "completed" by adding a single progress event.
+    RequestProgress progress;
+    if (contentLength == null || contentLength == 0) {
+      progress = new RequestProgress(0, 0);
+    } else {
+      progress = new RequestProgress(contentLength, contentLength);
+    }
+    uploadProgressController.add(progress);
 
     // Wait until this request is completed. This is either done manually by
     // the test (if it has access to this request), or indirectly through the
@@ -65,6 +77,15 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
       }
       if (!_streamResponse && response is StreamedResponse) {
         response = new Response.fromBytes(response.status, response.statusText, response.headers, await response.body.toBytes());
+      }
+
+      if (response is StreamedResponse) {
+        var progressListener = new http_utils.ByteStreamProgressListener(response.body.byteStream, total: response.contentLength);
+        progressListener.progressStream.listen(downloadProgressController.add);
+        response = new StreamedResponse.fromByteStream(response.status, response.statusText, response.headers, progressListener.byteStream);
+      } else {
+        int total = (response as Response).body.asBytes().length;
+        downloadProgressController.add(new RequestProgress(total, total));
       }
 
       _response.complete(response);

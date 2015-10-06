@@ -99,3 +99,5 @@ export 'package:w_transport/src/http/response.dart' show Response, StreamedRespo
 export 'package:w_transport/src/web_socket/w_socket.dart' show WSocket;
 export 'package:w_transport/src/web_socket/w_socket_exception.dart'
     show WSocketException;
+
+export 'package:http_parser/http_parser.dart' show MediaType;

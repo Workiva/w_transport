@@ -12,21 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@TestOn('vm')
+@TestOn('browser')
 library w_transport.test.unit.mocks.mock_http_test;
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_mock.dart';
-import 'package:w_transport/w_transport_vm.dart';
 
 void main() {
-  configureWTransportForTest();
-
   group('TransportMocks.http', () {
     Uri requestUri = Uri.parse('/mock/test');
 
     setUp(() {
+      configureWTransportForTest();
       MockTransports.reset();
     });
 
@@ -38,12 +36,10 @@ void main() {
 
     test('verifies that requests are mock requests before controlling them',
         () {
-      configureWTransportForVM();
-      Request request = new Request();
+      BaseRequest request;
       expect(() {
         MockTransports.http.completeRequest(request);
       }, throwsArgumentError);
-      configureWTransportForTest();
     });
 
     group('completeRequest()', () {

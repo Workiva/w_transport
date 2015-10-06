@@ -16,7 +16,7 @@ class MultipartFile {
     if (contentType != null) {
       _contentType = contentType;
     } else {
-      var mimeType = mime.lookupMimeType(filename);
+      var mimeType = filename != null ? mime.lookupMimeType(filename) : null;
       if (mimeType == null) {
         mimeType = 'application/octet-stream';
       }

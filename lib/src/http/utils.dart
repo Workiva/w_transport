@@ -8,16 +8,32 @@ import 'package:http_parser/http_parser.dart';
 
 import 'package:w_transport/src/http/request_progress.dart';
 
+/// RegExp that only matches strings containing only ASCII-compatible chars.
+final RegExp _asciiOnly = new RegExp(r"^[\x00-\x7F]+$");
+
+/// Returns true if all characters in [value] are ASCII-compatible chars.
+/// Returns false otherwise.
+bool isAsciiOnly(String value) => _asciiOnly.hasMatch(value);
+
 /// Converts a [Map] of field names to values to a query string. The resulting
 /// query string can be used as a URI query string or the body of a
 /// `application/x-www-form-urlencoded` request or response.
 String mapToQuery(Map<String, String> map, {Encoding encoding}) {
   List<String> params = [];
   map.forEach((key, value) {
-    params.add([
-      Uri.encodeQueryComponent(key, encoding: encoding),
-      Uri.encodeQueryComponent(value, encoding: encoding)
-    ].join('='));
+    var encoded;
+    if (encoding != null) {
+      encoded = [
+        Uri.encodeQueryComponent(key, encoding: encoding),
+        Uri.encodeQueryComponent(value, encoding: encoding)
+      ];
+    } else {
+      encoded = [
+        Uri.encodeQueryComponent(key),
+        Uri.encodeQueryComponent(value)
+      ];
+    }
+    params.add(encoded.join('='));
   });
   return params.join('&');
 }
@@ -28,6 +44,8 @@ String mapToQuery(Map<String, String> map, {Encoding encoding}) {
 /// type of "application/octet-stream" will be returned (as per RFC 2616
 /// http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html#sec7.2.1).
 MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
+  // Ensure the headers are case-insensitive.
+  headers = new CaseInsensitiveMap.from(headers);
   if (headers['content-type'] != null) return new MediaType.parse(headers['content-type']);
   return new MediaType('application', 'octet-stream');
 }
@@ -84,8 +102,13 @@ Map<String, String> queryToMap(String query, {Encoding encoding}) {
     var value = pieces.length > 1
     ? pieces.sublist(1).join('')
     : '';
-    key = Uri.decodeQueryComponent(key, encoding: encoding);
-    value = Uri.decodeQueryComponent(value, encoding: encoding);
+    if (encoding != null) {
+      key = Uri.decodeQueryComponent(key, encoding: encoding);
+      value = Uri.decodeQueryComponent(value, encoding: encoding);
+    } else {
+      key = Uri.decodeQueryComponent(key);
+      value = Uri.decodeQueryComponent(value);
+    }
     fields[key] = value;
   }
   return fields;

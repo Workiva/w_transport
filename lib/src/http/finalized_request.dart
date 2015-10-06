@@ -1,5 +1,7 @@
 library w_transport.src.http.common.finalized_request;
 
+import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
+
 import 'package:w_transport/src/http/http_body.dart';
 
 /// A finalized, read-only representation of a request.
@@ -22,5 +24,5 @@ class FinalizedRequest {
   final bool withCredentials;
 
   FinalizedRequest(String this.method, Uri this.uri, Map<String, String> headers, BaseHttpBody this.body, bool this.withCredentials)
-      : this.headers = new Map.unmodifiable(headers);
+      : this.headers = new Map.unmodifiable(new CaseInsensitiveMap.from(headers));
 }

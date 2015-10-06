@@ -10,14 +10,9 @@ import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/multipart_file.dart';
 import 'package:w_transport/src/http/requests.dart';
-import 'package:w_transport/src/http/vm/request_mixin.dart';
+import 'package:w_transport/src/http/utils.dart' as http_utils;
 
-class VMMultipartRequest extends CommonRequest with VMRequestMixin implements MultipartRequest {
-  VMMultipartRequest() : super();
-  VMMultipartRequest.withClient(client) : super.withClient(client);
-
-  /// RegExp that only matches strings containing only ASCII-compatible chars.
-  static final RegExp _asciiOnly = new RegExp(r"^[\x00-\x7F]+$");
+abstract class CommonMultipartRequest extends CommonRequest implements MultipartRequest {
 
   /// http://tools.ietf.org/html/rfc1341.html
   static const int _boundaryLength = 70;
@@ -58,6 +53,9 @@ class VMMultipartRequest extends CommonRequest with VMRequestMixin implements Mu
 
   Map<String, MultipartFile> _files = {};
 
+  CommonMultipartRequest() : super();
+  CommonMultipartRequest.withClient(client) : super.withClient(client);
+
   String get boundary {
     if (_boundary == null) {
       _boundary = _generateBoundaryString();
@@ -77,6 +75,7 @@ class VMMultipartRequest extends CommonRequest with VMRequestMixin implements Mu
     });
 
     files.forEach((name, file) {
+      if (file is! MultipartFile) throw new UnsupportedError('Illegal multipart file type: $file');
       length += _boundaryDelimiterLength;
       length += UTF8.encode(_multipartFileHeaders(name, file)).length;
       length += file.length;
@@ -95,10 +94,15 @@ class VMMultipartRequest extends CommonRequest with VMRequestMixin implements Mu
   @override
   MediaType get defaultContentType => new MediaType('multipart', 'form-data', {'boundary': boundary});
 
+  @override
+  set encoding(Encoding encoding) {
+    throw new UnsupportedError('A multipart request has many individually-encoded parts. An encoding cannot be set for the entire request.');
+  }
+
   Map<String, String> get fields
       => isSent ? new Map.unmodifiable(_fields) : _fields;
 
-  Map<String, MultipartFile> get files
+  Map<String, dynamic> get files
       => isSent ? new Map.unmodifiable(_files) : _files;
 
   @override
@@ -110,16 +114,17 @@ class VMMultipartRequest extends CommonRequest with VMRequestMixin implements Mu
   }
 
   @override
-  StreamedHttpBody finalizeBody([body]) {
+  Future<StreamedHttpBody> finalizeBody([body]) async {
     if (body != null) {
       throw new UnsupportedError('The body of a Multipart request must be set via `fields` and/or `files`.');
     }
 
-    StringBuffer sb = new StringBuffer();
+    if (fields.isEmpty && files.isEmpty) {
+      throw new UnsupportedError('The body of a Multipart request cannot be empty.');
+    }
 
     StreamController<List<int>> controller = new StreamController();
     void write(String content) {
-      sb.write(content);
       controller.add(UTF8.encode(content));
     }
     Future writeByteStream(Stream<List<int>> byteStream) {
@@ -137,6 +142,7 @@ class VMMultipartRequest extends CommonRequest with VMRequestMixin implements Mu
 
     var fileList = [];
     files.forEach((name, file) {
+      if (file is! MultipartFile) throw new UnsupportedError('Illegal multipart file type: $file');
       fileList.add({
         'headers': _multipartFileHeaders(name, file),
         'byteStream': file.byteStream,
@@ -153,7 +159,6 @@ class VMMultipartRequest extends CommonRequest with VMRequestMixin implements Mu
       // Ending boundary delimiter.
       write('$_boundaryHyphens$boundary$_boundaryHyphens$_crlf');
 
-      print(sb.toString());
       controller.close();
     });
 
@@ -178,7 +183,7 @@ class VMMultipartRequest extends CommonRequest with VMRequestMixin implements Mu
     var headers = [
       'content-disposition: form-data; name="${_encodeName(name)}"'
     ];
-    if (!_asciiOnly.hasMatch(value)) {
+    if (!http_utils.isAsciiOnly(value)) {
       // Field value has non-ASCII-compatible characters, so a content-type
       // header is required for this part.
       headers.add('content-type: text/plain; charset=utf-8');

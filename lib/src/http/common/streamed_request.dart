@@ -19,6 +19,7 @@ abstract class CommonStreamedRequest extends CommonRequest implements StreamedRe
   Stream<List<int>> get body => _body;
 
   set body(Stream<List<int>> byteStream) {
+    verifyUnsent();
     _body = byteStream;
   }
 
@@ -27,6 +28,7 @@ abstract class CommonStreamedRequest extends CommonRequest implements StreamedRe
 
   @override
   set contentLength(int value) {
+    verifyUnsent();
     _contentLength = value;
   }
 
@@ -34,7 +36,7 @@ abstract class CommonStreamedRequest extends CommonRequest implements StreamedRe
   MediaType get defaultContentType => new MediaType('text', 'plain', {'charset': encoding.name});
 
   @override
-  StreamedHttpBody finalizeBody([body]) {
+  Future<StreamedHttpBody> finalizeBody([body]) async {
     if (body != null) {
       if (body is Stream<List<int>>) {
         this.body = body;
@@ -43,6 +45,9 @@ abstract class CommonStreamedRequest extends CommonRequest implements StreamedRe
       }
     }
 
+    if (this.body == null) {
+      this.body = new Stream.fromIterable([]);
+    }
     return new StreamedHttpBody.fromByteStream(contentType, this.body, contentLength: contentLength);
   }
 }

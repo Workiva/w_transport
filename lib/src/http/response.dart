@@ -3,15 +3,10 @@ library w_transport.src.http.response;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:http_parser/http_parser.dart' show MediaType;
+import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap, MediaType;
 
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
-
-// TODO
-// TESTS
-// test that obtaining response data and modifying it does not modify the underlying response data
-// test that the contentLength from response headers matches calculated length of byte list
 
 abstract class BaseResponse {
   /// Gets and sets the content-length of the request, in bytes. If the size of
@@ -25,15 +20,6 @@ abstract class BaseResponse {
   /// content-type will be updated accordingly.
   MediaType get contentType => _contentType;
 
-  /// Encoding that will be used when decoding the response body. This encoding
-  /// is selected based on [contentType]'s `charset` parameter. If `charset`
-  /// is not given or the encoding name is unrecognized, [LATIN1] is used by
-  /// default ([RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html)).
-  final Encoding encoding;
-
-  /// Headers sent with the response to the HTTP request.
-  final Map<String, String> headers;
-
   /// Status code of the response to the HTTP request.
   /// 200, 404, etc.
   final int status;
@@ -43,12 +29,23 @@ abstract class BaseResponse {
   final String statusText;
 
   MediaType _contentType;
+  Encoding _encoding;
+  Map<String, String> _headers;
 
-  BaseResponse(int this.status, String this.statusText, Map<String, String> headers)
-      : encoding = http_utils.parseEncodingFromHeaders(headers, fallback: LATIN1),
-        headers = new Map.unmodifiable(headers) {
-    _contentType = http_utils.parseContentTypeFromHeaders(headers);
+  BaseResponse(int this.status, String this.statusText, Map<String, String> headers) {
+    _headers = new Map.unmodifiable(new CaseInsensitiveMap.from(headers));
+    _encoding = http_utils.parseEncodingFromHeaders(_headers, fallback: LATIN1);
+    _contentType = http_utils.parseContentTypeFromHeaders(_headers);
   }
+
+  /// Encoding that will be used when decoding the response body. This encoding
+  /// is selected based on [contentType]'s `charset` parameter. If `charset`
+  /// is not given or the encoding name is unrecognized, [LATIN1] is used by
+  /// default ([RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html)).
+  Encoding get encoding => _encoding;
+
+  /// Headers sent with the response to the HTTP request.
+  Map<String, String> get headers => _headers;
 }
 
 /// An HTTP response. Content of and meta data about a response to an HTTP

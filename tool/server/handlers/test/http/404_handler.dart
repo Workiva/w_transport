@@ -24,8 +24,18 @@ class FourzerofourHandler extends Handler {
   FourzerofourHandler() : super() {
     enableCors();
   }
-  Future get(HttpRequest request) async {
+
+  Future notFound(HttpRequest request) async {
     request.response.statusCode = HttpStatus.NOT_FOUND;
     setCorsHeaders(request);
   }
+
+  Future delete(HttpRequest request) => notFound(request);
+  Future get(HttpRequest request) => notFound(request);
+  Future head(HttpRequest request) => notFound(request);
+  Future options(HttpRequest request) => notFound(request);
+  Future patch(HttpRequest request) => notFound(request);
+  Future post(HttpRequest request) => notFound(request);
+  Future put(HttpRequest request) => notFound(request);
+  Future trace(HttpRequest request) => notFound(request);
 }

@@ -29,7 +29,9 @@ class MockClient extends CommonClient implements Client {
   @override
   FormRequest newFormRequest() {
     verifyNotClosed();
-    return new MockFormRequest();
+    FormRequest request = new MockFormRequest();
+    registerRequest(request);
+    return request;
   }
 
   /// Constructs a new [JsonRequest] that will use this client to send the
@@ -37,7 +39,9 @@ class MockClient extends CommonClient implements Client {
   @override
   JsonRequest newJsonRequest() {
     verifyNotClosed();
-    return new MockJsonRequest();
+    JsonRequest request = new MockJsonRequest();
+    registerRequest(request);
+    return request;
   }
 
   /// Constructs a new [MultipartRequest] that will use this client to send the
@@ -45,9 +49,9 @@ class MockClient extends CommonClient implements Client {
   @override
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
-    return null;
-    // todo
-//    return new MockMultipartRequest();
+    MultipartRequest request = new MockMultipartRequest();
+    registerRequest(request);
+    return request;
   }
 
   /// Constructs a new [Request] that will use this client to send the request.
@@ -55,7 +59,9 @@ class MockClient extends CommonClient implements Client {
   @override
   Request newRequest() {
     verifyNotClosed();
-    return new MockPlainTextRequest();
+    Request request = new MockPlainTextRequest();
+    registerRequest(request);
+    return request;
   }
 
   /// Constructs a new [StreamedRequest] that will use this client to send the
@@ -63,6 +69,8 @@ class MockClient extends CommonClient implements Client {
   @override
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
-    return new MockStreamedRequest();
+    StreamedRequest request = new MockStreamedRequest();
+    registerRequest(request);
+    return request;
   }
 }

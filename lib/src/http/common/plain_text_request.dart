@@ -1,5 +1,6 @@
 library w_transport.src.http.common.plain_text_request;
 
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
@@ -26,6 +27,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   }
 
   set body(String value) {
+    verifyUnsent();
     _body = value;
     _bodyBytes = null;
   }
@@ -40,6 +42,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   }
 
   set bodyBytes(List<int> bytes) {
+    verifyUnsent();
     _bodyBytes = bytes;
     _body = null;
   }
@@ -51,7 +54,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   MediaType get defaultContentType => new MediaType('text', 'plain', {'charset': encoding.name});
 
   @override
-  HttpBody finalizeBody([body]) {
+  Future<HttpBody> finalizeBody([body]) async {
     if (body != null) {
       if (body is String) {
         this.body = body;

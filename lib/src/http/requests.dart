@@ -7,6 +7,11 @@ import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/multipart_file.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 
+/// Representation of an HTTP request where the request body is a form that will
+/// be encoded as a url query string.
+///
+/// This request will be sent with content-type:
+/// application/x-www-form-urlencoded.
 abstract class FormRequest extends BaseRequest {
   /// Gets this request's body as a `Map` where each key-value pair is a form
   /// field's name and value.
@@ -54,7 +59,7 @@ abstract class JsonRequest extends BaseRequest {
   /// query string. Depending on the platform, this may then be encoded to
   /// bytes. Be sure to set [encoding] if this request body should be encoded
   /// with something other than the default UTF8.
-  Map<String, String> get body;
+  dynamic get body;
 
   /// Sets this request's form body. The given `Map` should represent the form
   /// fields where each key-value pair is a field's name and value.
@@ -63,17 +68,30 @@ abstract class JsonRequest extends BaseRequest {
   /// query string. Depending on the platform, this may then be encoded to
   /// bytes. Be sure to set [encoding] if this request body should be encoded
   /// with something other than the default UTF8.
-  set body(Map<String, String> body);
+  set body(dynamic body);
 
   factory JsonRequest() => PlatformAdapter.retrieve().newJsonRequest();
 }
 
-/// TODO
+
 abstract class MultipartRequest extends BaseRequest {
-  /// TODO
+  /// Get this request's text fields as a Map of field names to their values.
+  ///
+  /// The returned `Map` is modifiable. Fields can be set like so:
+  ///
+  ///     MultipartRequest request = new MultipartRequest()
+  ///       ..fields['key1'] = 'value1'
+  ///       ..fields['key2'] = 'value2';
   Map<String, String> get fields;
 
-  /// TODO
+  /// Get this request's file fields as a Map of field names to files. The value
+  /// can be a [MultipartFile] or, if in the browser, a [Blob].
+  ///
+  /// The returned `Map` is modifiable. Files can be set like so:
+  ///
+  ///     MultipartFile file = new MultipartFile(...);
+  ///     MultipartRequest request = new MultipartRequest()
+  ///       ..files['file1'] = file;
   Map<String, dynamic> get files;
 
   factory MultipartRequest() => PlatformAdapter.retrieve().newMultipartRequest();

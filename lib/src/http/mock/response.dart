@@ -19,7 +19,7 @@ class MockResponse implements Response {
     // If an encoding was given, update the content-type charset parameter.
     if (encoding != null) {
       var contentType = http_utils.parseContentTypeFromHeaders(headers);
-      contentType.parameters['charset'] = encoding.name;
+      contentType = contentType.change(parameters: {'charset': encoding.name});
       headers['content-type'] = contentType.toString();
     }
 
@@ -101,7 +101,7 @@ class MockStreamedResponse implements StreamedResponse {
     // If an encoding was given, update the content-type charset parameter.
     if (encoding != null) {
       var contentType = http_utils.parseContentTypeFromHeaders(headers);
-      contentType.parameters['charset'] = encoding.name;
+      contentType = contentType.change(parameters: {'charset': encoding.name});
       headers['content-type'] = contentType.toString();
     }
 

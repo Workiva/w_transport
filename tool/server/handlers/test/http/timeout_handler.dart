@@ -25,5 +25,14 @@ class TimeoutHandler extends Handler {
     enableCors();
   }
 
-  Future get(HttpRequest request) async => new Completer().future;
+  Future timeout() => new Completer().future;
+
+  Future delete(HttpRequest request) => timeout();
+  Future get(HttpRequest request) => timeout();
+  Future head(HttpRequest request) => timeout();
+  Future options(HttpRequest request) => timeout();
+  Future patch(HttpRequest request) => timeout();
+  Future post(HttpRequest request) => timeout();
+  Future put(HttpRequest request) => timeout();
+  Future trace(HttpRequest request) => timeout();
 }

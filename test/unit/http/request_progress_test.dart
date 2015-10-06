@@ -1,8 +1,5 @@
 library w_transport.test.unit.http.request_progress_test;
 
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 

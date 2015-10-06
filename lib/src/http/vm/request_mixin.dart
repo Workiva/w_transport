@@ -79,7 +79,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
       // Use a byte stream progress listener to transform the request body such
       // that it produces a stream of progress events.
       var progressListener = new http_utils.ByteStreamProgressListener(
-          finalizedRequest.body.byteStream,
+          (finalizedRequest.body as StreamedHttpBody).byteStream,
           total: finalizedRequest.body.contentLength);
 
       // Add the now-transformed request body stream.

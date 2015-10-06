@@ -1,14 +1,10 @@
 library w_transport.tool.server.handlers.test.http.upload;
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:http_server/http_server.dart';
 import 'package:mime/mime.dart';
-
-import 'package:w_transport/src/http/utils.dart' as http_utils;
 
 import '../../../handler.dart';
 

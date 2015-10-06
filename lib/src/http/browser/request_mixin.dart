@@ -82,11 +82,12 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     }
 
     if (finalizedRequest.body is HttpBody) {
-      _request.send(finalizedRequest.body.asBytes().buffer);
+      _request.send((finalizedRequest.body as HttpBody).asBytes().buffer);
     } else if (finalizedRequest.body is StreamedHttpBody) {
-      _request.send(await finalizedRequest.body.toBytes());
+      _request
+          .send(await (finalizedRequest.body as StreamedHttpBody).toBytes());
     } else if (finalizedRequest.body is FormDataBody) {
-      _request.send(finalizedRequest.body.formData);
+      _request.send((finalizedRequest.body as FormDataBody).formData);
     }
     return await c.future;
   }

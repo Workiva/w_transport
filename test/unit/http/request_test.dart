@@ -154,7 +154,7 @@ void _runCommonRequestSuiteFor(
       Completer dataCompleter = new Completer();
       MockTransports.http.when(requestUri, (FinalizedRequest request) async {
         if (request.body is HttpBody) {
-          dataCompleter.complete(request.body.asString());
+          dataCompleter.complete((request.body as HttpBody).asString());
         } else {
           dataCompleter.complete(
               UTF8.decode(await (request.body as StreamedHttpBody).toBytes()));

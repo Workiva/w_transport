@@ -80,16 +80,19 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
             response.status,
             response.statusText,
             response.headers,
-            new Stream.fromIterable([response.body.asBytes()]));
+            new Stream.fromIterable([(response as Response).body.asBytes()]));
       }
       if (!_streamResponse && response is StreamedResponse) {
-        response = new Response.fromBytes(response.status, response.statusText,
-            response.headers, await response.body.toBytes());
+        response = new Response.fromBytes(
+            response.status,
+            response.statusText,
+            response.headers,
+            await (response as StreamedResponse).body.toBytes());
       }
 
       if (response is StreamedResponse) {
         var progressListener = new http_utils.ByteStreamProgressListener(
-            response.body.byteStream,
+            (response as StreamedResponse).body.byteStream,
             total: response.contentLength);
         progressListener.progressStream.listen(downloadProgressController.add);
         response = new StreamedResponse.fromByteStream(response.status,

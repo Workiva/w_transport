@@ -18,7 +18,6 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:math' as math;
 
-import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:w_transport/w_transport.dart';
 
 import 'proxy.dart';

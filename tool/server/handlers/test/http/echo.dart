@@ -1,13 +1,7 @@
 library w_transport.tool.server.handlers.test.http.reader;
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:http_parser/http_parser.dart';
-
-import 'package:w_transport/src/http/utils.dart' as http_utils;
 
 import '../../../handler.dart';
 

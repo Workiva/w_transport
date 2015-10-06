@@ -6,8 +6,6 @@ import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 
-import 'package:w_transport/src/http/utils.dart' as http_utils;
-
 import '../integration_config.dart';
 
 void runPlainTextRequestSuite(HttpIntegrationConfig config) {

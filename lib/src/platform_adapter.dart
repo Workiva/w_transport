@@ -41,7 +41,6 @@ PlatformAdapter adapter;
 /// These classes remain platform-agnostic by using a [PlatformAdapter] instance
 /// to construct their appropriate platform-specific implementations.
 abstract class PlatformAdapter {
-
   /// Retrieve the currently configured platform adapter. This effectively
   /// defers the platform selection until absolutely necessary - when a
   /// transport class needs to be instantiated. In other words, this allows

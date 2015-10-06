@@ -35,12 +35,13 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
   int get contentLength => _bytes.length;
 
   @override
-  MediaType get defaultContentType => new MediaType('application', 'json', {'charset': encoding.name});
+  MediaType get defaultContentType =>
+      new MediaType('application', 'json', {'charset': encoding.name});
 
   // Calculate each time because body can be modified outside of the setter.
   Uint8List get _bytes => _encodedJson != null
-        ? encoding.encode(_encodedJson)
-        : new Uint8List.fromList([]);
+      ? encoding.encode(_encodedJson)
+      : new Uint8List.fromList([]);
 
   @override
   Future<HttpBody> finalizeBody([body]) async {

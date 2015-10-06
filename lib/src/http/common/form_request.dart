@@ -20,9 +20,11 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
   int get contentLength => _encodedQuery.length;
 
   @override
-  MediaType get defaultContentType => new MediaType('application', 'x-www-form-urlencoded', {'charset': encoding.name});
+  MediaType get defaultContentType => new MediaType(
+      'application', 'x-www-form-urlencoded', {'charset': encoding.name});
 
-  Map<String, String> get fields => isSent ? new Map.unmodifiable(_fields) : _fields;
+  Map<String, String> get fields =>
+      isSent ? new Map.unmodifiable(_fields) : _fields;
 
   set fields(Map<String, String> fields) {
     verifyUnsent();
@@ -32,7 +34,8 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
     _fields = fields;
   }
 
-  Uint8List get _encodedQuery => encoding.encode(http_utils.mapToQuery(fields, encoding: encoding));
+  Uint8List get _encodedQuery =>
+      encoding.encode(http_utils.mapToQuery(fields, encoding: encoding));
 
   @override
   Future<HttpBody> finalizeBody([body]) async {

@@ -10,20 +10,17 @@ import 'package:w_transport/w_transport_mock.dart';
 
 void main() {
   group('FormRequest', () {
-
     setUp(() {
       configureWTransportForTest();
     });
 
     test('setting fields defaults to empty map if null', () {
-      FormRequest request = new FormRequest()
-        ..fields = null;
+      FormRequest request = new FormRequest()..fields = null;
       expect(request.fields, equals({}));
     });
 
     test('setting entire fields map', () {
-      FormRequest request = new FormRequest()
-        ..fields = {'field': 'value'};
+      FormRequest request = new FormRequest()..fields = {'field': 'value'};
       expect(request.fields, equals({'field': 'value'}));
     });
 
@@ -48,7 +45,8 @@ void main() {
       expect(await body.future, equals('field=value'));
     });
 
-    test('setting body in request dispatcher should throw if invalid', () async {
+    test('setting body in request dispatcher should throw if invalid',
+        () async {
       Uri uri = Uri.parse('/test');
 
       FormRequest request = new FormRequest();
@@ -95,6 +93,5 @@ void main() {
         request.encoding = LATIN1;
       }, throwsStateError);
     });
-
   });
 }

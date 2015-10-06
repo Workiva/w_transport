@@ -9,7 +9,6 @@ import '../integration_config.dart';
 
 void runClientSuite(HttpIntegrationConfig config) {
   group('Client', () {
-
     test('newFormRequest()', () async {
       Client client = new Client();
       FormRequest request = client.newFormRequest();
@@ -51,7 +50,8 @@ void runClientSuite(HttpIntegrationConfig config) {
       List<Future> requests = [
         client.newFormRequest().post(uri: config.reflectEndpointUri),
         client.newJsonRequest().put(uri: config.reflectEndpointUri),
-        (client.newMultipartRequest()..fields['f'] = 'v').patch(uri: config.reflectEndpointUri),
+        (client.newMultipartRequest()..fields['f'] = 'v')
+            .patch(uri: config.reflectEndpointUri),
         client.newRequest().get(uri: config.reflectEndpointUri),
         client.newStreamedRequest().delete(uri: config.reflectEndpointUri),
         client.newRequest().send('OPTIONS', uri: config.reflectEndpointUri),
@@ -84,7 +84,6 @@ void runClientSuite(HttpIntegrationConfig config) {
 
       expect(willThrow, throwsA(new isInstanceOf<RequestException>()));
     });
-
   });
 }
 
@@ -94,5 +93,6 @@ _testRequest(BaseRequest request, HttpIntegrationConfig config) async {
   Response response = await request.get();
   expect(response.body.asJson()['method'], equals('GET'));
   expect(response.body.asJson()['headers'], containsPair('x-custom', 'value'));
-  expect(response.body.asJson()['headers'], containsPair('x-tokens', 'token1, token2'));
+  expect(response.body.asJson()['headers'],
+      containsPair('x-tokens', 'token1, token2'));
 }

@@ -14,7 +14,9 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/response.dart';
 
-abstract class CommonRequest extends Object with FluriMixin implements BaseRequest, RequestDispatchers {
+abstract class CommonRequest extends Object
+    with FluriMixin
+    implements BaseRequest, RequestDispatchers {
   CommonRequest();
   CommonRequest.withClient(client) : this.client = client;
 
@@ -81,7 +83,8 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
   /// streamed requests since the body may be sent asynchronously after the
   /// headers have been sent.
   set contentLength(int length) {
-    throw new UnsupportedError('The content-length of a request cannot be set manually when the request body is known in advance.');
+    throw new UnsupportedError(
+        'The content-length of a request cannot be set manually when the request body is known in advance.');
   }
 
   /// Content-type of this request. Set automatically based on the body type and
@@ -107,8 +110,8 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
   Future<Null> get done => _done.future;
 
   /// [RequestProgress] stream for this HTTP request's download.
-  Stream<RequestProgress> get downloadProgress
-      => downloadProgressController.stream;
+  Stream<RequestProgress> get downloadProgress =>
+      downloadProgressController.stream;
 
   /// Encoding to use to encode/decode the request body.
   Encoding get encoding => _encoding;
@@ -139,8 +142,7 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
   }
 
   /// [RequestProgress] stream for this HTTP request's upload.
-  Stream<RequestProgress> get uploadProgress
-      => uploadProgressController.stream;
+  Stream<RequestProgress> get uploadProgress => uploadProgressController.stream;
 
   /// Whether or not to send the request with credentials.
   bool get withCredentials => _withCredentials;
@@ -178,7 +180,9 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
   /// If [streamResponse] is true, the response should be streamed.
   ///
   /// This logic is platform-specific and should be implemented by the subclass.
-  Future<BaseResponse> sendRequestAndFetchResponse(FinalizedRequest finalizedRequest, {bool streamResponse: false});
+  Future<BaseResponse> sendRequestAndFetchResponse(
+      FinalizedRequest finalizedRequest,
+      {bool streamResponse: false});
 
   /// Cancel this request. If the request has already finished, this will do nothing.
   void abort([Object error]) {
@@ -200,8 +204,8 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
           this,
           response,
           _cancellationError != null
-          ? _cancellationError
-          : new Exception('Request canceled.'));
+              ? _cancellationError
+              : new Exception('Request canceled.'));
     }
   }
 
@@ -233,9 +237,11 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
   Future<FinalizedRequest> finalizeRequest([body]) async {
     Map<String, String> finalizedHeaders = finalizeHeaders();
     BaseHttpBody finalizedBody = await finalizeBody(body);
-    FinalizedRequest finalizedRequest = new FinalizedRequest(method, uri, finalizedHeaders, finalizedBody, withCredentials);
+    FinalizedRequest finalizedRequest = new FinalizedRequest(
+        method, uri, finalizedHeaders, finalizedBody, withCredentials);
 
-    if (isSent) throw new StateError('Request (${this.toString()}) has already been sent - it cannot be sent again.');
+    if (isSent) throw new StateError(
+        'Request (${this.toString()}) has already been sent - it cannot be sent again.');
     isSent = true;
 
     return finalizedRequest;
@@ -248,40 +254,68 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
   /// should be considered frozen. If this request has been sent, this throws
   /// a [StateError].
   void verifyUnsent() {
-    if (isSent) throw new StateError('Request (${this.toString()}) has already been sent and can no longer be modified.');
+    if (isSent) throw new StateError(
+        'Request (${this.toString()}) has already been sent and can no longer be modified.');
   }
 
-  Future<Response> delete({Map<String, String> headers, Uri uri}) => _send('DELETE', headers: headers, uri: uri);
+  Future<Response> delete({Map<String, String> headers, Uri uri}) =>
+      _send('DELETE', headers: headers, uri: uri);
 
-  Future<Response> get({Map<String, String> headers, Uri uri}) => _send('GET', headers: headers, uri: uri);
+  Future<Response> get({Map<String, String> headers, Uri uri}) =>
+      _send('GET', headers: headers, uri: uri);
 
-  Future<Response> head({Map<String, String> headers, Uri uri}) => _send('HEAD', headers: headers, uri: uri);
+  Future<Response> head({Map<String, String> headers, Uri uri}) =>
+      _send('HEAD', headers: headers, uri: uri);
 
-  Future<Response> options({Map<String, String> headers, Uri uri}) => _send('OPTIONS', headers: headers, uri: uri);
+  Future<Response> options({Map<String, String> headers, Uri uri}) =>
+      _send('OPTIONS', headers: headers, uri: uri);
 
-  Future<Response> patch({body, Map<String, String> headers, Uri uri}) => _send('PATCH', body: body, headers: headers, uri: uri);
+  Future<Response> patch({body, Map<String, String> headers, Uri uri}) =>
+      _send('PATCH', body: body, headers: headers, uri: uri);
 
-  Future<Response> post({body, Map<String, String> headers, Uri uri}) => _send('POST', body: body, headers: headers, uri: uri);
+  Future<Response> post({body, Map<String, String> headers, Uri uri}) =>
+      _send('POST', body: body, headers: headers, uri: uri);
 
-  Future<Response> put({body, Map<String, String> headers, Uri uri}) => _send('PUT', body: body, headers: headers, uri: uri);
+  Future<Response> put({body, Map<String, String> headers, Uri uri}) =>
+      _send('PUT', body: body, headers: headers, uri: uri);
 
-  Future<Response> send(String method, {body, Map<String, String> headers, Uri uri}) => _send(method, headers: headers, uri: uri);
+  Future<Response> send(String method,
+          {body, Map<String, String> headers, Uri uri}) =>
+      _send(method, headers: headers, uri: uri);
 
-  Future<StreamedResponse> streamDelete({Map<String, String> headers, Uri uri}) => _send('DELETE', headers: headers, streamResponse: true, uri: uri);
+  Future<StreamedResponse> streamDelete(
+          {Map<String, String> headers, Uri uri}) =>
+      _send('DELETE', headers: headers, streamResponse: true, uri: uri);
 
-  Future<StreamedResponse> streamGet({Map<String, String> headers, Uri uri}) => _send('GET', headers: headers, streamResponse: true, uri: uri);
+  Future<StreamedResponse> streamGet({Map<String, String> headers, Uri uri}) =>
+      _send('GET', headers: headers, streamResponse: true, uri: uri);
 
-  Future<StreamedResponse> streamHead({Map<String, String> headers, Uri uri}) => _send('HEAD', headers: headers, streamResponse: true, uri: uri);
+  Future<StreamedResponse> streamHead({Map<String, String> headers, Uri uri}) =>
+      _send('HEAD', headers: headers, streamResponse: true, uri: uri);
 
-  Future<StreamedResponse> streamOptions({Map<String, String> headers, Uri uri}) => _send('OPTIONS', headers: headers, streamResponse: true, uri: uri);
+  Future<StreamedResponse> streamOptions(
+          {Map<String, String> headers, Uri uri}) =>
+      _send('OPTIONS', headers: headers, streamResponse: true, uri: uri);
 
-  Future<StreamedResponse> streamPatch({body, Map<String, String> headers, Uri uri}) => _send('PATCH', body: body, headers: headers, streamResponse: true, uri: uri);
+  Future<StreamedResponse> streamPatch(
+          {body, Map<String, String> headers, Uri uri}) =>
+      _send('PATCH',
+          body: body, headers: headers, streamResponse: true, uri: uri);
 
-  Future<StreamedResponse> streamPost({body, Map<String, String> headers, Uri uri}) => _send('POST', body: body, headers: headers, streamResponse: true, uri: uri);
+  Future<StreamedResponse> streamPost(
+          {body, Map<String, String> headers, Uri uri}) =>
+      _send('POST',
+          body: body, headers: headers, streamResponse: true, uri: uri);
 
-  Future<StreamedResponse> streamPut({body, Map<String, String> headers, Uri uri}) => _send('PUT', body: body, headers: headers, streamResponse: true, uri: uri);
+  Future<StreamedResponse> streamPut(
+          {body, Map<String, String> headers, Uri uri}) =>
+      _send('PUT',
+          body: body, headers: headers, streamResponse: true, uri: uri);
 
-  Future<StreamedResponse> streamSend(String method, {body, Map<String, String> headers, Uri uri}) => _send(method, body: body, headers: headers, streamResponse: true, uri: uri);
+  Future<StreamedResponse> streamSend(String method,
+          {body, Map<String, String> headers, Uri uri}) =>
+      _send(method,
+          body: body, headers: headers, streamResponse: true, uri: uri);
 
   /// Send the HTTP request:
   /// - Finalize request (method, uri, headers, and body)
@@ -292,12 +326,14 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
   /// During this process, we check for cancellation several times and catch any
   /// errors that may be thrown. These errors are wrapped in a
   /// [RequestException] and rethrown.
-  Future<BaseResponse> _send(String method, {body, Map<String, String> headers, bool streamResponse, Uri uri}) async {
+  Future<BaseResponse> _send(String method,
+      {body, Map<String, String> headers, bool streamResponse, Uri uri}) async {
     this.method = method;
     if (uri != null) {
       this.uri = uri;
     }
-    if (this.uri == null || this.uri.toString().isEmpty) throw new StateError('Request: Cannot send a request without a URI.');
+    if (this.uri == null || this.uri.toString().isEmpty) throw new StateError(
+        'Request: Cannot send a request without a URI.');
 
     FinalizedRequest finalizedRequest = await finalizeRequest(body);
     checkForCancellation();
@@ -309,7 +345,8 @@ abstract class CommonRequest extends Object with FluriMixin implements BaseReque
       Completer<BaseResponse> responseCompleter = new Completer();
 
       // Attempt to fetch the response.
-      sendRequestAndFetchResponse(finalizedRequest, streamResponse: streamResponse).then((response) {
+      sendRequestAndFetchResponse(finalizedRequest,
+          streamResponse: streamResponse).then((response) {
         if (!responseCompleter.isCompleted) {
           responseCompleter.complete(response);
         }

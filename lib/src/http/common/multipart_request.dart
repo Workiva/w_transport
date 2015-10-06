@@ -12,24 +12,26 @@ import 'package:w_transport/src/http/multipart_file.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
 
-abstract class CommonMultipartRequest extends CommonRequest implements MultipartRequest {
-
+abstract class CommonMultipartRequest extends CommonRequest
+    implements MultipartRequest {
   /// http://tools.ietf.org/html/rfc1341.html
   static const int _boundaryLength = 70;
 
   /// http://tools.ietf.org/html/rfc2046#section-5.1.1
   static final List<int> _boundaryChars = <String>[
-    '\'', '(', ')', '+', '_', ',', '-', '.', '/', ':', '=', '?',      // chars
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',                 // digits
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',  // ALPHA
-    'N', 'O','P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',   // ALPHA
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i' , 'j', 'k', 'l', 'm', // alpha
-    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',  // alpha
+    '\'', '(', ')', '+', '_', ',', '-', '.', '/', ':', '=', '?', // chars
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', // digits
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', // ALPHA
+    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', // ALPHA
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', // alpha
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', // alpha
   ].map((c) => c.codeUnitAt(0)).toList(growable: false);
 
-  static const int _boundaryDelimiterLength = _boundaryHyphens.length + _boundaryLength + _crlf.length;
+  static const int _boundaryDelimiterLength =
+      _boundaryHyphens.length + _boundaryLength + _crlf.length;
 
-  static const int _boundaryClosingDelimeterLength = _boundaryDelimiterLength + _boundaryHyphens.length;
+  static const int _boundaryClosingDelimeterLength =
+      _boundaryDelimiterLength + _boundaryHyphens.length;
 
   static const String _boundaryHyphens = '--';
 
@@ -41,7 +43,8 @@ abstract class CommonMultipartRequest extends CommonRequest implements Multipart
 
   static String _generateBoundaryString() {
     String senderPrefix = 'dart-w-transport-boundary-';
-    var boundaryChars = new List<int>.generate(_boundaryLength - senderPrefix.length, (_) {
+    var boundaryChars =
+        new List<int>.generate(_boundaryLength - senderPrefix.length, (_) {
       return _boundaryChars[_random.nextInt(_boundaryChars.length)];
     }, growable: false);
     return '$senderPrefix${new String.fromCharCodes(boundaryChars)}';
@@ -75,7 +78,8 @@ abstract class CommonMultipartRequest extends CommonRequest implements Multipart
     });
 
     files.forEach((name, file) {
-      if (file is! MultipartFile) throw new UnsupportedError('Illegal multipart file type: $file');
+      if (file is! MultipartFile) throw new UnsupportedError(
+          'Illegal multipart file type: $file');
       length += _boundaryDelimiterLength;
       length += UTF8.encode(_multipartFileHeaders(name, file)).length;
       length += file.length;
@@ -88,22 +92,25 @@ abstract class CommonMultipartRequest extends CommonRequest implements Multipart
 
   @override
   set contentLength(int contentLength) {
-    throw new UnsupportedError('The content-length of a multipart request cannot be set manually.');
+    throw new UnsupportedError(
+        'The content-length of a multipart request cannot be set manually.');
   }
 
   @override
-  MediaType get defaultContentType => new MediaType('multipart', 'form-data', {'boundary': boundary});
+  MediaType get defaultContentType =>
+      new MediaType('multipart', 'form-data', {'boundary': boundary});
 
   @override
   set encoding(Encoding encoding) {
-    throw new UnsupportedError('A multipart request has many individually-encoded parts. An encoding cannot be set for the entire request.');
+    throw new UnsupportedError(
+        'A multipart request has many individually-encoded parts. An encoding cannot be set for the entire request.');
   }
 
-  Map<String, String> get fields
-      => isSent ? new Map.unmodifiable(_fields) : _fields;
+  Map<String, String> get fields =>
+      isSent ? new Map.unmodifiable(_fields) : _fields;
 
-  Map<String, dynamic> get files
-      => isSent ? new Map.unmodifiable(_files) : _files;
+  Map<String, dynamic> get files =>
+      isSent ? new Map.unmodifiable(_files) : _files;
 
   @override
   Map<String, String> finalizeHeaders() {
@@ -116,11 +123,13 @@ abstract class CommonMultipartRequest extends CommonRequest implements Multipart
   @override
   Future<StreamedHttpBody> finalizeBody([body]) async {
     if (body != null) {
-      throw new UnsupportedError('The body of a Multipart request must be set via `fields` and/or `files`.');
+      throw new UnsupportedError(
+          'The body of a Multipart request must be set via `fields` and/or `files`.');
     }
 
     if (fields.isEmpty && files.isEmpty) {
-      throw new UnsupportedError('The body of a Multipart request cannot be empty.');
+      throw new UnsupportedError(
+          'The body of a Multipart request cannot be empty.');
     }
 
     StreamController<List<int>> controller = new StreamController();
@@ -129,20 +138,22 @@ abstract class CommonMultipartRequest extends CommonRequest implements Multipart
     }
     Future writeByteStream(Stream<List<int>> byteStream) {
       var c = new Completer();
-      byteStream.listen(controller.add, onError: controller.addError, onDone: c.complete);
+      byteStream.listen(controller.add,
+          onError: controller.addError, onDone: c.complete);
       return c.future;
     }
 
     fields.forEach((name, value) {
-      write('$_boundaryHyphens$boundary$_crlf');  // Boundary delimiter.
+      write('$_boundaryHyphens$boundary$_crlf'); // Boundary delimiter.
       write(_multipartFieldHeaders(name, value)); // Field headers.
-      write(value);                               // Field value.
-      write(_crlf);                               // Ending newline.
+      write(value); // Field value.
+      write(_crlf); // Ending newline.
     });
 
     var fileList = [];
     files.forEach((name, file) {
-      if (file is! MultipartFile) throw new UnsupportedError('Illegal multipart file type: $file');
+      if (file is! MultipartFile) throw new UnsupportedError(
+          'Illegal multipart file type: $file');
       fileList.add({
         'headers': _multipartFileHeaders(name, file),
         'byteStream': file.byteStream,
@@ -150,8 +161,8 @@ abstract class CommonMultipartRequest extends CommonRequest implements Multipart
     });
 
     Future.forEach(fileList, (Map file) {
-      write('$_boundaryHyphens$boundary$_crlf');  // Boundary delimiter.
-      write(file['headers']);                     // File headers.
+      write('$_boundaryHyphens$boundary$_crlf'); // Boundary delimiter.
+      write(file['headers']); // File headers.
 
       // File bytes and ending newline.
       return writeByteStream(file['byteStream']).then((_) => write(_crlf));
@@ -162,7 +173,8 @@ abstract class CommonMultipartRequest extends CommonRequest implements Multipart
       controller.close();
     });
 
-    return new StreamedHttpBody.fromByteStream(contentType, controller.stream, contentLength: contentLength);
+    return new StreamedHttpBody.fromByteStream(contentType, controller.stream,
+        contentLength: contentLength);
   }
 
   /// Encode [name] in preparation of being included as a filename or field name
@@ -192,11 +204,10 @@ abstract class CommonMultipartRequest extends CommonRequest implements Multipart
   }
 
   String _multipartFileHeaders(String field, MultipartFile file) {
-    var headers = [
-      'content-type: ${file.contentType}'
-    ];
+    var headers = ['content-type: ${file.contentType}'];
 
-    var disposition = 'content-disposition: form-data; name="${_encodeName(field)}"';
+    var disposition =
+        'content-disposition: form-data; name="${_encodeName(field)}"';
     if (file.filename != null) {
       disposition = '$disposition; filename="${_encodeName(file.filename)}"';
     }

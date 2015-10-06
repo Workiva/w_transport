@@ -44,10 +44,11 @@ class ReflectHandler extends Handler {
       encoding = LATIN1;
     } else {
       MediaType contentType = new MediaType(
-        request.headers.contentType.primaryType,
-        request.headers.contentType.subType,
-        request.headers.contentType.parameters);
-      encoding = http_utils.parseEncodingFromContentType(contentType, fallback: LATIN1);
+          request.headers.contentType.primaryType,
+          request.headers.contentType.subType,
+          request.headers.contentType.parameters);
+      encoding = http_utils.parseEncodingFromContentType(contentType,
+          fallback: LATIN1);
     }
 
     Map reflection = {
@@ -58,7 +59,8 @@ class ReflectHandler extends Handler {
     };
 
     request.response.statusCode = HttpStatus.OK;
-    request.response.headers.set('content-type', 'application/json; charset=utf-8');
+    request.response.headers
+        .set('content-type', 'application/json; charset=utf-8');
     setCorsHeaders(request);
     request.response.write(JSON.encode(reflection));
   }

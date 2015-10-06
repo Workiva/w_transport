@@ -24,7 +24,7 @@ import 'common.dart';
 
 void main() {
   WebSocketIntegrationConfig config =
-    new WebSocketIntegrationConfig('Mock', Uri.parse('ws://localhost:8024'));
+      new WebSocketIntegrationConfig('Mock', Uri.parse('ws://localhost:8024'));
 
   group(config.title, () {
     setUp(() {
@@ -35,7 +35,7 @@ void main() {
       MockTransports.webSocket.when(config.fourOhFourUri, reject: true);
 
       MockTransports.webSocket.when(config.closeUri,
-      handler: (Uri uri, {protocols, headers}) {
+          handler: (Uri uri, {protocols, headers}) {
         MockWSocket webSocket = new MockWSocket();
 
         webSocket.onOutgoing((data) {
@@ -57,14 +57,14 @@ void main() {
       });
 
       MockTransports.webSocket.when(config.echoUri,
-      handler: (Uri uri, {protocols, headers}) {
+          handler: (Uri uri, {protocols, headers}) {
         MockWSocket webSocket = new MockWSocket();
         webSocket.onOutgoing(webSocket.addIncoming);
         return webSocket;
       });
 
       MockTransports.webSocket.when(config.pingUri,
-      handler: (Uri uri, {protocols, headers}) {
+          handler: (Uri uri, {protocols, headers}) {
         MockWSocket webSocket = new MockWSocket();
 
         webSocket.onOutgoing((data) async {

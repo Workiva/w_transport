@@ -89,12 +89,17 @@ library w_transport.w_http;
 export 'package:w_transport/src/http/base_request.dart' show BaseRequest;
 export 'package:w_transport/src/http/client.dart' show Client;
 export 'package:w_transport/src/http/http.dart' show Http;
-export 'package:w_transport/src/http/http_body.dart' show HttpBody, StreamedHttpBody;
+export 'package:w_transport/src/http/http_body.dart'
+    show HttpBody, StreamedHttpBody;
 export 'package:w_transport/src/http/multipart_file.dart' show MultipartFile;
-export 'package:w_transport/src/http/request_exception.dart' show RequestException;
-export 'package:w_transport/src/http/request_progress.dart' show RequestProgress;
-export 'package:w_transport/src/http/requests.dart' show FormRequest, JsonRequest, MultipartRequest, Request, StreamedRequest;
-export 'package:w_transport/src/http/response.dart' show Response, StreamedResponse;
+export 'package:w_transport/src/http/request_exception.dart'
+    show RequestException;
+export 'package:w_transport/src/http/request_progress.dart'
+    show RequestProgress;
+export 'package:w_transport/src/http/requests.dart'
+    show FormRequest, JsonRequest, MultipartRequest, Request, StreamedRequest;
+export 'package:w_transport/src/http/response.dart'
+    show Response, StreamedResponse;
 
 export 'package:w_transport/src/web_socket/w_socket.dart' show WSocket;
 export 'package:w_transport/src/web_socket/w_socket_exception.dart'

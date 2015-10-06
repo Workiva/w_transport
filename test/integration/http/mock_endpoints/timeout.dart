@@ -9,4 +9,3 @@ void mockTimeoutEndpoint(Uri uri) {
     return new Completer().future;
   });
 }
-

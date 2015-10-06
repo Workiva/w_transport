@@ -11,8 +11,10 @@ class MockFormRequest extends CommonFormRequest with MockRequestMixin {}
 
 class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {}
 
-class MockMultipartRequest extends CommonMultipartRequest with MockRequestMixin  {}
+class MockMultipartRequest extends CommonMultipartRequest
+    with MockRequestMixin {}
 
-class MockPlainTextRequest extends CommonPlainTextRequest with MockRequestMixin {}
+class MockPlainTextRequest extends CommonPlainTextRequest
+    with MockRequestMixin {}
 
 class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {}

@@ -27,11 +27,19 @@ library w_transport.w_transport_mock;
 import 'package:w_transport/src/mock_adapter.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 
-export 'package:w_transport/src/http/finalized_request.dart' show FinalizedRequest;
-export 'package:w_transport/src/http/mock/base_request.dart' show MockBaseRequest;
+export 'package:w_transport/src/http/finalized_request.dart'
+    show FinalizedRequest;
+export 'package:w_transport/src/http/mock/base_request.dart'
+    show MockBaseRequest;
 export 'package:w_transport/src/http/mock/client.dart' show MockClient;
-export 'package:w_transport/src/http/mock/requests.dart' show MockFormRequest, MockJsonRequest, MockPlainTextRequest, MockStreamedRequest;
-export 'package:w_transport/src/http/mock/response.dart' show MockResponse, MockStreamedResponse;
+export 'package:w_transport/src/http/mock/requests.dart'
+    show
+        MockFormRequest,
+        MockJsonRequest,
+        MockPlainTextRequest,
+        MockStreamedRequest;
+export 'package:w_transport/src/http/mock/response.dart'
+    show MockResponse, MockStreamedResponse;
 
 export 'package:w_transport/src/mocks/transport.dart' show MockTransports;
 

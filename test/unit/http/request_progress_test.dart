@@ -8,7 +8,6 @@ import 'package:w_transport/w_transport.dart';
 
 void main() {
   group('RequestProgress', () {
-
     test('lengthComputable should be true if total is known', () {
       RequestProgress prog = new RequestProgress(10, 100);
       expect(prog.lengthComputable, isTrue);
@@ -28,6 +27,5 @@ void main() {
       RequestProgress prog = new RequestProgress(10);
       expect(prog.percent, equals(0.0));
     });
-
   });
 }

@@ -74,7 +74,17 @@ abstract class Handler {
     _credentialsAllowed = credentials == true;
     _allowedMethods = (methods != null)
         ? methods
-        : ['COPY', 'DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'TRACE'];
+        : [
+            'COPY',
+            'DELETE',
+            'GET',
+            'HEAD',
+            'OPTIONS',
+            'PATCH',
+            'POST',
+            'PUT',
+            'TRACE'
+          ];
     _allowedOrigin = (origin != null) ? origin : null;
   }
 

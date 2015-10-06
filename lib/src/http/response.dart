@@ -3,7 +3,8 @@ library w_transport.src.http.response;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap, MediaType;
+import 'package:http_parser/http_parser.dart'
+    show CaseInsensitiveMap, MediaType;
 
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
@@ -32,7 +33,8 @@ abstract class BaseResponse {
   Encoding _encoding;
   Map<String, String> _headers;
 
-  BaseResponse(int this.status, String this.statusText, Map<String, String> headers) {
+  BaseResponse(
+      int this.status, String this.statusText, Map<String, String> headers) {
     _headers = new Map.unmodifiable(new CaseInsensitiveMap.from(headers));
     _encoding = http_utils.parseEncodingFromHeaders(_headers, fallback: LATIN1);
     _contentType = http_utils.parseContentTypeFromHeaders(_headers);
@@ -67,14 +69,18 @@ class Response extends BaseResponse {
 
   HttpBody _body;
 
-  Response.fromBytes(int status, String statusText, Map<String, String> headers, List<int> bytes)
+  Response.fromBytes(int status, String statusText, Map<String, String> headers,
+      List<int> bytes)
       : super(status, statusText, headers) {
-    _body = new HttpBody.fromBytes(contentType, bytes, fallbackEncoding: encoding);
+    _body =
+        new HttpBody.fromBytes(contentType, bytes, fallbackEncoding: encoding);
   }
 
-  Response.fromString(int status, String statusText, Map<String, String> headers, String body)
+  Response.fromString(
+      int status, String statusText, Map<String, String> headers, String body)
       : super(status, statusText, headers) {
-    _body = new HttpBody.fromString(contentType, body, fallbackEncoding: encoding);
+    _body =
+        new HttpBody.fromString(contentType, body, fallbackEncoding: encoding);
   }
 }
 
@@ -95,9 +101,10 @@ class StreamedResponse extends BaseResponse {
 
   StreamedHttpBody _body;
 
-  StreamedResponse.fromByteStream(int status, String statusText, Map<String, String> headers, Stream<List<int>> byteStream)
+  StreamedResponse.fromByteStream(int status, String statusText,
+      Map<String, String> headers, Stream<List<int>> byteStream)
       : super(status, statusText, headers) {
-    _body = new StreamedHttpBody.fromByteStream(contentType, byteStream, contentLength: contentLength, fallbackEncoding: encoding);
+    _body = new StreamedHttpBody.fromByteStream(contentType, byteStream,
+        contentLength: contentLength, fallbackEncoding: encoding);
   }
-
 }

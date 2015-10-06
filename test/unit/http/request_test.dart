@@ -25,23 +25,22 @@ import 'package:w_transport/w_transport_mock.dart';
 void main() {
   _runCommonRequestSuiteFor('FormRequest', ({bool withBody: false}) {
     if (!withBody) return new FormRequest();
-    return new FormRequest()
-      ..fields['field'] = 'value';
+    return new FormRequest()..fields['field'] = 'value';
   });
   _runCommonRequestSuiteFor('JsonRequest', ({bool withBody: false}) {
     if (!withBody) return new JsonRequest();
     return new JsonRequest()
-      ..body = [{'field': 'value'}];
+      ..body = [
+        {'field': 'value'}
+      ];
   });
   _runCommonRequestSuiteFor('MultipartRequest', ({bool withBody}) {
     // Multipart requests can't be empty.
-    return new MultipartRequest()
-      ..fields['field'] = 'value';
+    return new MultipartRequest()..fields['field'] = 'value';
   });
   _runCommonRequestSuiteFor('Request', ({bool withBody: false}) {
     if (!withBody) return new Request();
-    return new Request()
-      ..body = 'body';
+    return new Request()..body = 'body';
   });
   _runCommonRequestSuiteFor('StreamedRequest', ({bool withBody: false}) {
     if (!withBody) return new StreamedRequest();
@@ -51,7 +50,8 @@ void main() {
   });
 }
 
-void _runCommonRequestSuiteFor(String name, BaseRequest requestFactory({bool withBody})) {
+void _runCommonRequestSuiteFor(
+    String name, BaseRequest requestFactory({bool withBody})) {
   group(name, () {
     Uri requestUri = Uri.parse('/mock/request');
 
@@ -150,38 +150,39 @@ void _runCommonRequestSuiteFor(String name, BaseRequest requestFactory({bool wit
 
     test(
         'URI and data should be accepted as parameters to a request dispatch method',
-            () async {
-          Completer dataCompleter = new Completer();
-          MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-            if (request.body is HttpBody) {
-              dataCompleter.complete(request.body.asString());
-            } else {
-              dataCompleter.complete(UTF8.decode(await (request.body as StreamedHttpBody).toBytes()));
-            }
+        () async {
+      Completer dataCompleter = new Completer();
+      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        if (request.body is HttpBody) {
+          dataCompleter.complete(request.body.asString());
+        } else {
+          dataCompleter.complete(
+              UTF8.decode(await (request.body as StreamedHttpBody).toBytes()));
+        }
 
-            return new MockResponse.ok();
-          });
-          await requestFactory(withBody: true).post(uri: requestUri);
-          expect(await dataCompleter.future, isNotEmpty);
-        });
+        return new MockResponse.ok();
+      });
+      await requestFactory(withBody: true).post(uri: requestUri);
+      expect(await dataCompleter.future, isNotEmpty);
+    });
 
     test('request cancellation prior to dispatch should cancel request',
         () async {
       BaseRequest request = requestFactory();
       request.abort();
-      expect(
-          request.get(uri: requestUri), throwsA(new isInstanceOf<RequestException>()));
+      expect(request.get(uri: requestUri),
+          throwsA(new isInstanceOf<RequestException>()));
     });
 
     test(
         'request cancellation after dispatch but prior to resolution should cancel request',
-            () async {
-          BaseRequest request = requestFactory();
-          Future future = request.get(uri: requestUri);
-          await new Future.delayed(new Duration(milliseconds: 500));
-          request.abort();
-          expect(future, throwsA(new isInstanceOf<RequestException>()));
-        });
+        () async {
+      BaseRequest request = requestFactory();
+      Future future = request.get(uri: requestUri);
+      await new Future.delayed(new Duration(milliseconds: 500));
+      request.abort();
+      expect(future, throwsA(new isInstanceOf<RequestException>()));
+    });
 
     test('request cancellation after request has succeeded should do nothing',
         () async {
@@ -208,22 +209,24 @@ void _runCommonRequestSuiteFor(String name, BaseRequest requestFactory({bool wit
       request.abort(new Exception('custom error'));
       expect(request.get(uri: requestUri), throwsA(predicate((error) {
         return error is RequestException &&
-        error.toString().contains('custom error');
+            error.toString().contains('custom error');
       })));
     });
 
     test('should wrap an unexpected exception in RequestException', () async {
       BaseRequest request = requestFactory();
       MockTransports.http.causeFailureOnOpen(request);
-      expect(
-          request.get(uri: requestUri), throwsA(new isInstanceOf<RequestException>()));
+      expect(request.get(uri: requestUri),
+          throwsA(new isInstanceOf<RequestException>()));
     });
 
     test('should throw if status code is non-200', () async {
       Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri, respondWith: new MockResponse.internalServerError());
+      MockTransports.http.expect('GET', uri,
+          respondWith: new MockResponse.internalServerError());
       BaseRequest request = requestFactory();
-      expect(request.get(uri: uri), throwsA(new isInstanceOf<RequestException>()));
+      expect(
+          request.get(uri: uri), throwsA(new isInstanceOf<RequestException>()));
     });
 
     test('headers should be unmodifiable once sent', () async {
@@ -251,7 +254,8 @@ void _runCommonRequestSuiteFor(String name, BaseRequest requestFactory({bool wit
       }, throwsStateError);
     });
 
-    test('configure() should throw if called after request has been sent', () async {
+    test('configure() should throw if called after request has been sent',
+        () async {
       Uri uri = Uri.parse('/test');
       MockTransports.http.expect('GET', uri);
       BaseRequest request = requestFactory();

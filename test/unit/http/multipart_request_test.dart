@@ -10,7 +10,6 @@ import 'package:w_transport/w_transport_mock.dart';
 
 void main() {
   group('MultipartRequest', () {
-
     setUp(() {
       configureWTransportForTest();
     });
@@ -37,7 +36,7 @@ void main() {
       Uri uri = Uri.parse('/test');
       MockTransports.http.expect('POST', uri);
       MultipartRequest request = new MultipartRequest()
-      ..fields['field1'] = 'value1';
+        ..fields['field1'] = 'value1';
       await request.post(uri: uri);
       expect(() {
         request.fields['too'] = 'late';
@@ -53,6 +52,5 @@ void main() {
         request.encoding = UTF8;
       }, throwsUnsupportedError);
     });
-
   });
 }

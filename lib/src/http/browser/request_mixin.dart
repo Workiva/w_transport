@@ -32,7 +32,9 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
   }
 
   @override
-  Future<BaseResponse> sendRequestAndFetchResponse(FinalizedRequest finalizedRequest, {bool streamResponse: false}) async {
+  Future<BaseResponse> sendRequestAndFetchResponse(
+      FinalizedRequest finalizedRequest,
+      {bool streamResponse: false}) async {
     Completer<BaseResponse> c = new Completer();
 
     // Add request headers.
@@ -98,11 +100,14 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     if (streamResponse) {
       // TODO: Use xhr.response instead of xhr.responseText. Use FileReader to read it.
       var text = _request.responseText != null ? _request.responseText : '';
-      var responseEncoding = http_utils.parseEncodingFromHeaders(_request.responseHeaders);
+      var responseEncoding =
+          http_utils.parseEncodingFromHeaders(_request.responseHeaders);
       var byteStream = new Stream.fromIterable(responseEncoding.encode(text));
-      response = new StreamedResponse.fromByteStream(_request.status, _request.statusText, _request.responseHeaders, byteStream);
+      response = new StreamedResponse.fromByteStream(_request.status,
+          _request.statusText, _request.responseHeaders, byteStream);
     } else {
-      response = new Response.fromString(_request.status, _request.statusText, _request.responseHeaders, _request.responseText);
+      response = new Response.fromString(_request.status, _request.statusText,
+          _request.responseHeaders, _request.responseText);
     }
     return response;
   }

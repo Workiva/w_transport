@@ -51,7 +51,8 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   int get contentLength => bodyBytes.length;
 
   @override
-  MediaType get defaultContentType => new MediaType('text', 'plain', {'charset': encoding.name});
+  MediaType get defaultContentType =>
+      new MediaType('text', 'plain', {'charset': encoding.name});
 
   @override
   Future<HttpBody> finalizeBody([body]) async {
@@ -61,7 +62,8 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
       } else if (body is List<int>) {
         this.bodyBytes = body;
       } else {
-        throw new ArgumentError('Plain-text request body must be either a String or List<int>.');
+        throw new ArgumentError(
+            'Plain-text request body must be either a String or List<int>.');
       }
     }
 

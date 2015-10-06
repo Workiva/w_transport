@@ -20,11 +20,11 @@ class UploadHandler extends Handler {
 
   Future upload(HttpRequest request) async {
     ContentType contentType =
-    ContentType.parse(request.headers.value('content-type'));
+        ContentType.parse(request.headers.value('content-type'));
     String boundary = contentType.parameters['boundary'];
     Stream stream = request
-      .transform(new MimeMultipartTransformer(boundary))
-      .map(HttpMultipartFormData.parse);
+        .transform(new MimeMultipartTransformer(boundary))
+        .map(HttpMultipartFormData.parse);
 
     await for (HttpMultipartFormData formData in stream) {
       if (formData.isText) {

@@ -73,7 +73,6 @@ abstract class JsonRequest extends BaseRequest {
   factory JsonRequest() => PlatformAdapter.retrieve().newJsonRequest();
 }
 
-
 abstract class MultipartRequest extends BaseRequest {
   /// Get this request's text fields as a Map of field names to their values.
   ///
@@ -94,7 +93,8 @@ abstract class MultipartRequest extends BaseRequest {
   ///       ..files['file1'] = file;
   Map<String, dynamic> get files;
 
-  factory MultipartRequest() => PlatformAdapter.retrieve().newMultipartRequest();
+  factory MultipartRequest() =>
+      PlatformAdapter.retrieve().newMultipartRequest();
 }
 
 abstract class Request extends BaseRequest {

@@ -11,7 +11,6 @@ import 'package:w_transport/src/http/utils.dart' as http_utils;
 
 void main() {
   group('HTTP utils', () {
-
     test('isAsciiOnly()', () {
       expect(http_utils.isAsciiOnly('abc'), isTrue);
       expect(http_utils.isAsciiOnly('abç'), isFalse);
@@ -91,7 +90,9 @@ void main() {
     test('parseContentTypeFromHeaders() no content-type header', () {
       var headers = {};
       MediaType ct = http_utils.parseContentTypeFromHeaders(headers);
-      expect(ct.mimeType, equals('application/octet-stream'), reason: 'application/octet-stream content-type should be assumed if header is missing.');
+      expect(ct.mimeType, equals('application/octet-stream'),
+          reason:
+              'application/octet-stream content-type should be assumed if header is missing.');
       expect(ct.parameters, isEmpty);
     });
 
@@ -119,16 +120,19 @@ void main() {
 
     test('parseEncodingFromContentType() no charset', () {
       MediaType ct = new MediaType('text', 'plain');
-      expect(http_utils.parseEncodingFromContentType(ct, fallback: ASCII), equals(ASCII));
+      expect(http_utils.parseEncodingFromContentType(ct, fallback: ASCII),
+          equals(ASCII));
     });
 
     test('parseEncodingFromContentType() null content-type', () {
-      expect(http_utils.parseEncodingFromContentType(null, fallback: ASCII), equals(ASCII));
+      expect(http_utils.parseEncodingFromContentType(null, fallback: ASCII),
+          equals(ASCII));
     });
 
     test('parseEncodingFromContentType() unrecognized charset', () {
       MediaType ct = new MediaType('text', 'plain', {'charset': 'unknown'});
-      expect(http_utils.parseEncodingFromContentType(ct, fallback: ASCII), equals(ASCII));
+      expect(http_utils.parseEncodingFromContentType(ct, fallback: ASCII),
+          equals(ASCII));
     });
 
     test('parseEncodingFromContentTypeOrFail()', () {
@@ -174,17 +178,20 @@ void main() {
 
     test('parseEncodingFromHeaders() no charset', () {
       var headers = {'content-type': 'text/plain'};
-      expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII), equals(ASCII));
+      expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII),
+          equals(ASCII));
     });
 
     test('parseEncodingFromHeaders() no content-type', () {
       var headers = {};
-      expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII), equals(ASCII));
+      expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII),
+          equals(ASCII));
     });
 
     test('parseEncodingFromHeaders() unrecognized charset', () {
       var headers = {'content-type': 'text/plain; charset=unknown'};
-      expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII), equals(ASCII));
+      expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII),
+          equals(ASCII));
     });
 
     test('reduceByteStream()', () async {
@@ -203,7 +210,9 @@ void main() {
     });
 
     test('reduceByteStream() single element', () async {
-      Stream byteStream = new Stream.fromIterable([[1, 2]]);
+      Stream byteStream = new Stream.fromIterable([
+        [1, 2]
+      ]);
       var expected = new Uint8List.fromList([1, 2]);
       expect(await http_utils.reduceByteStream(byteStream), equals(expected));
     });
@@ -214,17 +223,20 @@ void main() {
         [4, 5, 6],
         [7, 8, 9, 10]
       ]);
-      var listener = new http_utils.ByteStreamProgressListener(byteStream, total: 10);
+      var listener =
+          new http_utils.ByteStreamProgressListener(byteStream, total: 10);
 
       var chunks = [];
       await for (var chunk in listener.byteStream) {
         chunks.add(chunk);
       }
-      expect(chunks, equals([
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 9, 10]
-      ]));
+      expect(
+          chunks,
+          equals([
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9, 10]
+          ]));
 
       var progressEvents = await listener.progressStream.toList();
       expect(progressEvents.length, equals(3));
@@ -241,11 +253,11 @@ void main() {
       var listener = new http_utils.ByteStreamProgressListener(byteStream);
 
       Completer done = new Completer();
-      StreamSubscription sub = listener.byteStream.listen((_) {}, onDone: done.complete);
+      StreamSubscription sub =
+          listener.byteStream.listen((_) {}, onDone: done.complete);
       sub.pause();
       sub.resume();
       await done.future;
     });
-
   });
 }

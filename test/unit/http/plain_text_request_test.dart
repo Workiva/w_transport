@@ -10,7 +10,6 @@ import 'package:w_transport/w_transport_mock.dart';
 
 void main() {
   group('Request', () {
-
     setUp(() {
       configureWTransportForTest();
     });
@@ -67,11 +66,13 @@ void main() {
       expect(await body.future, equals('body'));
     });
 
-    test('setting body in request dispatcher should throw if invalid', () async {
+    test('setting body in request dispatcher should throw if invalid',
+        () async {
       Uri uri = Uri.parse('/test');
 
       Request request = new Request();
-      expect(request.post(uri: uri, body: {'invalid': 'map'}), throwsArgumentError);
+      expect(request.post(uri: uri, body: {'invalid': 'map'}),
+          throwsArgumentError);
     });
 
     test('body should be unmodifiable once sent', () async {
@@ -114,6 +115,5 @@ void main() {
         request.encoding = LATIN1;
       }, throwsStateError);
     });
-
   });
 }

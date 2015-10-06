@@ -11,7 +11,6 @@ import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 
 void main() {
   group('Mock platform adapter', () {
-
     setUp(() {
       configureWTransportForTest();
     });
@@ -45,6 +44,5 @@ void main() {
       MockTransports.webSocket.expect(wsUri, connectTo: new MockWSocket());
       expect(await WSocket.connect(wsUri), new isInstanceOf<MockWSocket>());
     });
-
   });
 }

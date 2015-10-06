@@ -10,7 +10,6 @@ import 'package:w_transport/src/http/browser/requests.dart';
 
 void main() {
   group('Browser platform adapter', () {
-
     setUp(() {
       configureWTransportForBrowser();
     });
@@ -28,7 +27,8 @@ void main() {
     });
 
     test('newMultipartRequest()', () {
-      expect(new MultipartRequest(), new isInstanceOf<BrowserMultipartRequest>());
+      expect(
+          new MultipartRequest(), new isInstanceOf<BrowserMultipartRequest>());
     });
 
     test('newRequest()', () {
@@ -38,6 +38,5 @@ void main() {
     test('newStreamedRequest()', () {
       expect(new StreamedRequest(), new isInstanceOf<BrowserStreamedRequest>());
     });
-
   });
 }

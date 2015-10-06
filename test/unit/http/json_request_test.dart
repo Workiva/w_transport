@@ -10,28 +10,26 @@ import 'package:w_transport/w_transport_mock.dart';
 
 void main() {
   group('JsonRequest', () {
-
     setUp(() {
       configureWTransportForTest();
     });
 
     test('setting fields defaults to empty map if null', () {
-      FormRequest request = new FormRequest()
-        ..fields = null;
+      FormRequest request = new FormRequest()..fields = null;
       expect(request.fields, equals({}));
     });
 
     test('setting entire body (Map)', () {
       Map json = {'field': 'value'};
-      JsonRequest request = new JsonRequest()
-        ..body = json;
+      JsonRequest request = new JsonRequest()..body = json;
       expect(request.body, equals(json));
     });
 
     test('setting entire body (List)', () {
-      List json = [{'field': 'value'}];
-      JsonRequest request = new JsonRequest()
-        ..body = json;
+      List json = [
+        {'field': 'value'}
+      ];
+      JsonRequest request = new JsonRequest()..body = json;
       expect(request.body, equals(json));
     });
 
@@ -74,12 +72,15 @@ void main() {
       });
 
       JsonRequest request = new JsonRequest();
-      List json = [{'field': 'value'}];
+      List json = [
+        {'field': 'value'}
+      ];
       await request.post(uri: uri, body: json);
       expect(await body.future, equals(JSON.encode(json)));
     });
 
-    test('setting body in request dispatcher should throw if invalid', () async {
+    test('setting body in request dispatcher should throw if invalid',
+        () async {
       Uri uri = Uri.parse('/test');
 
       JsonRequest request = new JsonRequest();
@@ -123,6 +124,5 @@ void main() {
         request.encoding = LATIN1;
       }, throwsStateError);
     });
-
   });
 }

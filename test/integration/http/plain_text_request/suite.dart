@@ -12,19 +12,24 @@ import '../integration_config.dart';
 
 void runPlainTextRequestSuite(HttpIntegrationConfig config) {
   group('Request', () {
-
     test('contentLength should be set automatically', () async {
       Request emptyRequest = new Request();
-      Response response = await emptyRequest.post(uri: config.reflectEndpointUri);
-      var contentLength = int.parse(response.body.asJson()['headers']['content-length']);
-      expect(contentLength, equals(0), reason: 'Empty plain-text request\'s content-length should be 0.');
+      Response response =
+          await emptyRequest.post(uri: config.reflectEndpointUri);
+      var contentLength =
+          int.parse(response.body.asJson()['headers']['content-length']);
+      expect(contentLength, equals(0),
+          reason: 'Empty plain-text request\'s content-length should be 0.');
 
       Request nonEmptyRequest = new Request()
         ..uri = config.reflectEndpointUri
         ..body = 'data';
       response = await nonEmptyRequest.post();
-      contentLength = int.parse(response.body.asJson()['headers']['content-length']);
-      expect(contentLength, greaterThan(0), reason: 'Non-empty plain-text request\'s content-length should be greater than 0.');
+      contentLength =
+          int.parse(response.body.asJson()['headers']['content-length']);
+      expect(contentLength, greaterThan(0),
+          reason:
+              'Non-empty plain-text request\'s content-length should be greater than 0.');
     });
 
     test('content-type should be set automatically', () async {
@@ -32,7 +37,8 @@ void runPlainTextRequestSuite(HttpIntegrationConfig config) {
         ..uri = config.reflectEndpointUri
         ..body = 'data';
       Response response = await request.post();
-      MediaType contentType = new MediaType.parse(response.body.asJson()['headers']['content-type']);
+      MediaType contentType = new MediaType.parse(
+          response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('text/plain'));
     });
 
@@ -65,6 +71,5 @@ void runPlainTextRequestSuite(HttpIntegrationConfig config) {
       expect(response.encoding.name, equals(ASCII.name));
       expect(response.body.asString(), equals('data'));
     });
-
   });
 }

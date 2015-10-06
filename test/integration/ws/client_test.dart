@@ -28,7 +28,6 @@ void main() {
   WebSocketIntegrationConfig config = new WebSocketIntegrationConfig(
       'Client', Uri.parse('ws://localhost:8024'));
   group(config.title, () {
-
     setUp(() {
       configureWTransportForBrowser();
     });

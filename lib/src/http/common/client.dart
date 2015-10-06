@@ -22,7 +22,8 @@ abstract class CommonClient implements Client {
     _isClosed = true;
     closeClient();
     for (var request in _requests) {
-      request.abort(new Exception('HTTP client was closed before this request could complete.'));
+      request.abort(new Exception(
+          'HTTP client was closed before this request could complete.'));
     }
   }
 

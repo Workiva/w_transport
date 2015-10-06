@@ -24,7 +24,6 @@ void main() {
     runMultipartRequestSuite(config);
 
     group('MultipartRequest', () {
-
       test('underlying HttpRequest configuration', () async {
         MultipartRequest request = new MultipartRequest()
           ..uri = config.reflectEndpointUri
@@ -33,7 +32,8 @@ void main() {
           xhr.setRequestHeader('x-configured', 'true');
         });
         Response response = await request.get();
-        expect(response.body.asJson()['headers']['x-configured'], equals('true'));
+        expect(
+            response.body.asJson()['headers']['x-configured'], equals('true'));
       });
 
       group('withCredentials', () {
@@ -61,7 +61,8 @@ void main() {
       });
 
       test('withClient() ctor', () {
-        expect(new BrowserMultipartRequest.withClient(null), new isInstanceOf<MultipartRequest>());
+        expect(new BrowserMultipartRequest.withClient(null),
+            new isInstanceOf<MultipartRequest>());
       });
 
       test('setting content-length is unsupported', () {
@@ -88,7 +89,6 @@ void main() {
       test('should support File', () async {
         // TODO: Not sure how to test this - the File class cannot be constructed.
       });
-
     });
   });
 }

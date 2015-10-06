@@ -9,4 +9,3 @@ void mockPingEndpoint(Uri uri) {
     return new MockResponse.ok();
   });
 }
-

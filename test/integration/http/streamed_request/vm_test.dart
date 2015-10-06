@@ -21,7 +21,8 @@ void main() {
     runStreamedRequestSuite(config);
 
     test('underlying HttpRequest configuration', () async {
-      StreamedRequest request = new StreamedRequest()..uri = config.reflectEndpointUri;
+      StreamedRequest request = new StreamedRequest()
+        ..uri = config.reflectEndpointUri;
       request.configure((HttpClientRequest ioRequest) async {
         ioRequest.headers.set('x-configured', 'true');
       });

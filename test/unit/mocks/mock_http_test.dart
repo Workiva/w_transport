@@ -174,8 +174,7 @@ void main() {
       test('registers a handler for all requests with matching URI and method',
           () async {
         Response ok = new MockResponse.ok();
-        MockTransports.http
-            .when(requestUri, (_) async => ok, method: 'GET');
+        MockTransports.http.when(requestUri, (_) async => ok, method: 'GET');
         Http.get(Uri.parse('/wrong')); // Wrong URI.
         Http.delete(requestUri); // Wrong method.
         await Http.get(requestUri); // Matches.
@@ -196,8 +195,8 @@ void main() {
       });
 
       test('registers handler that throws to cause request failure', () async {
-        MockTransports.http.when(
-            requestUri, (_) async => throw new Exception());
+        MockTransports.http
+            .when(requestUri, (_) async => throw new Exception());
         expect(Http.get(requestUri), throws);
       });
     });

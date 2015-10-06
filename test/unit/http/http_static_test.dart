@@ -50,10 +50,8 @@ void main() {
         }
         return new MockResponse.ok();
       }, method: 'DELETE');
-      await Future.wait([
-        Http.delete(requestUri, withCredentials: true),
-        c.future
-      ]);
+      await Future
+          .wait([Http.delete(requestUri, withCredentials: true), c.future]);
     });
 
     test('GET', () async {
@@ -71,10 +69,8 @@ void main() {
         }
         return new MockResponse.ok();
       }, method: 'GET');
-      await Future.wait([
-        Http.get(requestUri, withCredentials: true),
-        c.future
-      ]);
+      await Future
+          .wait([Http.get(requestUri, withCredentials: true), c.future]);
     });
 
     test('HEAD', () async {
@@ -92,10 +88,8 @@ void main() {
         }
         return new MockResponse.ok();
       }, method: 'HEAD');
-      await Future.wait([
-        Http.head(requestUri, withCredentials: true),
-        c.future
-      ]);
+      await Future
+          .wait([Http.head(requestUri, withCredentials: true), c.future]);
     });
 
     test('OPTIONS', () async {
@@ -113,10 +107,8 @@ void main() {
         }
         return new MockResponse.ok();
       }, method: 'OPTIONS');
-      await Future.wait([
-        Http.options(requestUri, withCredentials: true),
-        c.future
-      ]);
+      await Future
+          .wait([Http.options(requestUri, withCredentials: true), c.future]);
     });
 
     test('PATCH', () async {
@@ -144,10 +136,8 @@ void main() {
         }
         return new MockResponse.ok();
       }, method: 'PATCH');
-      await Future.wait([
-        Http.patch(requestUri, withCredentials: true),
-        c.future
-      ]);
+      await Future
+          .wait([Http.patch(requestUri, withCredentials: true), c.future]);
     });
 
     test('POST', () async {
@@ -175,10 +165,8 @@ void main() {
         }
         return new MockResponse.ok();
       }, method: 'POST');
-      await Future.wait([
-        Http.post(requestUri, withCredentials: true),
-        c.future
-      ]);
+      await Future
+          .wait([Http.post(requestUri, withCredentials: true), c.future]);
     });
 
     test('PUT', () async {
@@ -206,10 +194,8 @@ void main() {
         }
         return new MockResponse.ok();
       }, method: 'PUT');
-      await Future.wait([
-        Http.put(requestUri, withCredentials: true),
-        c.future
-      ]);
+      await Future
+          .wait([Http.put(requestUri, withCredentials: true), c.future]);
     });
 
     test('custom method', () async {
@@ -237,10 +223,8 @@ void main() {
         }
         return new MockResponse.ok();
       }, method: 'COPY');
-      await Future.wait([
-        Http.send('COPY', requestUri, withCredentials: true),
-        c.future
-      ]);
+      await Future.wait(
+          [Http.send('COPY', requestUri, withCredentials: true), c.future]);
     });
   });
 }

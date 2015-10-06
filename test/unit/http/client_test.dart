@@ -9,7 +9,6 @@ import 'package:w_transport/w_transport_mock.dart';
 
 void main() {
   group('Client', () {
-
     setUp(() {
       configureWTransportForTest();
     });
@@ -38,7 +37,8 @@ void main() {
 
     test('newMultipartRequest() should create a new request', () async {
       Client client = new Client();
-      expect(client.newMultipartRequest(), new isInstanceOf<MultipartRequest>());
+      expect(
+          client.newMultipartRequest(), new isInstanceOf<MultipartRequest>());
     });
 
     test('newMultipartRequest() should throw if closed', () async {
@@ -82,6 +82,5 @@ void main() {
       client.close();
       expect(future, throws);
     });
-
   });
 }

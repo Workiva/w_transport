@@ -9,7 +9,8 @@ const String platformVM = 'vm';
 const String integrationHttpBrowser = '[integration] HTTP ($platformBrowser)';
 const String integrationHttpMock = '[integration] HTTP ($platformMock)';
 const String integrationHttpVM = '[integration] HTTP ($platformVM)';
-const String integrationWebSocketBrowser = '[integration] WS ($platformBrowser)';
+const String integrationWebSocketBrowser =
+    '[integration] WS ($platformBrowser)';
 const String integrationWebSocketMock = '[integration] WS ($platformMock)';
 const String integrationWebSocketVM = '[integration] WS ($platformVM)';
 

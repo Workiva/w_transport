@@ -110,7 +110,8 @@ class MockHttp {
 
   void failRequest(BaseRequest request, {Object error, BaseResponse response}) {
     _verifyRequestIsMock(request);
-    (request as MockBaseRequest).completeError(error: error, response: response);
+    (request as MockBaseRequest)
+        .completeError(error: error, response: response);
     _pending.remove(request);
   }
 

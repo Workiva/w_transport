@@ -12,19 +12,24 @@ import '../integration_config.dart';
 
 void runJsonRequestSuite(HttpIntegrationConfig config) {
   group('JsonRequest', () {
-
     test('contentLength should be set automatically', () async {
       JsonRequest emptyRequest = new JsonRequest();
-      Response response = await emptyRequest.post(uri: config.reflectEndpointUri);
-      int contentLength = int.parse(response.body.asJson()['headers']['content-length']);
-      expect(contentLength, equals(0), reason: 'Empty JSON request\'s content-length should be 0.');
+      Response response =
+          await emptyRequest.post(uri: config.reflectEndpointUri);
+      int contentLength =
+          int.parse(response.body.asJson()['headers']['content-length']);
+      expect(contentLength, equals(0),
+          reason: 'Empty JSON request\'s content-length should be 0.');
 
       JsonRequest nonEmptyRequest = new JsonRequest()
         ..uri = config.reflectEndpointUri
         ..body = {'field1': 'value1', 'field2': 'value2'};
       response = await nonEmptyRequest.post();
-      contentLength = int.parse(response.body.asJson()['headers']['content-length']);
-      expect(contentLength, greaterThan(0), reason: 'Non-empty JSON request\'s content-length should be greater than 0.');
+      contentLength =
+          int.parse(response.body.asJson()['headers']['content-length']);
+      expect(contentLength, greaterThan(0),
+          reason:
+              'Non-empty JSON request\'s content-length should be greater than 0.');
     });
 
     test('content-type should be set automatically', () async {
@@ -32,7 +37,8 @@ void runJsonRequestSuite(HttpIntegrationConfig config) {
         ..uri = config.reflectEndpointUri
         ..body = {'field1': 'value1', 'field2': 'value2'};
       Response response = await request.post();
-      MediaType contentType = new MediaType.parse(response.body.asJson()['headers']['content-type']);
+      MediaType contentType = new MediaType.parse(
+          response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('application/json'));
     });
 
@@ -40,10 +46,7 @@ void runJsonRequestSuite(HttpIntegrationConfig config) {
       JsonRequest request = new JsonRequest()
         ..uri = config.echoEndpointUri
         ..encoding = UTF8
-        ..body = {
-          'field1': 'value1',
-          'field2': 'ç®å'
-        };
+        ..body = {'field1': 'value1', 'field2': 'ç®å'};
       Response response = await request.post();
       expect(response.encoding.name, equals(UTF8.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
@@ -54,10 +57,7 @@ void runJsonRequestSuite(HttpIntegrationConfig config) {
       JsonRequest request = new JsonRequest()
         ..uri = config.echoEndpointUri
         ..encoding = LATIN1
-        ..body = {
-        'field1': 'value1',
-        'field2': 'ç®å'
-      };
+        ..body = {'field1': 'value1', 'field2': 'ç®å'};
       Response response = await request.post();
       expect(response.encoding.name, equals(LATIN1.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
@@ -68,15 +68,11 @@ void runJsonRequestSuite(HttpIntegrationConfig config) {
       JsonRequest request = new JsonRequest()
         ..uri = config.echoEndpointUri
         ..encoding = ASCII
-        ..body = {
-        'field1': 'value1',
-        'field2': 'value2'
-      };
+        ..body = {'field1': 'value1', 'field2': 'value2'};
       Response response = await request.post();
       expect(response.encoding.name, equals(ASCII.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'value2'));
     });
-
   });
 }

@@ -10,7 +10,6 @@ import 'package:w_transport/w_transport_mock.dart';
 
 void main() {
   group('StreamedRequest', () {
-
     setUp(() {
       configureWTransportForTest();
     });
@@ -18,7 +17,10 @@ void main() {
     test('setting body', () async {
       StreamedRequest request = new StreamedRequest();
 
-      var chunks = [[1, 2], [3, 4]];
+      var chunks = [
+        [1, 2],
+        [3, 4]
+      ];
       request.body = new Stream.fromIterable(chunks);
       expect(await request.body.toList(), equals(chunks));
     });
@@ -28,16 +30,19 @@ void main() {
 
       Completer body = new Completer();
       MockTransports.http.when(uri, (FinalizedRequest request) async {
-        body.complete(UTF8.decode(await (request.body as StreamedHttpBody).toBytes()));
+        body.complete(
+            UTF8.decode(await (request.body as StreamedHttpBody).toBytes()));
         return new MockResponse.ok();
       });
 
       StreamedRequest request = new StreamedRequest();
-      await request.post(uri: uri, body: new Stream.fromIterable([UTF8.encode('body')]));
+      await request.post(
+          uri: uri, body: new Stream.fromIterable([UTF8.encode('body')]));
       expect(await body.future, equals('body'));
     });
 
-    test('setting body in request dispatcher should throw on invalid data', () async {
+    test('setting body in request dispatcher should throw on invalid data',
+        () async {
       Uri uri = Uri.parse('/test');
 
       StreamedRequest request = new StreamedRequest();
@@ -50,7 +55,9 @@ void main() {
       StreamedRequest request = new StreamedRequest();
       await request.post(uri: uri);
       expect(() {
-        request.body = new Stream.fromIterable([[1, 2]]);
+        request.body = new Stream.fromIterable([
+          [1, 2]
+        ]);
       }, throwsStateError);
     });
 
@@ -65,9 +72,9 @@ void main() {
       MockTransports.http.expect('GET', uri);
       StreamedRequest request = new StreamedRequest();
       await request.get(uri: uri);
-    expect(() {
-      request.contentLength = 10;
-    }, throwsStateError);
+      expect(() {
+        request.contentLength = 10;
+      }, throwsStateError);
     });
 
     test('setting encoding should update content-type', () {
@@ -90,6 +97,5 @@ void main() {
         request.encoding = LATIN1;
       }, throwsStateError);
     });
-
   });
 }

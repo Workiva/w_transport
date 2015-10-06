@@ -12,7 +12,8 @@ class MultipartFile {
 
   MediaType _contentType;
 
-  MultipartFile(Stream<List<int>> this.byteStream, int this.length, {MediaType contentType, String this.filename}) {
+  MultipartFile(Stream<List<int>> this.byteStream, int this.length,
+      {MediaType contentType, String this.filename}) {
     if (contentType != null) {
       _contentType = contentType;
     } else {

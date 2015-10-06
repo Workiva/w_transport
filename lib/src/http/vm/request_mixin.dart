@@ -49,7 +49,9 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
   }
 
   @override
-  Future<BaseResponse> sendRequestAndFetchResponse(FinalizedRequest finalizedRequest, {bool streamResponse: false}) async {
+  Future<BaseResponse> sendRequestAndFetchResponse(
+      FinalizedRequest finalizedRequest,
+      {bool streamResponse: false}) async {
     if (streamResponse == null) {
       streamResponse = false;
     }
@@ -76,7 +78,9 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
     if (finalizedRequest.body is StreamedHttpBody) {
       // Use a byte stream progress listener to transform the request body such
       // that it produces a stream of progress events.
-      var progressListener = new http_utils.ByteStreamProgressListener(finalizedRequest.body.byteStream, total: finalizedRequest.body.contentLength);
+      var progressListener = new http_utils.ByteStreamProgressListener(
+          finalizedRequest.body.byteStream,
+          total: finalizedRequest.body.contentLength);
 
       // Add the now-transformed request body stream.
       await _request.addStream(progressListener.byteStream);
@@ -93,7 +97,8 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
       if (_request.contentLength == 0) {
         progress = new RequestProgress(0, 0);
       } else {
-        progress = new RequestProgress(_request.contentLength, _request.contentLength);
+        progress =
+            new RequestProgress(_request.contentLength, _request.contentLength);
       }
       uploadProgressController.add(progress);
     }
@@ -103,7 +108,8 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
 
     // Use a byte stream progress listener to transform the response stream such
     // that it produces a stream of progress events.
-    var progressListener = new http_utils.ByteStreamProgressListener(response, total: response.contentLength);
+    var progressListener = new http_utils.ByteStreamProgressListener(response,
+        total: response.contentLength);
 
     // Response body now resides in this transformed byte stream.
     Stream<List<int>> byteStream = progressListener.byteStream;
@@ -112,14 +118,20 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
     progressListener.progressStream.listen(downloadProgressController.add);
 
     // Parse the response headers into a platform-independent format.
-    Map<String, String> responseHeaders = vm_utils.parseServerHeaders(response.headers);
+    Map<String, String> responseHeaders =
+        vm_utils.parseServerHeaders(response.headers);
 
     // By default, responses in the VM are streamed. If this is the desired
     // format, simply return it.
-    StreamedResponse streamedResponse = new StreamedResponse.fromByteStream(response.statusCode, response.reasonPhrase, responseHeaders, byteStream);
+    StreamedResponse streamedResponse = new StreamedResponse.fromByteStream(
+        response.statusCode,
+        response.reasonPhrase,
+        responseHeaders,
+        byteStream);
     if (streamResponse) return streamedResponse;
 
     // Otherwise, the byte stream needs to be reduced to a single list of bytes.
-    return new Response.fromBytes(response.statusCode, response.reasonPhrase, responseHeaders, await streamedResponse.body.toBytes());
+    return new Response.fromBytes(response.statusCode, response.reasonPhrase,
+        responseHeaders, await streamedResponse.body.toBytes());
   }
 }

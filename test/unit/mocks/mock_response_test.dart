@@ -10,10 +10,9 @@ import 'package:w_transport/w_transport_mock.dart';
 
 void main() {
   group('MockResponse', () {
-
     test('custom constructor', () async {
       Response response = new MockResponse(100,
-      statusText: 'custom', headers: {'x-custom': 'value'}, body: 'data');
+          statusText: 'custom', headers: {'x-custom': 'value'}, body: 'data');
       expect(response.status, equals(100));
       expect(response.statusText, equals('custom'));
       expect(response.headers['x-custom'], equals('value'));
@@ -101,20 +100,22 @@ void main() {
     });
 
     test('content-type', () {
-      Response response = new MockResponse.ok(headers: {'content-type': 'application/json; charset=utf-8'});
+      Response response = new MockResponse.ok(
+          headers: {'content-type': 'application/json; charset=utf-8'});
       expect(response.contentType.mimeType, equals('application/json'));
       expect(response.contentType.parameters, containsPair('charset', 'utf-8'));
     });
-
   });
 
   group('MockStreamedResponse', () {
-
-    Stream<List<int>> toByteStream(String body) => new Stream.fromIterable([UTF8.encode(body)]);
+    Stream<List<int>> toByteStream(String body) =>
+        new Stream.fromIterable([UTF8.encode(body)]);
 
     test('custom constructor', () async {
       StreamedResponse response = new MockStreamedResponse(100,
-      statusText: 'custom', headers: {'x-custom': 'value'}, byteStream: toByteStream('data'));
+          statusText: 'custom',
+          headers: {'x-custom': 'value'},
+          byteStream: toByteStream('data'));
       expect(response.status, equals(100));
       expect(response.statusText, equals('custom'));
       expect(response.headers['x-custom'], equals('value'));
@@ -158,7 +159,8 @@ void main() {
     });
 
     test('.internalServerError() 500', () {
-      StreamedResponse response = new MockStreamedResponse.internalServerError();
+      StreamedResponse response =
+          new MockStreamedResponse.internalServerError();
       expect(response.status, equals(500));
       expect(response.statusText, equals('INTERNAL SERVER ERROR'));
     });
@@ -176,22 +178,26 @@ void main() {
     });
 
     test('encoding should set charset', () {
-      StreamedResponse response = new MockStreamedResponse(200, encoding: ASCII);
+      StreamedResponse response =
+          new MockStreamedResponse(200, encoding: ASCII);
       expect(response.contentType.parameters['charset'], equals(ASCII.name));
     });
 
     test('should support byteStream body', () async {
-      StreamedResponse response = new MockStreamedResponse(200, byteStream: toByteStream('body'));
+      StreamedResponse response =
+          new MockStreamedResponse(200, byteStream: toByteStream('body'));
       expect(UTF8.decode(await response.body.toBytes()), equals('body'));
     });
 
     test('content-length', () {
-      StreamedResponse response = new MockStreamedResponse.ok(headers: {'content-length': '5'});
+      StreamedResponse response =
+          new MockStreamedResponse.ok(headers: {'content-length': '5'});
       expect(response.contentLength, equals(5));
     });
 
     test('content-type', () {
-      StreamedResponse response = new MockStreamedResponse.ok(headers: {'content-type': 'application/json; charset=utf-8'});
+      StreamedResponse response = new MockStreamedResponse.ok(
+          headers: {'content-type': 'application/json; charset=utf-8'});
       expect(response.contentType.mimeType, equals('application/json'));
       expect(response.contentType.parameters, containsPair('charset', 'utf-8'));
     });
@@ -200,6 +206,5 @@ void main() {
       StreamedResponse response = new MockStreamedResponse(200, encoding: UTF8);
       expect(response.encoding, equals(UTF8));
     });
-
   });
 }

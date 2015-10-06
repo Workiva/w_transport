@@ -41,8 +41,10 @@ class HttpBody extends BaseHttpBody {
   Encoding _encoding;
 
   /// Construct the body to an HTTP request or an HTTP response from bytes.
-  HttpBody.fromBytes(MediaType this.contentType, List<int> bytes, {Encoding fallbackEncoding}) {
-    _encoding = http_utils.parseEncodingFromContentType(contentType, fallback: fallbackEncoding);
+  HttpBody.fromBytes(MediaType this.contentType, List<int> bytes,
+      {Encoding fallbackEncoding}) {
+    _encoding = http_utils.parseEncodingFromContentType(contentType,
+        fallback: fallbackEncoding);
     if (bytes == null) {
       bytes = [];
     }
@@ -50,8 +52,10 @@ class HttpBody extends BaseHttpBody {
   }
 
   /// Construct the body to an HTTP request or an HTTP response from text.
-  HttpBody.fromString(MediaType this.contentType, String body, {Encoding fallbackEncoding}) {
-    _encoding = http_utils.parseEncodingFromContentType(contentType, fallback: fallbackEncoding);
+  HttpBody.fromString(MediaType this.contentType, String body,
+      {Encoding fallbackEncoding}) {
+    _encoding = http_utils.parseEncodingFromContentType(contentType,
+        fallback: fallbackEncoding);
     if (body == null) {
       body = '';
     }
@@ -111,10 +115,13 @@ class StreamedHttpBody extends BaseHttpBody {
   /// Construct the body to an HTTP request or an HTTP response from a stream
   /// of chunks of bytes. The given [byteStream] should be a single-
   /// subscription stream.
-  StreamedHttpBody.fromByteStream(MediaType this.contentType, Stream<List<int>> this.byteStream, {int contentLength, Encoding fallbackEncoding})
+  StreamedHttpBody.fromByteStream(
+      MediaType this.contentType, Stream<List<int>> this.byteStream,
+      {int contentLength, Encoding fallbackEncoding})
       : this.contentLength = contentLength {
     if (byteStream == null) throw new ArgumentError.notNull('byteStream');
-    _encoding = http_utils.parseEncodingFromContentType(contentType, fallback: fallbackEncoding);
+    _encoding = http_utils.parseEncodingFromContentType(contentType,
+        fallback: fallbackEncoding);
   }
 
   /// Listens to this streamed request/response body and combines all chunks of

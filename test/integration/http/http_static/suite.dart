@@ -7,7 +7,6 @@ import '../integration_config.dart';
 
 void runHttpStaticSuite(HttpIntegrationConfig config) {
   group('Http static methods', () {
-
     var headers = {
       'authorization': 'test',
       'x-custom': 'value',
@@ -21,12 +20,14 @@ void runHttpStaticSuite(HttpIntegrationConfig config) {
     });
 
     test('DELETE request with headers', () async {
-      Response response = await Http.delete(config.reflectEndpointUri, headers: new Map.from(headers));
+      Response response = await Http.delete(config.reflectEndpointUri,
+          headers: new Map.from(headers));
       expect(response.status, equals(200));
 
       var json = response.body.asJson();
       expect(json['method'], equals('DELETE'));
-      expect(json['headers'], containsPair('authorization', headers['authorization']));
+      expect(json['headers'],
+          containsPair('authorization', headers['authorization']));
       expect(json['headers'], containsPair('x-custom', headers['x-custom']));
       expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
     });
@@ -38,17 +39,16 @@ void runHttpStaticSuite(HttpIntegrationConfig config) {
     });
 
     test('GET request with headers', () async {
-      Response response = await Http.get(config.reflectEndpointUri, headers: new Map.from(headers));
+      Response response = await Http.get(config.reflectEndpointUri,
+          headers: new Map.from(headers));
       expect(response.status, equals(200));
 
       var json = response.body.asJson();
       expect(json['method'], equals('GET'));
       expect(json['headers'],
-      containsPair('authorization', headers['authorization']));
-      expect(json['headers'],
-      containsPair('x-custom', headers['x-custom']));
-      expect(
-          json['headers'], containsPair('x-tokens', headers['x-tokens']));
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
+      expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
     });
 
     test('HEAD request', () async {
@@ -57,7 +57,8 @@ void runHttpStaticSuite(HttpIntegrationConfig config) {
     });
 
     test('HEAD request with headers', () async {
-      Response response = await Http.head(config.reflectEndpointUri, headers: new Map.from(headers));
+      Response response = await Http.head(config.reflectEndpointUri,
+          headers: new Map.from(headers));
       expect(response.status, equals(200));
     });
 
@@ -68,17 +69,16 @@ void runHttpStaticSuite(HttpIntegrationConfig config) {
     });
 
     test('OPTIONS request with headers', () async {
-      Response response = await Http.options(config.reflectEndpointUri, headers: new Map.from(headers));
+      Response response = await Http.options(config.reflectEndpointUri,
+          headers: new Map.from(headers));
       expect(response.status, equals(200));
 
       var json = response.body.asJson();
       expect(json['method'], equals('OPTIONS'));
       expect(json['headers'],
-      containsPair('authorization', headers['authorization']));
-      expect(json['headers'],
-      containsPair('x-custom', headers['x-custom']));
-      expect(
-          json['headers'], containsPair('x-tokens', headers['x-tokens']));
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
+      expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
     });
 
     test('PATCH request', () async {
@@ -88,21 +88,21 @@ void runHttpStaticSuite(HttpIntegrationConfig config) {
     });
 
     test('PATCH request with headers', () async {
-      Response response = await Http.patch(config.reflectEndpointUri, headers: new Map.from(headers));
+      Response response = await Http.patch(config.reflectEndpointUri,
+          headers: new Map.from(headers));
       expect(response.status, equals(200));
 
       var json = response.body.asJson();
       expect(json['method'], equals('PATCH'));
       expect(json['headers'],
-      containsPair('authorization', headers['authorization']));
-      expect(json['headers'],
-      containsPair('x-custom', headers['x-custom']));
-      expect(
-          json['headers'], containsPair('x-tokens', headers['x-tokens']));
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
+      expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
     });
 
     test('PATCH request with body', () async {
-      Response response = await Http.patch(config.echoEndpointUri, body: 'body');
+      Response response =
+          await Http.patch(config.echoEndpointUri, body: 'body');
       expect(response.body.asString(), equals('body'));
     });
 
@@ -113,17 +113,16 @@ void runHttpStaticSuite(HttpIntegrationConfig config) {
     });
 
     test('POST request with headers', () async {
-      Response response = await Http.post(config.reflectEndpointUri, headers: new Map.from(headers));
+      Response response = await Http.post(config.reflectEndpointUri,
+          headers: new Map.from(headers));
       expect(response.status, equals(200));
 
       var json = response.body.asJson();
       expect(json['method'], equals('POST'));
       expect(json['headers'],
-      containsPair('authorization', headers['authorization']));
-      expect(json['headers'],
-      containsPair('x-custom', headers['x-custom']));
-      expect(
-          json['headers'], containsPair('x-tokens', headers['x-tokens']));
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
+      expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
     });
 
     test('POST request with body', () async {
@@ -138,15 +137,15 @@ void runHttpStaticSuite(HttpIntegrationConfig config) {
     });
 
     test('PUT request with headers', () async {
-      Response response = await Http.put(config.reflectEndpointUri, headers: new Map.from(headers));
+      Response response = await Http.put(config.reflectEndpointUri,
+          headers: new Map.from(headers));
       expect(response.status, equals(200));
 
       var json = response.body.asJson();
       expect(json['method'], equals('PUT'));
       expect(json['headers'],
-      containsPair('authorization', headers['authorization']));
-      expect(json['headers'],
-      containsPair('x-custom', headers['x-custom']));
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
       expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
     });
 
@@ -162,20 +161,21 @@ void runHttpStaticSuite(HttpIntegrationConfig config) {
     });
 
     test('custom HTTP method request with headers', () async {
-      Response response = await Http.send('COPY', config.reflectEndpointUri, headers: new Map.from(headers));
+      Response response = await Http.send('COPY', config.reflectEndpointUri,
+          headers: new Map.from(headers));
       expect(response.status, equals(200));
 
       var json = response.body.asJson();
       expect(json['method'], equals('COPY'));
       expect(json['headers'],
-      containsPair('authorization', headers['authorization']));
-      expect(json['headers'],
-      containsPair('x-custom', headers['x-custom']));
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
       expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
     });
 
     test('custom HTTP method request with body', () async {
-      Response response = await Http.send('COPY', config.echoEndpointUri, body: 'body');
+      Response response =
+          await Http.send('COPY', config.echoEndpointUri, body: 'body');
       expect(response.body.asString(), equals('body'));
     });
   });

@@ -13,14 +13,17 @@ import '../integration_config.dart';
 
 void runStreamedRequestSuite(HttpIntegrationConfig config) {
   group('StreamedRequest', () {
-
     test('contentLength should NOT be set automatically', () async {
       StreamedRequest emptyRequest = new StreamedRequest()
         ..uri = config.reflectEndpointUri
         ..contentLength = 0;
-      Response response = await emptyRequest.post(uri: config.reflectEndpointUri);
-      var contentLength = int.parse(response.body.asJson()['headers']['content-length']);
-      expect(contentLength, equals(0), reason: 'Empty streamed plain-text request\'s content-length should be 0.');
+      Response response =
+          await emptyRequest.post(uri: config.reflectEndpointUri);
+      var contentLength =
+          int.parse(response.body.asJson()['headers']['content-length']);
+      expect(contentLength, equals(0),
+          reason:
+              'Empty streamed plain-text request\'s content-length should be 0.');
 
       List<List<int>> chunks = [
         UTF8.encode('chunk1'),
@@ -36,8 +39,11 @@ void runStreamedRequestSuite(HttpIntegrationConfig config) {
         ..body = new Stream.fromIterable(chunks)
         ..contentLength = size;
       response = await nonEmptyRequest.post();
-      contentLength = int.parse(response.body.asJson()['headers']['content-length']);
-      expect(contentLength, equals(size), reason: 'Non-empty streamed plain-text request\'s content-length should be greater than 0.');
+      contentLength =
+          int.parse(response.body.asJson()['headers']['content-length']);
+      expect(contentLength, equals(size),
+          reason:
+              'Non-empty streamed plain-text request\'s content-length should be greater than 0.');
     });
 
     test('content-type should be set automatically', () async {
@@ -46,7 +52,8 @@ void runStreamedRequestSuite(HttpIntegrationConfig config) {
         ..body = new Stream.fromIterable([])
         ..contentLength = 0;
       Response response = await request.post();
-      MediaType contentType = new MediaType.parse(response.body.asJson()['headers']['content-type']);
+      MediaType contentType = new MediaType.parse(
+          response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('text/plain'));
     });
 
@@ -79,6 +86,5 @@ void runStreamedRequestSuite(HttpIntegrationConfig config) {
       expect(response.encoding.name, equals(ASCII.name));
       expect(response.body.asString(), equals('data'));
     });
-
   });
 }

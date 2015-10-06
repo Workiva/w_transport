@@ -46,7 +46,8 @@ String mapToQuery(Map<String, String> map, {Encoding encoding}) {
 MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
   // Ensure the headers are case-insensitive.
   headers = new CaseInsensitiveMap.from(headers);
-  if (headers['content-type'] != null) return new MediaType.parse(headers['content-type']);
+  if (headers['content-type'] !=
+      null) return new MediaType.parse(headers['content-type']);
   return new MediaType('application', 'octet-stream');
 }
 
@@ -56,7 +57,8 @@ MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
 /// If no `charset` parameter is specified or if a corresponding [Encoding]
 /// cannot be found for the given `charset`, the [fallback] encoding will be
 /// returned.
-Encoding parseEncodingFromContentType(MediaType contentType, {Encoding fallback}) {
+Encoding parseEncodingFromContentType(MediaType contentType,
+    {Encoding fallback}) {
   if (contentType == null) return fallback;
   if (contentType.parameters['charset'] == null) return fallback;
   var encoding = Encoding.getByName(contentType.parameters['charset']);
@@ -70,12 +72,11 @@ Encoding parseEncodingFromContentType(MediaType contentType, {Encoding fallback}
 /// cannot be found for the given `charset`, the [fallback] encoding will be
 /// returned as long as it is not null. If [fallback] is null, then a
 /// [FormatException] will be thrown.
-Encoding parseEncodingFromContentTypeOrFail(MediaType contentType, {Encoding fallback}) {
+Encoding parseEncodingFromContentTypeOrFail(MediaType contentType,
+    {Encoding fallback}) {
   var encoding = parseEncodingFromContentType(contentType, fallback: fallback);
   if (encoding != null) return encoding;
-  var charset = contentType != null
-      ? contentType.parameters['charset']
-      : null;
+  var charset = contentType != null ? contentType.parameters['charset'] : null;
   throw new FormatException('Unsupported charset: $charset');
 }
 
@@ -86,7 +87,8 @@ Encoding parseEncodingFromContentTypeOrFail(MediaType contentType, {Encoding fal
 /// or if the `charset` parameter is not specified, or if a corresponding
 /// [Encoding] cannot be found for the parsed `charset`, the [fallback] encoding
 /// will be returned.
-Encoding parseEncodingFromHeaders(Map<String, String> headers, {Encoding fallback}) {
+Encoding parseEncodingFromHeaders(Map<String, String> headers,
+    {Encoding fallback}) {
   MediaType contentType = parseContentTypeFromHeaders(headers);
   return parseEncodingFromContentType(contentType, fallback: fallback);
 }
@@ -99,9 +101,7 @@ Map<String, String> queryToMap(String query, {Encoding encoding}) {
     var pieces = pair.split('=');
     if (pieces.isEmpty) continue;
     var key = pieces.first;
-    var value = pieces.length > 1
-    ? pieces.sublist(1).join('')
-    : '';
+    var value = pieces.length > 1 ? pieces.sublist(1).join('') : '';
     if (encoding != null) {
       key = Uri.decodeQueryComponent(key, encoding: encoding);
       value = Uri.decodeQueryComponent(value, encoding: encoding);
@@ -118,8 +118,7 @@ Map<String, String> queryToMap(String query, {Encoding encoding}) {
 Future<Uint8List> reduceByteStream(Stream<List<int>> byteStream) async {
   try {
     List<int> bytes = await byteStream.reduce((prev, next) {
-      var combined = new List.from(prev)
-        ..addAll(next);
+      var combined = new List.from(prev)..addAll(next);
       return combined;
     });
     return new Uint8List.fromList(bytes);
@@ -130,7 +129,8 @@ Future<Uint8List> reduceByteStream(Stream<List<int>> byteStream) async {
 }
 
 class ByteStreamProgressListener {
-  StreamController<RequestProgress> _progressController = new StreamController();
+  StreamController<RequestProgress> _progressController =
+      new StreamController();
 
   Stream<List<int>> _transformed;
 
@@ -145,23 +145,26 @@ class ByteStreamProgressListener {
   Stream<List<int>> _listenTo(Stream<List<int>> byteStream, {int total}) {
     int loaded = 0;
 
-    var progressListener = new StreamTransformer((Stream<List<int>> input, bool cancelOnError) {
+    var progressListener =
+        new StreamTransformer((Stream<List<int>> input, bool cancelOnError) {
       StreamController controller;
       StreamSubscription subscription;
 
       controller = new StreamController(onListen: () {
-        subscription = input.listen((bytes) {
-          controller.add(bytes);
-          try {
-            loaded += (bytes as List<int>).length;
-            _progressController.add(new RequestProgress(loaded, total));
-          } catch (e) {}
-        },
-        onError: controller.addError,
-        onDone: () {
-          controller.close();
-          _progressController.close();
-        }, cancelOnError: cancelOnError);
+        subscription = input.listen(
+            (bytes) {
+              controller.add(bytes);
+              try {
+                loaded += (bytes as List<int>).length;
+                _progressController.add(new RequestProgress(loaded, total));
+              } catch (e) {}
+            },
+            onError: controller.addError,
+            onDone: () {
+              controller.close();
+              _progressController.close();
+            },
+            cancelOnError: cancelOnError);
       }, onPause: () {
         subscription.pause();
       }, onResume: () {

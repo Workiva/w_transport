@@ -10,7 +10,6 @@ import 'package:w_transport/src/http/vm/requests.dart';
 
 void main() {
   group('Browser platform adapter', () {
-
     setUp(() {
       configureWTransportForVM();
     });
@@ -38,6 +37,5 @@ void main() {
     test('newStreamedRequest()', () {
       expect(new StreamedRequest(), new isInstanceOf<VMStreamedRequest>());
     });
-
   });
 }

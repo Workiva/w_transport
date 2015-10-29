@@ -12,26 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Easily mock out the platform-specific details of w_transport. Calling
-/// [configureWTransportForTest] will configure w_transport for controlled use
-/// in tests.
-library w_transport.w_transport_mock;
-
-import 'package:w_transport/src/mock_adapter.dart';
-import 'package:w_transport/src/platform_adapter.dart';
-
-export 'package:w_transport/src/http/mock/w_http.dart' show MockWHttp;
-export 'package:w_transport/src/http/mock/w_request.dart' show MockWRequest;
-export 'package:w_transport/src/http/mock/w_response.dart' show MockWResponse;
-
-export 'package:w_transport/src/mocks/transport.dart' show MockTransports;
-
-export 'package:w_transport/src/web_socket/mock/w_socket.dart' show MockWSocket;
-
-/// Configure w_transport for use in tests, allowing you to easily mock out the
-/// behavior of the w_transport classes.
-///
-/// Must be called before using any of the transport classes.
+/// Easily mock out the platform-specific details of w_transport. Exposes a
+/// single configuration method that must be called before instantiating any of
+/// the transport classes.
 ///
 ///     import 'package:w_transport/w_transport_mock.dart'
 ///         show configureWTransportForTest;
@@ -39,6 +22,31 @@ export 'package:w_transport/src/web_socket/mock/w_socket.dart' show MockWSocket;
 ///     void main() {
 ///       configureWTransportForTest();
 ///     }
+library w_transport.w_transport_mock;
+
+import 'package:w_transport/src/mock_adapter.dart';
+import 'package:w_transport/src/platform_adapter.dart';
+
+export 'package:w_transport/src/http/finalized_request.dart'
+    show FinalizedRequest;
+export 'package:w_transport/src/http/mock/base_request.dart'
+    show MockBaseRequest;
+export 'package:w_transport/src/http/mock/client.dart' show MockClient;
+export 'package:w_transport/src/http/mock/requests.dart'
+    show
+        MockFormRequest,
+        MockJsonRequest,
+        MockPlainTextRequest,
+        MockStreamedRequest;
+export 'package:w_transport/src/http/mock/response.dart'
+    show MockResponse, MockStreamedResponse;
+
+export 'package:w_transport/src/mocks/transport.dart' show MockTransports;
+
+export 'package:w_transport/src/web_socket/mock/w_socket.dart' show MockWSocket;
+
+/// Configure w_transport for use in tests, allowing you to easily mock out the
+/// behavior of the w_transport classes.
 void configureWTransportForTest() {
   adapter = new MockAdapter();
 }

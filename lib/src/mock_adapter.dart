@@ -16,17 +16,42 @@ library w_transport.src.mock_adapter;
 
 import 'dart:async';
 
-import 'package:w_transport/src/http/mock/w_http.dart';
-import 'package:w_transport/src/http/mock/w_request.dart';
-import 'package:w_transport/src/http/w_http.dart';
-import 'package:w_transport/src/http/w_request.dart';
+import 'package:w_transport/src/http/client.dart';
+import 'package:w_transport/src/http/mock/client.dart';
+import 'package:w_transport/src/http/mock/requests.dart';
+import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
 
+/// Adapter for the testing environment. Exposes factories for all of the
+/// transport classes that return mock implementations that can be controlled
+/// by the mock transport API.
 class MockAdapter implements PlatformAdapter {
-  WHttp newWHttp() => new MockWHttp();
-  WRequest newWRequest() => new MockWRequest();
+  /// Construct a new [MockClient] instance that implements [Client].
+  Client newClient() => new MockClient();
+
+  /// Construct a new [MockFormRequest] instance that implements
+  /// [FormRequest].
+  FormRequest newFormRequest() => new MockFormRequest();
+
+  /// Construct a new [MockJsonRequest] instance that implements
+  /// [JsonRequest].
+  JsonRequest newJsonRequest() => new MockJsonRequest();
+
+  /// Construct a new [MockMultipartRequest] instance that implements
+  /// [MultipartRequest].
+  MultipartRequest newMultipartRequest() => new MockMultipartRequest();
+
+  /// Construct a new [MockPlainTextRequest] instance that implements
+  /// [Request].
+  Request newRequest() => new MockPlainTextRequest();
+
+  /// Construct a new [MockStreamedRequest] instance that implements
+  /// [StreamedRequest].
+  StreamedRequest newStreamedRequest() => new MockStreamedRequest();
+
+  /// Construct a new [MockWSocket] instance that implements [WSocket].
   Future<WSocket> newWSocket(Uri uri,
           {Iterable<String> protocols, Map<String, dynamic> headers}) =>
       MockWSocket.connect(uri, protocols: protocols, headers: headers);

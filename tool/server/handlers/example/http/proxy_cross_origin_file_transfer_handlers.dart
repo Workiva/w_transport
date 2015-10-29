@@ -18,8 +18,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_server.dart'
-    show configureWTransportForServer;
+import 'package:w_transport/w_transport_vm.dart' show configureWTransportForVM;
 
 import '../../../handler.dart';
 
@@ -37,13 +36,13 @@ Uri uploadEndpoint = Uri.parse(
 Uri downloadEndpoint = Uri.parse(
     'http://localhost:8024/example/http/cross_origin_file_transfer/download');
 
-WHttp http;
-WHttp getHttpClient() {
-  if (http == null) {
-    configureWTransportForServer();
-    http = new WHttp();
+Client client;
+Client getHttpClient() {
+  if (client == null) {
+    configureWTransportForVM();
+    client = new Client();
   }
-  return http;
+  return client;
 }
 
 class FilesProxy extends Handler {
@@ -56,15 +55,16 @@ class FilesProxy extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    WRequest proxyRequest = getHttpClient().newRequest()..headers = headers;
+    Request proxyRequest = getHttpClient().newRequest()..headers = headers;
 
-    WResponse proxyResponse = await proxyRequest.get(filesEndpoint);
+    StreamedResponse proxyResponse =
+        await proxyRequest.streamGet(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
-    await request.response.addStream(proxyResponse.asStream());
+    await request.response.addStream(proxyResponse.body.byteStream);
   }
 
   Future delete(HttpRequest request) async {
@@ -72,15 +72,16 @@ class FilesProxy extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    WRequest proxyRequest = getHttpClient().newRequest()..headers = headers;
+    Request proxyRequest = getHttpClient().newRequest()..headers = headers;
 
-    WResponse proxyResponse = await proxyRequest.delete(filesEndpoint);
+    StreamedResponse proxyResponse =
+        await proxyRequest.streamDelete(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
-    await request.response.addStream(proxyResponse.asStream());
+    await request.response.addStream(proxyResponse.body.byteStream);
   }
 }
 
@@ -94,24 +95,27 @@ class UploadProxy extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    WRequest proxyRequest = getHttpClient().newRequest()
+    MediaType contentType =
+        new MediaType.parse(request.headers.value('content-type'));
+    StreamedRequest proxyRequest = getHttpClient().newStreamedRequest()
       ..headers = headers
-      ..data = request
-      ..contentLength = request.contentLength;
+      ..body = request
+      ..contentLength = request.contentLength
+      ..contentType = contentType;
 
-    proxyRequest.uploadProgress.listen((WProgress progress) {
+    proxyRequest.uploadProgress.listen((RequestProgress progress) {
       print('Uploading: ${progress.percent}%');
     });
 
-    WResponse proxyResponse;
+    StreamedResponse proxyResponse;
     try {
-      proxyResponse = await proxyRequest.post(uploadEndpoint);
+      proxyResponse = await proxyRequest.streamPost(uri: uploadEndpoint);
       request.response.statusCode = HttpStatus.OK;
       setCorsHeaders(request);
       proxyResponse.headers.forEach((h, v) {
         request.response.headers.set(h, v);
       });
-      await request.response.addStream(proxyResponse.asStream());
+      await request.response.addStream(proxyResponse.body.byteStream);
     } on HttpException catch (e) {
       proxyRequest.abort(e);
       request.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -130,25 +134,25 @@ class DownloadProxy extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    WRequest proxyRequest = getHttpClient().newRequest()
+    Request proxyRequest = getHttpClient().newRequest()
       ..uri = downloadEndpoint
       ..query = request.uri.query
       ..headers = headers;
 
-    proxyRequest.downloadProgress.listen((WProgress progress) {
+    proxyRequest.downloadProgress.listen((RequestProgress progress) {
       print(
           'Downloading ${request.uri.queryParameters['file']}: ${progress.percent}%');
     });
 
-    WResponse proxyResponse;
+    StreamedResponse proxyResponse;
     try {
-      proxyResponse = await proxyRequest.get();
+      proxyResponse = await proxyRequest.streamGet();
       request.response.statusCode = HttpStatus.OK;
       setCorsHeaders(request);
       proxyResponse.headers.forEach((h, v) {
         request.response.headers.set(h, v);
       });
-      await request.response.addStream(proxyResponse.asStream());
+      await request.response.addStream(proxyResponse.body.byteStream);
     } on HttpException catch (e) {
       proxyRequest.abort(e);
       request.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;

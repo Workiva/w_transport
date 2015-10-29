@@ -12,52 +12,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@TestOn('vm')
+@TestOn('browser')
 library w_transport.test.unit.mocks.mock_http_test;
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_mock.dart';
-import 'package:w_transport/w_transport_server.dart';
 
 void main() {
-  configureWTransportForTest();
-
   group('TransportMocks.http', () {
     Uri requestUri = Uri.parse('/mock/test');
 
     setUp(() {
+      configureWTransportForTest();
       MockTransports.reset();
     });
 
     test('causeFailureOnOpen() should cause request to throw', () async {
-      WRequest request = new WRequest();
+      Request request = new Request();
       MockTransports.http.causeFailureOnOpen(request);
-      expect(request.get(requestUri), throws);
+      expect(request.get(uri: requestUri), throws);
     });
 
     test('verifies that requests are mock requests before controlling them',
         () {
-      configureWTransportForServer();
-      WRequest request = new WRequest();
+      BaseRequest request;
       expect(() {
         MockTransports.http.completeRequest(request);
       }, throwsArgumentError);
-      configureWTransportForTest();
     });
 
     group('completeRequest()', () {
       test('completes a request with 200 OK by default', () async {
-        WRequest request = new WRequest();
+        Request request = new Request();
         MockTransports.http.completeRequest(request);
-        expect((await request.get(requestUri)).status, equals(200));
+        expect((await request.get(uri: requestUri)).status, equals(200));
       });
 
       test('can complete a request with custom response', () async {
-        WRequest request = new WRequest();
-        WResponse response = new MockWResponse(202);
+        Request request = new Request();
+        Response response = new MockResponse(202);
         MockTransports.http.completeRequest(request, response: response);
-        expect((await request.get(requestUri)).status, equals(202));
+        expect((await request.get(uri: requestUri)).status, equals(202));
       });
     });
 
@@ -65,61 +61,61 @@ void main() {
       test('expected request completes automatically with 200 OK by default',
           () async {
         MockTransports.http.expect('GET', requestUri);
-        expect((await WHttp.get(requestUri)).status, equals(200));
+        expect((await Http.get(requestUri)).status, equals(200));
       });
 
       test('expected request with custom response', () async {
-        MockWResponse response = new MockWResponse(202);
+        Response response = new MockResponse(202);
         MockTransports.http.expect('POST', requestUri, respondWith: response);
-        expect((await WHttp.post(requestUri)).status, equals(202));
+        expect((await Http.post(requestUri)).status, equals(202));
       });
 
       test('expected request failure', () async {
         Exception exception = new Exception('Custom exception');
         MockTransports.http.expect('DELETE', requestUri, failWith: exception);
-        expect(WHttp.delete(requestUri), throwsA(predicate((error) {
+        expect(Http.delete(requestUri), throwsA(predicate((error) {
           return error.toString().contains('Custom exception');
         })));
       });
 
       test('expected request has to match URI and method', () async {
         MockTransports.http.expect('GET', requestUri);
-        WHttp.delete(requestUri); // Wrong method
-        WHttp.get(Uri.parse('/wrong')); // Wrong URI
-        await WHttp.get(requestUri); // Correct
+        Http.delete(requestUri); // Wrong method
+        Http.get(Uri.parse('/wrong')); // Wrong URI
+        await Http.get(requestUri); // Correct
         expect(MockTransports.http.numPendingRequests, equals(2));
       });
 
       test('supports failWith, or respondWith, but not both', () {
         expect(() {
           MockTransports.http.expect('GET', requestUri,
-              failWith: new Exception(), respondWith: new MockWResponse.ok());
+              failWith: new Exception(), respondWith: new MockResponse.ok());
         }, throwsArgumentError);
       });
     });
 
     group('failRequest()', () {
       test('causes request to throw', () async {
-        WRequest request = new WRequest();
+        Request request = new Request();
         MockTransports.http.failRequest(request);
-        expect(request.get(requestUri), throws);
+        expect(request.get(uri: requestUri), throws);
       });
 
       test('can include a custom exception', () async {
-        WRequest request = new WRequest();
+        Request request = new Request();
         MockTransports.http
             .failRequest(request, error: new Exception('Custom exception'));
-        expect(request.get(requestUri), throwsA(predicate((error) {
+        expect(request.get(uri: requestUri), throwsA(predicate((error) {
           return error.toString().contains('Custom exception');
         })));
       });
 
       test('can include a custom response', () async {
-        WRequest request = new WRequest();
-        WResponse response = new MockWResponse.internalServerError();
+        Request request = new Request();
+        Response response = new MockResponse.internalServerError();
         MockTransports.http.failRequest(request, response: response);
-        expect(request.get(requestUri), throwsA(predicate((error) {
-          return error is WHttpException && error.response.status == 500;
+        expect(request.get(uri: requestUri), throwsA(predicate((error) {
+          return error is RequestException && error.response.status == 500;
         })));
       });
     });
@@ -128,24 +124,24 @@ void main() {
         'reset() should clear all expectations, pending requests, and handlers',
         () async {
       MockTransports.http
-          .when(requestUri, (req) async => new MockWResponse.ok());
+          .when(requestUri, (req) async => new MockResponse.ok());
       MockTransports.http.expect('GET', Uri.parse('/expected'));
-      MockWRequest request = new MockWRequest();
-      request.get(Uri.parse('/other'));
-      await request.onSent;
+      Request request = new Request();
+      request.get(uri: Uri.parse('/other'));
+      await (request as MockBaseRequest).onSent;
       expect(MockTransports.http.numPendingRequests, equals(1));
 
       MockTransports.http.reset();
 
       // Would have been handled by our handler, but should no longer be:
-      MockWRequest request2 = new MockWRequest();
-      request2.delete(requestUri);
-      await request2.onSent;
+      Request request2 = new Request();
+      request2.delete(uri: requestUri);
+      await (request2 as MockBaseRequest).onSent;
 
       // Would have been expected, but should no longer be:
-      MockWRequest request3 = new MockWRequest();
-      request3.get(Uri.parse('/expected'));
-      await request3.onSent;
+      Request request3 = new Request();
+      request3.get(uri: Uri.parse('/expected'));
+      await (request3 as MockBaseRequest).onSent;
 
       expect(MockTransports.http.numPendingRequests, equals(2));
     });
@@ -158,9 +154,9 @@ void main() {
       });
 
       test('throws if requests are pending', () async {
-        MockWRequest request = new MockWRequest();
-        request.get(requestUri);
-        await request.onSent;
+        Request request = new Request();
+        request.get(uri: requestUri);
+        await (request as MockBaseRequest).onSent;
         expect(() {
           MockTransports.http.verifyNoOutstandingExceptions();
         }, throwsStateError);
@@ -177,32 +173,31 @@ void main() {
     group('when()', () {
       test('registers a handler for all requests with matching URI and method',
           () async {
-        WResponse ok = new MockWResponse.ok();
-        MockTransports.http
-            .when(requestUri, (WRequest request) async => ok, method: 'GET');
-        WHttp.get(Uri.parse('/wrong')); // Wrong URI.
-        WHttp.delete(requestUri); // Wrong method.
-        await WHttp.get(requestUri); // Matches.
-        await WHttp.get(requestUri); // Matches again.
+        Response ok = new MockResponse.ok();
+        MockTransports.http.when(requestUri, (_) async => ok, method: 'GET');
+        Http.get(Uri.parse('/wrong')); // Wrong URI.
+        Http.delete(requestUri); // Wrong method.
+        await Http.get(requestUri); // Matches.
+        await Http.get(requestUri); // Matches again.
         expect(MockTransports.http.numPendingRequests, equals(2));
       });
 
       test(
           'registers a handler for all requests with matching URI and ANY method',
           () async {
-        WResponse ok = new MockWResponse.ok();
-        MockTransports.http.when(requestUri, (WRequest request) async => ok);
-        WHttp.get(Uri.parse('/wrong')); // Wrong URI.
-        await WHttp.delete(requestUri); // Matches.
-        await WHttp.get(requestUri); // Matches.
-        await WHttp.get(requestUri); // Matches again.
+        Response ok = new MockResponse.ok();
+        MockTransports.http.when(requestUri, (_) async => ok);
+        Http.get(Uri.parse('/wrong')); // Wrong URI.
+        await Http.delete(requestUri); // Matches.
+        await Http.get(requestUri); // Matches.
+        await Http.get(requestUri); // Matches again.
         expect(MockTransports.http.numPendingRequests, equals(1));
       });
 
       test('registers handler that throws to cause request failure', () async {
-        MockTransports.http.when(
-            requestUri, (WRequest request) async => throw new Exception());
-        expect(WHttp.get(requestUri), throws);
+        MockTransports.http
+            .when(requestUri, (_) async => throw new Exception());
+        expect(Http.get(requestUri), throws);
       });
     });
   });

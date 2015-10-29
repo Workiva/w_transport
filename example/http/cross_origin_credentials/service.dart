@@ -15,7 +15,6 @@
 library w_transport.example.http.cross_origin_credentials.service;
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:w_transport/w_transport.dart';
 
@@ -29,11 +28,11 @@ Uri credentialedEndpointUrl =
 /// Send a request to the /session endpoint to check authentication status.
 /// Returns true if authenticated, false otherwise.
 Future<bool> checkStatus() async {
-  WRequest req = new WRequest()..withCredentials = true;
+  Request req = new Request()..withCredentials = true;
 
   try {
-    WResponse response = await req.get(sessionUrl);
-    return JSON.decode(await response.asText())['authenticated'];
+    Response response = await req.get(uri: sessionUrl);
+    return response.body.asJson()['authenticated'];
   } catch (error) {
     // Server probably isn't running
     return false;
@@ -43,28 +42,26 @@ Future<bool> checkStatus() async {
 
 /// Login by sending a POST request to the /session endpoint.
 Future<bool> login() async {
-  WRequest req = new WRequest()..withCredentials = true;
-  WResponse response;
+  Request req = new Request()..withCredentials = true;
+  Response response;
   try {
-    response = await req.post(sessionUrl);
+    response = await req.post(uri: sessionUrl);
   } catch (e) {
     return false;
   }
-  return response.status == 200 &&
-      JSON.decode(await response.asText())['authenticated'];
+  return response.status == 200 && response.body.asJson()['authenticated'];
 }
 
 /// Logout by sending a request to the /logout endpoint.
 Future<bool> logout() async {
-  WRequest req = new WRequest()..withCredentials = true;
-  WResponse response;
+  Request req = new Request()..withCredentials = true;
+  Response response;
   try {
-    response = await req.delete(sessionUrl);
+    response = await req.delete(uri: sessionUrl);
   } catch (e) {
     return false;
   }
-  return response.status == 200 &&
-      !JSON.decode(await response.asText())['authenticated'];
+  return response.status == 200 && !response.body.asJson()['authenticated'];
 }
 
 /// Attempt to make a request that requires credentials.
@@ -72,11 +69,11 @@ Future<bool> logout() async {
 /// means the session HTTP cookie (if set) will be included.
 /// Thus, if authenticated, this request should succeed.
 Future<String> makeCredentialedRequest() async {
-  WRequest req = new WRequest()..withCredentials = true;
+  Request req = new Request()..withCredentials = true;
 
-  WResponse response;
-  response = await req.get(credentialedEndpointUrl);
-  return response.asText();
+  Response response;
+  response = await req.get(uri: credentialedEndpointUrl);
+  return response.body.asString();
 }
 
 /// Attempt to make a request that requires credentials,
@@ -84,6 +81,6 @@ Future<String> makeCredentialedRequest() async {
 /// This request should fail regardless of authentication.
 Future<String> makeUncredentialedRequest() async {
   // withCredentials is unset by default, so no need to do anything special here
-  WResponse response = await WHttp.get(credentialedEndpointUrl);
-  return response.asText();
+  Response response = await Http.get(credentialedEndpointUrl);
+  return response.body.asString();
 }

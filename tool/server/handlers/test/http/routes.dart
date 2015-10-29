@@ -15,17 +15,21 @@
 library w_transport.tool.server.handlers.test.http.routes;
 
 import '../../../handler.dart';
-import './404_handler.dart';
-import './download.dart';
-import './ping_handler.dart';
-import './reflect_handler.dart';
-import './timeout_handler.dart';
+import '404_handler.dart';
+import 'download.dart';
+import 'ping_handler.dart';
+import 'echo.dart';
+import 'reflect_handler.dart';
+import 'timeout_handler.dart';
+import 'upload.dart';
 
 String pathPrefix = '/test/http';
 Map<String, Handler> testHttpIntegrationRoutes = {
   '$pathPrefix/404': new FourzerofourHandler(),
   '$pathPrefix/download': new DownloadHandler(),
+  '$pathPrefix/echo': new EchoHandler(),
   '$pathPrefix/ping': new PingHandler(),
   '$pathPrefix/reflect': new ReflectHandler(),
   '$pathPrefix/timeout': new TimeoutHandler(),
+  '$pathPrefix/upload': new UploadHandler(),
 };

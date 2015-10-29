@@ -128,17 +128,20 @@ class UploadHandler extends Handler {
         .map(HttpMultipartFormData.parse);
 
     await for (HttpMultipartFormData formData in stream) {
-      String filename = formData.contentDisposition.parameters['filename'];
-      if (filename == null) {
-        filename = new DateTime.now().toString();
-      }
+      switch (formData.contentDisposition.parameters['name']) {
+        case 'file':
+          String filename = formData.contentDisposition.parameters['filename'];
+          if (filename == null) {
+            filename = new DateTime.now().toString();
+          }
 
-      if (formData.isText) {
-        String contents = await _readFileUploadAsString(formData);
-        _writeFileUploadAsString(filename, contents);
-      } else {
-        List<int> bytes = await _readFileUploadAsBytes(formData);
-        _writeFileUploadAsBytes(filename, bytes);
+          if (formData.isText) {
+            String contents = await _readFileUploadAsString(formData);
+            _writeFileUploadAsString(filename, contents);
+          } else {
+            List<int> bytes = await _readFileUploadAsBytes(formData);
+            _writeFileUploadAsBytes(filename, bytes);
+          }
       }
     }
 

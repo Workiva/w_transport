@@ -18,6 +18,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:http_parser/http_parser.dart' show MediaType;
+
+import 'package:w_transport/src/http/utils.dart' as http_utils;
+
 import '../../../handler.dart';
 
 /// Always responds with a 200 OK and dumps a reflection
@@ -34,18 +38,34 @@ class ReflectHandler extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
+
+    Encoding encoding;
+    if (request.headers.contentType == null) {
+      encoding = LATIN1;
+    } else {
+      MediaType contentType = new MediaType(
+          request.headers.contentType.primaryType,
+          request.headers.contentType.subType,
+          request.headers.contentType.parameters);
+      encoding = http_utils.parseEncodingFromContentType(contentType,
+          fallback: LATIN1);
+    }
+
     Map reflection = {
       'method': request.method,
       'path': request.uri.path,
       'headers': headers,
-      'body': await UTF8.decodeStream(request),
+      'body': await encoding.decodeStream(request),
     };
 
     request.response.statusCode = HttpStatus.OK;
+    request.response.headers
+        .set('content-type', 'application/json; charset=utf-8');
     setCorsHeaders(request);
     request.response.write(JSON.encode(reflection));
   }
 
+  Future copy(HttpRequest request) async => reflect(request);
   Future delete(HttpRequest request) async => reflect(request);
   Future get(HttpRequest request) async => reflect(request);
   Future head(HttpRequest request) async => reflect(request);

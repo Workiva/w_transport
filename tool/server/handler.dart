@@ -32,6 +32,9 @@ abstract class Handler {
   Future processRequest(HttpRequest request) async {
     Function handler;
     switch (request.method) {
+      case 'COPY':
+        handler = copy;
+        break;
       case 'DELETE':
         handler = delete;
         break;
@@ -71,7 +74,17 @@ abstract class Handler {
     _credentialsAllowed = credentials == true;
     _allowedMethods = (methods != null)
         ? methods
-        : ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'TRACE'];
+        : [
+            'COPY',
+            'DELETE',
+            'GET',
+            'HEAD',
+            'OPTIONS',
+            'PATCH',
+            'POST',
+            'PUT',
+            'TRACE'
+          ];
     _allowedOrigin = (origin != null) ? origin : null;
   }
 
@@ -105,6 +118,8 @@ abstract class Handler {
   }
 
   /// RESTful method handlers. Override as necessary.
+  Future copy(HttpRequest request) async =>
+      request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
   Future delete(HttpRequest request) async =>
       request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
   Future get(HttpRequest request) async =>

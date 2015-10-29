@@ -16,8 +16,8 @@ library w_transport.example.http.cross_origin_file_transfer.components.app_compo
 
 import 'package:react/react.dart' as react;
 
-import './download_page.dart';
-import './upload_page.dart';
+import 'download_page.dart';
+import 'upload_page.dart';
 import '../services/proxy.dart' as proxy;
 
 /// Main application component.

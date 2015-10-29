@@ -20,16 +20,18 @@ import 'dart:typed_data';
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_client.dart';
+import 'package:w_transport/w_transport_browser.dart';
 
 import 'common.dart';
 
 void main() {
-  configureWTransportForBrowser();
-
   WebSocketIntegrationConfig config = new WebSocketIntegrationConfig(
       'Client', Uri.parse('ws://localhost:8024'));
   group(config.title, () {
+    setUp(() {
+      configureWTransportForBrowser();
+    });
+
     runCommonWebSocketIntegrationTests(config);
 
     test('should support Blob', () async {

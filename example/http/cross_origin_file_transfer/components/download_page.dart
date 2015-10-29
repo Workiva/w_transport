@@ -21,7 +21,7 @@ import 'package:react/react.dart' as react;
 
 import '../services/file_transfer.dart';
 import '../services/remote_files.dart';
-import './file_transfer_list_component.dart';
+import 'file_transfer_list_component.dart';
 
 final num _gb = math.pow(2, 30);
 final num _mb = math.pow(2, 20);

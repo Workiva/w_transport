@@ -15,7 +15,7 @@
 library w_transport.example.index;
 
 import 'package:react/react_client.dart' as react_client;
-import 'package:w_transport/w_transport_client.dart'
+import 'package:w_transport/w_transport_browser.dart'
     show configureWTransportForBrowser;
 
 import './common/global_example_menu_component.dart';

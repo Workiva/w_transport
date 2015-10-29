@@ -22,12 +22,11 @@ import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_mock.dart';
 
 void main() {
-  configureWTransportForTest();
-
   group('WSocket', () {
     Uri webSocketUri = Uri.parse('ws://mock.com/ws');
 
     setUp(() {
+      configureWTransportForTest();
       MockTransports.reset();
     });
 

@@ -17,8 +17,8 @@ library w_transport.example.http.cross_origin_file_transfer.components.upload_pa
 import 'package:react/react.dart' as react;
 
 import '../services/file_transfer.dart';
-import './drop_zone_component.dart';
-import './file_transfer_list_component.dart';
+import 'drop_zone_component.dart';
+import 'file_transfer_list_component.dart';
 
 var uploadPage = react.registerComponent(() => new UploadPage());
 

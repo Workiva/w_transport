@@ -17,7 +17,7 @@ library w_transport.example.http.cross_origin_file_transfer.components.file_tran
 import 'package:react/react.dart' as react;
 
 import '../services/file_transfer.dart';
-import './file_transfer_list_item_component.dart';
+import 'file_transfer_list_item_component.dart';
 
 /// List of all file uploads.
 var fileTransferListComponent =

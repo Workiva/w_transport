@@ -95,10 +95,13 @@ class UploadProxy extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
+    MediaType contentType =
+        new MediaType.parse(request.headers.value('content-type'));
     StreamedRequest proxyRequest = getHttpClient().newStreamedRequest()
       ..headers = headers
       ..body = request
-      ..contentLength = request.contentLength;
+      ..contentLength = request.contentLength
+      ..contentType = contentType;
 
     proxyRequest.uploadProgress.listen((RequestProgress progress) {
       print('Uploading: ${progress.percent}%');

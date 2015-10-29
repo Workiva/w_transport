@@ -38,7 +38,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// By default, the mime-type is "text/plain" and the charset is "UTF8".
   /// When the request body or the encoding is set or updated, the content-type
   /// will be updated accordingly.
-  MediaType get contentType;
+  MediaType contentType;
 
   /// Future that resolves when the request has completed (successful or
   /// otherwise).

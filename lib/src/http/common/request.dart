@@ -113,9 +113,17 @@ abstract class CommonRequest extends Object
     return _contentType;
   }
 
+  /// By default, the content-type cannot be set manually because it's set
+  /// automatically based on the type of request. Streamed requests will be the
+  /// exception to this rule because the body is not known in advance.
+  set contentType(MediaType contentType) {
+    throw new UnsupportedError(
+        'The content-type is set automatically when the request body and type is known in advance.');
+  }
+
   /// Set the content-type of this request. Used to update the charset
   /// parameter when the encoding changes.
-  set contentType(MediaType contentType) {
+  updateContentType(MediaType contentType) {
     _contentType = contentType;
   }
 
@@ -135,7 +143,8 @@ abstract class CommonRequest extends Object
   set encoding(Encoding encoding) {
     verifyUnsent();
     _encoding = encoding;
-    contentType = contentType.change(parameters: {'charset': encoding.name});
+    updateContentType(
+        contentType.change(parameters: {'charset': encoding.name}));
   }
 
   /// Get the request headers to be sent with this HTTP request.

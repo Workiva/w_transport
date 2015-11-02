@@ -30,7 +30,7 @@ class MockClient extends CommonClient implements Client {
   FormRequest newFormRequest() {
     verifyNotClosed();
     FormRequest request = new MockFormRequest();
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -40,7 +40,7 @@ class MockClient extends CommonClient implements Client {
   JsonRequest newJsonRequest() {
     verifyNotClosed();
     JsonRequest request = new MockJsonRequest();
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -50,7 +50,7 @@ class MockClient extends CommonClient implements Client {
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
     MultipartRequest request = new MockMultipartRequest();
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -60,7 +60,7 @@ class MockClient extends CommonClient implements Client {
   Request newRequest() {
     verifyNotClosed();
     Request request = new MockPlainTextRequest();
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -70,7 +70,7 @@ class MockClient extends CommonClient implements Client {
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
     StreamedRequest request = new MockStreamedRequest();
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 }

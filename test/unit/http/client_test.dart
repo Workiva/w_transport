@@ -25,6 +25,7 @@ void main() {
   group('Client', () {
     setUp(() {
       configureWTransportForTest();
+      MockTransports.reset();
     });
 
     test('newFormRequest() should create a new request', () async {
@@ -87,6 +88,28 @@ void main() {
       Client client = new Client();
       Uri uri = Uri.parse('/test');
       MockTransports.http.expect('GET', uri);
+      await client.newRequest().get(uri: uri);
+    });
+
+    test('withCredentials should cascade to all factoried requests', () async {
+      Client client = new Client()..withCredentials = true;
+      Uri uri = Uri.parse('/test');
+      Completer c = new Completer();
+      MockTransports.http.when(uri, (FinalizedRequest request) async {
+        request.withCredentials
+            ? c.complete()
+            : c.completeError(new Exception('withCredentials should be true'));
+        return new MockResponse.ok();
+      }, method: 'GET');
+      await client.newRequest().get(uri: uri);
+      await c.future;
+    });
+
+    test('headers should cascade to all factoried requests', () async {
+      var headers = {'x-custom1': 'value', 'x-custom2': 'value2'};
+      Client client = new Client()..headers = headers;
+      Uri uri = Uri.parse('/test');
+      MockTransports.http.expect('GET', uri, headers: headers);
       await client.newRequest().get(uri: uri);
     });
 

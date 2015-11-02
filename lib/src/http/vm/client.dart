@@ -42,7 +42,7 @@ class VMClient extends CommonClient implements Client {
   FormRequest newFormRequest() {
     verifyNotClosed();
     FormRequest request = new VMFormRequest.withClient(_client);
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -52,7 +52,7 @@ class VMClient extends CommonClient implements Client {
   JsonRequest newJsonRequest() {
     verifyNotClosed();
     JsonRequest request = new VMJsonRequest.withClient(_client);
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -62,7 +62,7 @@ class VMClient extends CommonClient implements Client {
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
     MultipartRequest request = new VMMultipartRequest.withClient(_client);
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -72,7 +72,7 @@ class VMClient extends CommonClient implements Client {
   Request newRequest() {
     verifyNotClosed();
     Request request = new VMPlainTextRequest.withClient(_client);
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -82,7 +82,7 @@ class VMClient extends CommonClient implements Client {
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
     StreamedRequest request = new VMStreamedRequest.withClient(_client);
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 }

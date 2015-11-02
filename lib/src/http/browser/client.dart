@@ -31,7 +31,7 @@ class BrowserClient extends CommonClient implements Client {
   FormRequest newFormRequest() {
     verifyNotClosed();
     FormRequest request = new BrowserFormRequest();
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -41,7 +41,7 @@ class BrowserClient extends CommonClient implements Client {
   JsonRequest newJsonRequest() {
     verifyNotClosed();
     JsonRequest request = new BrowserJsonRequest();
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -51,7 +51,7 @@ class BrowserClient extends CommonClient implements Client {
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
     MultipartRequest request = new BrowserMultipartRequest();
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -61,7 +61,7 @@ class BrowserClient extends CommonClient implements Client {
   Request newRequest() {
     verifyNotClosed();
     Request request = new BrowserPlainTextRequest();
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 
@@ -71,7 +71,7 @@ class BrowserClient extends CommonClient implements Client {
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
     StreamedRequest request = new BrowserStreamedRequest();
-    registerRequest(request);
+    registerAndDecorateRequest(request);
     return request;
   }
 }

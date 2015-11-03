@@ -59,19 +59,49 @@ void main() {
       expect(await controller.stream.toList(), equals(['one', 'two']));
     });
 
-    test('addError() should add an error to the underlying web socket',
+    test('addStream() should cause the web socket to close when erorr is added',
         () async {
       MockWSocket mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       WSocket webSocket = await WSocket.connect(webSocketUri);
 
-      Completer c = new Completer();
-      mockWebSocket.onOutgoingError(c.completeError);
-      expect(c.future, throwsException);
+      var controller = new StreamController();
+      controller.add('message');
+      controller
+          .addError(new Exception('addStream error, should close socket'));
+      controller.close();
 
+      await webSocket.addStream(controller.stream);
+      expect(webSocket.done, throwsException);
+    });
+
+    test('addError() should cause the web socket to close', () async {
+      MockWSocket mockWebSocket = new MockWSocket();
+      MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
+      WSocket webSocket = await WSocket.connect(webSocketUri);
+
+      expect(webSocket.done, throwsException);
       webSocket.addError(new Exception('web socket consumer error'));
+    });
 
-      await webSocket.close();
+    test('error from the socket should be stored and close the socket',
+        () async {
+      MockWSocket mockWebSocket = new MockWSocket();
+      MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
+      WSocket webSocket = await WSocket.connect(webSocketUri);
+
+      expect(webSocket.done, throwsException);
+      mockWebSocket.triggerServerError(new Exception('Server Exception'));
+    });
+
+    test('server closing the connection should close the socket', () async {
+      MockWSocket mockWebSocket = new MockWSocket();
+      MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
+      WSocket webSocket = await WSocket.connect(webSocketUri);
+      mockWebSocket.triggerServerClose(1000, 'closed');
+      await webSocket.done;
+      expect(webSocket.closeCode, equals(1000));
+      expect(webSocket.closeReason, equals('closed'));
     });
   });
 }

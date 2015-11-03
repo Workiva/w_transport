@@ -13,7 +13,7 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.integration.ws.client_test;
+library w_transport.test.integration.ws.browser_test;
 
 import 'dart:html';
 import 'dart:typed_data';
@@ -26,7 +26,7 @@ import 'common.dart';
 
 void main() {
   WebSocketIntegrationConfig config = new WebSocketIntegrationConfig(
-      'Client', Uri.parse('ws://localhost:8024'));
+      'Browser', Uri.parse('ws://localhost:8024'));
   group(config.title, () {
     setUp(() {
       configureWTransportForBrowser();
@@ -62,22 +62,5 @@ void main() {
       }, throwsArgumentError);
       socket.close();
     });
-
-//    // TODO: Get this test passing.
-//    test('should close the socket with an error that can be caught', () async {
-//      socket = await WSocket.connect(echoUri);
-//
-//      // Trigger the socket shutdown by adding an error.
-//      socket.addError(new Exception('Exception should close the socket with an error.'));
-//
-//      var error;
-//      try {
-//        await socket.done;
-//      } catch (e) {
-//        error = e;
-//      }
-//      expect(error, isNotNull);
-//      expect(error, isException);
-//    });
   });
 }

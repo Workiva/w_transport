@@ -22,7 +22,7 @@ import 'package:w_transport/src/http/vm/client.dart';
 import 'package:w_transport/src/http/vm/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/server/w_socket.dart';
+import 'package:w_transport/src/web_socket/vm/w_socket.dart';
 
 /// Adapter for the Dart VM. Exposes factories for all of the transport classes
 /// that return VM-specific implementations that leverage dart:io.
@@ -50,5 +50,5 @@ class VMAdapter implements PlatformAdapter {
   /// Construct a new [ServerWSocket] instance that implements [WSocket].
   Future<WSocket> newWSocket(Uri uri,
           {Iterable<String> protocols, Map<String, dynamic> headers}) =>
-      ServerWSocket.connect(uri, protocols: protocols, headers: headers);
+      VMWSocket.connect(uri, protocols: protocols, headers: headers);
 }

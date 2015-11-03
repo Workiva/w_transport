@@ -21,7 +21,7 @@ import 'package:w_transport/src/http/browser/requests.dart';
 import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
-import 'package:w_transport/src/web_socket/client/w_socket.dart';
+import 'package:w_transport/src/web_socket/browser/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
 
 /// Adapter for the browser platform. Exposes factories for all of the transport
@@ -54,5 +54,5 @@ class BrowserAdapter implements PlatformAdapter {
   /// Construct a new [ClientWSocket] instance that implements [WSocket].
   Future<WSocket> newWSocket(Uri uri,
           {Iterable<String> protocols, Map<String, dynamic> headers}) =>
-      ClientWSocket.connect(uri, protocols: protocols, headers: headers);
+      BrowserWSocket.connect(uri, protocols: protocols, headers: headers);
 }

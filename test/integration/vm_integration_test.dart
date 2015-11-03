@@ -28,7 +28,7 @@ import 'http/streamed_request/vm_test.dart' as http_streamed_request_vm;
 
 import 'platforms/vm_platform_test.dart' as vm_platform_adapter_test;
 
-import 'ws/server_test.dart' as ws_vm;
+import 'ws/vm_test.dart' as ws_vm;
 
 void main() {
   http_client_vm.main();

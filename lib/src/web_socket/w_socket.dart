@@ -101,7 +101,7 @@ abstract class WSocket implements Stream, StreamSink {
   String get closeReason;
 
   /// Future that resolves when this WebSocket connection has completely closed.
-  Future get done;
+  Future<Null> get done;
 
   /// Sends a message over the WebSocket connection.
   ///

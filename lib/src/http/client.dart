@@ -20,8 +20,17 @@ import 'package:w_transport/src/platform_adapter.dart';
 abstract class Client {
   factory Client() => PlatformAdapter.retrieve().newClient();
 
+  /// Get and set request headers that will be applied to all requests created
+  /// by this HTTP client.
+  Map<String, String> headers;
+
   /// Whether or not the HTTP client has been closed.
   bool get isClosed;
+
+  /// Whether or not to send requests from this client with credentials. Only
+  /// applicable to requests in the browser, but does not adversely affect any
+  /// other platform.
+  bool withCredentials;
 
   /// Closes the client, cancelling or closing any outstanding connections.
   void close();

@@ -14,22 +14,36 @@
 
 library w_transport.src.http.common.client;
 
+import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
+
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/client.dart';
 
 /// HTTP client logic that can be shared across platforms.
 abstract class CommonClient implements Client {
+  CaseInsensitiveMap<String> _headers = new CaseInsensitiveMap();
+
   /// Whether or not this HTTP client has been closed.
   bool _isClosed = false;
 
   /// List of outstanding requests.
   List<BaseRequest> _requests = [];
 
+  Map<String, String> get headers => _headers;
+  set headers(Map<String, String> headers) {
+    _headers = new CaseInsensitiveMap.from(headers);
+  }
+
   /// Whether or not this HTTP client has been closed.
   @override
   bool get isClosed => _isClosed;
 
-  /// Closes the client, cancelling or closing any outstanding connections.
+  /// Whether or not to send the request with credentials. Only applicable to
+  /// requests in the browser, but does not adversely affect any other platform.
+  @override
+  bool withCredentials;
+
+  /// Closes the client, canceling or closing any outstanding connections.
   @override
   void close() {
     if (isClosed) return;
@@ -46,8 +60,14 @@ abstract class CommonClient implements Client {
   void closeClient() {}
 
   /// Registers a request created by this client so that it will be canceled if
-  /// still incomplete when this client is closed.
-  void registerRequest(BaseRequest request) {
+  /// still incomplete when this client is closed. Also decorates the request by
+  /// adding headers that are set on this client and setting the withCredentials
+  /// flag.
+  void registerAndDecorateRequest(BaseRequest request) {
+    request.headers = _headers;
+    if (withCredentials == true) {
+      request.withCredentials = true;
+    }
     _requests.add(request);
     request.done.then((_) {
       _requests.remove(request);

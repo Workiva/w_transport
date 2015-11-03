@@ -16,6 +16,7 @@ library w_transport.src.mocks.http;
 
 import 'dart:async';
 
+import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
 import 'package:w_transport/w_transport.dart';
 
 import 'package:w_transport/src/http/finalized_request.dart';
@@ -36,8 +37,27 @@ void cancelMockRequest(MockBaseRequest request) {
 }
 
 handleMockRequest(MockBaseRequest request) {
-  Iterable matchingExpectations = _expectations
-      .where((e) => e.method == request.method && e.uri == request.uri);
+  Iterable matchingExpectations = _expectations.where((e) {
+    bool methodMatches = e.method == request.method;
+    bool uriMatches = e.uri == request.uri;
+    bool headersMatch;
+    if (e.headers == null) {
+      // Ignore headers check if expectation didn't specify.
+      headersMatch = true;
+    } else if (e.headers.isEmpty) {
+      headersMatch = request.headers.isEmpty;
+    } else {
+      headersMatch = true;
+      e.headers.forEach((header, value) {
+        if (!request.headers.containsKey(header) ||
+            request.headers[header] != value) {
+          headersMatch = false;
+        }
+      });
+    }
+    return methodMatches && uriMatches && headersMatch;
+  });
+
   if (matchingExpectations.isNotEmpty) {
     /// If this request was expected, resolve it as planned.
     _RequestExpectation expectation = matchingExpectations.first;
@@ -97,7 +117,9 @@ class MockHttp {
   }
 
   void expect(String method, Uri uri,
-      {Object failWith, BaseResponse respondWith}) {
+      {Object failWith,
+      Map<String, String> headers,
+      BaseResponse respondWith}) {
     if (failWith != null && respondWith != null) {
       throw new ArgumentError('Use failWith OR respondWith, but not both.');
     }
@@ -105,6 +127,7 @@ class MockHttp {
       respondWith = new MockResponse.ok();
     }
     _expectations.add(new _RequestExpectation(method, uri,
+        headers == null ? null : new CaseInsensitiveMap.from(headers),
         failWith: failWith, respondWith: respondWith));
   }
 
@@ -160,10 +183,12 @@ class MockHttp {
 
 class _RequestExpectation {
   Object failWith;
+  final Map<String, String> headers;
   final String method;
   BaseResponse respondWith;
   final Uri uri;
 
-  _RequestExpectation(String this.method, Uri this.uri,
+  _RequestExpectation(
+      String this.method, Uri this.uri, Map<String, String> this.headers,
       {Object this.failWith, BaseResponse this.respondWith});
 }

@@ -22,15 +22,15 @@ import 'package:w_transport/w_transport.dart';
 
 import 'package:w_transport/src/http/utils.dart' as http_utils;
 
-import '../integration_config.dart';
+import '../../integration_paths.dart';
 
-void runFormRequestSuite(HttpIntegrationConfig config) {
+void runFormRequestSuite() {
   group('FormRequest', () {
     test('content-length should be set automatically', () async {
       // Empty request.
       FormRequest emptyRequest = new FormRequest();
       Response response =
-          await emptyRequest.post(uri: config.reflectEndpointUri);
+          await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
       int contentLength =
           int.parse(response.body.asJson()['headers']['content-length']);
       expect(contentLength, equals(0),
@@ -38,7 +38,7 @@ void runFormRequestSuite(HttpIntegrationConfig config) {
 
       // Non-empty request.
       FormRequest nonEmptyRequest = new FormRequest()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..fields['field1'] = 'value1'
         ..fields['field2'] = 'value2';
       response = await nonEmptyRequest.post();
@@ -51,7 +51,7 @@ void runFormRequestSuite(HttpIntegrationConfig config) {
 
     test('content-type should be set automatically', () async {
       FormRequest request = new FormRequest()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..fields['field'] = 'value';
       Response response = await request.post();
       MediaType contentType = new MediaType.parse(
@@ -61,7 +61,7 @@ void runFormRequestSuite(HttpIntegrationConfig config) {
 
     test('UTF8', () async {
       FormRequest request = new FormRequest()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = UTF8
         ..fields['field1'] = 'value1'
         ..fields['field2'] = 'ç®å';
@@ -75,7 +75,7 @@ void runFormRequestSuite(HttpIntegrationConfig config) {
 
     test('LATIN1', () async {
       FormRequest request = new FormRequest()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = LATIN1
         ..fields['field1'] = 'value1'
         ..fields['field2'] = 'ç®å';
@@ -89,7 +89,7 @@ void runFormRequestSuite(HttpIntegrationConfig config) {
 
     test('ASCII', () async {
       FormRequest request = new FormRequest()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = ASCII
         ..fields['field1'] = 'value1'
         ..fields['field2'] = 'value2';

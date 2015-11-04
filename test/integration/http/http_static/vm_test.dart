@@ -19,16 +19,19 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport_vm.dart';
 
 import '../../../naming.dart';
-import '../integration_config.dart';
 import 'suite.dart';
 
 void main() {
-  var config = new HttpIntegrationConfig.vm();
-  group(integrationHttpVM, () {
+  Naming naming = new Naming()
+    ..platform = platformVM
+    ..testType = testTypeIntegration
+    ..topic = topicHttp;
+
+  group(naming.toString(), () {
     setUp(() {
       configureWTransportForVM();
     });
 
-    runHttpStaticSuite(config);
+    runHttpStaticSuite();
   });
 }

@@ -22,21 +22,25 @@ import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_vm.dart';
 
 import '../../../naming.dart';
-import '../integration_config.dart';
+import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  var config = new HttpIntegrationConfig.vm();
-  group(integrationHttpVM, () {
+  Naming naming = new Naming()
+    ..platform = platformVM
+    ..testType = testTypeIntegration
+    ..topic = topicHttp;
+
+  group(naming.toString(), () {
     setUp(() {
       configureWTransportForVM();
     });
 
-    runMultipartRequestSuite(config);
+    runMultipartRequestSuite();
 
     test('underlying HttpRequest configuration', () async {
       MultipartRequest request = new MultipartRequest()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..fields['field'] = 'value';
       request.configure((HttpClientRequest ioRequest) async {
         ioRequest.headers.set('x-configured', 'true');

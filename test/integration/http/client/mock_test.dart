@@ -22,21 +22,24 @@ import '../../../naming.dart';
 import '../mock_endpoints/ping.dart';
 import '../mock_endpoints/reflect.dart';
 import '../mock_endpoints/timeout.dart';
-import '../integration_config.dart';
+import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  group(integrationHttpMock, () {
-    var config = new HttpIntegrationConfig.mock();
+  Naming naming = new Naming()
+    ..platform = platformMock
+    ..testType = testTypeIntegration
+    ..topic = topicHttp;
 
+  group(naming.toString(), () {
     setUp(() {
       configureWTransportForTest();
-      mockPingEndpoint(config.pingEndpointUri);
-      mockReflectEndpoint(config.reflectEndpointUri);
-      mockTimeoutEndpoint(config.timeoutEndpointUri);
+      mockPingEndpoint(IntegrationPaths.pingEndpointUri);
+      mockReflectEndpoint(IntegrationPaths.reflectEndpointUri);
+      mockTimeoutEndpoint(IntegrationPaths.timeoutEndpointUri);
     });
 
-    runClientSuite(config);
+    runClientSuite();
 
     tearDown(() {
       MockTransports.verifyNoOutstandingExceptions();

@@ -19,21 +19,21 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 
-import '../integration_config.dart';
+import '../../integration_paths.dart';
 
-void runClientSuite(HttpIntegrationConfig config) {
+void runClientSuite() {
   group('Client', () {
     test('newFormRequest()', () async {
       Client client = new Client();
       FormRequest request = client.newFormRequest();
-      await _testRequest(request, config);
+      await _testRequest(request);
       client.close();
     });
 
     test('newJsonRequest()', () async {
       Client client = new Client();
       JsonRequest request = client.newJsonRequest();
-      await _testRequest(request, config);
+      await _testRequest(request);
       client.close();
     });
 
@@ -41,34 +41,38 @@ void runClientSuite(HttpIntegrationConfig config) {
       Client client = new Client();
       MultipartRequest request = client.newMultipartRequest();
       request.fields['key'] = 'value';
-      await _testRequest(request, config);
+      await _testRequest(request);
       client.close();
     });
 
     test('newRequest()', () async {
       Client client = new Client();
       Request request = client.newRequest();
-      await _testRequest(request, config);
+      await _testRequest(request);
       client.close();
     });
 
     test('newStreamedRequest()', () async {
       Client client = new Client();
       StreamedRequest request = client.newStreamedRequest();
-      await _testRequest(request, config);
+      await _testRequest(request);
       client.close();
     });
 
     test('should support multiple concurrent requests', () async {
       Client client = new Client();
       List<Future> requests = [
-        client.newFormRequest().post(uri: config.reflectEndpointUri),
-        client.newJsonRequest().put(uri: config.reflectEndpointUri),
+        client.newFormRequest().post(uri: IntegrationPaths.reflectEndpointUri),
+        client.newJsonRequest().put(uri: IntegrationPaths.reflectEndpointUri),
         (client.newMultipartRequest()..fields['f'] = 'v')
-            .patch(uri: config.reflectEndpointUri),
-        client.newRequest().get(uri: config.reflectEndpointUri),
-        client.newStreamedRequest().delete(uri: config.reflectEndpointUri),
-        client.newRequest().send('OPTIONS', uri: config.reflectEndpointUri),
+            .patch(uri: IntegrationPaths.reflectEndpointUri),
+        client.newRequest().get(uri: IntegrationPaths.reflectEndpointUri),
+        client
+            .newStreamedRequest()
+            .delete(uri: IntegrationPaths.reflectEndpointUri),
+        client
+            .newRequest()
+            .send('OPTIONS', uri: IntegrationPaths.reflectEndpointUri),
       ];
       await Future.wait(requests);
     });
@@ -86,11 +90,12 @@ void runClientSuite(HttpIntegrationConfig config) {
 
       // We will let this request finish before closing the client.
       Request willComplete = client.newRequest();
-      await willComplete.get(uri: config.pingEndpointUri);
+      await willComplete.get(uri: IntegrationPaths.pingEndpointUri);
 
       // This request should be canceled before it times out.
       Request willNotComplete = client.newRequest();
-      Future willThrow = willNotComplete.get(uri: config.timeoutEndpointUri);
+      Future willThrow =
+          willNotComplete.get(uri: IntegrationPaths.timeoutEndpointUri);
 
       // Closing the client should not affect the completed request, but should
       // abort the pending request.
@@ -101,8 +106,8 @@ void runClientSuite(HttpIntegrationConfig config) {
   });
 }
 
-_testRequest(BaseRequest request, HttpIntegrationConfig config) async {
-  request.uri = config.reflectEndpointUri;
+_testRequest(BaseRequest request) async {
+  request.uri = IntegrationPaths.reflectEndpointUri;
   request.headers = {'x-custom': 'value', 'x-tokens': 'token1, token2'};
   Response response = await request.get();
   expect(response.body.asJson()['method'], equals('GET'));

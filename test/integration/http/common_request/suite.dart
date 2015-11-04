@@ -20,31 +20,30 @@ import 'dart:convert';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 
-import '../integration_config.dart';
+import '../../integration_paths.dart';
 
-void runCommonRequestSuite(HttpIntegrationConfig config) {
+void runCommonRequestSuite() {
   group('Common Request API', () {
-    _runCommonRequestSuiteFor(config, 'FormRequest', ({bool withBody: false}) {
+    _runCommonRequestSuiteFor('FormRequest', ({bool withBody: false}) {
       if (!withBody) return new FormRequest();
       return new FormRequest()..fields['field'] = 'value';
     });
-    _runCommonRequestSuiteFor(config, 'JsonRequest', ({bool withBody: false}) {
+    _runCommonRequestSuiteFor('JsonRequest', ({bool withBody: false}) {
       if (!withBody) return new JsonRequest();
       return new JsonRequest()
         ..body = [
           {'field': 'value'}
         ];
     });
-    _runCommonRequestSuiteFor(config, 'MultipartRequest', ({bool withBody}) {
+    _runCommonRequestSuiteFor('MultipartRequest', ({bool withBody}) {
       // Multipart requests can't be empty.
       return new MultipartRequest()..fields['field'] = 'value';
     });
-    _runCommonRequestSuiteFor(config, 'Request', ({bool withBody: false}) {
+    _runCommonRequestSuiteFor('Request', ({bool withBody: false}) {
       if (!withBody) return new Request();
       return new Request()..body = 'body';
     });
-    _runCommonRequestSuiteFor(config, 'StreamedRequest', (
-        {bool withBody: false}) {
+    _runCommonRequestSuiteFor('StreamedRequest', ({bool withBody: false}) {
       if (!withBody) return new StreamedRequest();
       return new StreamedRequest()
         ..body = new Stream.fromIterable([UTF8.encode('bytes')])
@@ -53,8 +52,8 @@ void runCommonRequestSuite(HttpIntegrationConfig config) {
   });
 }
 
-void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
-    BaseRequest requestFactory({bool withBody})) {
+void _runCommonRequestSuiteFor(
+    String name, BaseRequest requestFactory({bool withBody})) {
   group(name, () {
     var headers = {
       'authorization': 'test',
@@ -64,7 +63,7 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
 
     test('"done" should complete when the request succeeds', () async {
       BaseRequest request = requestFactory();
-      request.post(uri: config.reflectEndpointUri);
+      request.post(uri: IntegrationPaths.reflectEndpointUri);
       await request.done;
     });
 
@@ -72,7 +71,7 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
       BaseRequest request = requestFactory();
 
       try {
-        Future future = request.post(uri: config.timeoutEndpointUri);
+        Future future = request.post(uri: IntegrationPaths.timeoutEndpointUri);
         await new Future.delayed(new Duration(milliseconds: 5));
         request.abort();
         await future;
@@ -84,21 +83,85 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
     test('"done" should complete when the request fails', () async {
       BaseRequest request = requestFactory();
       try {
-        await request.post(uri: config.fourOhFourEndpointUri);
+        await request.post(uri: IntegrationPaths.fourOhFourEndpointUri);
       } on RequestException {}
       await request.done;
     });
 
+    test('DELETE (streamed)', () async {
+      BaseRequest request = requestFactory();
+      StreamedResponse response =
+          await request.streamDelete(uri: IntegrationPaths.downloadEndpointUri);
+      expect(response.status, equals(200));
+      expect(await response.body.byteStream.isEmpty, isFalse);
+    });
+
+    test('GET (streamed)', () async {
+      BaseRequest request = requestFactory();
+      StreamedResponse response =
+          await request.streamGet(uri: IntegrationPaths.downloadEndpointUri);
+      expect(response.status, equals(200));
+      expect(await response.body.byteStream.isEmpty, isFalse);
+    });
+
+    test('HEAD (streamed)', () async {
+      BaseRequest request = requestFactory();
+      StreamedResponse response =
+          await request.streamHead(uri: IntegrationPaths.downloadEndpointUri);
+      expect(response.status, equals(200));
+    });
+
+    test('OPTIONS (streamed)', () async {
+      BaseRequest request = requestFactory();
+      StreamedResponse response = await request.streamOptions(
+          uri: IntegrationPaths.downloadEndpointUri);
+      expect(response.status, equals(200));
+      expect(await response.body.byteStream.isEmpty, isFalse);
+    });
+
+    test('PATCH (streamed)', () async {
+      BaseRequest request = requestFactory();
+      StreamedResponse response =
+          await request.streamPatch(uri: IntegrationPaths.downloadEndpointUri);
+      expect(response.status, equals(200));
+      expect(await response.body.byteStream.isEmpty, isFalse);
+    });
+
+    test('POST (streamed)', () async {
+      BaseRequest request = requestFactory();
+      StreamedResponse response =
+          await request.streamPost(uri: IntegrationPaths.downloadEndpointUri);
+      expect(response.status, equals(200));
+      expect(await response.body.byteStream.isEmpty, isFalse);
+    });
+
+    test('PUT (streamed)', () async {
+      BaseRequest request = requestFactory();
+      StreamedResponse response =
+          await request.streamPut(uri: IntegrationPaths.downloadEndpointUri);
+      expect(response.status, equals(200));
+      expect(await response.body.byteStream.isEmpty, isFalse);
+    });
+
+    test('custom HTTP method (streamed)', () async {
+      BaseRequest request = requestFactory();
+      StreamedResponse response = await request.streamSend('COPY',
+          uri: IntegrationPaths.downloadEndpointUri);
+      expect(response.status, equals(200));
+      expect(await response.body.byteStream.isEmpty, isFalse);
+    });
+
     test('DELETE request', () async {
       BaseRequest request = requestFactory();
-      Response response = await request.delete(uri: config.reflectEndpointUri);
+      Response response =
+          await request.delete(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('DELETE'));
     });
 
     test('DELETE request with headers', () async {
       BaseRequest request = requestFactory()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..headers = new Map.from(headers);
       Response response = await request.delete();
       expect(response.status, equals(200));
@@ -115,14 +178,15 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
 
     test('GET request', () async {
       BaseRequest request = requestFactory();
-      Response response = await request.get(uri: config.reflectEndpointUri);
+      Response response =
+          await request.get(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('GET'));
     });
 
     test('GET request with headers', () async {
       BaseRequest request = requestFactory()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..headers = new Map.from(headers);
       Response response = await request.get();
       expect(response.status, equals(200));
@@ -139,13 +203,14 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
 
     test('HEAD request', () async {
       BaseRequest request = requestFactory();
-      Response response = await request.head(uri: config.reflectEndpointUri);
+      Response response =
+          await request.head(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
     });
 
     test('HEAD request with headers', () async {
       BaseRequest request = requestFactory()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..headers = new Map.from(headers);
       Response response = await request.head();
       expect(response.status, equals(200));
@@ -153,14 +218,15 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
 
     test('OPTIONS request', () async {
       BaseRequest request = requestFactory();
-      Response response = await request.options(uri: config.reflectEndpointUri);
+      Response response =
+          await request.options(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('OPTIONS'));
     });
 
     test('OPTIONS request with headers', () async {
       BaseRequest request = requestFactory()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..headers = new Map.from(headers);
       Response response = await request.options();
       expect(response.status, equals(200));
@@ -177,14 +243,15 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
 
     test('PATCH request', () async {
       BaseRequest request = requestFactory();
-      Response response = await request.patch(uri: config.reflectEndpointUri);
+      Response response =
+          await request.patch(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('PATCH'));
     });
 
     test('PATCH request with headers', () async {
       BaseRequest request = requestFactory()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..headers = new Map.from(headers);
       Response response = await request.patch();
       expect(response.status, equals(200));
@@ -201,14 +268,15 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
 
     test('POST request', () async {
       BaseRequest request = requestFactory();
-      Response response = await request.post(uri: config.reflectEndpointUri);
+      Response response =
+          await request.post(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('POST'));
     });
 
     test('POST request with headers', () async {
       BaseRequest request = requestFactory()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..headers = new Map.from(headers);
       Response response = await request.post();
       expect(response.status, equals(200));
@@ -225,14 +293,15 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
 
     test('PUT request', () async {
       BaseRequest request = requestFactory();
-      Response response = await request.put(uri: config.reflectEndpointUri);
+      Response response =
+          await request.put(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('PUT'));
     });
 
     test('PUT request with headers', () async {
       BaseRequest request = requestFactory()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..headers = new Map.from(headers);
       Response response = await request.put();
       expect(response.status, equals(200));
@@ -250,7 +319,7 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
     test('upload progress stream', () async {
       Completer uploadProgressListenedTo = new Completer();
       BaseRequest request = requestFactory(withBody: true)
-        ..uri = config.reflectEndpointUri;
+        ..uri = IntegrationPaths.reflectEndpointUri;
       request.uploadProgress.listen((RequestProgress progress) {
         if (progress.percent > 0 && !uploadProgressListenedTo.isCompleted) {
           uploadProgressListenedTo.complete();
@@ -262,7 +331,8 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
 
     test('download progress stream', () async {
       Completer downloadProgressListenedTo = new Completer();
-      BaseRequest request = requestFactory()..uri = config.downloadEndpointUri;
+      BaseRequest request = requestFactory()
+        ..uri = IntegrationPaths.downloadEndpointUri;
       request.downloadProgress.listen((RequestProgress progress) {
         if (progress.percent > 0 && !downloadProgressListenedTo.isCompleted) {
           downloadProgressListenedTo.complete();
@@ -274,20 +344,20 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
 
     test('should throw RequestException on failed requests', () async {
       BaseRequest request = requestFactory()
-        ..uri = config.fourOhFourEndpointUri;
+        ..uri = IntegrationPaths.fourOhFourEndpointUri;
       expect(
           request.get(),
           throwsA(predicate((exception) {
             return exception != null &&
                 exception is RequestException &&
                 exception.method == 'GET' &&
-                exception.uri == config.fourOhFourEndpointUri;
+                exception.uri == IntegrationPaths.fourOhFourEndpointUri;
           }, 'throws a RequestException')));
     });
 
     test('request cancellation prior to dispatch should cause request to fail',
         () async {
-      BaseRequest request = requestFactory()..uri = config.hostUri;
+      BaseRequest request = requestFactory()..uri = IntegrationPaths.hostUri;
       request.abort();
       expect(request.get(), throwsA(predicate((exception) {
         return exception is RequestException &&
@@ -298,7 +368,8 @@ void _runCommonRequestSuiteFor(HttpIntegrationConfig config, String name,
     test(
         'request cancellation after dispatch but prior to resolution should cause request to fail',
         () async {
-      BaseRequest request = requestFactory()..uri = config.timeoutEndpointUri;
+      BaseRequest request = requestFactory()
+        ..uri = IntegrationPaths.timeoutEndpointUri;
       Future future = request.get();
 
       // Wait a sufficient amount of time to allow the request to open.

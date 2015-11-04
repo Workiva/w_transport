@@ -23,8 +23,15 @@ import 'package:w_transport/src/http/mock/client.dart';
 import 'package:w_transport/src/http/mock/requests.dart';
 import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 
+import '../../naming.dart';
+
 void main() {
-  group('Mock platform adapter', () {
+  Naming naming = new Naming()
+    ..platform = platformMock
+    ..testType = testTypeIntegration
+    ..topic = topicPlatformAdapter;
+
+  group(naming.toString(), () {
     setUp(() {
       configureWTransportForTest();
     });

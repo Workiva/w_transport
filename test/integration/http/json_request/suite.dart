@@ -20,21 +20,21 @@ import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 
-import '../integration_config.dart';
+import '../../integration_paths.dart';
 
-void runJsonRequestSuite(HttpIntegrationConfig config) {
+void runJsonRequestSuite() {
   group('JsonRequest', () {
     test('contentLength should be set automatically', () async {
       JsonRequest emptyRequest = new JsonRequest();
       Response response =
-          await emptyRequest.post(uri: config.reflectEndpointUri);
+          await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
       int contentLength =
           int.parse(response.body.asJson()['headers']['content-length']);
       expect(contentLength, equals(0),
           reason: 'Empty JSON request\'s content-length should be 0.');
 
       JsonRequest nonEmptyRequest = new JsonRequest()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..body = {'field1': 'value1', 'field2': 'value2'};
       response = await nonEmptyRequest.post();
       contentLength =
@@ -46,7 +46,7 @@ void runJsonRequestSuite(HttpIntegrationConfig config) {
 
     test('content-type should be set automatically', () async {
       JsonRequest request = new JsonRequest()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..body = {'field1': 'value1', 'field2': 'value2'};
       Response response = await request.post();
       MediaType contentType = new MediaType.parse(
@@ -56,7 +56,7 @@ void runJsonRequestSuite(HttpIntegrationConfig config) {
 
     test('UTF8', () async {
       JsonRequest request = new JsonRequest()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = UTF8
         ..body = {'field1': 'value1', 'field2': 'ç®å'};
       Response response = await request.post();
@@ -67,7 +67,7 @@ void runJsonRequestSuite(HttpIntegrationConfig config) {
 
     test('LATIN1', () async {
       JsonRequest request = new JsonRequest()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = LATIN1
         ..body = {'field1': 'value1', 'field2': 'ç®å'};
       Response response = await request.post();
@@ -78,7 +78,7 @@ void runJsonRequestSuite(HttpIntegrationConfig config) {
 
     test('ASCII', () async {
       JsonRequest request = new JsonRequest()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = ASCII
         ..body = {'field1': 'value1', 'field2': 'value2'};
       Response response = await request.post();

@@ -19,26 +19,34 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' show RequestException, Response;
 import 'package:w_transport/w_transport_mock.dart';
 
+import '../../naming.dart';
+
 void main() {
-  group('RequestException', () {
-    test('should include the method and URi if given', () {
-      RequestException exception =
-          new RequestException('POST', Uri.parse('/path'), null, null);
-      expect(exception.toString(), contains('POST'));
-      expect(exception.toString(), contains('/path'));
-    });
+  Naming naming = new Naming()
+    ..testType = testTypeUnit
+    ..topic = topicHttp;
 
-    test('should include the response status and text if given', () {
-      Response response = new MockResponse.ok();
-      RequestException exception =
-          new RequestException('GET', null, null, response);
-      expect(exception.toString(), contains('200 OK'));
-    });
+  group(naming.toString(), () {
+    group('RequestException', () {
+      test('should include the method and URi if given', () {
+        RequestException exception =
+            new RequestException('POST', Uri.parse('/path'), null, null);
+        expect(exception.toString(), contains('POST'));
+        expect(exception.toString(), contains('/path'));
+      });
 
-    test('should include the original error if given', () {
-      RequestException exception = new RequestException(
-          'GET', null, null, null, new Exception('original'));
-      expect(exception.toString(), contains('original'));
+      test('should include the response status and text if given', () {
+        Response response = new MockResponse.ok();
+        RequestException exception =
+            new RequestException('GET', null, null, response);
+        expect(exception.toString(), contains('200 OK'));
+      });
+
+      test('should include the original error if given', () {
+        RequestException exception = new RequestException(
+            'GET', null, null, null, new Exception('original'));
+        expect(exception.toString(), contains('original'));
+      });
     });
   });
 }

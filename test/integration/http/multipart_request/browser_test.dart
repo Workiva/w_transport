@@ -25,22 +25,26 @@ import 'package:w_transport/w_transport_browser.dart';
 import 'package:w_transport/src/http/browser/multipart_request.dart';
 
 import '../../../naming.dart';
-import '../integration_config.dart';
+import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  var config = new HttpIntegrationConfig.browser();
-  group(integrationHttpBrowser, () {
+  Naming naming = new Naming()
+    ..platform = platformBrowser
+    ..testType = testTypeIntegration
+    ..topic = topicHttp;
+
+  group(naming.toString(), () {
     setUp(() {
       configureWTransportForBrowser();
     });
 
-    runMultipartRequestSuite(config);
+    runMultipartRequestSuite();
 
     group('MultipartRequest', () {
       test('underlying HttpRequest configuration', () async {
         MultipartRequest request = new MultipartRequest()
-          ..uri = config.reflectEndpointUri
+          ..uri = IntegrationPaths.reflectEndpointUri
           ..fields['field'] = 'value';
         request.configure((HttpRequest xhr) async {
           xhr.setRequestHeader('x-configured', 'true');
@@ -53,7 +57,7 @@ void main() {
       group('withCredentials', () {
         test('set to true (MultipartRequest)', () async {
           MultipartRequest request = new MultipartRequest()
-            ..uri = config.pingEndpointUri
+            ..uri = IntegrationPaths.pingEndpointUri
             ..fields['field'] = 'value'
             ..withCredentials = true;
           request.configure((HttpRequest xhr) async {
@@ -64,7 +68,7 @@ void main() {
 
         test('set to false (MultipartRequest)', () async {
           MultipartRequest request = new MultipartRequest()
-            ..uri = config.pingEndpointUri
+            ..uri = IntegrationPaths.pingEndpointUri
             ..fields['field'] = 'value'
             ..withCredentials = false;
           request.configure((HttpRequest xhr) async {
@@ -88,20 +92,20 @@ void main() {
 
       test('setting body in request dispatcher is unsupported', () async {
         MultipartRequest request = new MultipartRequest()
-          ..uri = config.reflectEndpointUri;
+          ..uri = IntegrationPaths.reflectEndpointUri;
         expect(request.post(body: 'invalid'), throwsUnsupportedError);
       });
 
       test('should support Blob file', () async {
         Blob blob = new Blob([UTF8.encode('file')]);
         MultipartRequest request = new MultipartRequest()
-          ..uri = config.reflectEndpointUri
+          ..uri = IntegrationPaths.reflectEndpointUri
           ..files['blob'] = blob;
         await request.post();
       });
 
       test('should support File', () async {
-        // TODO: Not sure how to test this - the File class cannot be constructed.
+        // TODO: Write a functional test for this - not sure how to mock File/Blob class (or that it's possible)
       });
     });
   });

@@ -20,21 +20,26 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport_mock.dart';
 
+import '../../naming.dart';
+import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  WebSocketIntegrationConfig config =
-      new WebSocketIntegrationConfig('Mock', Uri.parse('ws://localhost:8024'));
+  Naming naming = new Naming()
+    ..platform = platformMock
+    ..testType = testTypeIntegration
+    ..topic = topicWebSocket;
 
-  group(config.title, () {
+  group(naming.toString(), () {
     setUp(() {
       configureWTransportForTest();
 
       MockTransports.reset();
 
-      MockTransports.webSocket.when(config.fourOhFourUri, reject: true);
+      MockTransports.webSocket
+          .when(IntegrationPaths.fourOhFourUri, reject: true);
 
-      MockTransports.webSocket.when(config.closeUri,
+      MockTransports.webSocket.when(IntegrationPaths.closeUri,
           handler: (Uri uri, {protocols, headers}) {
         MockWSocket webSocket = new MockWSocket();
 
@@ -56,14 +61,14 @@ void main() {
         return webSocket;
       });
 
-      MockTransports.webSocket.when(config.echoUri,
+      MockTransports.webSocket.when(IntegrationPaths.echoUri,
           handler: (Uri uri, {protocols, headers}) {
         MockWSocket webSocket = new MockWSocket();
         webSocket.onOutgoing(webSocket.addIncoming);
         return webSocket;
       });
 
-      MockTransports.webSocket.when(config.pingUri,
+      MockTransports.webSocket.when(IntegrationPaths.pingUri,
           handler: (Uri uri, {protocols, headers}) {
         MockWSocket webSocket = new MockWSocket();
 
@@ -83,6 +88,6 @@ void main() {
       });
     });
 
-    runCommonWebSocketIntegrationTests(config);
+    runCommonWebSocketIntegrationTests();
   });
 }

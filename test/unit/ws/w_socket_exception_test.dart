@@ -19,9 +19,17 @@ import 'package:test/test.dart';
 
 import 'package:w_transport/src/web_socket/w_socket_exception.dart';
 
+import '../../naming.dart';
+
 void main() {
-  test('WSocketException should support toString()', () {
-    expect(
-        new WSocketException('test').toString(), contains('WSocketException:'));
+  Naming naming = new Naming()
+    ..testType = testTypeUnit
+    ..topic = topicWebSocket;
+
+  group(naming.toString(), () {
+    test('WSocketException should support toString()', () {
+      expect(new WSocketException('test').toString(),
+          contains('WSocketException:'));
+    });
   });
 }

@@ -98,10 +98,10 @@ class BrowserMultipartRequest extends CommonRequest
     List<Future> additions = [];
     files.forEach((name, value) {
       additions.add(() async {
-        if (value is Blob) {
-          formData.appendBlob(name, value);
-        } else if (value is File) {
+        if (value is File) {
           formData.appendBlob(name, value, value.name);
+        } else if (value is Blob) {
+          formData.appendBlob(name, value);
         } else if (value is MultipartFile) {
           String contentType =
               value.contentType != null ? value.contentType.toString() : null;

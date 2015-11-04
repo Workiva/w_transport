@@ -22,41 +22,46 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_browser.dart';
 
+import '../../naming.dart';
+import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  WebSocketIntegrationConfig config = new WebSocketIntegrationConfig(
-      'Browser', Uri.parse('ws://localhost:8024'));
-  group(config.title, () {
+  Naming naming = new Naming()
+    ..platform = platformBrowser
+    ..testType = testTypeIntegration
+    ..topic = topicWebSocket;
+
+  group(naming.toString(), () {
     setUp(() {
       configureWTransportForBrowser();
     });
 
-    runCommonWebSocketIntegrationTests(config);
+    runCommonWebSocketIntegrationTests();
 
     test('should support Blob', () async {
       Blob blob = new Blob(['one', 'two']);
-      WSocket socket = await WSocket.connect(config.echoUri);
+      WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(blob);
       socket.close();
     });
 
     test('should support String', () async {
       String data = 'data';
-      WSocket socket = await WSocket.connect(config.echoUri);
+      WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(data);
       socket.close();
     });
 
     test('should support TypedData', () async {
       TypedData data = new Uint16List.fromList([1, 2, 3]);
-      WSocket socket = await WSocket.connect(config.echoUri);
+      WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(data);
       socket.close();
     });
 
     test('should throw when attempting to send invalid data', () async {
-      WSocket socket = await WSocket.connect(config.pingUri);
+      WSocket socket = await WSocket.connect(IntegrationPaths.pingUri);
       expect(() {
         socket.add(true);
       }, throwsArgumentError);

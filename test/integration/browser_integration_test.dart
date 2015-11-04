@@ -31,7 +31,7 @@ import 'http/streamed_request/browser_test.dart'
 
 import 'platforms/browser_platform_test.dart' as browser_platform_adapter_test;
 
-import 'ws/client_test.dart' as ws_browser;
+import 'ws/browser_test.dart' as ws_browser;
 
 void main() {
   http_client_browser.main();

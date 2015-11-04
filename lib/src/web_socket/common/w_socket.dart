@@ -17,6 +17,7 @@ library w_transport.src.web_socket.common.w_socket;
 import 'dart:async';
 
 import 'package:w_transport/src/web_socket/w_socket.dart';
+import 'package:w_transport/src/web_socket/w_socket_close_event.dart';
 
 abstract class CommonWSocket extends Stream implements WSocket {
   /// The close code set when the WebSocket connection is closed. If there is
@@ -27,20 +28,73 @@ abstract class CommonWSocket extends Stream implements WSocket {
   /// no close reason available this property will be `null`.
   String closeReason;
 
+  /// Incoming communication. Data from the web socket will be piped
+  /// to this controller's sink. The stream will be exposed, allowing
+  /// users to listen to the incoming data.
+  StreamController incoming;
+
+  /// Outgoing communication. Sink will be exposed, allowing users to
+  /// add items to the outgoing stream.
+  StreamController outgoing;
+
+  /// Completer that will complete when the outgoing sink has finished closing
+  /// and the socket connection has finished closing.
+  Completer<Null> _allClosed = new Completer();
+
+  /// The close event with close code and reason from the socket connection.
+  /// Will only be populated once the socket has actually closed.
+  WSocketCloseEvent _closeEvent;
+
+  /// Completer that will complete when [_allClosed] has completed and the close
+  /// code and reason have been set. If the socket closed due to an error, this
+  /// will complete with an error. Otherwise, it will complete normally.
+  Completer<Null> _done = new Completer();
+
+  /// The error that was either added to the socket sink or received from the
+  /// socket stream. This will only be populated if an error occurs.
+  var _error;
+
   /// Whether or not the web socket is in the process of closing (or already has
   /// closed). This prevents duplicate behavior if [close] is called multiple
   /// times.
-  bool _closed = false;
+  bool _isClosed = false;
+
+  /// Whether or not the outgoing sink has been closed.
+  bool _isSinkClosed = false;
+
+  /// Whether or not the incoming socket stream connection has been closed.
+  bool _isSocketClosed = false;
+
+  /// The stack trace from the error that was either added to the socket sink or
+  /// received from the socket stream. This will only be populated if an error
+  /// occurs.
+  StackTrace _stackTrace;
 
   CommonWSocket() {
-    done.whenComplete(() {
-      _closed = true;
+    // Wait for both the sink and the socket to finish closing before exposing
+    // the close code, close reason, and completing the [_done] completer.
+    // If the socket closed due to an error, the [_done] completer will be
+    // completed with that error.
+    _allClosed.future.then((_) {
+      closeCode = _closeEvent.code;
+      closeReason = _closeEvent.reason;
+      _isClosed = true;
+      if (_error != null) {
+        _done.completeError(_error, _stackTrace);
+      } else {
+        _done.complete();
+      }
     });
   }
 
-  StreamSink get sink;
+  /// Future that resolves when this WebSocket connection has completely closed.
+  Future get done => _done.future;
 
-  Stream get stream;
+  /// The stream sink for outgoing messages.
+  StreamSink get sink => outgoing.sink;
+
+  /// The stream for incoming messages.
+  Stream get stream => incoming.stream;
 
   /// Sends a message over the WebSocket connection.
   ///
@@ -60,7 +114,7 @@ abstract class CommonWSocket extends Stream implements WSocket {
 
   /// Add an error to the sink. This will cause the WebSocket connection to close.
   void addError(errorEvent, [StackTrace stackTrace]) {
-    sink.addError(errorEvent, stackTrace);
+    shutDown(error: errorEvent, stackTrace: stackTrace);
   }
 
   /// Adds a stream of data to send over the WebSocket connection.
@@ -78,15 +132,50 @@ abstract class CommonWSocket extends Stream implements WSocket {
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
   Future close([int code, String reason]) {
-    if (_closed) return done;
-    _closed = true;
-    closeConnection(code, reason);
-    sink.close();
+    if (_isClosed) return done;
+    _isClosed = true;
+    shutDown(code: code, reason: reason);
     return done;
   }
 
-  /// Close the WebSocket connection if one has been established.
-  Future closeConnection([int code, String reason]);
+  void closeSocket(int code, String reason);
+
+  void handleOutgoingError(error, [StackTrace stackTrace]) {
+    // Don't pass the error on to the socket. It will cause the socket to
+    // close anyway, so we will preempt this and handle the shut down
+    // by ourselves. This allows us to prevent the error from propagating to
+    // the root zone where it cannot be caught.
+    shutDown(error: error, stackTrace: stackTrace);
+  }
+
+  void handleOutgoingDone() {
+    _isSinkClosed = true;
+    if (_isSocketClosed) {
+      _allClosed.complete();
+    }
+
+    // No need to close the socket here because [shutDown] handles that, and
+    // the sink would only ever close as a result of [shutDown] being called,
+    // which happens when
+    // - [addError] is called
+    // - [close] is called
+    // - the sink receives an error during a call to [addStream]
+  }
+
+  void handleSocketError(error, [StackTrace stackTrace]) {
+    shutDown(error: error, stackTrace: stackTrace);
+  }
+
+  void handleSocketDone(WSocketCloseEvent closeEvent) {
+    _closeEvent = closeEvent;
+
+    _isSocketClosed = true;
+    if (_isSinkClosed) {
+      _allClosed.complete();
+    } else {
+      outgoing.close();
+    }
+  }
 
   StreamSubscription listen(void onData(event),
       {Function onError, void onDone(), bool cancelOnError}) {
@@ -95,6 +184,18 @@ abstract class CommonWSocket extends Stream implements WSocket {
     }
     return stream.listen(onData,
         onError: onError, cancelOnError: cancelOnError);
+  }
+
+  /// Close the WebSocket connection if one has been established.
+  void shutDown({int code, error, String reason, StackTrace stackTrace}) {
+    // Store the error and stack trace. When everything has finished closing,
+    // they will be indicators that the socket connection closed with an error.
+    _error = error;
+    _stackTrace = stackTrace;
+
+    // Close both incoming and outgoing communication.
+    closeSocket(code, reason);
+    sink.close();
   }
 
   /// Validate the data type of the message being sent. Throws an ArgumentError

@@ -72,7 +72,22 @@ void runCommonWebSocketIntegrationTests(WebSocketIntegrationConfig config) {
     }, throwsStateError);
   });
 
-  // TODO: Find a way to test addError() (see https://github.com/Workiva/w_transport/issues/60)
+  test('addError() should close the socket with an error that can be caught',
+      () async {
+    WSocket socket = await WSocket.connect(config.echoUri);
+    socket.addError(
+        new Exception('Exception should close the socket with an error.'));
+
+    var error;
+    try {
+      await socket.done;
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error, isNotNull);
+    expect(error, isException);
+  });
 
   test('addStream() should send a Stream of data', () async {
     WSocket socket = await WSocket.connect(config.echoUri);
@@ -112,6 +127,16 @@ void runCommonWebSocketIntegrationTests(WebSocketIntegrationConfig config) {
     await socket.close();
     expect(socket.addStream(new Stream.fromIterable(['too late'])),
         throwsStateError);
+  });
+
+  test('addStream() should cause socket to close if error is added', () async {
+    WSocket socket = await WSocket.connect(config.echoUri);
+    var controller = new StreamController();
+    controller.add('message1');
+    controller.addError(new Exception('addStream error, should close socket'));
+    controller.close();
+    await socket.addStream(controller.stream);
+    expect(socket.done, throwsException);
   });
 
   test('should support listening to incoming messages', () async {

@@ -20,6 +20,7 @@ import 'package:w_transport/src/mocks/web_socket.dart'
     show handleWebSocketConnection;
 import 'package:w_transport/src/web_socket/common/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
+import 'package:w_transport/src/web_socket/w_socket_close_event.dart';
 
 abstract class MockWSocket implements WSocket {
   static Future<WSocket> connect(Uri uri,
@@ -30,45 +31,49 @@ abstract class MockWSocket implements WSocket {
 
   void addIncoming(data);
   void onOutgoing(callback(data));
-  void onOutgoingError(callback(error));
+  void triggerServerClose([int code, String reason]);
+  void triggerServerError(error, [StackTrace stackTrace]);
 }
 
-// TODO expose a public interface for this class to limit the API to what would only be useful for testing
 class _MockWSocket extends CommonWSocket implements MockWSocket, WSocket {
   List<Function> _callbacks = [];
 
-  Completer _done = new Completer();
+  int _code;
 
-  List<Function> _errorCallbacks = [];
+  StreamController _mocket = new StreamController();
 
-  StreamController _sinkController = new StreamController();
+  String _reason;
 
-  StreamController _streamController = new StreamController();
+  _MockWSocket() : super() {
+    outgoing = new StreamController();
+    incoming = new StreamController();
 
-  _MockWSocket() {
-    _sinkController.stream.listen((data) {
+    outgoing.stream.listen((data) {
       _callbacks.forEach((f) => f(data));
-    }, onError: (error) {
-      _errorCallbacks.forEach((f) => f(error));
-    });
+    }, onError: handleOutgoingError, onDone: handleOutgoingDone);
+
+    _mocket.stream.listen(
+        (message) {
+          incoming.add(message);
+        },
+        onError: handleSocketError,
+        onDone: () {
+          var closeEvent = new WSocketCloseEvent(_code, _reason);
+          handleSocketDone(closeEvent);
+        });
   }
-
-  StreamSink get sink => _sinkController.sink;
-
-  Stream get stream => _streamController.stream;
-
-  Future get done => _done.future;
 
   /// Simulate an incoming message that the owner of this [WSocket] instance
   /// will receive if listening.
   void addIncoming(data) {
-    _streamController.add(data);
+    _mocket.add(data);
   }
 
-  Future closeConnection([int code, String reason]) async {
-    closeCode = code;
-    closeReason = reason;
-    _done.complete();
+  @override
+  void closeSocket(int code, String reason) {
+    _code = code;
+    _reason = reason;
+    _mocket.close();
   }
 
   /// Register a callback that will be called for every outgoing data event that
@@ -80,8 +85,12 @@ class _MockWSocket extends CommonWSocket implements MockWSocket, WSocket {
     _callbacks.add(callback);
   }
 
-  void onOutgoingError(callback(error)) {
-    _errorCallbacks.add(callback);
+  void triggerServerClose([int code, String reason]) {
+    closeSocket(code, reason);
+  }
+
+  void triggerServerError(error, [StackTrace stackTrace]) {
+    _mocket.addError(error, stackTrace);
   }
 
   /// Validate the WebSocket message data type.

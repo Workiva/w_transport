@@ -13,7 +13,7 @@
 // limitations under the License.
 
 @TestOn('vm')
-library w_transport.test.integration.ws.server_test;
+library w_transport.test.integration.ws.vm_test;
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
@@ -24,8 +24,8 @@ import 'common.dart';
 void main() {
   configureWTransportForVM();
 
-  WebSocketIntegrationConfig config = new WebSocketIntegrationConfig(
-      'Server', Uri.parse('ws://localhost:8024'));
+  WebSocketIntegrationConfig config =
+      new WebSocketIntegrationConfig('VM', Uri.parse('ws://localhost:8024'));
   group(config.title, () {
     runCommonWebSocketIntegrationTests(config);
 
@@ -50,22 +50,5 @@ void main() {
       }, throwsArgumentError);
       socket.close();
     });
-
-//    // TODO: Get this test passing.
-//    test('should close the socket with an error that can be caught', () async {
-//      socket = await WSocket.connect(echoUri);
-//
-//      // Trigger the socket shutdown by adding an error.
-//      socket.addError(new Exception('Exception should close the socket with an error.'));
-//
-//      var error;
-//      try {
-//        await socket.done;
-//      } catch (e) {
-//        error = e;
-//      }
-//      expect(error, isNotNull);
-//      expect(error, isException);
-//    });
   });
 }

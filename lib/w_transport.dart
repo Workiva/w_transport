@@ -102,6 +102,8 @@ export 'package:w_transport/src/http/response.dart'
     show Response, StreamedResponse;
 
 export 'package:w_transport/src/web_socket/w_socket.dart' show WSocket;
+export 'package:w_transport/src/web_socket/w_socket_close_event.dart'
+    show WSocketCloseEvent;
 export 'package:w_transport/src/web_socket/w_socket_exception.dart'
     show WSocketException;
 

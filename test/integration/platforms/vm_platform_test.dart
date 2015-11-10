@@ -22,8 +22,15 @@ import 'package:w_transport/w_transport_vm.dart';
 import 'package:w_transport/src/http/vm/client.dart';
 import 'package:w_transport/src/http/vm/requests.dart';
 
+import '../../naming.dart';
+
 void main() {
-  group('Browser platform adapter', () {
+  Naming naming = new Naming()
+    ..platform = platformVM
+    ..testType = testTypeIntegration
+    ..topic = topicPlatformAdapter;
+
+  group(naming.toString(), () {
     setUp(() {
       configureWTransportForVM();
     });

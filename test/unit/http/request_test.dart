@@ -22,31 +22,39 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_mock.dart';
 
+import '../../naming.dart';
+
 void main() {
-  _runCommonRequestSuiteFor('FormRequest', ({bool withBody: false}) {
-    if (!withBody) return new FormRequest();
-    return new FormRequest()..fields['field'] = 'value';
-  });
-  _runCommonRequestSuiteFor('JsonRequest', ({bool withBody: false}) {
-    if (!withBody) return new JsonRequest();
-    return new JsonRequest()
-      ..body = [
-        {'field': 'value'}
-      ];
-  });
-  _runCommonRequestSuiteFor('MultipartRequest', ({bool withBody}) {
-    // Multipart requests can't be empty.
-    return new MultipartRequest()..fields['field'] = 'value';
-  });
-  _runCommonRequestSuiteFor('Request', ({bool withBody: false}) {
-    if (!withBody) return new Request();
-    return new Request()..body = 'body';
-  });
-  _runCommonRequestSuiteFor('StreamedRequest', ({bool withBody: false}) {
-    if (!withBody) return new StreamedRequest();
-    return new StreamedRequest()
-      ..body = new Stream.fromIterable([UTF8.encode('bytes')])
-      ..contentLength = UTF8.encode('bytes').length;
+  Naming naming = new Naming()
+    ..testType = testTypeUnit
+    ..topic = topicHttp;
+
+  group(naming.toString(), () {
+    _runCommonRequestSuiteFor('FormRequest', ({bool withBody: false}) {
+      if (!withBody) return new FormRequest();
+      return new FormRequest()..fields['field'] = 'value';
+    });
+    _runCommonRequestSuiteFor('JsonRequest', ({bool withBody: false}) {
+      if (!withBody) return new JsonRequest();
+      return new JsonRequest()
+        ..body = [
+          {'field': 'value'}
+        ];
+    });
+    _runCommonRequestSuiteFor('MultipartRequest', ({bool withBody}) {
+      // Multipart requests can't be empty.
+      return new MultipartRequest()..fields['field'] = 'value';
+    });
+    _runCommonRequestSuiteFor('Request', ({bool withBody: false}) {
+      if (!withBody) return new Request();
+      return new Request()..body = 'body';
+    });
+    _runCommonRequestSuiteFor('StreamedRequest', ({bool withBody: false}) {
+      if (!withBody) return new StreamedRequest();
+      return new StreamedRequest()
+        ..body = new Stream.fromIterable([UTF8.encode('bytes')])
+        ..contentLength = UTF8.encode('bytes').length;
+    });
   });
 }
 
@@ -252,6 +260,15 @@ void _runCommonRequestSuiteFor(
       expect(() {
         request.withCredentials = true;
       }, throwsStateError);
+    });
+
+    test('request can only be sent once', () async {
+      Uri uri = Uri.parse('/test');
+      MockTransports.http.expect('GET', uri);
+      BaseRequest request = requestFactory();
+      Future first = request.get(uri: uri);
+      expect(request.get(uri: uri), throwsStateError);
+      await first;
     });
 
     test('configure() should throw if called after request has been sent',

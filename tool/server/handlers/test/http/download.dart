@@ -26,7 +26,7 @@ class DownloadHandler extends Handler {
     enableCors();
   }
 
-  Future get(HttpRequest request) async {
+  Future download(HttpRequest request) async {
     File file = new File('tool/server/handlers/test/http/file.txt');
     Stream downloadStream = file.openRead();
     request.response.statusCode = HttpStatus.OK;
@@ -36,4 +36,14 @@ class DownloadHandler extends Handler {
     setCorsHeaders(request);
     await request.response.addStream(downloadStream);
   }
+
+  Future copy(HttpRequest request) async => download(request);
+  Future delete(HttpRequest request) async => download(request);
+  Future get(HttpRequest request) async => download(request);
+  Future head(HttpRequest request) async => download(request);
+  Future options(HttpRequest request) async => download(request);
+  Future patch(HttpRequest request) async => download(request);
+  Future post(HttpRequest request) async => download(request);
+  Future put(HttpRequest request) async => download(request);
+  Future trace(HttpRequest request) async => download(request);
 }

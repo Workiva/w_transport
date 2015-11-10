@@ -20,21 +20,21 @@ import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 
-import '../integration_config.dart';
+import '../../integration_paths.dart';
 
-void runPlainTextRequestSuite(HttpIntegrationConfig config) {
+void runPlainTextRequestSuite() {
   group('Request', () {
     test('contentLength should be set automatically', () async {
       Request emptyRequest = new Request();
       Response response =
-          await emptyRequest.post(uri: config.reflectEndpointUri);
+          await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
       var contentLength =
           int.parse(response.body.asJson()['headers']['content-length']);
       expect(contentLength, equals(0),
           reason: 'Empty plain-text request\'s content-length should be 0.');
 
       Request nonEmptyRequest = new Request()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..body = 'data';
       response = await nonEmptyRequest.post();
       contentLength =
@@ -46,7 +46,7 @@ void runPlainTextRequestSuite(HttpIntegrationConfig config) {
 
     test('content-type should be set automatically', () async {
       Request request = new Request()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..body = 'data';
       Response response = await request.post();
       MediaType contentType = new MediaType.parse(
@@ -56,7 +56,7 @@ void runPlainTextRequestSuite(HttpIntegrationConfig config) {
 
     test('UTF8', () async {
       Request request = new Request()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = UTF8
         ..body = 'dataç®å';
       Response response = await request.post();
@@ -66,7 +66,7 @@ void runPlainTextRequestSuite(HttpIntegrationConfig config) {
 
     test('LATIN1', () async {
       Request request = new Request()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = LATIN1
         ..body = 'dataç®å';
       Response response = await request.post();
@@ -76,7 +76,7 @@ void runPlainTextRequestSuite(HttpIntegrationConfig config) {
 
     test('ASCII', () async {
       Request request = new Request()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = ASCII
         ..body = 'data';
       Response response = await request.post();

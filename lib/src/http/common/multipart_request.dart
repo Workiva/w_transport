@@ -68,7 +68,7 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   Map<String, String> _fields = {};
 
-  Map<String, MultipartFile> _files = {};
+  Map<String, dynamic> _files = {};
 
   CommonMultipartRequest() : super();
   CommonMultipartRequest.withClient(client) : super.withClient(client);
@@ -166,8 +166,6 @@ abstract class CommonMultipartRequest extends CommonRequest
 
     var fileList = [];
     files.forEach((name, file) {
-      if (file is! MultipartFile) throw new UnsupportedError(
-          'Illegal multipart file type: $file');
       fileList.add({
         'headers': _multipartFileHeaders(name, file),
         'byteStream': file.byteStream,

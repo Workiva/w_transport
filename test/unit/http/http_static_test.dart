@@ -21,210 +21,218 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_mock.dart';
 
+import '../../naming.dart';
+
 // TODO: tests with headers
 void main() {
-  group('Http static methods', () {
-    Uri requestUri = Uri.parse('https://mock.com/resource?limit=10');
+  Naming naming = new Naming()
+    ..testType = testTypeUnit
+    ..topic = topicHttp;
 
-    setUp(() {
-      MockTransports.reset();
-      configureWTransportForTest();
-    });
+  group(naming.toString(), () {
+    group('Http static methods', () {
+      Uri requestUri = Uri.parse('https://mock.com/resource?limit=10');
 
-    tearDown(() {
-      MockTransports.verifyNoOutstandingExceptions();
-    });
+      setUp(() {
+        MockTransports.reset();
+        configureWTransportForTest();
+      });
 
-    test('DELETE', () async {
-      MockTransports.http.expect('DELETE', requestUri);
-      await Http.delete(requestUri);
-    });
+      tearDown(() {
+        MockTransports.verifyNoOutstandingExceptions();
+      });
 
-    test('DELETE withCredentials', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        if (request.withCredentials) {
-          c.complete();
-        } else {
-          c.completeError('withCredentials should be true');
-        }
-        return new MockResponse.ok();
-      }, method: 'DELETE');
-      await Future
-          .wait([Http.delete(requestUri, withCredentials: true), c.future]);
-    });
+      test('DELETE', () async {
+        MockTransports.http.expect('DELETE', requestUri);
+        await Http.delete(requestUri);
+      });
 
-    test('GET', () async {
-      MockTransports.http.expect('GET', requestUri);
-      await Http.get(requestUri);
-    });
+      test('DELETE withCredentials', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          if (request.withCredentials) {
+            c.complete();
+          } else {
+            c.completeError('withCredentials should be true');
+          }
+          return new MockResponse.ok();
+        }, method: 'DELETE');
+        await Future
+            .wait([Http.delete(requestUri, withCredentials: true), c.future]);
+      });
 
-    test('GET withCredentials', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        if (request.withCredentials) {
-          c.complete();
-        } else {
-          c.completeError('withCredentials should be true');
-        }
-        return new MockResponse.ok();
-      }, method: 'GET');
-      await Future
-          .wait([Http.get(requestUri, withCredentials: true), c.future]);
-    });
+      test('GET', () async {
+        MockTransports.http.expect('GET', requestUri);
+        await Http.get(requestUri);
+      });
 
-    test('HEAD', () async {
-      MockTransports.http.expect('HEAD', requestUri);
-      await Http.head(requestUri);
-    });
+      test('GET withCredentials', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          if (request.withCredentials) {
+            c.complete();
+          } else {
+            c.completeError('withCredentials should be true');
+          }
+          return new MockResponse.ok();
+        }, method: 'GET');
+        await Future
+            .wait([Http.get(requestUri, withCredentials: true), c.future]);
+      });
 
-    test('HEAD withCredentials', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        if (request.withCredentials) {
-          c.complete();
-        } else {
-          c.completeError('withCredentials should be true');
-        }
-        return new MockResponse.ok();
-      }, method: 'HEAD');
-      await Future
-          .wait([Http.head(requestUri, withCredentials: true), c.future]);
-    });
+      test('HEAD', () async {
+        MockTransports.http.expect('HEAD', requestUri);
+        await Http.head(requestUri);
+      });
 
-    test('OPTIONS', () async {
-      MockTransports.http.expect('OPTIONS', requestUri);
-      await Http.options(requestUri);
-    });
+      test('HEAD withCredentials', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          if (request.withCredentials) {
+            c.complete();
+          } else {
+            c.completeError('withCredentials should be true');
+          }
+          return new MockResponse.ok();
+        }, method: 'HEAD');
+        await Future
+            .wait([Http.head(requestUri, withCredentials: true), c.future]);
+      });
 
-    test('OPTIONS withCredentials', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        if (request.withCredentials) {
-          c.complete();
-        } else {
-          c.completeError('withCredentials should be true');
-        }
-        return new MockResponse.ok();
-      }, method: 'OPTIONS');
-      await Future
-          .wait([Http.options(requestUri, withCredentials: true), c.future]);
-    });
+      test('OPTIONS', () async {
+        MockTransports.http.expect('OPTIONS', requestUri);
+        await Http.options(requestUri);
+      });
 
-    test('PATCH', () async {
-      MockTransports.http.expect('PATCH', requestUri);
-      await Http.patch(requestUri);
-    });
+      test('OPTIONS withCredentials', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          if (request.withCredentials) {
+            c.complete();
+          } else {
+            c.completeError('withCredentials should be true');
+          }
+          return new MockResponse.ok();
+        }, method: 'OPTIONS');
+        await Future
+            .wait([Http.options(requestUri, withCredentials: true), c.future]);
+      });
 
-    test('PATCH with body', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        c.complete((request.body as HttpBody).asString());
-        return new MockResponse.ok();
-      }, method: 'PATCH');
-      Http.patch(requestUri, body: 'body');
-      expect(await c.future, equals('body'));
-    });
+      test('PATCH', () async {
+        MockTransports.http.expect('PATCH', requestUri);
+        await Http.patch(requestUri);
+      });
 
-    test('PATCH withCredentials', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        if (request.withCredentials) {
-          c.complete();
-        } else {
-          c.completeError('withCredentials should be true');
-        }
-        return new MockResponse.ok();
-      }, method: 'PATCH');
-      await Future
-          .wait([Http.patch(requestUri, withCredentials: true), c.future]);
-    });
+      test('PATCH with body', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          c.complete((request.body as HttpBody).asString());
+          return new MockResponse.ok();
+        }, method: 'PATCH');
+        Http.patch(requestUri, body: 'body');
+        expect(await c.future, equals('body'));
+      });
 
-    test('POST', () async {
-      MockTransports.http.expect('POST', requestUri);
-      await Http.post(requestUri);
-    });
+      test('PATCH withCredentials', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          if (request.withCredentials) {
+            c.complete();
+          } else {
+            c.completeError('withCredentials should be true');
+          }
+          return new MockResponse.ok();
+        }, method: 'PATCH');
+        await Future
+            .wait([Http.patch(requestUri, withCredentials: true), c.future]);
+      });
 
-    test('POST with body', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        c.complete((request.body as HttpBody).asString());
-        return new MockResponse.ok();
-      }, method: 'POST');
-      Http.post(requestUri, body: 'body');
-      expect(await c.future, equals('body'));
-    });
+      test('POST', () async {
+        MockTransports.http.expect('POST', requestUri);
+        await Http.post(requestUri);
+      });
 
-    test('POST withCredentials', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        if (request.withCredentials) {
-          c.complete();
-        } else {
-          c.completeError('withCredentials should be true');
-        }
-        return new MockResponse.ok();
-      }, method: 'POST');
-      await Future
-          .wait([Http.post(requestUri, withCredentials: true), c.future]);
-    });
+      test('POST with body', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          c.complete((request.body as HttpBody).asString());
+          return new MockResponse.ok();
+        }, method: 'POST');
+        Http.post(requestUri, body: 'body');
+        expect(await c.future, equals('body'));
+      });
 
-    test('PUT', () async {
-      MockTransports.http.expect('PUT', requestUri);
-      await Http.put(requestUri);
-    });
+      test('POST withCredentials', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          if (request.withCredentials) {
+            c.complete();
+          } else {
+            c.completeError('withCredentials should be true');
+          }
+          return new MockResponse.ok();
+        }, method: 'POST');
+        await Future
+            .wait([Http.post(requestUri, withCredentials: true), c.future]);
+      });
 
-    test('PUT with body', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        c.complete((request.body as HttpBody).asString());
-        return new MockResponse.ok();
-      }, method: 'PATCH');
-      Http.patch(requestUri, body: 'body');
-      expect(await c.future, equals('body'));
-    });
+      test('PUT', () async {
+        MockTransports.http.expect('PUT', requestUri);
+        await Http.put(requestUri);
+      });
 
-    test('PUT withCredentials', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        if (request.withCredentials) {
-          c.complete();
-        } else {
-          c.completeError('withCredentials should be true');
-        }
-        return new MockResponse.ok();
-      }, method: 'PUT');
-      await Future
-          .wait([Http.put(requestUri, withCredentials: true), c.future]);
-    });
+      test('PUT with body', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          c.complete((request.body as HttpBody).asString());
+          return new MockResponse.ok();
+        }, method: 'PATCH');
+        Http.patch(requestUri, body: 'body');
+        expect(await c.future, equals('body'));
+      });
 
-    test('custom method', () async {
-      MockTransports.http.expect('COPY', requestUri);
-      await Http.send('COPY', requestUri);
-    });
+      test('PUT withCredentials', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          if (request.withCredentials) {
+            c.complete();
+          } else {
+            c.completeError('withCredentials should be true');
+          }
+          return new MockResponse.ok();
+        }, method: 'PUT');
+        await Future
+            .wait([Http.put(requestUri, withCredentials: true), c.future]);
+      });
 
-    test('custom method with body', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        c.complete((request.body as HttpBody).asString());
-        return new MockResponse.ok();
-      }, method: 'COPY');
-      Http.send('COPY', requestUri, body: 'body');
-      expect(await c.future, equals('body'));
-    });
+      test('custom method', () async {
+        MockTransports.http.expect('COPY', requestUri);
+        await Http.send('COPY', requestUri);
+      });
 
-    test('custom method withCredentials', () async {
-      Completer c = new Completer();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-        if (request.withCredentials) {
-          c.complete();
-        } else {
-          c.completeError('withCredentials should be true');
-        }
-        return new MockResponse.ok();
-      }, method: 'COPY');
-      await Future.wait(
-          [Http.send('COPY', requestUri, withCredentials: true), c.future]);
+      test('custom method with body', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          c.complete((request.body as HttpBody).asString());
+          return new MockResponse.ok();
+        }, method: 'COPY');
+        Http.send('COPY', requestUri, body: 'body');
+        expect(await c.future, equals('body'));
+      });
+
+      test('custom method withCredentials', () async {
+        Completer c = new Completer();
+        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+          if (request.withCredentials) {
+            c.complete();
+          } else {
+            c.completeError('withCredentials should be true');
+          }
+          return new MockResponse.ok();
+        }, method: 'COPY');
+        await Future.wait(
+            [Http.send('COPY', requestUri, withCredentials: true), c.future]);
+      });
     });
   });
 }

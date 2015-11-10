@@ -19,9 +19,18 @@ import 'package:test/test.dart';
 
 import 'package:w_transport/src/platform_adapter.dart';
 
+import '../../naming.dart';
+
 void main() {
-  test('PlatformAdapter.retrieve() should throw if not platform set', () async {
-    adapter = null;
-    expect(PlatformAdapter.retrieve, throwsStateError);
+  Naming naming = new Naming()
+    ..testType = testTypeIntegration
+    ..topic = topicPlatformAdapter;
+
+  group(naming.toString(), () {
+    test('PlatformAdapter.retrieve() should throw if not platform set',
+        () async {
+      adapter = null;
+      expect(PlatformAdapter.retrieve, throwsStateError);
+    });
   });
 }

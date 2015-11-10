@@ -27,7 +27,6 @@ import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/response.dart';
-import 'package:w_transport/src/http/utils.dart' as http_utils;
 
 abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
   HttpRequest _request;
@@ -81,15 +80,20 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         c.complete(_createResponse(streamResponse: streamResponse));
       }
     });
-    void onError(error) {
+    Future onError(error) async {
       if (!c.isCompleted) {
-        BaseResponse response = _createResponse(streamResponse: streamResponse);
+        BaseResponse response =
+            await _createResponse(streamResponse: streamResponse);
         error = new RequestException(method, uri, this, response, error);
         c.completeError(error, new Chain.current());
       }
     }
     _request.onError.listen(onError);
     _request.onAbort.listen(onError);
+
+    if (streamResponse == true) {
+      _request.responseType = 'blob';
+    }
 
     // Allow the caller to configure the request.
     dynamic configurationResult;
@@ -113,18 +117,23 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     return await c.future;
   }
 
-  BaseResponse _createResponse({bool streamResponse: false}) {
+  Future<BaseResponse> _createResponse({bool streamResponse: false}) async {
     if (streamResponse == null) {
       streamResponse = false;
     }
 
     BaseResponse response;
     if (streamResponse) {
-      // TODO: Use xhr.response instead of xhr.responseText. Use FileReader to read it.
-      var text = _request.responseText != null ? _request.responseText : '';
-      var responseEncoding =
-          http_utils.parseEncodingFromHeaders(_request.responseHeaders);
-      var byteStream = new Stream.fromIterable(responseEncoding.encode(text));
+      Completer result = new Completer();
+      FileReader reader = new FileReader();
+      reader.onLoad.first.then((_) {
+        result.complete(reader.result);
+      });
+      reader.onError.first.then(result.completeError);
+      reader.readAsArrayBuffer(
+          _request.response != null ? _request.response : new Blob([]));
+      List<int> bytes = await result.future;
+      var byteStream = new Stream.fromIterable(bytes);
       response = new StreamedResponse.fromByteStream(_request.status,
           _request.statusText, _request.responseHeaders, byteStream);
     } else {

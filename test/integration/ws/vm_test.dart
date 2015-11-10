@@ -19,32 +19,39 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_vm.dart';
 
+import '../../naming.dart';
+import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  configureWTransportForVM();
+  Naming naming = new Naming()
+    ..platform = platformVM
+    ..testType = testTypeIntegration
+    ..topic = topicWebSocket;
 
-  WebSocketIntegrationConfig config =
-      new WebSocketIntegrationConfig('VM', Uri.parse('ws://localhost:8024'));
-  group(config.title, () {
-    runCommonWebSocketIntegrationTests(config);
+  group(naming.toString(), () {
+    setUp(() {
+      configureWTransportForVM();
+    });
+
+    runCommonWebSocketIntegrationTests();
 
     test('should support List<int>', () async {
       List<int> data = [1, 2, 3];
-      WSocket socket = await WSocket.connect(config.echoUri);
+      WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(data);
       socket.close();
     });
 
     test('should support String', () async {
       String data = 'data';
-      WSocket socket = await WSocket.connect(config.echoUri);
+      WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(data);
       socket.close();
     });
 
     test('should throw when attempting to send invalid data', () async {
-      WSocket socket = await WSocket.connect(config.pingUri);
+      WSocket socket = await WSocket.connect(IntegrationPaths.pingUri);
       expect(() {
         socket.add(true);
       }, throwsArgumentError);

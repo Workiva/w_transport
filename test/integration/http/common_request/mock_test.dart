@@ -19,26 +19,29 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport_mock.dart';
 
 import '../../../naming.dart';
+import '../../integration_paths.dart';
 import '../mock_endpoints/404.dart';
 import '../mock_endpoints/download.dart';
 import '../mock_endpoints/reflect.dart';
 import '../mock_endpoints/timeout.dart';
-import '../integration_config.dart';
 import 'suite.dart';
 
 void main() {
-  group(integrationHttpMock, () {
-    var config = new HttpIntegrationConfig.mock();
+  Naming naming = new Naming()
+    ..platform = platformMock
+    ..testType = testTypeIntegration
+    ..topic = topicHttp;
 
+  group(naming.toString(), () {
     setUp(() {
       configureWTransportForTest();
-      mock404Endpoint(config.fourOhFourEndpointUri);
-      mockDownloadEndpoint(config.downloadEndpointUri);
-      mockReflectEndpoint(config.reflectEndpointUri);
-      mockTimeoutEndpoint(config.timeoutEndpointUri);
+      mock404Endpoint(IntegrationPaths.fourOhFourEndpointUri);
+      mockDownloadEndpoint(IntegrationPaths.downloadEndpointUri);
+      mockReflectEndpoint(IntegrationPaths.reflectEndpointUri);
+      mockTimeoutEndpoint(IntegrationPaths.timeoutEndpointUri);
     });
 
-    runCommonRequestSuite(config);
+    runCommonRequestSuite();
 
     tearDown(() {
       MockTransports.verifyNoOutstandingExceptions();

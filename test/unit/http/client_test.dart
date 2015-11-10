@@ -21,103 +21,120 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_mock.dart';
 
+import '../../naming.dart';
+
 void main() {
-  group('Client', () {
-    setUp(() {
-      configureWTransportForTest();
-      MockTransports.reset();
-    });
+  Naming naming = new Naming()
+    ..testType = testTypeUnit
+    ..topic = topicHttp;
 
-    test('newFormRequest() should create a new request', () async {
-      Client client = new Client();
-      expect(client.newFormRequest(), new isInstanceOf<FormRequest>());
-    });
+  group(naming.toString(), () {
+    group('Client', () {
+      setUp(() {
+        configureWTransportForTest();
+        MockTransports.reset();
+      });
 
-    test('newFormRequest() should throw if closed', () async {
-      Client client = new Client();
-      client.close();
-      expect(client.newFormRequest, throwsStateError);
-    });
+      test('newFormRequest() should create a new request', () async {
+        Client client = new Client();
+        expect(client.newFormRequest(), new isInstanceOf<FormRequest>());
+      });
 
-    test('newJsonRequest() should create a new request', () async {
-      Client client = new Client();
-      expect(client.newJsonRequest(), new isInstanceOf<JsonRequest>());
-    });
+      test('newFormRequest() should throw if closed', () async {
+        Client client = new Client();
+        client.close();
+        expect(client.newFormRequest, throwsStateError);
+      });
 
-    test('newJsonRequest() should throw if closed', () async {
-      Client client = new Client();
-      client.close();
-      expect(client.newJsonRequest, throwsStateError);
-    });
+      test('newJsonRequest() should create a new request', () async {
+        Client client = new Client();
+        expect(client.newJsonRequest(), new isInstanceOf<JsonRequest>());
+      });
 
-    test('newMultipartRequest() should create a new request', () async {
-      Client client = new Client();
-      expect(
-          client.newMultipartRequest(), new isInstanceOf<MultipartRequest>());
-    });
+      test('newJsonRequest() should throw if closed', () async {
+        Client client = new Client();
+        client.close();
+        expect(client.newJsonRequest, throwsStateError);
+      });
 
-    test('newMultipartRequest() should throw if closed', () async {
-      Client client = new Client();
-      client.close();
-      expect(client.newMultipartRequest, throwsStateError);
-    });
+      test('newMultipartRequest() should create a new request', () async {
+        Client client = new Client();
+        expect(
+            client.newMultipartRequest(), new isInstanceOf<MultipartRequest>());
+      });
 
-    test('newRequest() should create a new request', () async {
-      Client client = new Client();
-      expect(client.newRequest(), new isInstanceOf<Request>());
-    });
+      test('newMultipartRequest() should throw if closed', () async {
+        Client client = new Client();
+        client.close();
+        expect(client.newMultipartRequest, throwsStateError);
+      });
 
-    test('newRequest() should throw if closed', () async {
-      Client client = new Client();
-      client.close();
-      expect(client.newRequest, throwsStateError);
-    });
+      test('newRequest() should create a new request', () async {
+        Client client = new Client();
+        expect(client.newRequest(), new isInstanceOf<Request>());
+      });
 
-    test('newStreamedRequest() should create a new request', () async {
-      Client client = new Client();
-      expect(client.newStreamedRequest(), new isInstanceOf<StreamedRequest>());
-    });
+      test('newRequest() should throw if closed', () async {
+        Client client = new Client();
+        client.close();
+        expect(client.newRequest, throwsStateError);
+      });
 
-    test('newStreamedRequest() should throw if closed', () async {
-      Client client = new Client();
-      client.close();
-      expect(client.newStreamedRequest, throwsStateError);
-    });
+      test('newStreamedRequest() should create a new request', () async {
+        Client client = new Client();
+        expect(
+            client.newStreamedRequest(), new isInstanceOf<StreamedRequest>());
+      });
 
-    test('complete request', () async {
-      Client client = new Client();
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri);
-      await client.newRequest().get(uri: uri);
-    });
+      test('newStreamedRequest() should throw if closed', () async {
+        Client client = new Client();
+        client.close();
+        expect(client.newStreamedRequest, throwsStateError);
+      });
 
-    test('withCredentials should cascade to all factoried requests', () async {
-      Client client = new Client()..withCredentials = true;
-      Uri uri = Uri.parse('/test');
-      Completer c = new Completer();
-      MockTransports.http.when(uri, (FinalizedRequest request) async {
-        request.withCredentials
-            ? c.complete()
-            : c.completeError(new Exception('withCredentials should be true'));
-        return new MockResponse.ok();
-      }, method: 'GET');
-      await client.newRequest().get(uri: uri);
-      await c.future;
-    });
+      test('complete request', () async {
+        Client client = new Client();
+        Uri uri = Uri.parse('/test');
+        MockTransports.http.expect('GET', uri);
+        await client.newRequest().get(uri: uri);
+      });
 
-    test('headers should cascade to all factoried requests', () async {
-      var headers = {'x-custom1': 'value', 'x-custom2': 'value2'};
-      Client client = new Client()..headers = headers;
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri, headers: headers);
-      await client.newRequest().get(uri: uri);
-    });
+      test('withCredentials should cascade to all factoried requests',
+          () async {
+        Client client = new Client()..withCredentials = true;
+        Uri uri = Uri.parse('/test');
+        Completer c = new Completer();
+        MockTransports.http.when(uri, (FinalizedRequest request) async {
+          request.withCredentials
+              ? c.complete()
+              : c.completeError(
+                  new Exception('withCredentials should be true'));
+          return new MockResponse.ok();
+        }, method: 'GET');
+        await client.newRequest().get(uri: uri);
+        await c.future;
+      });
 
-    test('close()', () async {
-      Client client = new Client();
-      Future future = client.newRequest().get(uri: Uri.parse('/test'));
-      client.close();
-      expect(future, throws);
+      test('headers should cascade to all factoried requests', () async {
+        var headers = {'x-custom1': 'value', 'x-custom2': 'value2'};
+        Client client = new Client()..headers = headers;
+        Uri uri = Uri.parse('/test');
+        MockTransports.http.expect('GET', uri, headers: headers);
+        await client.newRequest().get(uri: uri);
+      });
+
+      test('headers', () async {
+        var headers = {'x-custom1': 'value', 'x-custom2': 'value2'};
+        Client client = new Client()..headers = headers;
+        expect(client.headers, equals(headers));
+      });
+
+      test('close()', () async {
+        Client client = new Client();
+        Future future = client.newRequest().get(uri: Uri.parse('/test'));
+        client.close();
+        expect(future, throws);
+      });
     });
   });
 }

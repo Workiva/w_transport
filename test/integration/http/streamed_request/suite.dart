@@ -21,16 +21,16 @@ import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 
-import '../integration_config.dart';
+import '../../integration_paths.dart';
 
-void runStreamedRequestSuite(HttpIntegrationConfig config) {
+void runStreamedRequestSuite() {
   group('StreamedRequest', () {
     test('contentLength should NOT be set automatically', () async {
       StreamedRequest emptyRequest = new StreamedRequest()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..contentLength = 0;
       Response response =
-          await emptyRequest.post(uri: config.reflectEndpointUri);
+          await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
       var contentLength =
           int.parse(response.body.asJson()['headers']['content-length']);
       expect(contentLength, equals(0),
@@ -47,7 +47,7 @@ void runStreamedRequestSuite(HttpIntegrationConfig config) {
         size += chunk.length;
       });
       StreamedRequest nonEmptyRequest = new StreamedRequest()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..body = new Stream.fromIterable(chunks)
         ..contentLength = size;
       response = await nonEmptyRequest.post();
@@ -60,7 +60,7 @@ void runStreamedRequestSuite(HttpIntegrationConfig config) {
 
     test('content-type should be set automatically', () async {
       StreamedRequest request = new StreamedRequest()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..body = new Stream.fromIterable([])
         ..contentLength = 0;
       Response response = await request.post();
@@ -71,7 +71,7 @@ void runStreamedRequestSuite(HttpIntegrationConfig config) {
 
     test('UTF8', () async {
       StreamedRequest request = new StreamedRequest()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = UTF8
         ..body = new Stream.fromIterable([UTF8.encode('dataç®å')]);
       Response response = await request.post();
@@ -81,7 +81,7 @@ void runStreamedRequestSuite(HttpIntegrationConfig config) {
 
     test('LATIN1', () async {
       StreamedRequest request = new StreamedRequest()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = LATIN1
         ..body = new Stream.fromIterable([LATIN1.encode('dataç®å')]);
       Response response = await request.post();
@@ -91,7 +91,7 @@ void runStreamedRequestSuite(HttpIntegrationConfig config) {
 
     test('ASCII', () async {
       StreamedRequest request = new StreamedRequest()
-        ..uri = config.echoEndpointUri
+        ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = ASCII
         ..body = new Stream.fromIterable([ASCII.encode('data')]);
       Response response = await request.post();

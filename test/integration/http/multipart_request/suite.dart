@@ -21,9 +21,9 @@ import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 
-import '../integration_config.dart';
+import '../../integration_paths.dart';
 
-void runMultipartRequestSuite(HttpIntegrationConfig config) {
+void runMultipartRequestSuite() {
   group('MultipartRequest', () {
     test('contentLength should be set automatically', () async {
       List<List<int>> chunks = [
@@ -39,11 +39,12 @@ void runMultipartRequestSuite(HttpIntegrationConfig config) {
       MultipartFile file = new MultipartFile(fileStream, size);
 
       MultipartRequest request = new MultipartRequest()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..files['file'] = file
         ..fields['field'] = 'value';
 
-      Response response = await request.post(uri: config.reflectEndpointUri);
+      Response response =
+          await request.post(uri: IntegrationPaths.reflectEndpointUri);
       var contentLength =
           int.parse(response.body.asJson()['headers']['content-length']);
       expect(contentLength, greaterThan(0),
@@ -53,7 +54,7 @@ void runMultipartRequestSuite(HttpIntegrationConfig config) {
 
     test('content-type should be set automatically', () async {
       MultipartRequest request = new MultipartRequest()
-        ..uri = config.reflectEndpointUri
+        ..uri = IntegrationPaths.reflectEndpointUri
         ..fields['field'] = 'value';
       Response response = await request.post();
       MediaType contentType = new MediaType.parse(
@@ -63,7 +64,7 @@ void runMultipartRequestSuite(HttpIntegrationConfig config) {
 
     test('text fields with non-ASCII chars', () async {
       MultipartRequest request = new MultipartRequest()
-        ..uri = config.uploadEndpointUri
+        ..uri = IntegrationPaths.uploadEndpointUri
         ..fields['field'] = 'ç®å';
       await request.post();
     });
@@ -103,7 +104,7 @@ void runMultipartRequestSuite(HttpIntegrationConfig config) {
           contentType: asciiContentType, filename: 'ascii-file');
 
       MultipartRequest request = new MultipartRequest()
-        ..uri = config.uploadEndpointUri
+        ..uri = IntegrationPaths.uploadEndpointUri
         ..files['utf8File'] = utf8File
         ..files['latin1File'] = latin1File
         ..files['asciiFile'] = asciiFile;

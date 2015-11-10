@@ -19,24 +19,27 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport_mock.dart';
 
 import '../../../naming.dart';
+import '../../integration_paths.dart';
 import '../mock_endpoints/404.dart';
 import '../mock_endpoints/echo.dart';
 import '../mock_endpoints/reflect.dart';
-import '../integration_config.dart';
 import 'suite.dart';
 
 void main() {
-  group(integrationHttpMock, () {
-    var config = new HttpIntegrationConfig.mock();
+  Naming naming = new Naming()
+    ..platform = platformMock
+    ..testType = testTypeIntegration
+    ..topic = topicHttp;
 
+  group(naming.toString(), () {
     setUp(() {
       configureWTransportForTest();
-      mock404Endpoint(config.fourOhFourEndpointUri);
-      mockEchoEndpoint(config.echoEndpointUri);
-      mockReflectEndpoint(config.reflectEndpointUri);
+      mock404Endpoint(IntegrationPaths.fourOhFourEndpointUri);
+      mockEchoEndpoint(IntegrationPaths.echoEndpointUri);
+      mockReflectEndpoint(IntegrationPaths.reflectEndpointUri);
     });
 
-    runPlainTextRequestSuite(config);
+    runPlainTextRequestSuite();
 
     tearDown(() {
       MockTransports.verifyNoOutstandingExceptions();

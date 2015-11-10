@@ -22,20 +22,25 @@ import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_browser.dart';
 
 import '../../../naming.dart';
-import '../integration_config.dart';
+import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  var config = new HttpIntegrationConfig.browser();
-  group(integrationHttpBrowser, () {
+  Naming naming = new Naming()
+    ..platform = platformBrowser
+    ..testType = testTypeIntegration
+    ..topic = topicHttp;
+
+  group(naming.toString(), () {
     setUp(() {
       configureWTransportForBrowser();
     });
 
-    runJsonRequestSuite(config);
+    runJsonRequestSuite();
 
     test('underlying HttpRequest configuration', () async {
-      JsonRequest request = new JsonRequest()..uri = config.reflectEndpointUri;
+      JsonRequest request = new JsonRequest()
+        ..uri = IntegrationPaths.reflectEndpointUri;
       request.configure((HttpRequest xhr) async {
         xhr.setRequestHeader('x-configured', 'true');
       });
@@ -46,7 +51,7 @@ void main() {
     group('withCredentials', () {
       test('set to true (JsonRequest)', () async {
         JsonRequest request = new JsonRequest()
-          ..uri = config.pingEndpointUri
+          ..uri = IntegrationPaths.pingEndpointUri
           ..withCredentials = true;
         request.configure((HttpRequest xhr) async {
           expect(xhr.withCredentials, isTrue);
@@ -56,7 +61,7 @@ void main() {
 
       test('set to false (JsonRequest)', () async {
         JsonRequest request = new JsonRequest()
-          ..uri = config.pingEndpointUri
+          ..uri = IntegrationPaths.pingEndpointUri
           ..withCredentials = false;
         request.configure((HttpRequest xhr) async {
           expect(xhr.withCredentials, isFalse);

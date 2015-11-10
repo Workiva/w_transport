@@ -17,7 +17,7 @@ library tool.dev;
 import 'dart:async';
 
 import 'package:dart_dev/dart_dev.dart' show dev, config;
-import 'package:dart_dev/util.dart' show reporter;
+import 'package:dart_dev/util.dart' show TaskProcess, reporter;
 
 import 'server/server.dart' show Server;
 
@@ -43,8 +43,8 @@ main(List<String> args) async {
 
   config.coverage
     ..reportOn = ['lib/']
-    ..before = [_startServer]
-    ..after = [_stopServer];
+    ..before = [_startServer, _startSockJSServer]
+    ..after = [_stopServer, _stopSockJSServer];
 
   config.examples
     ..port = 9000
@@ -64,8 +64,8 @@ main(List<String> args) async {
       'test/integration/vm_integration_test.dart'
     ]
     ..platforms = ['vm', 'content-shell']
-    ..before = [_startServer]
-    ..after = [_stopServer];
+    ..before = [_startServer, _startSockJSServer]
+    ..after = [_stopServer, _stopSockJSServer];
 
   await dev(args);
 }
@@ -73,8 +73,14 @@ main(List<String> args) async {
 /// Server needed for integration tests and examples.
 Server _server;
 
+/// SockJS Server needed for integration tests.
+TaskProcess _sockJSServer;
+
 /// Output from the server (only used if caching the output to dump at the end).
 List<String> _serverOutput;
+
+/// Output from the SockJS server.
+List<String> _sockJSServerOutput;
 
 /// Start the server needed for integration tests and examples and cache the
 /// server output until the task requiring the server has finished. Then, the
@@ -84,6 +90,14 @@ Future _startServer() async {
   _server = new Server();
   _server.output.listen(_serverOutput.add);
   await _server.start();
+}
+
+Future _startSockJSServer() async {
+  _sockJSServerOutput = [];
+  _sockJSServer = new TaskProcess('node', ['tool/server/sockjs.js']);
+  _sockJSServer.stdout.listen(_sockJSServerOutput.add);
+  _sockJSServer.stderr.listen(_sockJSServerOutput.add);
+  // todo: wait for server to start
 }
 
 /// Start the server needed for integration tests and examples and stream the
@@ -104,4 +118,16 @@ Future _stopServer() async {
         output: '    ${_serverOutput.join('\n')}');
   }
   await _server.stop();
+}
+
+Future _stopSockJSServer() async {
+  if (_sockJSServerOutput != null) {
+    reporter.logGroup('SockJS Server Logs',
+        output: '    ${_sockJSServerOutput.join('\n')}');
+  }
+  if (_sockJSServer != null) {
+    try {
+      _sockJSServer.kill();
+    } catch (e) {}
+  }
 }

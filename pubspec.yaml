@@ -13,6 +13,10 @@ dependencies:
   fluri: "^1.0.0"
   http_parser: "^1.0.0"
   mime: "^0.9.3"
+  sockjs_client:
+    git:
+      url: https://github.com/Workiva/sockjs-dart-client.git
+      ref: cors
   stack_trace: "^1.4.0"
 dev_dependencies:
   ansicolor: "^0.0.9"

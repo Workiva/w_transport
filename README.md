@@ -550,3 +550,6 @@ This project leverages [the `dart_dev` package](https://github.com/Workiva/dart_
 for most of its tooling needs, including static analysis, code formatting,
 running tests, collecting coverage, and serving examples. Check out the dart_dev
 readme for more information.
+
+> **Note:** to run integration tests, you'll need two JS dependencies for a
+> SockJS server. Run an `npm install` to download them.

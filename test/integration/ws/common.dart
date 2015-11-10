@@ -21,35 +21,45 @@ import 'package:w_transport/w_transport.dart' show WSocket, WSocketException;
 
 import '../integration_paths.dart';
 
-void runCommonWebSocketIntegrationTests() {
+void runCommonWebSocketIntegrationTests({int port}) {
+  var closeUri = IntegrationPaths.closeUri;
+  var echoUri = IntegrationPaths.echoUri;
+  var fourOhFourUri = IntegrationPaths.fourOhFourUri;
+  var pingUri = IntegrationPaths.pingUri;
+  if (port != null) {
+    closeUri = closeUri.replace(port: port);
+    echoUri = echoUri.replace(port: port);
+    pingUri = pingUri.replace(port: port);
+  }
+
   test('should throw if connection cannot be established', () async {
-    expect(WSocket.connect(IntegrationPaths.fourOhFourUri),
+    expect(WSocket.connect(fourOhFourUri),
         throwsA(new isInstanceOf<WSocketException>()));
   });
 
   test('add() should send a message', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
     WSHelper helper = new WSHelper(socket);
 
     socket.add('message');
     await helper.messagesReceived(1);
-    expect(helper.messages.single, equals('message'));
-    socket.close();
+    expect(await helper.messages.single, equals('message'));
+    await socket.close();
   });
 
   test('add() should support sending multiple messages', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
     WSHelper helper = new WSHelper(socket);
 
     socket.add('message1');
     socket.add('message2');
     await helper.messagesReceived(2);
-    expect(helper.messages, unorderedEquals(['message1', 'message2']));
-    socket.close();
+    expect(await helper.messages, unorderedEquals(['message1', 'message2']));
+    await socket.close();
   });
 
   test('add() should throw after sink has been closed', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
     await socket.close();
     expect(() {
       socket.add('too late');
@@ -58,7 +68,7 @@ void runCommonWebSocketIntegrationTests() {
 
   test('addError() should close the socket with an error that can be caught',
       () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
     socket.addError(
         new Exception('Exception should close the socket with an error.'));
 
@@ -74,18 +84,19 @@ void runCommonWebSocketIntegrationTests() {
   });
 
   test('addStream() should send a Stream of data', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
     WSHelper helper = new WSHelper(socket);
 
     var stream = new Stream.fromIterable(['message1', 'message2']);
     socket.addStream(stream);
     await helper.messagesReceived(2);
-    expect(helper.messages, unorderedEquals(['message1', 'message2']));
+    expect(await helper.messages, unorderedEquals(['message1', 'message2']));
+    await socket.close();
   });
 
   test('addStream() should support sending multiple Streams serially',
       () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
     WSHelper helper = new WSHelper(socket);
 
     var stream1 = new Stream.fromIterable(['message1a', 'message2a']);
@@ -93,28 +104,37 @@ void runCommonWebSocketIntegrationTests() {
     await socket.addStream(stream1);
     await socket.addStream(stream2);
     await helper.messagesReceived(4);
-    expect(helper.messages,
+    expect(await helper.messages,
         unorderedEquals(['message1a', 'message1b', 'message2a', 'message2b']));
+    await socket.close();
   });
 
   test('addStream() should throw if multiple Streams added concurrently',
       () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
 
     var stream = new Stream.fromIterable(['message1', 'message2']);
-    socket.addStream(stream);
-    expect(socket.addStream(stream), throwsStateError);
+    var firstFuture = socket.addStream(stream);
+    var lateFuture = socket.addStream(stream);
+    expect(lateFuture, throwsStateError);
+    await firstFuture;
+    try {
+      await lateFuture;
+    } catch (e) {}
+    try {
+      await socket.close();
+    } catch (e) {}
   });
 
   test('addStream() should throw after sink has been closed', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
     await socket.close();
     expect(socket.addStream(new Stream.fromIterable(['too late'])),
         throwsStateError);
   });
 
   test('addStream() should cause socket to close if error is added', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
     var controller = new StreamController();
     controller.add('message1');
     controller.addError(new Exception('addStream error, should close socket'));
@@ -124,36 +144,39 @@ void runCommonWebSocketIntegrationTests() {
   });
 
   test('should support listening to incoming messages', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.pingUri);
+    WSocket socket = await WSocket.connect(pingUri);
     WSHelper helper = new WSHelper(socket);
 
     socket.add('ping2');
     await helper.messagesReceived(2);
 
-    expect(helper.messages, unorderedEquals(['pong', 'pong']));
+    expect(await helper.messages, unorderedEquals(['pong', 'pong']));
+    await socket.close();
   });
 
-  test('should allow multiple listeners by default', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+  test('should not allow multiple listeners by default', () async {
+    WSocket socket = await WSocket.connect(echoUri);
     socket.listen((_) {});
     expect(() {
       socket.listen((_) {});
     }, throwsStateError);
+    await socket.close();
   });
 
   test('should not lose messages if a listener is registered late', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.pingUri);
+    WSocket socket = await WSocket.connect(pingUri);
     socket.add('ping3');
 
     await new Future.delayed(new Duration(seconds: 1));
     WSHelper helper = new WSHelper(socket);
     await helper.messagesReceived(3);
 
-    expect(helper.messages, unorderedEquals(['pong', 'pong', 'pong']));
+    expect(await helper.messages, unorderedEquals(['pong', 'pong', 'pong']));
+    await socket.close();
   });
 
   test('should call onDone() when socket closes', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
 
     Completer c = new Completer();
     socket.listen((_) {}, onDone: () {
@@ -166,15 +189,12 @@ void runCommonWebSocketIntegrationTests() {
 
   test('should have the close code and reason available in onDone() callback',
       () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
 
     Completer c = new Completer();
     socket.listen((_) {}, onDone: () {
       expect(socket.closeCode, equals(4001));
-
-      // TODO: Dart's WebSocket server did not previously set the closeReason
-      // See: https://github.com/dart-lang/sdk/issues/23964
-      // expect(socket.closeReason, equals('Closed.'));
+      expect(socket.closeReason, equals('Closed.'));
 
       c.complete();
     });
@@ -182,14 +202,14 @@ void runCommonWebSocketIntegrationTests() {
     socket.add('echo');
 
     new Timer(new Duration(seconds: 1), () {
-      socket.close(4001, 'oops');
+      socket.close(4001, 'Closed.');
     });
 
     await c.future;
   });
 
   test('should work as a broadcast stream', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.pingUri);
+    WSocket socket = await WSocket.connect(pingUri);
     Stream stream = socket.asBroadcastStream();
 
     Completer c1 = new Completer();
@@ -204,29 +224,27 @@ void runCommonWebSocketIntegrationTests() {
 
     socket.add('ping');
 
-    return Future.wait([c1.future, c2.future]);
+    await Future.wait([c1.future, c2.future]);
+    await socket.close();
   });
 
   test('should have the close code and reason available after closing',
       () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
     await socket.close(4001, 'Closed.');
     expect(socket.closeCode, equals(4001));
-
-    // TODO: Dart's WebSocket server did not previously set the closeReason
-    // See: https://github.com/dart-lang/sdk/issues/23964
-    // expect(socket.closeReason, equals('Closed.'));
+    expect(socket.closeReason, equals('Closed.'));
   });
 
   test(
       'should close and properly drain stream even if no listeners were registered',
       () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
     await socket.close();
   });
 
   test('should handle the server closing the connection', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.closeUri);
+    WSocket socket = await WSocket.connect(closeUri);
     socket.add(_closeRequest());
     await socket.done;
   });
@@ -234,7 +252,7 @@ void runCommonWebSocketIntegrationTests() {
   test(
       'should ignore close() being called after the server closes the connection',
       () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.closeUri);
+    WSocket socket = await WSocket.connect(closeUri);
     socket.add(_closeRequest(4001, 'Closed by server.'));
     await socket.done;
     await socket.close(4002, 'Late close.');
@@ -243,7 +261,7 @@ void runCommonWebSocketIntegrationTests() {
   });
 
   test('should ignore close() calls after the first', () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+    WSocket socket = await WSocket.connect(echoUri);
     await socket.close(4001, 'Custom close.');
     await socket.close(4002, 'Late close.');
     expect(socket.closeCode, equals(4001));
@@ -253,7 +271,7 @@ void runCommonWebSocketIntegrationTests() {
   test(
       'should report the close code and reason that the server used when closing the connection',
       () async {
-    WSocket socket = await WSocket.connect(IntegrationPaths.closeUri);
+    WSocket socket = await WSocket.connect(closeUri);
     socket.add(_closeRequest(4001, 'Closed by server.'));
     await socket.done;
     expect(socket.closeCode, equals(4001));

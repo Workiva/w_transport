@@ -16,6 +16,8 @@ library w_transport.test.naming;
 
 /// Platforms.
 const String platformBrowser = 'browser';
+const String platformBrowserSockjsWS = 'browser (SockJS WS)';
+const String platformBrowserSockjsXhr = 'browser (SockJS XHR)';
 const String platformMock = 'mock';
 const String platformVM = 'vm';
 

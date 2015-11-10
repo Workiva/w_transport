@@ -39,6 +39,14 @@ import 'package:w_transport/src/browser_adapter.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 
 /// Configures w_transport for use in the browser via dart:html.
-void configureWTransportForBrowser() {
-  adapter = new BrowserAdapter();
+void configureWTransportForBrowser(
+    {bool useSockJS: false,
+    bool sockJSDebug: false,
+    bool sockJSNoCredentials: false,
+    List<String> sockJSProtocolsWhitelist}) {
+  adapter = new BrowserAdapter(
+      useSockJS: useSockJS,
+      sockJSDebug: sockJSDebug,
+      sockJSNoCredentials: sockJSNoCredentials,
+      sockJSProtocolsWhitelist: sockJSProtocolsWhitelist);
 }

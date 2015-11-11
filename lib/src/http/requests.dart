@@ -25,7 +25,7 @@ import 'package:w_transport/src/platform_adapter.dart';
 /// be encoded as a url query string.
 ///
 /// This request will be sent with content-type:
-/// application/x-www-form-urlencoded.
+/// application/x-www-form-urlencoded
 abstract class FormRequest extends BaseRequest {
   /// Gets this request's body as a `Map` where each key-value pair is a form
   /// field's name and value.
@@ -57,6 +57,10 @@ abstract class FormRequest extends BaseRequest {
   factory FormRequest() => PlatformAdapter.retrieve().newFormRequest();
 }
 
+/// Representation of an HTTP request where the request body is a json-encodable
+/// Map or List.
+///
+/// This request will be sent with content-type: application/json
 abstract class JsonRequest extends BaseRequest {
   /// Gets this request's body as a JSON `Map` or `List`.
   ///
@@ -87,6 +91,10 @@ abstract class JsonRequest extends BaseRequest {
   factory JsonRequest() => PlatformAdapter.retrieve().newJsonRequest();
 }
 
+/// Representation of an HTTP request where the request body is comprised of
+/// one or more parts. Each part can be either a field name and value or a file.
+///
+/// This request will be sent with content-type: multipart/form-data
 abstract class MultipartRequest extends BaseRequest {
   /// Get this request's text fields as a Map of field names to their values.
   ///
@@ -111,6 +119,9 @@ abstract class MultipartRequest extends BaseRequest {
       PlatformAdapter.retrieve().newMultipartRequest();
 }
 
+/// Representation of an HTTP request where the request body is plain-text.
+///
+/// This request will be sent with content-type: text/plain
 abstract class Request extends BaseRequest {
   /// Gets this request's body.
   String get body;
@@ -135,6 +146,8 @@ abstract class Request extends BaseRequest {
   factory Request() => PlatformAdapter.retrieve().newRequest();
 }
 
+/// Representation of an HTTP request where the request body is sent
+/// asynchronously as a stream. The [content-type] should be set manually.
 abstract class StreamedRequest extends BaseRequest {
   /// Get the byte stream that will be sent as this request's body.
   Stream<List<int>> get body;

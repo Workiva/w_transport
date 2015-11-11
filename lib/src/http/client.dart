@@ -17,6 +17,10 @@ library w_transport.src.http.client;
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 
+/// An HTTP client for constructing requests. By using a [Client], common
+/// [headers] and the [withCredentials] flag will be set on every request when
+/// constructed. On the server, the Dart VM will also be able to take advantage
+/// of cached network connections.
 abstract class Client {
   factory Client() => PlatformAdapter.retrieve().newClient();
 

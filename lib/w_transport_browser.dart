@@ -21,6 +21,18 @@
 ///     void main() {
 ///       configureWTransportForBrowser();
 ///     }
+///
+/// If you'd like WebSocket to fall back to XHR-streaming if native WebSockets
+/// are not available, w_transport can be configured to use a SockJS client.
+///
+///     import 'package:w_transport/w_transport_browser.dart'
+///         show configureWTransportForBrowser;
+///
+///     void main() {
+///       configureWTransportForBrowser(
+///           useSockJS: true,
+///           sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming']);
+///     }
 library w_transport.w_transport_browser;
 
 import 'package:w_transport/src/browser_adapter.dart';

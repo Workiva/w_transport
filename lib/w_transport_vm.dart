@@ -19,7 +19,7 @@
 ///         show configureWTransportForServer;
 ///
 ///     void main() {
-///       configureWTransportForServer();
+///       configureWTransportForVM();
 ///     }
 library w_transport.w_transport_server;
 

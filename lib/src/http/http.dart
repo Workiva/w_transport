@@ -103,7 +103,96 @@ class Http {
           headers: headers,
           withCredentials: withCredentials).send(method);
 
-  static _createRequest(Uri uri,
+  /// Sends a DELETE request to [uri] and returns a [StreamedResponse]. Includes
+  /// request [headers] if given.
+  ///
+  /// Secure cookies (credentials) will be included (in the browser) if
+  /// [withCredentials] is true.
+  static Future<StreamedResponse> streamDelete(Uri uri,
+          {Map<String, String> headers, bool withCredentials}) =>
+      _createRequest(uri, headers: headers, withCredentials: withCredentials)
+          .streamDelete();
+
+  /// Sends a GET request to [uri] and returns a [StreamedResponse]. Includes
+  /// request [headers] if given.
+  ///
+  /// Secure cookies (credentials) will be included (in the browser) if
+  /// [withCredentials] is true.
+  static Future<StreamedResponse> streamGet(Uri uri,
+          {Map<String, String> headers, bool withCredentials}) =>
+      _createRequest(uri, headers: headers, withCredentials: withCredentials)
+          .streamGet();
+
+  /// Sends a HEAD request to [uri] and returns a [StreamedResponse]. Includes
+  /// request [headers] if given.
+  ///
+  /// Secure cookies (credentials) will be included (in the browser) if
+  /// [withCredentials] is true.
+  static Future<StreamedResponse> streamHead(Uri uri,
+          {Map<String, String> headers, bool withCredentials}) =>
+      _createRequest(uri, headers: headers, withCredentials: withCredentials)
+          .streamHead();
+
+  /// Sends an OPTIONS request to [uri] and returns a [StreamedResponse].
+  /// Includes request [headers] if given.
+  ///
+  /// Secure cookies (credentials) will be included (in the browser) if
+  /// [withCredentials] is true.
+  static Future<StreamedResponse> streamOptions(Uri uri,
+          {Map<String, String> headers, bool withCredentials}) =>
+      _createRequest(uri, headers: headers, withCredentials: withCredentials)
+          .streamOptions();
+
+  /// Sends a PATCH request to [uri] and returns a [StreamedResponse]. Includes
+  /// request [headers] and a request [body] if given.
+  ///
+  /// Secure cookies (credentials) will be included (in the browser) if
+  /// [withCredentials] is true.
+  static Future<StreamedResponse> streamPatch(Uri uri,
+          {String body, Map<String, String> headers, bool withCredentials}) =>
+      _createRequest(uri,
+          body: body,
+          headers: headers,
+          withCredentials: withCredentials).streamPatch();
+
+  /// Sends a POST request to [uri] and returns a [StreamedResponse]. Includes
+  /// request [headers] and a request [body] if given.
+  ///
+  /// Secure cookies (credentials) will be included (in the browser) if
+  /// [withCredentials] is true.
+  static Future<StreamedResponse> streamPost(Uri uri,
+          {String body, Map<String, String> headers, bool withCredentials}) =>
+      _createRequest(uri,
+          body: body,
+          headers: headers,
+          withCredentials: withCredentials).streamPost();
+
+  /// Sends a PUT request to [uri] and returns a [StreamedResponse]. Includes
+  /// request [headers] and a request [body] if given.
+  ///
+  /// Secure cookies (credentials) will be included (in the browser) if
+  /// [withCredentials] is true.
+  static Future<StreamedResponse> streamPut(Uri uri,
+          {String body, Map<String, String> headers, bool withCredentials}) =>
+      _createRequest(uri,
+          body: body,
+          headers: headers,
+          withCredentials: withCredentials).streamPut();
+
+  /// Sends a request to [uri] using the HTTP method specified by [method] and
+  /// returns a [StreamedResponse]. Includes request [headers] and a request
+  /// [body] if given.
+  ///
+  /// Secure cookies (credentials) will be included (in the browser) if
+  /// [withCredentials] is true.
+  static Future<StreamedResponse> streamSend(String method, Uri uri,
+          {String body, Map<String, String> headers, bool withCredentials}) =>
+      _createRequest(uri,
+          body: body,
+          headers: headers,
+          withCredentials: withCredentials).streamSend(method);
+
+  static Request _createRequest(Uri uri,
       {String body, Map<String, String> headers, bool withCredentials}) {
     var request = new Request()..uri = uri;
     if (body != null) {

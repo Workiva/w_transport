@@ -133,7 +133,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
       reader.readAsArrayBuffer(
           _request.response != null ? _request.response : new Blob([]));
       List<int> bytes = await result.future;
-      var byteStream = new Stream.fromIterable(bytes);
+      var byteStream = new Stream.fromIterable([bytes]);
       response = new StreamedResponse.fromByteStream(_request.status,
           _request.statusText, _request.responseHeaders, byteStream);
     } else {

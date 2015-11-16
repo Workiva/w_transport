@@ -14,6 +14,10 @@
 
 library w_transport.test.integration.http.http_static.suite;
 
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 
@@ -198,6 +202,211 @@ void runHttpStaticSuite() {
       Response response = await Http
           .send('COPY', IntegrationPaths.echoEndpointUri, body: 'body');
       expect(response.body.asString(), equals('body'));
+    });
+
+    Future<String> _decodeStreamedResponseToString(
+        StreamedResponse response) async {
+      Uint8List bytes = await response.body.toBytes();
+      return response.encoding.decode(bytes.toList());
+    }
+
+    Future<Map> _decodeStreamedResponseToJson(StreamedResponse response) async {
+      return JSON.decode(await _decodeStreamedResponseToString(response));
+    }
+
+    test('streamed DELETE request', () async {
+      StreamedResponse response =
+          await Http.streamDelete(IntegrationPaths.reflectEndpointUri);
+      expect(response.status, equals(200));
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('DELETE'));
+    });
+
+    test('streamed DELETE request with headers', () async {
+      StreamedResponse response = await Http.streamDelete(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map.from(headers));
+      expect(response.status, equals(200));
+
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('DELETE'));
+      expect(json['headers'],
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
+      expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
+    });
+
+    test('streamed GET request', () async {
+      StreamedResponse response =
+          await Http.streamGet(IntegrationPaths.reflectEndpointUri);
+      expect(response.status, equals(200));
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('GET'));
+    });
+
+    test('streamed GET request with headers', () async {
+      StreamedResponse response = await Http.streamGet(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map.from(headers));
+      expect(response.status, equals(200));
+
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('GET'));
+      expect(json['headers'],
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
+      expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
+    });
+
+    test('streamed HEAD request', () async {
+      StreamedResponse response =
+          await Http.streamHead(IntegrationPaths.reflectEndpointUri);
+      expect(response.status, equals(200));
+    });
+
+    test('streamed HEAD request with headers', () async {
+      StreamedResponse response = await Http.streamHead(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map.from(headers));
+      expect(response.status, equals(200));
+    });
+
+    test('streamed OPTIONS request', () async {
+      StreamedResponse response =
+          await Http.streamOptions(IntegrationPaths.reflectEndpointUri);
+      expect(response.status, equals(200));
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('OPTIONS'));
+    });
+
+    test('streamed OPTIONS request with headers', () async {
+      StreamedResponse response = await Http.streamOptions(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map.from(headers));
+      expect(response.status, equals(200));
+
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('OPTIONS'));
+      expect(json['headers'],
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
+      expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
+    });
+
+    test('streamed PATCH request', () async {
+      StreamedResponse response =
+          await Http.streamPatch(IntegrationPaths.reflectEndpointUri);
+      expect(response.status, equals(200));
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('PATCH'));
+    });
+
+    test('streamed PATCH request with headers', () async {
+      StreamedResponse response = await Http.streamPatch(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map.from(headers));
+      expect(response.status, equals(200));
+
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('PATCH'));
+      expect(json['headers'],
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
+      expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
+    });
+
+    test('streamed PATCH request with body', () async {
+      StreamedResponse response = await Http
+          .streamPatch(IntegrationPaths.echoEndpointUri, body: 'body');
+      String body = await _decodeStreamedResponseToString(response);
+      expect(body, equals('body'));
+    });
+
+    test('streamed POST request', () async {
+      StreamedResponse response =
+          await Http.streamPost(IntegrationPaths.reflectEndpointUri);
+      expect(response.status, equals(200));
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('POST'));
+    });
+
+    test('streamed POST request with headers', () async {
+      StreamedResponse response = await Http.streamPost(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map.from(headers));
+      expect(response.status, equals(200));
+
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('POST'));
+      expect(json['headers'],
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
+      expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
+    });
+
+    test('streamed POST request with body', () async {
+      StreamedResponse response =
+          await Http.streamPost(IntegrationPaths.echoEndpointUri, body: 'body');
+      String body = await _decodeStreamedResponseToString(response);
+      expect(body, equals('body'));
+    });
+
+    test('streamed PUT request', () async {
+      StreamedResponse response =
+          await Http.streamPut(IntegrationPaths.reflectEndpointUri);
+      expect(response.status, equals(200));
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('PUT'));
+    });
+
+    test('streamed PUT request with headers', () async {
+      StreamedResponse response = await Http.streamPut(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map.from(headers));
+      expect(response.status, equals(200));
+
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('PUT'));
+      expect(json['headers'],
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
+      expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
+    });
+
+    test('streamed PUT request with body', () async {
+      StreamedResponse response =
+          await Http.streamPut(IntegrationPaths.echoEndpointUri, body: 'body');
+      String body = await _decodeStreamedResponseToString(response);
+      expect(body, equals('body'));
+    });
+
+    test('streamed custom HTTP method request', () async {
+      StreamedResponse response =
+          await Http.streamSend('COPY', IntegrationPaths.reflectEndpointUri);
+      expect(response.status, equals(200));
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('COPY'));
+    });
+
+    test('streamed custom HTTP method request with headers', () async {
+      StreamedResponse response = await Http.streamSend(
+          'COPY', IntegrationPaths.reflectEndpointUri,
+          headers: new Map.from(headers));
+      expect(response.status, equals(200));
+
+      Map json = await _decodeStreamedResponseToJson(response);
+      expect(json['method'], equals('COPY'));
+      expect(json['headers'],
+          containsPair('authorization', headers['authorization']));
+      expect(json['headers'], containsPair('x-custom', headers['x-custom']));
+      expect(json['headers'], containsPair('x-tokens', headers['x-tokens']));
+    });
+
+    test('streamed custom HTTP method request with body', () async {
+      StreamedResponse response = await Http
+          .streamSend('COPY', IntegrationPaths.echoEndpointUri, body: 'body');
+      String body = await _decodeStreamedResponseToString(response);
+      expect(body, equals('body'));
     });
   });
 }

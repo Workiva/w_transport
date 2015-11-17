@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// A fluent-style, platform-agnostic transport library. Currently supports HTTP
-/// and WebSocket. All transport classes are available from the main import:
+/// Platform-agnostic transport library for sending and receiving data over HTTP
+/// and WebSocket. HTTP support includes plain-text, JSON, form-data, and
+/// multipart data, as well as custom encoding. WebSocket support includes native
+/// WebSockets in the browser and the VM with the option to use SockJS in the
+/// browser.
 ///
 ///     import 'package:w_transport/w_transport.dart';
 ///

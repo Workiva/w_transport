@@ -19,13 +19,22 @@ import 'dart:async';
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mime/mime.dart' as mime;
 
+/// A platform-independent file abstraction. The [MultipartRequest] accepts
+/// files of this type.
 class MultipartFile {
+  /// File contents as a stream of chunks of bytes.
   final Stream<List<int>> byteStream;
+
+  /// Filename.
   final String filename;
+
+  /// Length of the file contents.
   final int length;
 
   MediaType _contentType;
 
+  /// Construct a [MultipartFile] by supplying the file contents and the file
+  /// length. Optionally include a filename and content-type.
   MultipartFile(Stream<List<int>> this.byteStream, int this.length,
       {MediaType contentType, String this.filename}) {
     if (contentType != null) {
@@ -39,5 +48,6 @@ class MultipartFile {
     }
   }
 
+  /// File content-type. Defaults to "application/octet-stream".
   MediaType get contentType => _contentType;
 }

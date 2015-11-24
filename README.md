@@ -42,6 +42,9 @@
   - [Receiving Data](#receiving-data)
   - [Sending Data](#sending-data)
   - [Listening for Completion](#listening-for-completion)
+- [**Testing & Mocks**](#testing--mocks)
+  - [Mocking HTTP](#mocking-http)
+  - [Mocking WebSockets](#mocking-websockets)
 - [**Credits**](#credits)
 - [**Development**](#development)
 
@@ -81,7 +84,9 @@ import 'package:w_transport/w_transport_browser.dart'
     show configureWTransportForBrowser;
 
 void main() {
-  configureWTransportForBrowser(useSockJS: true);
+  configureWTransportForBrowser(
+      useSockJS: true,
+      sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming']);
 }
 ```
 
@@ -533,6 +538,166 @@ webSocket.done.then((_) {
   // Handle socket error, reopen socket, etc.
 });
 ```
+
+---
+
+## Testing & Mocks
+
+Just like the browser or the Dart VM, tests are considered a platform for which
+this library can be configured. By configuring `w_transport` for tests, mock
+implementations of all classes will be used.
+
+```dart
+import 'package:w_transport/w_transport_mock.dart';
+
+main() {
+  configureWTransportForTest();
+}
+```
+
+That's it. No changes to your source code are necessary! Once configured for
+test, you are in control of every HTTP request and every WebSocket connection.
+The APIs for controlling these transports are exported with the
+`w_transport_mock.dart` entry point as static APIs on a `MockTransports` class.
+
+> **Resetting Mocks:**
+>
+> At any point, you can reset all mock expectations and handlers, giving you a
+> clean state to begin a new mock setup:
+>
+> ```dart
+> MockTransports.reset();
+> ```
+
+### Mocking HTTP
+
+#### Expecting a request (and returning a 200 OK response by default)
+```dart
+MockTransports.http.expect('GET', Uri.parse('/resource'));
+```
+
+#### Expecting a request and providing a custom response
+```dart
+Response response = new MockResponse.unauthorized(
+    body: 'Invalid access token',
+    headers: {'x-session': 'ab93s...'});
+MockTransports.http.expect(
+    'GET',
+    Uri.parse('/resource'),
+    respondWith: response);
+```
+
+#### Expecting a request and causing a failure (exception)
+```dart
+MockTransports.http.expect(
+    'GET',
+    Uri.parse('/resource'),
+    failWith: new Exception('Unexpected error...'));
+```
+
+#### Registering a handler (expecting multiple requests to the same URI)
+```dart
+MockTransports.http.when(
+    Uri.parse('/resource'),
+    (FinalizedRequest request) async {
+      if (request.method == 'GET') {
+        return new MockResponse.ok(body: '...');
+      }
+      if (request.method == 'DELETE') {
+        return new MockResponse(204);
+      }
+      ...
+    });
+```
+
+#### Registering a handler (expecting multiple requests with the same URI and method)
+```dart
+MockTransports.http.when(
+    Uri.parse('/resource'),
+    (FinalizedRequest request) async => new MockResponse.ok(body: '...'),
+    method: 'GET');
+```
+
+#### Verifying there are no unresolved requests and/or unsatisfied expectations
+```dart
+MockTransports.verifyNoOutstandingExceptions();
+```
+
+> This will throw if an expected request has yet to occur or if a request was
+> made for which no applicable handler was found and was not otherwise expected.
+
+
+### Mocking WebSockets
+
+#### Expecting and accepting a websocket connection
+```dart
+MockTransports.webSocket.expect(
+    Uri.parse('/ws'),
+    handler: (Uri uri,
+              {Iterable<String> protocols,
+              Map<String, dynamic> headers}) async {
+      return new MockWSocket();
+    });
+```
+
+#### Expecting and rejecting a websocket connection
+```dart
+MockTransports.webSocket.expect(Uri.parse('/ws'), reject: true);
+```
+
+> This will cause the `WSocket.connect(...)` clause to throw.
+
+#### Listening to outgoing data from a mock websocket connection
+```dart
+MockTransports.webSocket.expect(
+    Uri.parse('/ws'),
+    handler: (Uri uri,
+              {Iterable<String> protocols,
+              Map<String, dynamic> headers}) async {
+      MockWSocket ws = new MockWSocket();
+      ws.onOutgoing((data) { ... });
+      return ws;
+    });
+```
+
+#### Sending data to the client from a mock websocket connection
+```dart
+MockTransports.webSocket.expect(
+    Uri.parse('/ws'),
+    handler: (Uri uri,
+              {Iterable<String> protocols,
+              Map<String, dynamic> headers}) async {
+      MockWSocket ws = new MockWSocket();
+
+      // Connected message.
+      ws.add('Connected.');
+
+      // Echo.
+      ws.onOutgoing((data) {
+        ws.addIncoming(data);
+      });
+
+      return ws;
+    });
+```
+
+#### Triggering a close event for a mock websocket connection
+```dart
+MockTransports.webSocket.expect(
+    Uri.parse('/ws'),
+    handler: (Uri uri,
+              {Iterable<String> protocols,
+              Map<String, dynamic> headers}) async {
+      MockWSocket ws = new MockWSocket();
+
+      new Timer(new Duration(seconds: 5), () {
+        ws.triggerServerClose();
+      });
+
+      return ws;
+    });
+```
+
 
 ---
 

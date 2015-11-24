@@ -21,6 +21,7 @@ import 'package:w_transport/src/http/browser/requests.dart';
 import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/web_socket/browser/sockjs.dart';
 import 'package:w_transport/src/web_socket/browser/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
 
@@ -28,6 +29,21 @@ import 'package:w_transport/src/web_socket/w_socket.dart';
 /// classes that return browser-specific implementations that leverage
 /// dart:html.
 class BrowserAdapter implements PlatformAdapter {
+  final bool _useSockJS;
+  final bool _sockJSDebug;
+  final bool _sockJSNoCredentials;
+  final List<String> _sockJSProtocolsWhitelist;
+
+  BrowserAdapter(
+      {bool useSockJS: false,
+      bool sockJSNoCredentials: false,
+      bool sockJSDebug: false,
+      List<String> sockJSProtocolsWhitelist})
+      : _useSockJS = useSockJS == true,
+        _sockJSDebug = sockJSDebug == true,
+        _sockJSProtocolsWhitelist = sockJSProtocolsWhitelist,
+        _sockJSNoCredentials = sockJSNoCredentials == true;
+
   /// Construct a new [BrowserClient] instance that implements [Client].
   Client newClient() => new BrowserClient();
 
@@ -53,6 +69,15 @@ class BrowserAdapter implements PlatformAdapter {
 
   /// Construct a new [ClientWSocket] instance that implements [WSocket].
   Future<WSocket> newWSocket(Uri uri,
-          {Iterable<String> protocols, Map<String, dynamic> headers}) =>
-      BrowserWSocket.connect(uri, protocols: protocols, headers: headers);
+      {Iterable<String> protocols, Map<String, dynamic> headers}) {
+    if (_useSockJS) {
+      return SockJSSocket.connect(uri,
+          debug: _sockJSDebug,
+          noCredentials: _sockJSNoCredentials,
+          protocolsWhitelist: _sockJSProtocolsWhitelist);
+    } else {
+      return BrowserWSocket.connect(uri,
+          protocols: protocols, headers: headers);
+    }
+  }
 }

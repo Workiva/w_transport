@@ -173,7 +173,7 @@ abstract class CommonWSocket extends Stream implements WSocket {
     if (_isSinkClosed) {
       _allClosed.complete();
     } else {
-      outgoing.close();
+      outgoing.close().catchError((_) {});
     }
   }
 

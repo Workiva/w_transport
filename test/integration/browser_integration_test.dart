@@ -32,6 +32,7 @@ import 'http/streamed_request/browser_test.dart'
 import 'platforms/browser_platform_test.dart' as browser_platform_adapter_test;
 
 import 'ws/browser_test.dart' as ws_browser;
+import 'ws/sockjs_test.dart' as ws_sockjs;
 
 void main() {
   http_client_browser.main();
@@ -46,4 +47,5 @@ void main() {
   browser_platform_adapter_test.main();
 
   ws_browser.main();
+  ws_sockjs.main();
 }

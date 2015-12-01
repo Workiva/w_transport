@@ -20,6 +20,9 @@ import 'package:w_transport/src/http/response.dart';
 /// An exception that is raised when a response to a request returns with
 /// an unsuccessful status code.
 class RequestException implements Exception {
+  /// Original error, if any.
+  final error;
+
   /// HTTP method.
   final String method;
 
@@ -32,13 +35,10 @@ class RequestException implements Exception {
   /// URL of the attempted/unsuccessful request.
   final Uri uri;
 
-  /// Original error, if any.
-  var _error;
-
   /// Construct a new instance of [WHttpException] using information from
   /// an HTTP request and response.
   RequestException(this.method, this.uri, this.request, this.response,
-      [this._error]);
+      [this.error]);
 
   /// Descriptive error message that includes the request method & URL and the response status.
   String get message {
@@ -47,8 +47,8 @@ class RequestException implements Exception {
       msg += ' ${response.status} ${response.statusText}';
     }
     msg += ' $uri';
-    if (_error != null) {
-      msg += '\n\t$_error';
+    if (error != null) {
+      msg += '\n\t$error';
     }
     return msg;
   }

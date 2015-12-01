@@ -127,6 +127,22 @@ void main() {
         var headers = {'x-custom1': 'value', 'x-custom2': 'value2'};
         Client client = new Client()..headers = headers;
         expect(client.headers, equals(headers));
+        expect(client.newFormRequest().headers, equals(headers));
+        expect(client.newJsonRequest().headers, equals(headers));
+        expect(client.newMultipartRequest().headers, equals(headers));
+        expect(client.newRequest().headers, equals(headers));
+        expect(client.newStreamedRequest().headers, equals(headers));
+      });
+
+      test('timeoutThreshold', () async {
+        Duration tt = new Duration(seconds: 1);
+        Client client = new Client()..timeoutThreshold = tt;
+        expect(client.timeoutThreshold, equals(tt));
+        expect(client.newFormRequest().timeoutThreshold, equals(tt));
+        expect(client.newJsonRequest().timeoutThreshold, equals(tt));
+        expect(client.newMultipartRequest().timeoutThreshold, equals(tt));
+        expect(client.newRequest().timeoutThreshold, equals(tt));
+        expect(client.newStreamedRequest().timeoutThreshold, equals(tt));
       });
 
       test('close()', () async {

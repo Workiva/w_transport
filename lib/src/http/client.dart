@@ -31,6 +31,13 @@ abstract class Client {
   /// Whether or not the HTTP client has been closed.
   bool get isClosed;
 
+  /// Amount of time to wait for a request created by this client to finish
+  /// before canceling it and considering it "timed out" (results in a
+  /// [RequestException] being thrown).
+  ///
+  /// If null, no timeout threshold will be enforced.
+  Duration timeoutThreshold;
+
   /// Whether or not to send requests from this client with credentials. Only
   /// applicable to requests in the browser, but does not adversely affect any
   /// other platform.

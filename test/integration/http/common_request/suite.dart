@@ -380,5 +380,21 @@ void _runCommonRequestSuiteFor(
       request.abort();
       expect(future, throwsA(new isInstanceOf<RequestException>()));
     });
+
+    test('timeoutThreshold does nothing if request completes in time',
+        () async {
+      BaseRequest request = requestFactory()
+        ..timeoutThreshold = new Duration(seconds: 5);
+      await request.get(uri: IntegrationPaths.pingEndpointUri);
+    });
+
+    test('timeoutThreshold cancels the request if exceeded', () async {
+      BaseRequest request = requestFactory()
+        ..timeoutThreshold = new Duration(milliseconds: 250);
+      expect(request.get(uri: IntegrationPaths.timeoutEndpointUri),
+          throwsA(predicate((error) {
+        return error is RequestException && error.error is TimeoutException;
+      })));
+    });
   });
 }

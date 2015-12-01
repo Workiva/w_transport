@@ -1,18 +1,14 @@
 # w_transport 
-[![Pub](https://img.shields.io/pub/v/w_transport.svg)](https://pub.dartlang.org/packages/w_transport) [![Build Status](https://travis-ci.org/Workiva/w_transport.svg?branch=travis-ci)](https://travis-ci.org/Workiva/w_transport) [![codecov.io](http://codecov.io/github/Workiva/w_transport/coverage.svg?branch=master)](http://codecov.io/github/Workiva/w_transport?branch=master)
+[![Pub](https://img.shields.io/pub/v/w_transport.svg)](https://pub.dartlang.org/packages/w_transport)
+[![Build Status](https://travis-ci.org/Workiva/w_transport.svg?branch=travis-ci)](https://travis-ci.org/Workiva/w_transport)
+[![codecov.io](http://codecov.io/github/Workiva/w_transport/coverage.svg?branch=master)](http://codecov.io/github/Workiva/w_transport?branch=master)
+[![documentation](https://img.shields.io/badge/Documentation-w__transport-blue.svg)](https://www.dartdocs.org/documentation/w_transport/latest/)
 
 > Platform-agnostic transport library for sending and receiving data over HTTP
 > and WebSocket. HTTP support includes plain-text, JSON, form-data, and
 > multipart data, as well as custom encoding. WebSocket support includes native
 > WebSockets in the browser and the VM with the option to use SockJS in the
 > browser.
-
----
-
-> This README provides an overview of w_transport with enough information to get
-> you started. For full API reference with more details and examples, check out
-> the [documentation](https://www.dartdocs.org/documentation/w_transport/latest/)
-> as well as the [examples](https://github.com/Workiva/w_transport/tree/master/example).
 
 
 - [**Importing**](#importing)
@@ -35,6 +31,7 @@
     - [MultipartRequest](#multipartrequest)
     - [Request (plain-text)](#request-plain-text)
     - [StreamedRequest](#streamedrequest)
+  - [HTTP Client](#http-client)
   - [Responses](#responses)
   - [Streamed Responses](#streamed-responses)
 - [**WebSocket**](#websocket)
@@ -436,6 +433,35 @@ StreamedRequest request = new StreamedRequest()
 
 > Note: the stream you supply should be a single-subscription stream (not a
 > broadcast stream) to avoid losing data.
+
+
+### HTTP Client
+An HTTP client acts as a single point from which many requests can be
+constructed. All requests constructed from a client will inherit headers, the
+`withCredentials` flag, and the timeout threshold.
+
+On the server, the Dart VM will also be able to take advantage of cached
+network connections between requests that share a client.
+
+```dart
+Client client = new Client()
+  ..headers['x-xsrf-token'] = 'ab93c...'
+  ..withCredentials = true;
+
+// This request will inherit the above header and withCredentials value.
+// Once created, it can be used and dispatched as expected.
+Request request = client.newRequest();
+```
+
+If you know that a client will no longer be used, or if you'd like to cancel all
+outstanding requests from a client, you should close the client. On the server,
+this ensures that cached network connections are closed.
+
+```dart
+Client client = new Client();
+...
+client.close();
+```
 
 
 ### Responses

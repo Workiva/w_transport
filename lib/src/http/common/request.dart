@@ -62,6 +62,12 @@ abstract class CommonRequest extends Object
   /// HTTP method ('GET', 'POST', etc).
   String method;
 
+  /// Amount of time to wait for the request to finish before canceling it and
+  /// considering it "timed out" (results in a [RequestException] being thrown).
+  ///
+  /// If null, no timeout threshold will be enforced.
+  Duration timeoutThreshold;
+
   /// [RequestProgress] stream controller for this HTTP request's upload.
   StreamController<RequestProgress> uploadProgressController =
       new StreamController<RequestProgress>();
@@ -367,6 +373,15 @@ abstract class CommonRequest extends Object
       checkForCancellation();
       Completer<BaseResponse> responseCompleter = new Completer();
 
+      // Enforce a timeout threshold if set.
+      Timer timeout;
+      if (timeoutThreshold != null) {
+        timeout = new Timer(timeoutThreshold, () {
+          abort(new TimeoutException(
+              'Request took too long to complete.', timeoutThreshold));
+        });
+      }
+
       // Attempt to fetch the response.
       sendRequestAndFetchResponse(finalizedRequest,
           streamResponse: streamResponse).then((response) {
@@ -389,6 +404,9 @@ abstract class CommonRequest extends Object
 
       response = await responseCompleter.future;
       checkForCancellation(response: response);
+      if (timeout != null) {
+        timeout.cancel();
+      }
 
       if (response.status != 0 &&
           response.status != 304 &&

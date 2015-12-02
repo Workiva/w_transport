@@ -63,6 +63,12 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// sent via one of the request dispatch methods.
   String get method;
 
+  /// Amount of time to wait for the request to finish before canceling it and
+  /// considering it "timed out" (results in a [RequestException] being thrown).
+  ///
+  /// If null, no timeout threshold will be enforced.
+  Duration timeoutThreshold;
+
   /// [RequestProgress] stream for this HTTP request's upload.
   Stream<RequestProgress> get uploadProgress;
 

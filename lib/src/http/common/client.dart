@@ -38,6 +38,13 @@ abstract class CommonClient implements Client {
   @override
   bool get isClosed => _isClosed;
 
+  /// Amount of time to wait for the request to finish before canceling it and
+  /// considering it "timed out" (results in a [RequestException] being thrown).
+  ///
+  /// If null, no timeout threshold will be enforced.
+  @override
+  Duration timeoutThreshold;
+
   /// Whether or not to send the request with credentials. Only applicable to
   /// requests in the browser, but does not adversely affect any other platform.
   @override
@@ -64,7 +71,9 @@ abstract class CommonClient implements Client {
   /// adding headers that are set on this client and setting the withCredentials
   /// flag.
   void registerAndDecorateRequest(BaseRequest request) {
-    request.headers = _headers;
+    request
+      ..headers = _headers
+      ..timeoutThreshold = timeoutThreshold;
     if (withCredentials == true) {
       request.withCredentials = true;
     }

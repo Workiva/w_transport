@@ -271,6 +271,35 @@ void _runCommonRequestSuiteFor(
       await first;
     });
 
+    test('timeoutThreshold is not enforced if not set', () async {
+      Uri uri = Uri.parse('/test');
+      BaseRequest request = requestFactory();
+      Future future = request.get(uri: uri);
+      await new Future.delayed(new Duration(milliseconds: 250));
+      MockTransports.http.completeRequest(request);
+      await future;
+    });
+
+    test('timeoutThreshold does nothing if request completes in time',
+        () async {
+      Uri uri = Uri.parse('/test');
+      BaseRequest request = requestFactory()
+        ..timeoutThreshold = new Duration(milliseconds: 500);
+      Future future = request.get(uri: uri);
+      await new Future.delayed(new Duration(milliseconds: 250));
+      MockTransports.http.completeRequest(request);
+      await future;
+    });
+
+    test('timeoutThreshold cancels the request if exceeded', () async {
+      Uri uri = Uri.parse('/test');
+      BaseRequest request = requestFactory()
+        ..timeoutThreshold = new Duration(milliseconds: 500);
+      expect(request.get(uri: uri), throwsA(predicate((error) {
+        return error is RequestException && error.error is TimeoutException;
+      })));
+    });
+
     test('configure() should throw if called after request has been sent',
         () async {
       Uri uri = Uri.parse('/test');

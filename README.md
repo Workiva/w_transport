@@ -24,6 +24,7 @@
     - [Bytes](#bytes)
     - [Content-Length, Content-Type and Encoding](#content-length-content-type-and-encoding)
     - [Canceling a Request](#canceling-a-request)
+    - [Timeout Threshold](#timeout-threshold)
     - [Credentials (browser only)](#credentials-browser-only)
   - [Request Types](#request-types)
     - [JsonRequest](#jsonrequest)
@@ -289,6 +290,18 @@ Request request = new Request();
 request.get(Uri.parse('/notes/'));
 ...
 request.abort();
+```
+
+##### Timeout Threshold
+A timeout threshold can be set on any request. If the request takes longer than
+the set duration, the request will be canceled.
+
+```dart
+Request request = new Request()
+  ..uri = Uri.parse('/notes/')
+  ..timeoutThreshold = new Duration(seconds: 15);
+request.get();
+// This will throw if the request takes longer than 15 seconds.
 ```
 
 ##### Credentials (browser only)

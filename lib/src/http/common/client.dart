@@ -85,7 +85,8 @@ abstract class CommonClient implements Client {
 
   /// Throws a [StateError] if this client has been closed.
   void verifyNotClosed() {
-    if (isClosed) throw new StateError(
-        'HTTP Client has been closed, can\'t create a new request.');
+    if (isClosed)
+      throw new StateError(
+          'HTTP Client has been closed, can\'t create a new request.');
   }
 }

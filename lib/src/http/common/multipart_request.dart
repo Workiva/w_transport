@@ -92,8 +92,8 @@ abstract class CommonMultipartRequest extends CommonRequest
     });
 
     files.forEach((name, file) {
-      if (file is! MultipartFile) throw new UnsupportedError(
-          'Illegal multipart file type: $file');
+      if (file is! MultipartFile)
+        throw new UnsupportedError('Illegal multipart file type: $file');
       length += _boundaryDelimiterLength;
       length += UTF8.encode(_multipartFileHeaders(name, file)).length;
       length += file.length;

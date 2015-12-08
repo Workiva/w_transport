@@ -269,8 +269,9 @@ abstract class CommonRequest extends Object
     FinalizedRequest finalizedRequest = new FinalizedRequest(
         method, uri, finalizedHeaders, finalizedBody, withCredentials);
 
-    if (isSent) throw new StateError(
-        'Request (${this.toString()}) has already been sent - it cannot be sent again.');
+    if (isSent)
+      throw new StateError(
+          'Request (${this.toString()}) has already been sent - it cannot be sent again.');
     isSent = true;
 
     return finalizedRequest;
@@ -283,8 +284,9 @@ abstract class CommonRequest extends Object
   /// should be considered frozen. If this request has been sent, this throws
   /// a [StateError].
   void verifyUnsent() {
-    if (isSent) throw new StateError(
-        'Request (${this.toString()}) has already been sent and can no longer be modified.');
+    if (isSent)
+      throw new StateError(
+          'Request (${this.toString()}) has already been sent and can no longer be modified.');
   }
 
   Future<Response> delete({Map<String, String> headers, Uri uri}) =>
@@ -361,8 +363,8 @@ abstract class CommonRequest extends Object
     if (uri != null) {
       this.uri = uri;
     }
-    if (this.uri == null || this.uri.toString().isEmpty) throw new StateError(
-        'Request: Cannot send a request without a URI.');
+    if (this.uri == null || this.uri.toString().isEmpty)
+      throw new StateError('Request: Cannot send a request without a URI.');
 
     FinalizedRequest finalizedRequest = await finalizeRequest(body);
     checkForCancellation();

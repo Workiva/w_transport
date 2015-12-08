@@ -33,9 +33,8 @@ Future<WSocket> handleWebSocketConnection(Uri uri,
     /// If this connection was expected, resolve it as planned.
     _WebSocketConnectExpectation expectation = matchingExpectations.first;
     _expectations.remove(expectation);
-    if (expectation.reject != null &&
-        expectation.reject) throw new WSocketException(
-        'Mock connection to $uri rejected.');
+    if (expectation.reject != null && expectation.reject)
+      throw new WSocketException('Mock connection to $uri rejected.');
     return expectation.connectTo;
   }
 

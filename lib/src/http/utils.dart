@@ -60,8 +60,8 @@ String mapToQuery(Map<String, String> map, {Encoding encoding}) {
 MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
   // Ensure the headers are case-insensitive.
   headers = new CaseInsensitiveMap.from(headers);
-  if (headers['content-type'] !=
-      null) return new MediaType.parse(headers['content-type']);
+  if (headers['content-type'] != null)
+    return new MediaType.parse(headers['content-type']);
   return new MediaType('application', 'octet-stream');
 }
 

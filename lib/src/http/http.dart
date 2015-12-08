@@ -65,9 +65,8 @@ class Http {
   static Future<Response> patch(Uri uri,
           {String body, Map<String, String> headers, bool withCredentials}) =>
       _createRequest(uri,
-          body: body,
-          headers: headers,
-          withCredentials: withCredentials).patch();
+              body: body, headers: headers, withCredentials: withCredentials)
+          .patch();
 
   /// Sends a POST request to [uri]. Includes request [headers] and a request
   /// [body] if given.
@@ -77,9 +76,8 @@ class Http {
   static Future<Response> post(Uri uri,
           {String body, Map<String, String> headers, bool withCredentials}) =>
       _createRequest(uri,
-          body: body,
-          headers: headers,
-          withCredentials: withCredentials).post();
+              body: body, headers: headers, withCredentials: withCredentials)
+          .post();
 
   /// Sends a PUT request to [uri]. Includes request [headers] and a request
   /// [body] if given.
@@ -89,7 +87,8 @@ class Http {
   static Future<Response> put(Uri uri,
           {String body, Map<String, String> headers, bool withCredentials}) =>
       _createRequest(uri,
-          body: body, headers: headers, withCredentials: withCredentials).put();
+              body: body, headers: headers, withCredentials: withCredentials)
+          .put();
 
   /// Sends a request to [uri] using the HTTP method specified by [method].
   /// Includes request [headers] and a request [body] if given.
@@ -99,9 +98,8 @@ class Http {
   static Future<Response> send(String method, Uri uri,
           {String body, Map<String, String> headers, bool withCredentials}) =>
       _createRequest(uri,
-          body: body,
-          headers: headers,
-          withCredentials: withCredentials).send(method);
+              body: body, headers: headers, withCredentials: withCredentials)
+          .send(method);
 
   /// Sends a DELETE request to [uri] and returns a [StreamedResponse]. Includes
   /// request [headers] if given.
@@ -151,9 +149,8 @@ class Http {
   static Future<StreamedResponse> streamPatch(Uri uri,
           {String body, Map<String, String> headers, bool withCredentials}) =>
       _createRequest(uri,
-          body: body,
-          headers: headers,
-          withCredentials: withCredentials).streamPatch();
+              body: body, headers: headers, withCredentials: withCredentials)
+          .streamPatch();
 
   /// Sends a POST request to [uri] and returns a [StreamedResponse]. Includes
   /// request [headers] and a request [body] if given.
@@ -163,9 +160,8 @@ class Http {
   static Future<StreamedResponse> streamPost(Uri uri,
           {String body, Map<String, String> headers, bool withCredentials}) =>
       _createRequest(uri,
-          body: body,
-          headers: headers,
-          withCredentials: withCredentials).streamPost();
+              body: body, headers: headers, withCredentials: withCredentials)
+          .streamPost();
 
   /// Sends a PUT request to [uri] and returns a [StreamedResponse]. Includes
   /// request [headers] and a request [body] if given.
@@ -175,9 +171,8 @@ class Http {
   static Future<StreamedResponse> streamPut(Uri uri,
           {String body, Map<String, String> headers, bool withCredentials}) =>
       _createRequest(uri,
-          body: body,
-          headers: headers,
-          withCredentials: withCredentials).streamPut();
+              body: body, headers: headers, withCredentials: withCredentials)
+          .streamPut();
 
   /// Sends a request to [uri] using the HTTP method specified by [method] and
   /// returns a [StreamedResponse]. Includes request [headers] and a request
@@ -188,9 +183,8 @@ class Http {
   static Future<StreamedResponse> streamSend(String method, Uri uri,
           {String body, Map<String, String> headers, bool withCredentials}) =>
       _createRequest(uri,
-          body: body,
-          headers: headers,
-          withCredentials: withCredentials).streamSend(method);
+              body: body, headers: headers, withCredentials: withCredentials)
+          .streamSend(method);
 
   static Request _createRequest(Uri uri,
       {String body, Map<String, String> headers, bool withCredentials}) {

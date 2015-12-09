@@ -23,6 +23,57 @@ import 'package:w_transport/w_transport_mock.dart';
 
 import '../../naming.dart';
 
+abstract class ReqIntMixin implements HttpInterceptor {
+  @override
+  Future<RequestPayload> interceptRequest(RequestPayload payload) async {
+    payload.request.headers['x-intercepted'] = 'true';
+    return payload;
+  }
+}
+
+abstract class RespIntMixin implements HttpInterceptor {
+  @override
+  Future<ResponsePayload> interceptResponse(ResponsePayload payload) async {
+    var newHeaders = new Map.from(payload.response.headers);
+    newHeaders['x-intercepted'] = 'true';
+    payload.response = new Response.fromString(
+        payload.response.status,
+        payload.response.statusText,
+        newHeaders,
+        (payload.response as Response).body.asString());
+    return payload;
+  }
+}
+
+class ReqInt extends HttpInterceptor with ReqIntMixin {}
+
+class RespInt extends HttpInterceptor with RespIntMixin {}
+
+class ReqRespInt extends HttpInterceptor with ReqIntMixin, RespIntMixin {}
+
+class AsyncInt extends HttpInterceptor {
+  @override
+  Future<RequestPayload> interceptRequest(RequestPayload payload) async {
+    await new Future.delayed(new Duration(milliseconds: 500));
+    payload.request.updateQuery({'interceptor': 'asyncint'});
+    return payload;
+  }
+
+  @override
+  Future<ResponsePayload> interceptResponse(ResponsePayload payload) async {
+    await new Future.delayed(new Duration(milliseconds: 500));
+    var headers = new Map.from(payload.response.headers);
+    headers['x-interceptor'] =
+        payload.request.uri.queryParameters['interceptor'];
+    payload.response = new Response.fromString(
+        payload.response.status,
+        payload.response.statusText,
+        headers,
+        (payload.response as Response).body.asString());
+    return payload;
+  }
+}
+
 Iterable<BaseRequest> createAllRequestTypes(Client client) {
   return [
     client.newFormRequest(),
@@ -158,6 +209,65 @@ void main() {
           }
           await request.get(uri: uri);
           await c.future;
+        }
+      });
+
+      test('addInterceptor() single interceptor (request only)', () async {
+        Client client = new Client()..addInterceptor(new ReqInt());
+        for (BaseRequest request in createAllRequestTypes(client)) {
+          Uri uri = Uri.parse('/test');
+          MockTransports.http
+              .expect('GET', uri, headers: {'x-intercepted': 'true'});
+          if (request is MultipartRequest) {
+            request.fields['f'] = 'v';
+          }
+          await request.get(uri: uri);
+        }
+      });
+
+      test('addInterceptor() single interceptor (response only)', () async {
+        Client client = new Client()..addInterceptor(new RespInt());
+        for (BaseRequest request in createAllRequestTypes(client)) {
+          Uri uri = Uri.parse('/test');
+          MockTransports.http.expect('GET', uri);
+          if (request is MultipartRequest) {
+            request.fields['f'] = 'v';
+          }
+          Response response = await request.get(uri: uri);
+          expect(response.headers, containsPair('x-intercepted', 'true'));
+        }
+      });
+
+      test('addInterceptor() single interceptor', () async {
+        Client client = new Client()..addInterceptor(new ReqRespInt());
+        for (BaseRequest request in createAllRequestTypes(client)) {
+          Uri uri = Uri.parse('/test');
+          MockTransports.http
+              .expect('GET', uri, headers: {'x-intercepted': 'true'});
+          if (request is MultipartRequest) {
+            request.fields['f'] = 'v';
+          }
+          Response response = await request.get(uri: uri);
+          expect(response.headers, containsPair('x-intercepted', 'true'));
+        }
+      });
+
+      test('addInterceptor() multiple interceptors', () async {
+        Client client = new Client()
+          ..addInterceptor(new ReqRespInt())
+          ..addInterceptor(new AsyncInt());
+        for (BaseRequest request in createAllRequestTypes(client)) {
+          Uri uri = Uri.parse('/test');
+          Uri augmentedUri =
+              uri.replace(queryParameters: {'interceptor': 'asyncint'});
+          MockTransports.http
+              .expect('GET', augmentedUri, headers: {'x-intercepted': 'true'});
+          if (request is MultipartRequest) {
+            request.fields['f'] = 'v';
+          }
+          Response response = await request.get(uri: uri);
+          expect(response.headers, containsPair('x-intercepted', 'true'));
+          expect(response.headers, containsPair('x-interceptor', 'asyncint'));
         }
       });
 

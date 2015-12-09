@@ -2,10 +2,21 @@
 
 ## 2.1.0
 
-**Features:**
+### Features
 
 - Added a `baseUri` field to `Client` that all requests from the client will
   inherit.
+
+- All request classes now support a timeout threshold via the `timeoutTreshold`
+  field. This was also added to the `Client` class and all requests created from
+  a client will inherit this value.
+
+- Request and response interception is now supported. This can be done directly
+  on a request instance, but more usefully through a `Client` instance. See
+  ["request & response interception"](README.md#request--response-interception)
+  and ["intercepting requests & responses from a client"](README.md#intercepting-requests--responses-from-a-client)
+  in the README.
+
 
 ## 2.0.0
 
@@ -79,6 +90,7 @@ This has been greatly improved by switching to two different response classes:
 - `StreamedResponse` - response meta data available synchronously, body
   available as a stream of bytes
 
+
 ## 1.0.1
 **Bug Fixes:**
 
@@ -89,6 +101,7 @@ This has been greatly improved by switching to two different response classes:
   upon assignment, allowing intermediate data assignments.
 - Verify w_transport configuration has been set before constructing a `WHttp`
   instance.
+
 
 ## 1.0.0
 - Initial version of w_transport: a fluent-style, platform-agnostic library with

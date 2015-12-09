@@ -18,6 +18,7 @@ import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
 
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/client.dart';
+import 'package:w_transport/src/http/http_interceptor.dart';
 
 /// HTTP client logic that can be shared across platforms.
 abstract class CommonClient implements Client {
@@ -46,6 +47,9 @@ abstract class CommonClient implements Client {
   /// List of outstanding requests.
   List<BaseRequest> _requests = [];
 
+  Pathway<RequestPayload> _requestPathway = new Pathway();
+  Pathway<ResponsePayload> _responsePathway = new Pathway();
+
   Map<String, String> get headers => _headers;
   set headers(Map<String, String> headers) {
     _headers = new CaseInsensitiveMap.from(headers);
@@ -54,6 +58,12 @@ abstract class CommonClient implements Client {
   /// Whether or not this HTTP client has been closed.
   @override
   bool get isClosed => _isClosed;
+
+  @override
+  void addInterceptor(HttpInterceptor interceptor) {
+    _requestPathway.addInterceptor(interceptor.interceptRequest);
+    _responsePathway.addInterceptor(interceptor.interceptResponse);
+  }
 
   /// Closes the client, canceling or closing any outstanding connections.
   @override
@@ -84,6 +94,17 @@ abstract class CommonClient implements Client {
       request.withCredentials = true;
     }
     _requests.add(request);
+    if (_requestPathway.hasInterceptors) {
+      request.requestInterceptor = (request) async {
+        await _requestPathway.process(new RequestPayload(request));
+      };
+    }
+    if (_responsePathway.hasInterceptors) {
+      request.responseInterceptor = (request, response, [exception]) async {
+        var payload = new ResponsePayload(request, response, exception);
+        return (await _responsePathway.process(payload)).response;
+      };
+    }
     request.done.then((_) {
       _requests.remove(request);
     });

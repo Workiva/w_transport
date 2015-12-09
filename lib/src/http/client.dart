@@ -14,6 +14,7 @@
 
 library w_transport.src.http.client;
 
+import 'package:w_transport/src/http/http_interceptor.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 
@@ -47,6 +48,8 @@ abstract class Client {
   /// applicable to requests in the browser, but does not adversely affect any
   /// other platform.
   bool withCredentials;
+
+  void addInterceptor(HttpInterceptor interceptor);
 
   /// Closes the client, cancelling or closing any outstanding connections.
   void close();

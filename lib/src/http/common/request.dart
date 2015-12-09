@@ -45,10 +45,6 @@ abstract class CommonRequest extends Object
   /// See [configure].
   Function configureFn;
 
-  /// Default content-type. This will depend on the type of request and should
-  /// be implemented by the subclasses.
-  MediaType get defaultContentType;
-
   /// [RequestProgress] stream controller for this HTTP request's download.
   StreamController<RequestProgress> downloadProgressController =
       new StreamController<RequestProgress>();
@@ -61,6 +57,13 @@ abstract class CommonRequest extends Object
 
   /// HTTP method ('GET', 'POST', etc).
   String method;
+
+  /// Request interceptor. Called right before request is sent.
+  RequestInterceptor _requestInterceptor;
+
+  /// Response interceptor. Called after response is received and before it is
+  /// delivered to the request sender.
+  ResponseInterceptor _responseInterceptor;
 
   /// Amount of time to wait for the request to finish before canceling it and
   /// considering it "timed out" (results in a [RequestException] being thrown).
@@ -133,6 +136,10 @@ abstract class CommonRequest extends Object
     _contentType = contentType;
   }
 
+  /// Default content-type. This will depend on the type of request and should
+  /// be implemented by the subclasses.
+  MediaType get defaultContentType;
+
   /// Future that resolves when the request has completed (successful or
   /// otherwise).
   Future<Null> get done => _done.future;
@@ -168,6 +175,27 @@ abstract class CommonRequest extends Object
   set headers(Map<String, String> headers) {
     verifyUnsent();
     _headers = new CaseInsensitiveMap.from(headers);
+  }
+
+  /// Request interceptor. Called right before request is sent.
+  RequestInterceptor get requestInterceptor => _requestInterceptor;
+
+  /// Set the request interceptor. Will throw if the request has already been
+  /// sent.
+  set requestInterceptor(RequestInterceptor interceptor) {
+    verifyUnsent();
+    _requestInterceptor = interceptor;
+  }
+
+  /// Response interceptor. Called after response is received and before it is
+  /// delivered to the request sender.
+  ResponseInterceptor get responseInterceptor => _responseInterceptor;
+
+  /// Set the response interceptor. Will throw if the request has already been
+  /// sent.
+  set responseInterceptor(ResponseInterceptor interceptor) {
+    verifyUnsent();
+    _responseInterceptor = interceptor;
   }
 
   /// [RequestProgress] stream for this HTTP request's upload.
@@ -366,10 +394,18 @@ abstract class CommonRequest extends Object
     if (this.uri == null || this.uri.toString().isEmpty)
       throw new StateError('Request: Cannot send a request without a URI.');
 
+    // Apply the request interceptor if set.
+    if (requestInterceptor != null) {
+      await requestInterceptor(this);
+      checkForCancellation();
+    }
+
+    // No further changes should be made to the request at this point.
     FinalizedRequest finalizedRequest = await finalizeRequest(body);
     checkForCancellation();
 
     BaseResponse response;
+    bool responseInterceptorThrew = false;
     try {
       await openRequest(client);
       checkForCancellation();
@@ -406,6 +442,8 @@ abstract class CommonRequest extends Object
 
       response = await responseCompleter.future;
       checkForCancellation(response: response);
+
+      // Response has been received, so the timeout timer can be canceled.
       if (timeout != null) {
         timeout.cancel();
       }
@@ -415,14 +453,32 @@ abstract class CommonRequest extends Object
           !(response.status >= 200 && response.status < 300)) {
         throw new RequestException(method, this.uri, this, response);
       }
+
+      // Apply the response interceptor if set.
+      if (responseInterceptor != null) {
+        try {
+          response = await responseInterceptor(finalizedRequest, response);
+        } catch (e) {
+          // We try to apply the response interceptor even if the request fails,
+          // but if the request failure was due to the response interceptor
+          // throwing, then we should avoid applying it again.
+          responseInterceptorThrew = true;
+          rethrow;
+        }
+      }
     } catch (e) {
       var error = e;
       if (!_done.isCompleted) {
         _done.complete();
       }
       cleanUp();
-      checkForCancellation(response: response);
       if (error is! RequestException) {
+        error = new RequestException(method, this.uri, this, response, error);
+      }
+      // Apply the response interceptor even in the event of failure, unless the
+      // response interceptor was the cause of failure.
+      if (responseInterceptor != null && !responseInterceptorThrew) {
+        response = await responseInterceptor(finalizedRequest, response, error);
         error = new RequestException(method, this.uri, this, response, error);
       }
       throw error;

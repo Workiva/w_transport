@@ -15,7 +15,7 @@ authors:
   - Trent Grover <trent.grover@workiva.com>
 homepage: https://github.com/Workiva/w_transport
 dependencies:
-  fluri: "^1.0.0"
+  fluri: "^1.1.0"
   http_parser: "^1.0.0"
   mime: "^0.9.3"
   sockjs_client:

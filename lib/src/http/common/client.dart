@@ -21,6 +21,23 @@ import 'package:w_transport/src/http/client.dart';
 
 /// HTTP client logic that can be shared across platforms.
 abstract class CommonClient implements Client {
+  /// A base URI that all requests created by this client should inherit.
+  @override
+  Uri baseUri;
+
+  /// Amount of time to wait for the request to finish before canceling it and
+  /// considering it "timed out" (results in a [RequestException] being thrown).
+  ///
+  /// If null, no timeout threshold will be enforced.
+  @override
+  Duration timeoutThreshold;
+
+  /// Whether or not to send the request with credentials. Only applicable to
+  /// requests in the browser, but does not adversely affect any other platform.
+  @override
+  bool withCredentials;
+
+  /// Headers to be inherited by all requests created from this client.
   CaseInsensitiveMap<String> _headers = new CaseInsensitiveMap();
 
   /// Whether or not this HTTP client has been closed.
@@ -37,18 +54,6 @@ abstract class CommonClient implements Client {
   /// Whether or not this HTTP client has been closed.
   @override
   bool get isClosed => _isClosed;
-
-  /// Amount of time to wait for the request to finish before canceling it and
-  /// considering it "timed out" (results in a [RequestException] being thrown).
-  ///
-  /// If null, no timeout threshold will be enforced.
-  @override
-  Duration timeoutThreshold;
-
-  /// Whether or not to send the request with credentials. Only applicable to
-  /// requests in the browser, but does not adversely affect any other platform.
-  @override
-  bool withCredentials;
 
   /// Closes the client, canceling or closing any outstanding connections.
   @override
@@ -72,6 +77,7 @@ abstract class CommonClient implements Client {
   /// flag.
   void registerAndDecorateRequest(BaseRequest request) {
     request
+      ..uri = baseUri
       ..headers = _headers
       ..timeoutThreshold = timeoutThreshold;
     if (withCredentials == true) {

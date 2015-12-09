@@ -26,6 +26,9 @@ import 'package:w_transport/src/platform_adapter.dart';
 abstract class Client {
   factory Client() => PlatformAdapter.retrieve().newClient();
 
+  /// A base URI that all requests from this client should inherit.
+  Uri baseUri;
+
   /// Get and set request headers that will be applied to all requests created
   /// by this HTTP client.
   Map<String, String> headers;

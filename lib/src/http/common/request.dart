@@ -20,19 +20,35 @@ import 'dart:convert';
 import 'package:fluri/fluri.dart';
 import 'package:http_parser/http_parser.dart';
 
+import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/base_request.dart';
+import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/request_dispatchers.dart';
 import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
+import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
 
 abstract class CommonRequest extends Object
     with FluriMixin
     implements BaseRequest, RequestDispatchers {
-  CommonRequest();
-  CommonRequest.withClient(client) : this.client = client;
+  CommonRequest() {
+    autoRetry = new RequestAutoRetry(this);
+  }
+
+  CommonRequest.fromClient(Client wTransportClient, client)
+      : this._wTransportClient = wTransportClient,
+        this.client = client {
+    autoRetry = new RequestAutoRetry(this);
+  }
+
+  /// Configuration of automatic request retrying for failed requests. Use this
+  /// object to enable or disable automatic retrying, configure the criteria
+  /// that determines whether or not a request should be retried, as well as the
+  /// number of retries to attempt.
+  RequestAutoRetry autoRetry;
 
   /// The underlying HTTP client instance. In the browser, this will be null
   /// because there is no HTTP client API available. In the VM, this will be an
@@ -97,6 +113,10 @@ abstract class CommonRequest extends Object
 
   /// Whether or not to send the request with credentials.
   bool _withCredentials = false;
+
+  /// [Client] instance from which this request was created. Used in [clone] to
+  /// correctly tie the clone to the same client.
+  Client _wTransportClient;
 
   /// Gets the content length of the request. If the size of the request is not
   /// known in advance, the content length should be null.
@@ -266,6 +286,51 @@ abstract class CommonRequest extends Object
     }
   }
 
+  /// Returns a clone of this request.
+  ///
+  /// Sub classes should override this, call super.clone() first to get the base
+  /// clone, and then add fields specific to their implementation.
+  BaseRequest clone() {
+    // StreamedRequests can't be cloned.
+    if (this is StreamedRequest) return null;
+
+    BaseRequest requestClone;
+    bool fromClient = _wTransportClient != null;
+    if (this is FormRequest) {
+      requestClone =
+          fromClient ? _wTransportClient.newFormRequest() : new FormRequest();
+    } else if (this is JsonRequest) {
+      requestClone =
+          fromClient ? _wTransportClient.newJsonRequest() : new JsonRequest();
+    } else if (this is MultipartRequest) {
+      requestClone = fromClient
+          ? _wTransportClient.newMultipartRequest()
+          : new MultipartRequest();
+    } else if (this is Request) {
+      requestClone =
+          fromClient ? _wTransportClient.newRequest() : new Request();
+    }
+
+    requestClone
+      ..autoRetry = autoRetry
+      ..headers = headers
+      ..requestInterceptor = requestInterceptor
+      ..responseInterceptor = responseInterceptor
+      ..timeoutThreshold = timeoutThreshold
+      ..uri = uri
+      ..withCredentials = withCredentials;
+
+    // Encoding cannot be set on MultipartRequests
+    if (this is! MultipartRequest) {
+      requestClone.encoding = encoding;
+    }
+
+    // Don't need to worry about content-type and -length because they can only
+    // be set on streamed requests, which can't be cloned.
+
+    return requestClone;
+  }
+
   /// Allows more advanced configuration of this request prior to sending.
   /// The supplied callback [configureRequest] should be called after opening,
   /// but prior to sending, this request. The [request] parameter will either
@@ -306,7 +371,7 @@ abstract class CommonRequest extends Object
   }
 
   @override
-  String toString() => '$method $uri ($contentType)';
+  String toString() => '$runtimeType: $method $uri ($contentType)';
 
   /// Verify that this request has not yet been sent. Once it has, all fields
   /// should be considered frozen. If this request has been sent, this throws
@@ -376,6 +441,28 @@ abstract class CommonRequest extends Object
       _send(method,
           body: body, headers: headers, streamResponse: true, uri: uri);
 
+  /// Determine if this request failure is eligible for retry.
+  Future<bool> _canRetry(
+      FinalizedRequest request, BaseResponse response) async {
+    if (response == null) return false;
+    if (!autoRetry.enabled ||
+        !autoRetry.supported ||
+        autoRetry.didExceedMaxNumberOfAttempts) return false;
+
+    bool willRetry = autoRetry.forHttpMethods.contains(method) &&
+        autoRetry.forStatusCodes.contains(response.status);
+    if (autoRetry.test != null) {
+      willRetry = await autoRetry.test(request, response, willRetry);
+    }
+    return willRetry;
+  }
+
+  /// Retry this request by creating and sending a clone.
+  Future<BaseResponse> _retry(bool streamResponse) async {
+    BaseRequest retry = clone();
+    return streamResponse ? retry.streamSend(method) : retry.send(method);
+  }
+
   /// Send the HTTP request:
   /// - Finalize request (method, uri, headers, and body)
   /// - Open the request (using a client, if available)
@@ -387,6 +474,12 @@ abstract class CommonRequest extends Object
   /// [RequestException] and rethrown.
   Future<BaseResponse> _send(String method,
       {body, Map<String, String> headers, bool streamResponse, Uri uri}) async {
+    autoRetry.numAttempts++;
+
+    // Use a completer so that an exception can be wrapped in a RequestException
+    // instance while still preserving the stack trace of the original error.
+    Completer c = new Completer();
+
     this.method = method;
     if (uri != null) {
       this.uri = uri;
@@ -398,6 +491,9 @@ abstract class CommonRequest extends Object
         this.headers[key] = value;
       });
     }
+
+    // Ensure non-null.
+    streamResponse = streamResponse == true;
 
     // Apply the request interceptor if set.
     if (requestInterceptor != null) {
@@ -471,27 +567,64 @@ abstract class CommonRequest extends Object
           rethrow;
         }
       }
-    } catch (e) {
+
+      c.complete();
+    } catch (e, stackTrace) {
       var error = e;
-      if (!_done.isCompleted) {
-        _done.complete();
-      }
-      cleanUp();
       if (error is! RequestException) {
         error = new RequestException(method, this.uri, this, response, error);
       }
+
       // Apply the response interceptor even in the event of failure, unless the
       // response interceptor was the cause of failure.
       if (responseInterceptor != null && !responseInterceptorThrew) {
         response = await responseInterceptor(finalizedRequest, response, error);
         error = new RequestException(method, this.uri, this, response, error);
       }
-      throw error;
+
+      // Store the failure for context.
+      autoRetry.failures.add(error);
+
+      // Attempt to retry the request if configuration and state permit it.
+      bool retrySucceeded = false;
+      if (await _canRetry(finalizedRequest, response)) {
+        Completer<BaseResponse> retryCompleter = new Completer();
+
+        _retry(streamResponse).then((retryResponse) {
+          if (!retryCompleter.isCompleted) {
+            response = retryResponse;
+            retrySucceeded = true;
+            retryCompleter.complete();
+          }
+        }, onError: (retryError, retryStackTrace) {
+          if (!retryCompleter.isCompleted) {
+            error = retryError;
+            // TODO: Combine stack trace from above with the retry stack trace?
+            // TODO: Or is replacing with the retry stack trace enough?
+            retryCompleter.complete();
+          }
+        });
+
+        // Listen for cancellation and break out of the retry early if
+        // cancellation occurs before the retry has finished.
+        _cancellationCompleter.future.then((_) {
+          if (!retryCompleter.isCompleted) {
+            retryCompleter.complete();
+          }
+        });
+
+        await retryCompleter.future;
+        checkForCancellation(response: response);
+      }
+
+      retrySucceeded ? c.complete() : c.completeError(error, stackTrace);
+    } finally {
+      cleanUp();
+      if (!_done.isCompleted) {
+        _done.complete();
+      }
     }
-    if (!_done.isCompleted) {
-      _done.complete();
-    }
-    cleanUp();
+    await c.future;
     checkForCancellation(response: response);
     return response;
   }

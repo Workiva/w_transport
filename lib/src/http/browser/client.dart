@@ -30,7 +30,7 @@ class BrowserClient extends CommonClient implements Client {
   @override
   FormRequest newFormRequest() {
     verifyNotClosed();
-    FormRequest request = new BrowserFormRequest();
+    FormRequest request = new BrowserFormRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -40,7 +40,7 @@ class BrowserClient extends CommonClient implements Client {
   @override
   JsonRequest newJsonRequest() {
     verifyNotClosed();
-    JsonRequest request = new BrowserJsonRequest();
+    JsonRequest request = new BrowserJsonRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -50,7 +50,7 @@ class BrowserClient extends CommonClient implements Client {
   @override
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
-    MultipartRequest request = new BrowserMultipartRequest();
+    MultipartRequest request = new BrowserMultipartRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -60,7 +60,7 @@ class BrowserClient extends CommonClient implements Client {
   @override
   Request newRequest() {
     verifyNotClosed();
-    Request request = new BrowserPlainTextRequest();
+    Request request = new BrowserPlainTextRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -70,7 +70,7 @@ class BrowserClient extends CommonClient implements Client {
   @override
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
-    StreamedRequest request = new BrowserStreamedRequest();
+    StreamedRequest request = new BrowserStreamedRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }

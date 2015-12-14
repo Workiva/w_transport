@@ -29,7 +29,7 @@ class MockClient extends CommonClient implements Client {
   @override
   FormRequest newFormRequest() {
     verifyNotClosed();
-    FormRequest request = new MockFormRequest();
+    FormRequest request = new MockFormRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -39,7 +39,7 @@ class MockClient extends CommonClient implements Client {
   @override
   JsonRequest newJsonRequest() {
     verifyNotClosed();
-    JsonRequest request = new MockJsonRequest();
+    JsonRequest request = new MockJsonRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -49,7 +49,7 @@ class MockClient extends CommonClient implements Client {
   @override
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
-    MultipartRequest request = new MockMultipartRequest();
+    MultipartRequest request = new MockMultipartRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -59,7 +59,7 @@ class MockClient extends CommonClient implements Client {
   @override
   Request newRequest() {
     verifyNotClosed();
-    Request request = new MockPlainTextRequest();
+    Request request = new MockPlainTextRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -69,7 +69,7 @@ class MockClient extends CommonClient implements Client {
   @override
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
-    StreamedRequest request = new MockStreamedRequest();
+    StreamedRequest request = new MockStreamedRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }

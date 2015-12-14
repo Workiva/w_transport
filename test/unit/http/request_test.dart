@@ -30,30 +30,66 @@ void main() {
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    _runCommonRequestSuiteFor('FormRequest', ({bool withBody: false}) {
+    formReqFactory({bool withBody: false}) {
       if (!withBody) return new FormRequest();
       return new FormRequest()..fields['field'] = 'value';
-    });
-    _runCommonRequestSuiteFor('JsonRequest', ({bool withBody: false}) {
+    }
+    jsonReqFactory({bool withBody: false}) {
       if (!withBody) return new JsonRequest();
       return new JsonRequest()
         ..body = [
           {'field': 'value'}
         ];
-    });
-    _runCommonRequestSuiteFor('MultipartRequest', ({bool withBody}) {
+    }
+    multipartReqFactory({bool withBody}) {
       // Multipart requests can't be empty.
       return new MultipartRequest()..fields['field'] = 'value';
-    });
-    _runCommonRequestSuiteFor('Request', ({bool withBody: false}) {
+    }
+    reqFactory({bool withBody: false}) {
       if (!withBody) return new Request();
       return new Request()..body = 'body';
-    });
-    _runCommonRequestSuiteFor('StreamedRequest', ({bool withBody: false}) {
+    }
+    streamedReqFactory({bool withBody: false}) {
       if (!withBody) return new StreamedRequest();
       return new StreamedRequest()
         ..body = new Stream.fromIterable([UTF8.encode('bytes')])
         ..contentLength = UTF8.encode('bytes').length;
+    }
+
+    _runCommonRequestSuiteFor('FormRequest', formReqFactory);
+    _runCommonRequestSuiteFor('JsonRequest', jsonReqFactory);
+    _runCommonRequestSuiteFor('MultipartRequest', multipartReqFactory);
+    _runCommonRequestSuiteFor('Request', reqFactory);
+    _runCommonRequestSuiteFor('StreamedRequest', streamedReqFactory);
+
+    _runAutoRetryTestSuiteFor('FormRequest', formReqFactory);
+    _runAutoRetryTestSuiteFor('JsonRequest', jsonReqFactory);
+    _runAutoRetryTestSuiteFor('MultipartRequest', multipartReqFactory);
+    _runAutoRetryTestSuiteFor('Request', reqFactory);
+
+    test('clone() of request from client', () async {
+      Uri requestUri = Uri.parse('/mock/request');
+
+      // Hold the requests long enough to let the client cancel them on close
+      MockTransports.http.when(requestUri, (request) async {
+        await new Future.delayed(new Duration(seconds: 10));
+      }, method: 'GET');
+
+      Client client = new Client();
+      var clientReqs = [
+        client.newFormRequest(),
+        client.newJsonRequest(),
+        client.newMultipartRequest()..fields['f1'] = 'v1',
+        client.newRequest()
+      ];
+      for (BaseRequest orig in clientReqs) {
+        BaseRequest clone = orig.clone()..uri = requestUri;
+        expect(clone.get(), throwsA(predicate((exception) {
+          return exception is RequestException &&
+              exception.toString().contains('client was closed');
+        })));
+      }
+      client.close();
     });
   });
 }
@@ -282,19 +318,17 @@ void _runCommonRequestSuiteFor(
     });
 
     test('should throw if status code is non-200', () async {
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri,
+      MockTransports.http.expect('GET', requestUri,
           respondWith: new MockResponse.internalServerError());
       BaseRequest request = requestFactory();
-      expect(
-          request.get(uri: uri), throwsA(new isInstanceOf<RequestException>()));
+      expect(request.get(uri: requestUri),
+          throwsA(new isInstanceOf<RequestException>()));
     });
 
     test('headers should be unmodifiable once sent', () async {
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri);
+      MockTransports.http.expect('GET', requestUri);
       BaseRequest request = requestFactory()
-        ..uri = uri
+        ..uri = requestUri
         ..headers = {'x-custom': 'value'};
       await request.get();
       expect(() {
@@ -306,33 +340,30 @@ void _runCommonRequestSuiteFor(
     });
 
     test('withCredentials flag should be unmodifiable once sent', () async {
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri);
+      MockTransports.http.expect('GET', requestUri);
       BaseRequest request = requestFactory();
-      await request.get(uri: uri);
+      await request.get(uri: requestUri);
       expect(() {
         request.withCredentials = true;
       }, throwsStateError);
     });
 
     test('request can only be sent once', () async {
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri);
+      MockTransports.http.expect('GET', requestUri);
       BaseRequest request = requestFactory();
-      Future first = request.get(uri: uri);
-      expect(request.get(uri: uri), throwsStateError);
+      Future first = request.get(uri: requestUri);
+      expect(request.get(uri: requestUri), throwsStateError);
       await first;
     });
 
     test('requestInterceptor allows async modification of request', () async {
-      Uri uri = Uri.parse('/test');
       MockTransports.http
-          .expect('GET', uri, headers: {'x-intercepted': 'true'});
+          .expect('GET', requestUri, headers: {'x-intercepted': 'true'});
       BaseRequest request = requestFactory();
       request.requestInterceptor = (BaseRequest request) async {
         request.headers['x-intercepted'] = 'true';
       };
-      await request.get(uri: uri);
+      await request.get(uri: requestUri);
     });
 
     test(
@@ -349,89 +380,82 @@ void _runCommonRequestSuiteFor(
 
     test('setting requestInterceptor throws if request has been sent',
         () async {
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri);
+      MockTransports.http.expect('GET', requestUri);
       BaseRequest request = requestFactory();
-      await request.get(uri: uri);
+      await request.get(uri: requestUri);
       expect(() {
         request.requestInterceptor = (request) async {};
       }, throwsStateError);
     });
 
     test('responseInterceptor gets FinalizedRequest', () async {
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri);
+      MockTransports.http.expect('GET', requestUri);
       BaseRequest request = requestFactory();
       request.responseInterceptor =
           (FinalizedRequest request, response, [exception]) async {
         expect(request.method, equals('GET'));
-        expect(request.uri, equals(uri));
+        expect(request.uri, equals(requestUri));
       };
-      await request.get(uri: uri);
+      await request.get(uri: requestUri);
     });
 
     test('responseInterceptor gets BaseResponse', () async {
-      Uri uri = Uri.parse('/test');
       MockResponse mockResponse = new MockResponse.ok(body: 'original');
-      MockTransports.http.expect('GET', uri, respondWith: mockResponse);
+      MockTransports.http.expect('GET', requestUri, respondWith: mockResponse);
       BaseRequest request = requestFactory();
       request.responseInterceptor =
           (request, BaseResponse response, [exception]) async {
         expect(response, new isInstanceOf<Response>());
         expect((response as Response).body.asString(), equals('original'));
       };
-      await request.get(uri: uri);
+      await request.get(uri: requestUri);
     });
 
     test('responseInterceptor gets no RequestException on successful request',
         () async {
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri);
+      MockTransports.http.expect('GET', requestUri);
       BaseRequest request = requestFactory();
       request.responseInterceptor = (request, response, [exception]) async {
         expect(exception, isNull);
       };
-      await request.get(uri: uri);
+      await request.get(uri: requestUri);
     });
 
     test('responseInterceptor gets RequestException on failed request',
         () async {
-      Uri uri = Uri.parse('/test');
       MockTransports.http
-          .expect('GET', uri, failWith: new Exception('mock failure'));
+          .expect('GET', requestUri, failWith: new Exception('mock failure'));
       BaseRequest request = requestFactory();
       request.responseInterceptor =
           (request, response, [RequestException exception]) async {
         expect(exception, isNotNull);
         expect(exception.toString(), contains('mock failure'));
       };
-      expect(request.get(uri: uri), throws);
+      expect(request.get(uri: requestUri), throws);
     });
 
     test('responseInterceptor allows replacement of BaseResponse', () async {
-      Uri uri = Uri.parse('/test');
       MockResponse mockResponse = new MockResponse.ok(body: 'original');
-      MockTransports.http.expect('GET', uri, respondWith: mockResponse);
+      MockTransports.http.expect('GET', requestUri, respondWith: mockResponse);
       BaseRequest request = requestFactory();
       request.responseInterceptor =
           (request, BaseResponse response, [exception]) async {
         return new Response.fromString(
             response.status, response.statusText, response.headers, 'modified');
       };
-      Response response = await request.get(uri: uri);
+      Response response = await request.get(uri: requestUri);
       expect(response.body.asString(), equals('modified'));
     });
 
     test(
         'if responseInterceptor throws, the error should be wrapped in a RequestException',
         () async {
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri);
+      MockTransports.http.expect('GET', requestUri);
       BaseRequest request = requestFactory();
       request.responseInterceptor = (request, response, [exception]) async {
         throw new Exception('interceptor failure');
       };
-      expect(request.get(uri: uri), throwsA(predicate((error) {
+      expect(request.get(uri: requestUri), throwsA(predicate((error) {
         return error is RequestException &&
             error.toString().contains('interceptor failure');
       })));
@@ -439,19 +463,17 @@ void _runCommonRequestSuiteFor(
 
     test('setting responseInterceptor throws if request has been sent',
         () async {
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri);
+      MockTransports.http.expect('GET', requestUri);
       BaseRequest request = requestFactory();
-      await request.get(uri: uri);
+      await request.get(uri: requestUri);
       expect(() {
         request.responseInterceptor = (request, response, [exception]) async {};
       }, throwsStateError);
     });
 
     test('timeoutThreshold is not enforced if not set', () async {
-      Uri uri = Uri.parse('/test');
       BaseRequest request = requestFactory();
-      Future future = request.get(uri: uri);
+      Future future = request.get(uri: requestUri);
       await new Future.delayed(new Duration(milliseconds: 250));
       MockTransports.http.completeRequest(request);
       await future;
@@ -459,43 +481,425 @@ void _runCommonRequestSuiteFor(
 
     test('timeoutThreshold does nothing if request completes in time',
         () async {
-      Uri uri = Uri.parse('/test');
       BaseRequest request = requestFactory()
         ..timeoutThreshold = new Duration(milliseconds: 500);
-      Future future = request.get(uri: uri);
+      Future future = request.get(uri: requestUri);
       await new Future.delayed(new Duration(milliseconds: 250));
       MockTransports.http.completeRequest(request);
       await future;
     });
 
     test('timeoutThreshold cancels the request if exceeded', () async {
-      Uri uri = Uri.parse('/test');
       BaseRequest request = requestFactory()
         ..timeoutThreshold = new Duration(milliseconds: 500);
-      expect(request.get(uri: uri), throwsA(predicate((error) {
+      expect(request.get(uri: requestUri), throwsA(predicate((error) {
         return error is RequestException && error.error is TimeoutException;
       })));
     });
 
     test('configure() should throw if called after request has been sent',
         () async {
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri);
+      MockTransports.http.expect('GET', requestUri);
       BaseRequest request = requestFactory();
-      await request.get(uri: uri);
+      await request.get(uri: requestUri);
       expect(() {
         request.configure((_) {});
       }, throwsStateError);
     });
 
     test('toString()', () async {
-      Uri uri = Uri.parse('/test');
-      MockTransports.http.expect('GET', uri);
+      MockTransports.http.expect('GET', requestUri);
       BaseRequest request = requestFactory();
-      await request.get(uri: uri);
+      await request.get(uri: requestUri);
       expect(request.toString(), contains('GET'));
-      expect(request.toString(), contains(uri.toString()));
+      expect(request.toString(), contains(requestUri.toString()));
       expect(request.toString(), contains(request.contentType.toString()));
+    });
+  });
+}
+
+_runAutoRetryTestSuiteFor(
+    String name, BaseRequest requestFactory({bool withBody})) {
+  group(name, () {
+    Uri requestUri = Uri.parse('/mock/request');
+
+    setUp(() {
+      MockTransports.reset();
+      configureWTransportForTest();
+    });
+
+    tearDown(() {
+      MockTransports.verifyNoOutstandingExceptions();
+    });
+
+    test('clone()', () {
+      var headers = {'x-custom': 'header'};
+      var reqInt = (request) async {};
+      var respInt = (request, response, [exception]) async {};
+      var tt = new Duration(seconds: 10);
+      var encoding = LATIN1;
+
+      BaseRequest orig = requestFactory()
+        ..autoRetry.enabled = true
+        ..headers = headers
+        ..requestInterceptor = reqInt
+        ..responseInterceptor = respInt
+        ..timeoutThreshold = tt
+        ..uri = requestUri
+        ..withCredentials = true;
+      if (orig is! MultipartRequest) {
+        orig.encoding = encoding;
+      }
+
+      BaseRequest clone = orig.clone();
+      expect(identical(clone.autoRetry, orig.autoRetry), isTrue);
+      expect(clone.headers, equals(headers));
+      expect(clone.requestInterceptor, equals(reqInt));
+      expect(clone.responseInterceptor, equals(respInt));
+      expect(clone.timeoutThreshold, equals(tt));
+      expect(clone.uri, equals(requestUri));
+      if (orig is! MultipartRequest) {
+        expect(clone.encoding, equals(encoding));
+      }
+    });
+
+    group('auto retry', () {
+      test('disabled', () async {
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        BaseRequest request = requestFactory();
+        expect(request.get(uri: requestUri),
+            throwsA(new isInstanceOf<RequestException>()));
+        await request.done;
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test('no retries', () async {
+        MockTransports.http.expect('GET', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        await request.get(uri: requestUri);
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures, isEmpty);
+      });
+
+      test('1 successful retry', () async {
+        // 1st request = 500, 2nd request = 200
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        await request.get(uri: requestUri);
+        expect(request.autoRetry.numAttempts, equals(2));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test('1 failed retry, 1 successful retry', () async {
+        // 1st two requests = 500, 3rd request = 200
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        await request.get(uri: requestUri);
+        expect(request.autoRetry.numAttempts, equals(3));
+        expect(request.autoRetry.failures.length, equals(2));
+      });
+
+      test('maximum retries exceeded', () async {
+        // All 3 requests 500
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        expect(request.get(uri: requestUri),
+            throwsA(new isInstanceOf<RequestException>()));
+        await request.done;
+        expect(request.autoRetry.numAttempts, equals(3));
+        expect(request.autoRetry.failures.length, equals(3));
+      });
+
+      test('1 failed retry that is not eligible for retry', () async {
+        // 1st request = 500, 2nd request = 404, no 3rd request because 404
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.notFound());
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        expect(request.get(uri: requestUri), throws);
+        await request.done;
+        expect(request.autoRetry.numAttempts, equals(2));
+        expect(request.autoRetry.failures.length, equals(2));
+      });
+
+      test('request ineligible for retry due to HTTP method', () async {
+        // 1st request = POST, so no retry
+        MockTransports.http.expect('POST', requestUri,
+            respondWith: new MockResponse.internalServerError());
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        expect(request.post(uri: requestUri), throws);
+        await request.done;
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test('request ineligible for retry due to response status code',
+          () async {
+        // 1st request = 404, so no retry
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.notFound());
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        expect(request.get(uri: requestUri), throws);
+        await request.done;
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test('request ineligible for retry due to custom test', () async {
+        // 1st request has a header that tells our custom test to not retry
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError(
+                headers: {'x-retry': 'no'}));
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2
+          ..test = (request, BaseResponse response, willRetry) async =>
+              response.headers['x-retry'] == 'yes';
+
+        expect(request.get(uri: requestUri), throws);
+        await request.done;
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test('retries only 500, 502, 503, 504 by default', () async {
+        Future expectNumRetries(int num, {shouldSucceed: true}) async {
+          BaseRequest request = requestFactory();
+          request.autoRetry
+            ..enabled = true
+            ..maxRetries = num;
+
+          if (shouldSucceed) {
+            await request.get(uri: requestUri);
+          } else {
+            expect(request.get(uri: requestUri), throws);
+          }
+          await request.done;
+          expect(request.autoRetry.numAttempts, equals(num + 1));
+        }
+
+        MockTransports.http
+            .expect('GET', requestUri, respondWith: new MockResponse(500));
+        MockTransports.http.expect('GET', requestUri);
+        await expectNumRetries(1);
+
+        MockTransports.http
+            .expect('GET', requestUri, respondWith: new MockResponse(502));
+        MockTransports.http.expect('GET', requestUri);
+        await expectNumRetries(1);
+
+        MockTransports.http
+            .expect('GET', requestUri, respondWith: new MockResponse(503));
+        MockTransports.http.expect('GET', requestUri);
+        await expectNumRetries(1);
+
+        MockTransports.http
+            .expect('GET', requestUri, respondWith: new MockResponse(504));
+        MockTransports.http.expect('GET', requestUri);
+        await expectNumRetries(1);
+
+        MockTransports.http
+            .expect('GET', requestUri, respondWith: new MockResponse(404));
+        await expectNumRetries(0, shouldSucceed: false);
+      });
+
+      test('retries only GET, HEAD, OPTIONS by default', () async {
+        Future expectNumRetries(String method, int num,
+            {shouldSucceed: true}) async {
+          BaseRequest request = requestFactory();
+          request.autoRetry
+            ..enabled = true
+            ..maxRetries = num;
+
+          if (shouldSucceed) {
+            await request.send(method, uri: requestUri);
+          } else {
+            expect(request.send(method, uri: requestUri), throws);
+          }
+
+          await request.done;
+          expect(request.autoRetry.numAttempts, equals(num + 1));
+        }
+
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri);
+        await expectNumRetries('GET', 1);
+
+        MockTransports.http.expect('HEAD', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('HEAD', requestUri);
+        await expectNumRetries('HEAD', 1);
+
+        MockTransports.http.expect('OPTIONS', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('OPTIONS', requestUri);
+        await expectNumRetries('OPTIONS', 1);
+
+        MockTransports.http.expect('DELETE', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        await expectNumRetries('DELETE', 0, shouldSucceed: false);
+
+        MockTransports.http.expect('PATCH', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        await expectNumRetries('PATCH', 0, shouldSucceed: false);
+
+        MockTransports.http.expect('POST', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        await expectNumRetries('POST', 0, shouldSucceed: false);
+
+        MockTransports.http.expect('PUT', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        await expectNumRetries('PUT', 0, shouldSucceed: false);
+      });
+
+      test('custom status code', () async {
+        // 1st request = 408 (request timeout), 2nd request = 200
+        MockTransports.http
+            .expect('GET', requestUri, respondWith: new MockResponse(408));
+        MockTransports.http.expect('GET', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2
+          ..forStatusCodes = [408];
+
+        await request.get(uri: requestUri);
+        expect(request.autoRetry.numAttempts, equals(2));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test('custom HTTP method', () async {
+        // 1st request = DELETE 500, 2nd request = 200
+        MockTransports.http.expect('DELETE', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('DELETE', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2
+          ..forHttpMethods = ['DELETE'];
+
+        await request.delete(uri: requestUri);
+        expect(request.autoRetry.numAttempts, equals(2));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test('custom retry eligibility test', () async {
+        // 1st request = 500, 2nd request = 200
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2
+          ..test = (request, response, willRetry) async => willRetry;
+
+        await request.get(uri: requestUri);
+        expect(request.autoRetry.numAttempts, equals(2));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test('custom retry eligibility test defers to rest of configuration',
+          () async {
+        // 1st request = 404
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.notFound());
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2
+          ..test = (request, response, willRetry) async => willRetry;
+
+        expect(request.get(uri: requestUri),
+            throwsA(new isInstanceOf<RequestException>()));
+        await request.done;
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test(
+          'request cancellation during a retry attempt should cancel the retry',
+          () async {
+        // 1st request = 500, 2nd request hangs indefinitely
+        int c = 0;
+        MockTransports.http.when(requestUri, (request) async {
+          if (++c == 1) {
+            return new MockResponse.internalServerError();
+          } else {
+            await new Future.delayed(new Duration(seconds: 10));
+          }
+        }, method: 'GET');
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        Future future = request.get(uri: requestUri);
+        await new Future.delayed(new Duration(milliseconds: 500));
+        request.abort();
+        expect(future, throwsA(predicate((exception) {
+          return exception is RequestException &&
+              exception.toString().contains('Request canceled');
+        })));
+      });
     });
   });
 }

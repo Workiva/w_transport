@@ -55,6 +55,10 @@ abstract class FormRequest extends BaseRequest {
   set fields(Map<String, String> fields);
 
   factory FormRequest() => PlatformAdapter.retrieve().newFormRequest();
+
+  /// Returns an clone of this request.
+  @override
+  FormRequest clone();
 }
 
 /// Representation of an HTTP request where the request body is a json-encodable
@@ -89,6 +93,10 @@ abstract class JsonRequest extends BaseRequest {
   set body(dynamic body);
 
   factory JsonRequest() => PlatformAdapter.retrieve().newJsonRequest();
+
+  /// Returns an clone of this request.
+  @override
+  JsonRequest clone();
 }
 
 /// Representation of an HTTP request where the request body is comprised of
@@ -96,27 +104,32 @@ abstract class JsonRequest extends BaseRequest {
 ///
 /// This request will be sent with content-type: multipart/form-data
 abstract class MultipartRequest extends BaseRequest {
-  /// Get this request's text fields as a Map of field names to their values.
+  /// Get and set this request's text fields as a Map of field names to their
+  /// values.
   ///
   /// The returned `Map` is modifiable. Fields can be set like so:
   ///
   ///     MultipartRequest request = new MultipartRequest()
   ///       ..fields['key1'] = 'value1'
   ///       ..fields['key2'] = 'value2';
-  Map<String, String> get fields;
+  Map<String, String> fields;
 
-  /// Get this request's file fields as a Map of field names to files. The value
-  /// can be a [MultipartFile] or, if in the browser, a [Blob].
+  /// Get and set this request's file fields as a Map of field names to files.
+  /// The value can be a [MultipartFile] or, if in the browser, a [Blob].
   ///
   /// The returned `Map` is modifiable. Files can be set like so:
   ///
   ///     MultipartFile file = new MultipartFile(...);
   ///     MultipartRequest request = new MultipartRequest()
   ///       ..files['file1'] = file;
-  Map<String, dynamic> get files;
+  Map<String, dynamic> files;
 
   factory MultipartRequest() =>
       PlatformAdapter.retrieve().newMultipartRequest();
+
+  /// Returns an clone of this request.
+  @override
+  MultipartRequest clone();
 }
 
 /// Representation of an HTTP request where the request body is plain-text.
@@ -144,6 +157,10 @@ abstract class Request extends BaseRequest {
   set bodyBytes(List<int> bytes);
 
   factory Request() => PlatformAdapter.retrieve().newRequest();
+
+  /// Returns an clone of this request.
+  @override
+  Request clone();
 }
 
 /// Representation of an HTTP request where the request body is sent
@@ -161,4 +178,9 @@ abstract class StreamedRequest extends BaseRequest {
   set body(Stream<List<int>> byteStream);
 
   factory StreamedRequest() => PlatformAdapter.retrieve().newStreamedRequest();
+
+  /// Cloning a StreamedRequest is not supported. This will throw an
+  /// [UnsupportedError].
+  @override
+  StreamedRequest clone();
 }

@@ -19,6 +19,7 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 
+import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/requests.dart';
@@ -26,7 +27,8 @@ import 'package:w_transport/src/http/utils.dart' as http_utils;
 
 abstract class CommonFormRequest extends CommonRequest implements FormRequest {
   CommonFormRequest() : super();
-  CommonFormRequest.withClient(client) : super.withClient(client);
+  CommonFormRequest.fromClient(Client wTransportClient, client)
+      : super.fromClient(wTransportClient, client);
 
   Map<String, String> _fields = {};
 
@@ -50,6 +52,11 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
 
   Uint8List get _encodedQuery =>
       encoding.encode(http_utils.mapToQuery(fields, encoding: encoding));
+
+  @override
+  FormRequest clone() {
+    return (super.clone() as FormRequest)..fields = fields;
+  }
 
   @override
   Future<HttpBody> finalizeBody([body]) async {

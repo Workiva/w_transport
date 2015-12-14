@@ -16,6 +16,7 @@ library w_transport.tool.server.handlers.test.http.routes;
 
 import '../../../handler.dart';
 import '404_handler.dart';
+import 'custom.dart';
 import 'download.dart';
 import 'ping_handler.dart';
 import 'echo.dart';
@@ -26,6 +27,7 @@ import 'upload.dart';
 String pathPrefix = '/test/http';
 Map<String, Handler> testHttpIntegrationRoutes = {
   '$pathPrefix/404': new FourzerofourHandler(),
+  '$pathPrefix/custom': new CustomHandler(),
   '$pathPrefix/download': new DownloadHandler(),
   '$pathPrefix/echo': new EchoHandler(),
   '$pathPrefix/ping': new PingHandler(),

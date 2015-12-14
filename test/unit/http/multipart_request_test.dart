@@ -57,6 +57,18 @@ void main() {
         expect(request.post(uri: Uri.parse('/test')), throwsUnsupportedError);
       });
 
+      test('body can be set incrementally or all at once', () {
+        MultipartRequest request = new MultipartRequest();
+        request.fields = {'field1': 'v1'};
+        expect(request.fields, containsPair('field1', 'v1'));
+        request.files = {'file1': 'f1'};
+        expect(request.files, containsPair('file1', 'f1'));
+        request.fields['field2'] = 'v2';
+        expect(request.fields, containsPair('field2', 'v2'));
+        request.files['file2'] = 'f2';
+        expect(request.files, containsPair('file2', 'f2'));
+      });
+
       test('body should be unmodifiable once sent', () async {
         Uri uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
@@ -69,6 +81,12 @@ void main() {
         expect(() {
           request.files['too'] = 'late';
         }, throwsUnsupportedError);
+        expect(() {
+          request.fields = {'too': 'late'};
+        }, throwsStateError);
+        expect(() {
+          request.files = {'too': 'late'};
+        }, throwsStateError);
       });
 
       test('setting encoding should be unsupported', () {
@@ -76,6 +94,18 @@ void main() {
         expect(() {
           request.encoding = UTF8;
         }, throwsUnsupportedError);
+      });
+
+      test('clone()', () {
+        var fields = {'f1': 'v1', 'f2': 'v2'};
+        MultipartRequest orig = new MultipartRequest()..fields = fields;
+        MultipartRequest clone = orig.clone();
+        expect(clone.fields, equals(fields));
+      });
+
+      test('autoRetry with files not supported', () {
+        MultipartRequest request = new MultipartRequest()..files['k'] = 'f';
+        expect(request.autoRetry.supported, isFalse);
       });
     });
   });

@@ -19,13 +19,15 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 
+import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/requests.dart';
 
 abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   CommonPlainTextRequest() : super();
-  CommonPlainTextRequest.withClient(client) : super.withClient(client);
+  CommonPlainTextRequest.fromClient(Client wTransportClient, client)
+      : super.fromClient(wTransportClient, client);
 
   String _body;
 
@@ -67,6 +69,17 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   @override
   MediaType get defaultContentType =>
       new MediaType('text', 'plain', {'charset': encoding.name});
+
+  @override
+  Request clone() {
+    Request requestClone = super.clone() as Request;
+    if (_body != null) {
+      requestClone.body = body;
+    } else if (_bodyBytes != null) {
+      requestClone.bodyBytes = bodyBytes;
+    }
+    return requestClone;
+  }
 
   @override
   Future<HttpBody> finalizeBody([body]) async {

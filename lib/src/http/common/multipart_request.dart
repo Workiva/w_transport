@@ -20,6 +20,7 @@ import 'dart:math';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 
+import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/multipart_file.dart';
@@ -71,7 +72,8 @@ abstract class CommonMultipartRequest extends CommonRequest
   Map<String, dynamic> _files = {};
 
   CommonMultipartRequest() : super();
-  CommonMultipartRequest.withClient(client) : super.withClient(client);
+  CommonMultipartRequest.fromClient(Client wTransportClient, client)
+      : super.fromClient(wTransportClient, client);
 
   String get boundary {
     if (_boundary == null) {
@@ -123,8 +125,25 @@ abstract class CommonMultipartRequest extends CommonRequest
   Map<String, String> get fields =>
       isSent ? new Map.unmodifiable(_fields) : _fields;
 
+  set fields(Map<String, String> fields) {
+    verifyUnsent();
+    _fields = new Map.from(fields);
+  }
+
   Map<String, dynamic> get files =>
       isSent ? new Map.unmodifiable(_files) : _files;
+
+  set files(Map<String, dynamic> files) {
+    verifyUnsent();
+    _files = new Map.from(files);
+  }
+
+  @override
+  MultipartRequest clone() {
+    return (super.clone() as MultipartRequest)
+      ..fields = fields
+      ..files = files;
+  }
 
   @override
   Map<String, String> finalizeHeaders() {

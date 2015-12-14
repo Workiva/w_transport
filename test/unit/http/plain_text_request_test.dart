@@ -142,6 +142,18 @@ void main() {
           request.encoding = LATIN1;
         }, throwsStateError);
       });
+
+      test('clone()', () {
+        var body = 'body';
+        Request orig = new Request()..body = body;
+        Request clone = orig.clone();
+        expect(clone.body, equals(body));
+
+        var bodyBytes = UTF8.encode('bytes');
+        Request orig2 = new Request()..bodyBytes = bodyBytes;
+        Request clone2 = orig2.clone();
+        expect(clone2.bodyBytes, equals(bodyBytes));
+      });
     });
   });
 }

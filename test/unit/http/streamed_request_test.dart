@@ -124,6 +124,15 @@ void main() {
           request.encoding = LATIN1;
         }, throwsStateError);
       });
+
+      test('clone()', () {
+        StreamedRequest request = new StreamedRequest();
+        expect(request.clone, throwsUnsupportedError);
+      });
+
+      test('autoRetry not supported', () {
+        expect(new StreamedRequest().autoRetry.supported, isFalse);
+      });
     });
   });
 }

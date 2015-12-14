@@ -22,8 +22,6 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_browser.dart';
 
-import 'package:w_transport/src/http/browser/multipart_request.dart';
-
 import '../../../naming.dart';
 import '../../integration_paths.dart';
 import 'suite.dart';
@@ -78,11 +76,6 @@ void main() {
         });
       });
 
-      test('withClient() ctor', () {
-        expect(new BrowserMultipartRequest.withClient(null),
-            new isInstanceOf<MultipartRequest>());
-      });
-
       test('setting content-length is unsupported', () {
         MultipartRequest request = new MultipartRequest();
         expect(() {
@@ -106,6 +99,13 @@ void main() {
 
       test('should support File', () async {
         // TODO: Write a functional test for this - not sure how to mock File/Blob class (or that it's possible)
+      });
+
+      test('clone()', () {
+        MultipartRequest orig = new MultipartRequest()
+          ..fields = {'field1': 'value1'};
+        MultipartRequest clone = orig.clone();
+        expect(clone.fields, equals(orig.fields));
       });
     });
   });

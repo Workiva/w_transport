@@ -23,6 +23,16 @@ import 'package:w_transport/w_transport_mock.dart';
 
 import '../../naming.dart';
 
+Iterable<BaseRequest> createAllRequestTypes(Client client) {
+  return [
+    client.newFormRequest(),
+    client.newJsonRequest(),
+    client.newMultipartRequest(),
+    client.newRequest(),
+    client.newStreamedRequest(),
+  ];
+}
+
 void main() {
   Naming naming = new Naming()
     ..testType = testTypeUnit
@@ -99,50 +109,56 @@ void main() {
         await client.newRequest().get(uri: uri);
       });
 
-      test('withCredentials should cascade to all factoried requests',
-          () async {
-        Client client = new Client()..withCredentials = true;
-        Uri uri = Uri.parse('/test');
-        Completer c = new Completer();
-        MockTransports.http.when(uri, (FinalizedRequest request) async {
-          request.withCredentials
-              ? c.complete()
-              : c.completeError(
-                  new Exception('withCredentials should be true'));
-          return new MockResponse.ok();
-        }, method: 'GET');
-        await client.newRequest().get(uri: uri);
-        await c.future;
+      test('baseUri should be inherited by all requests', () async {
+        var baseUri = Uri.parse('https://example.com/base/path');
+        Client client = new Client()..baseUri = baseUri;
+        for (var request in createAllRequestTypes(client)) {
+          expect(request.uri, equals(baseUri));
+        }
       });
 
-      test('headers should cascade to all factoried requests', () async {
-        var headers = {'x-custom1': 'value', 'x-custom2': 'value2'};
-        Client client = new Client()..headers = headers;
-        Uri uri = Uri.parse('/test');
-        MockTransports.http.expect('GET', uri, headers: headers);
-        await client.newRequest().get(uri: uri);
-      });
-
-      test('headers', () async {
+      test('headers should be inherited by all requests', () async {
         var headers = {'x-custom1': 'value', 'x-custom2': 'value2'};
         Client client = new Client()..headers = headers;
         expect(client.headers, equals(headers));
-        expect(client.newFormRequest().headers, equals(headers));
-        expect(client.newJsonRequest().headers, equals(headers));
-        expect(client.newMultipartRequest().headers, equals(headers));
-        expect(client.newRequest().headers, equals(headers));
-        expect(client.newStreamedRequest().headers, equals(headers));
+        for (var request in createAllRequestTypes(client)) {
+          Uri uri = Uri.parse('/test');
+          MockTransports.http.expect('GET', uri, headers: headers);
+          if (request is MultipartRequest) {
+            request.fields['f'] = 'v';
+          }
+          await request.get(uri: uri);
+        }
       });
 
-      test('timeoutThreshold', () async {
+      test('timeoutThreshold should be inherited by all requests', () async {
         Duration tt = new Duration(seconds: 1);
         Client client = new Client()..timeoutThreshold = tt;
         expect(client.timeoutThreshold, equals(tt));
-        expect(client.newFormRequest().timeoutThreshold, equals(tt));
-        expect(client.newJsonRequest().timeoutThreshold, equals(tt));
-        expect(client.newMultipartRequest().timeoutThreshold, equals(tt));
-        expect(client.newRequest().timeoutThreshold, equals(tt));
-        expect(client.newStreamedRequest().timeoutThreshold, equals(tt));
+        for (var request in createAllRequestTypes(client)) {
+          expect(request.timeoutThreshold, equals(tt));
+        }
+      });
+
+      test('withCredentials should be inherited by all requests', () async {
+        Client client = new Client()..withCredentials = true;
+        expect(client.withCredentials, isTrue);
+        for (var request in createAllRequestTypes(client)) {
+          Uri uri = Uri.parse('/test');
+          Completer c = new Completer();
+          MockTransports.http.when(uri, (FinalizedRequest request) async {
+            request.withCredentials
+                ? c.complete()
+                : c.completeError(
+                    new Exception('withCredentials should be true'));
+            return new MockResponse.ok();
+          }, method: 'GET');
+          if (request is MultipartRequest) {
+            request.fields['f'] = 'v';
+          }
+          await request.get(uri: uri);
+          await c.future;
+        }
       });
 
       test('close()', () async {

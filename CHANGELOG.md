@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0
+
+**Features:**
+
+- Added a `baseUri` field to `Client` that all requests from the client will
+  inherit.
+
 ## 2.0.0
 
 > The 2.0.0 release is a major breaking release. While many of the patterns from

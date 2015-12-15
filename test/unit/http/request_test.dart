@@ -271,6 +271,130 @@ void _runCommonRequestSuiteFor(
       await first;
     });
 
+    test('requestInterceptor allows async modification of request', () async {
+      Uri uri = Uri.parse('/test');
+      MockTransports.http
+          .expect('GET', uri, headers: {'x-intercepted': 'true'});
+      BaseRequest request = requestFactory();
+      request.requestInterceptor = (BaseRequest request) async {
+        request.headers['x-intercepted'] = 'true';
+      };
+      await request.get(uri: uri);
+    });
+
+    test(
+        'if requestInterceptor throws, the request should fail with that exception',
+        () async {
+      BaseRequest request = requestFactory();
+      var exception = new Exception('interceptor failure');
+
+      request.requestInterceptor = (BaseRequest request) async {
+        throw exception;
+      };
+      expect(request.get(uri: Uri.parse('/test')), throwsA(equals(exception)));
+    });
+
+    test('setting requestInterceptor throws if request has been sent',
+        () async {
+      Uri uri = Uri.parse('/test');
+      MockTransports.http.expect('GET', uri);
+      BaseRequest request = requestFactory();
+      await request.get(uri: uri);
+      expect(() {
+        request.requestInterceptor = (request) async {};
+      }, throwsStateError);
+    });
+
+    test('responseInterceptor gets FinalizedRequest', () async {
+      Uri uri = Uri.parse('/test');
+      MockTransports.http.expect('GET', uri);
+      BaseRequest request = requestFactory();
+      request.responseInterceptor =
+          (FinalizedRequest request, response, [exception]) async {
+        expect(request.method, equals('GET'));
+        expect(request.uri, equals(uri));
+      };
+      await request.get(uri: uri);
+    });
+
+    test('responseInterceptor gets BaseResponse', () async {
+      Uri uri = Uri.parse('/test');
+      MockResponse mockResponse = new MockResponse.ok(body: 'original');
+      MockTransports.http.expect('GET', uri, respondWith: mockResponse);
+      BaseRequest request = requestFactory();
+      request.responseInterceptor =
+          (request, BaseResponse response, [exception]) async {
+        expect(response, new isInstanceOf<Response>());
+        expect((response as Response).body.asString(), equals('original'));
+      };
+      await request.get(uri: uri);
+    });
+
+    test('responseInterceptor gets no RequestException on successful request',
+        () async {
+      Uri uri = Uri.parse('/test');
+      MockTransports.http.expect('GET', uri);
+      BaseRequest request = requestFactory();
+      request.responseInterceptor = (request, response, [exception]) async {
+        expect(exception, isNull);
+      };
+      await request.get(uri: uri);
+    });
+
+    test('responseInterceptor gets RequestException on failed request',
+        () async {
+      Uri uri = Uri.parse('/test');
+      MockTransports.http
+          .expect('GET', uri, failWith: new Exception('mock failure'));
+      BaseRequest request = requestFactory();
+      request.responseInterceptor =
+          (request, response, [RequestException exception]) async {
+        expect(exception, isNotNull);
+        expect(exception.toString(), contains('mock failure'));
+      };
+      expect(request.get(uri: uri), throws);
+    });
+
+    test('responseInterceptor allows replacement of BaseResponse', () async {
+      Uri uri = Uri.parse('/test');
+      MockResponse mockResponse = new MockResponse.ok(body: 'original');
+      MockTransports.http.expect('GET', uri, respondWith: mockResponse);
+      BaseRequest request = requestFactory();
+      request.responseInterceptor =
+          (request, BaseResponse response, [exception]) async {
+        return new Response.fromString(
+            response.status, response.statusText, response.headers, 'modified');
+      };
+      Response response = await request.get(uri: uri);
+      expect(response.body.asString(), equals('modified'));
+    });
+
+    test(
+        'if responseInterceptor throws, the error should be wrapped in a RequestException',
+        () async {
+      Uri uri = Uri.parse('/test');
+      MockTransports.http.expect('GET', uri);
+      BaseRequest request = requestFactory();
+      request.responseInterceptor = (request, response, [exception]) async {
+        throw new Exception('interceptor failure');
+      };
+      expect(request.get(uri: uri), throwsA(predicate((error) {
+        return error is RequestException &&
+            error.toString().contains('interceptor failure');
+      })));
+    });
+
+    test('setting responseInterceptor throws if request has been sent',
+        () async {
+      Uri uri = Uri.parse('/test');
+      MockTransports.http.expect('GET', uri);
+      BaseRequest request = requestFactory();
+      await request.get(uri: uri);
+      expect(() {
+        request.responseInterceptor = (request, response, [exception]) async {};
+      }, throwsStateError);
+    });
+
     test('timeoutThreshold is not enforced if not set', () async {
       Uri uri = Uri.parse('/test');
       BaseRequest request = requestFactory();

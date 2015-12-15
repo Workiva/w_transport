@@ -18,14 +18,15 @@
   - [Dart VM](#dart-vm)
   - [Tests](#tests)
 - [**HTTP**](#http)
-  - [Simple Requests](#simple-requests)
-  - [Advanced Requests & Common Request API](#advanced-requests)
+  - [Static Request Methods](#static-request-methods)
+  - [Request Classes](#request-classes)
+  - [Common Request API](#common-request-api)
     - [Creating a Request](#creating-a-request)
-    - [Bytes](#bytes)
-    - [Content-Length, Content-Type and Encoding](#content-length-content-type-and-encoding)
     - [Canceling a Request](#canceling-a-request)
-    - [Timeout Threshold](#timeout-threshold)
     - [Credentials (browser only)](#credentials-browser-only)
+    - [Content-Length, Content-Type and Encoding](#content-length-content-type-and-encoding)
+    - [Timeout Threshold](#timeout-threshold)
+    - [Request & Response Interception](#request--response-interception)
   - [Request Types](#request-types)
     - [JsonRequest](#jsonrequest)
     - [FormRequest](#formrequest)
@@ -33,6 +34,7 @@
     - [Request (plain-text)](#request-plain-text)
     - [StreamedRequest](#streamedrequest)
   - [HTTP Client](#http-client)
+    - [Intercepting Requests & Responses from a Client](#intercepting-requests--responses-from-a-client)
   - [Responses](#responses)
   - [Streamed Responses](#streamed-responses)
 - [**WebSocket**](#websocket)
@@ -112,7 +114,7 @@ void main() {
 
 ## HTTP
 
-### Simple Requests
+### Static Request Methods
 
 For one-off or simple requests, use the static methods on the `Http` class:
 ```dart
@@ -129,7 +131,6 @@ These standard HTTP methods are supported:
 * PATCH : `Http.patch()`
 * POST : `Http.post()`
 * PUT : `Http.put()`
-* TRACE : `Http.trace()` (forbidden in the browser)
 
 If you need to send a request with a non-standard HTTP method, use `send()`:
 ```dart
@@ -153,11 +154,11 @@ await Http.post(Uri.parse('/notes/'), body: 'testing..');
 > Plain-text request bodies default to UTF8 encoding.
 
 
-### Advanced Requests
+### Request Classes
 The above works well for simple requests, but what if you need to send JSON? Or
 use a different encoding? Send a multi-part request? Or maybe you just want more
 explicit control over the request. In these cases, you'll want to use one of the
-exposed `Request` classes:
+exposed request classes:
 
 * `Request`
 * `FormRequest`
@@ -165,11 +166,14 @@ exposed `Request` classes:
 * `MultipartRequest`
 * `StreamedRequest`
 
-#### Common Request API
+> Every request class extends from `BaseRequest`.
+
+
+### Common Request API
 Though each request type has some idiosyncrasies, they share a common underlying
 API. We'll cover this common API using `Request` as the example.
 
-##### Creating a Request
+#### Creating a Request
 ```dart
 Request request = new Request();
 ```
@@ -188,7 +192,7 @@ they can be set on the `Request` directly before being sent:
 
 ```dart
 Request request = new Request()
-  ..uri = Uri.parse('/notes/'),
+  ..uri = Uri.parse('/notes/')
   ..headers = {'x-auth-token': 'a390bn'}
   ..body = 'A note.';
 await request.post();
@@ -211,21 +215,34 @@ Request request = new Request();
 await request.send('COPY', uri: Uri.parse('/notes/6'));
 ```
 
-##### Bytes
-The body of a request can be set from the encoded bytes:
+#### Canceling a Request
+All of the request classes support cancellation. At any time, the `.abort()`
+method can be called. If the request has not completed yet, it will be canceled.
+If it has already completed, it has no effect.
+
 ```dart
-Uint8List bytes = UTF8.encode('data');
-Request request = new Request()
-  ..bodyBytes = bytes;
+Request request = new Request();
+request.get(Uri.parse('/notes/'));
+...
+request.abort();
 ```
 
-This is useful if you are already dealing with encoded data - no need to
-translate back and forth between bytes and text just to fit the API.
+#### Credentials (browser only)
+HTTP requests made from a browser have an added restriction - secure cookies are
+not sent by default on cross-origin requests. To include these secure cookies
+when sending a request, set `withCredentials` to `true`. Although this only
+applies to browsers, it's included in the platform-independent API because it
+has no effect on the other platforms.
 
-> Be sure to set `encoding` if using something other than the default UTF8.
+```dart
+Request request = new Request()
+  ..uri = Uri.parse('https://otherhost.com/notes/')
+  ..withCredentials = true;
+await request.get();
+```
 
-##### Content-Length, Content-Type and Encoding
-All of the `Request` classes set the `content-type` automatically based on the
+#### Content-Length, Content-Type and Encoding
+All of the request classes set the `content-type` automatically based on the
 type of data being sent in the request body, and the `charset` parameter is set
 using the encoding's name.
 
@@ -280,19 +297,7 @@ types will set the content-type as follows:
 * `JsonRequest`: `application/json`
 * `MultipartRequest`: `multipart/form-data`
 
-##### Canceling a Request
-All of the `Request` classes support cancellation. At any time, the `.abort()`
-method can be called. If the request has not completed yet, it will be canceled.
-If it has already completed, it has no effect.
-
-```dart
-Request request = new Request();
-request.get(Uri.parse('/notes/'));
-...
-request.abort();
-```
-
-##### Timeout Threshold
+#### Timeout Threshold
 A timeout threshold can be set on any request. If the request takes longer than
 the set duration, the request will be canceled.
 
@@ -304,19 +309,49 @@ request.get();
 // This will throw if the request takes longer than 15 seconds.
 ```
 
-##### Credentials (browser only)
-HTTP requests made from a browser have an added restriction - secure cookies are
-not sent by default on cross-origin requests. To include these secure cookies
-when sending a request, set `withCredentials` to `true`. Although this only
-applies to browsers, it's included in the platform-independent API because it
-has no effect on the other platforms.
+#### Request & Response Interception
+All of the request classes have hooks that allow request and response
+interception.
+
+> Although hooks for interception are available on the request classes, their
+> purpose is to enable an API on the [`Client` class](#http-client) for
+> intercepting every request created by the client, which is much more useful.
+
+**Request interception** occurs right before the request is dispatched, at which
+point changes (async if necessary) to the request instance can be made.
 
 ```dart
-Request request = new Request()
-  ..uri = Uri.parse('https://otherhost.com/notes/')
-  ..withCredentials = true;
-await request.get();
+Request request = new Request();
+
+// Register a hook to intercept the request.
+request.requestInterceptor = (Request request) async {
+  // Modify the request as necessary.
+};
 ```
+
+**Response interception** occurs after the response is received but before it is
+delivered to the caller. At this point, a finalized version of the request can
+be inspected and the response instance can be modified, augmented, or replaced.
+Additionally, a `RequestException` instance will be available if one occurred.
+Again, this interception can be async if necessary.
+
+```dart
+Request request = new Request();
+
+// Register a hook to intercept the response.
+request.responseInterceptor =
+    (FinalizedRequest request, BaseResponse response,
+    [RequestException exception]) async {
+  // Return a `BaseResponse` instance, modified as necessary.
+};
+```
+
+> Note that while response interceptors _can_ replace the response instance (and
+> thus are expected to return a `BaseResponse` instance), request interceptors
+> _cannot_ do this because the request creator's reference would then be
+> incorrect. For this reason, request interceptors must modify the request in
+> place.
+
 
 ### Request Types
 Now that we've established the API common across all of our `Request` classes,
@@ -327,7 +362,6 @@ let's dive into the different types of requests that are supported.
 * `MultipartRequest`
 * `Request`
 * `StreamedRequest`
-
 
 #### `JsonRequest`
 A `JsonRequest` sets the content-type to `application/json` and accepts
@@ -428,6 +462,11 @@ Request request = new Request()
   ..bodyBytes = UTF8.encode('My notes.');
 ```
 
+The latter approach is useful if you are already dealing with encoded data - no
+need to translate back and forth between bytes and text just to fit the API.
+
+> Be sure to set `encoding` if using something other than the default UTF8.
+
 
 #### `StreamedRequest`
 A `StreamedRequest` accepts a byte stream (`Stream<List<int>>`) as the request
@@ -474,6 +513,79 @@ this ensures that cached network connections are closed.
 Client client = new Client();
 ...
 client.close();
+```
+
+#### Intercepting Requests & Responses from a Client
+The request classes have [hooks for intercepting the request and the response](#request--response-interception)
+which the `Client` class leverages to provide an API for registering a chain of
+interceptors that will be applied to all requests and subsequent responses
+created by the client.
+
+```dart
+class HeaderInterceptor extends HttpInterceptor {
+  @override
+  Future<RequestPayload> interceptRequest(RequestPayload payload) async {
+    payload.request.headers['x-foo'] = 'bar';
+    return payload;
+  }
+}
+
+class QueryParamInterceptor extends HttpInterceptor {
+  @override
+  Future<RequestPayload> interceptRequest(RequestPayload payload) async {
+    payload.request.updateQuery({'baz': 'bar'});
+    return payload;
+  }
+}
+
+main() {
+  Client client = new Client()
+    ..addInterceptor(new HeaderInterceptor())
+    ..addInterceptor(new QueryParamInterceptor());
+
+  // The client will create a request interceptor that chains together the logic
+  // from both of the interceptors registered above. This will be set on the
+  // request, meaning that this request will have an `x-foo: bar` header and a
+  // `baz=bar` query parameter.
+  client.newRequest().get(uri: Uri.parse('...'));
+```
+
+Obviously these examples are contrived, but this pattern enables some powerful
+functionality. Consider the following interceptors as possibilities:
+
+- **Analytics:** records types of requests, request duration, request
+  failures, etc.
+- **CSRF:** sets a header for CSRF verification on outgoing mutation requests
+  and updates said token if the response headers include a new one.
+- **OAuth2:** sets the `Authorization` header to a valid OAuth2 token.
+- **Session monitoring:** watches for failures due to invalid session, like an
+  HTTP 401 failure.
+
+This interceptor logic is asynchronous, which means that you can get really
+creative. Let's take the CSRF interceptor example and consider a scenario where
+the initial request requires a CSRF token but one is not known at the time. We
+can preempt the request and send a separate request to obtain a token:
+
+```dart
+class CsrfInterceptor extends HttpInterceptor {
+  Uri csrfEndpointUri = ...;
+  String token;
+
+  @override
+  Future<RequestPayload> interceptRequest(RequestPayload payload) async {
+    if (token == null) {
+      token = await fetchNewToken();
+    }
+    payload.request.headers['x-xsrf-token'] = token;
+    return payload;
+  }
+
+  // Assuming we have an endpoint to retrieve a CSRF token.
+  Future<String> fetchNewToken() async {
+    Response response = await Http.get(csrfEndpointUri);
+    return response.body.asJson()['token'];
+  }
+}
 ```
 
 

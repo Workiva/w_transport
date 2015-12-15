@@ -20,8 +20,16 @@ import 'dart:convert';
 import 'package:fluri/fluri.dart';
 import 'package:http_parser/http_parser.dart';
 
+import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/request_dispatchers.dart';
+import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
+import 'package:w_transport/src/http/response.dart';
+
+typedef Future<Null> RequestInterceptor(BaseRequest request);
+typedef Future<BaseResponse> ResponseInterceptor(
+    FinalizedRequest request, BaseResponse response,
+    [RequestException error]);
 
 /// A common API that applies to all request types. The piece that is missing is
 /// that which is specific to the request body. Setting the request body differs
@@ -58,6 +66,26 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// Note that the "content-type" header will be set automatically based on the
   /// type of data in this request's body and the [encoding].
   Map<String, String> headers = {};
+
+  /// Hook into the request lifecycle right before the request is sent.
+  ///
+  /// If not null, this function will be called with the [BaseRequest] instance
+  /// as the first argument. This function should return a `Future`, and the
+  /// request will not be sent until the returned `Future` completes.
+  ///
+  /// _The request instance cannot be replaced, it must be modified in place._
+  RequestInterceptor requestInterceptor;
+
+  /// Hook into the request lifecycle after the response has been received and
+  /// before the request is considered "complete" (in other words, before the
+  /// response is delivered to the caller).
+  ///
+  /// If not null, this function will be called with three arguments: the
+  /// [FinalizedRequest] instance, the [BaseResponse] instance, and a
+  /// [RequestException] if the request failed. This function should return a
+  /// `Future<BaseResponse>`, allowing the opportunity to modify, augment, or
+  /// replace the response before considering it "complete".
+  ResponseInterceptor responseInterceptor;
 
   /// HTTP method ('GET', 'POST', etc). Set automatically when the request is
   /// sent via one of the request dispatch methods.

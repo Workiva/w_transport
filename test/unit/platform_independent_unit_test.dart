@@ -20,6 +20,7 @@ import 'package:test/test.dart';
 import 'http/client_test.dart' as http_client_test;
 import 'http/form_request_test.dart' as http_form_request_test;
 import 'http/http_body_test.dart' as http_body_test;
+import 'http/http_interceptor_test.dart' as http_interceptor_test;
 import 'http/http_static_test.dart' as http_static_test;
 import 'http/json_request_test.dart' as http_json_request_test;
 import 'http/multipart_file_test.dart' as http_multipart_file_test;
@@ -42,6 +43,7 @@ import 'ws/w_socket_test.dart' as ws_w_socket_test;
 void main() {
   http_client_test.main();
   http_body_test.main();
+  http_interceptor_test.main();
   http_form_request_test.main();
   http_json_request_test.main();
   http_multipart_file_test.main();

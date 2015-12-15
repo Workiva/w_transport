@@ -393,6 +393,11 @@ abstract class CommonRequest extends Object
     }
     if (this.uri == null || this.uri.toString().isEmpty)
       throw new StateError('Request: Cannot send a request without a URI.');
+    if (headers != null) {
+      headers.forEach((key, value) {
+        this.headers[key] = value;
+      });
+    }
 
     // Apply the request interceptor if set.
     if (requestInterceptor != null) {

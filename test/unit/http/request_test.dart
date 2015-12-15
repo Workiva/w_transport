@@ -62,6 +62,7 @@ void _runCommonRequestSuiteFor(
     String name, BaseRequest requestFactory({bool withBody})) {
   group(name, () {
     Uri requestUri = Uri.parse('/mock/request');
+    Map requestHeaders = {'x-custom': 'header'};
 
     setUp(() {
       MockTransports.reset();
@@ -77,9 +78,19 @@ void _runCommonRequestSuiteFor(
       await requestFactory().delete(uri: requestUri);
     });
 
+    test('DELETE with headers', () async {
+      MockTransports.http.expect('DELETE', requestUri, headers: requestHeaders);
+      await requestFactory().delete(uri: requestUri, headers: requestHeaders);
+    });
+
     test('GET', () async {
       MockTransports.http.expect('GET', requestUri);
       await requestFactory().get(uri: requestUri);
+    });
+
+    test('GET with headers', () async {
+      MockTransports.http.expect('GET', requestUri, headers: requestHeaders);
+      await requestFactory().get(uri: requestUri, headers: requestHeaders);
     });
 
     test('HEAD', () async {
@@ -87,9 +98,20 @@ void _runCommonRequestSuiteFor(
       await requestFactory().head(uri: requestUri);
     });
 
+    test('HEAD with headers', () async {
+      MockTransports.http.expect('HEAD', requestUri, headers: requestHeaders);
+      await requestFactory().head(uri: requestUri, headers: requestHeaders);
+    });
+
     test('OPTIONS', () async {
       MockTransports.http.expect('OPTIONS', requestUri);
       await requestFactory().options(uri: requestUri);
+    });
+
+    test('OPTIONS with headers', () async {
+      MockTransports.http
+          .expect('OPTIONS', requestUri, headers: requestHeaders);
+      await requestFactory().options(uri: requestUri, headers: requestHeaders);
     });
 
     test('PATCH', () async {
@@ -97,9 +119,19 @@ void _runCommonRequestSuiteFor(
       await requestFactory().patch(uri: requestUri);
     });
 
+    test('PATCH with headers', () async {
+      MockTransports.http.expect('PATCH', requestUri, headers: requestHeaders);
+      await requestFactory().patch(uri: requestUri, headers: requestHeaders);
+    });
+
     test('POST', () async {
       MockTransports.http.expect('POST', requestUri);
       await requestFactory().post(uri: requestUri);
+    });
+
+    test('POST with headers', () async {
+      MockTransports.http.expect('POST', requestUri, headers: requestHeaders);
+      await requestFactory().post(uri: requestUri, headers: requestHeaders);
     });
 
     test('PUT', () async {
@@ -107,9 +139,20 @@ void _runCommonRequestSuiteFor(
       await requestFactory().put(uri: requestUri);
     });
 
+    test('PUT with headers', () async {
+      MockTransports.http.expect('PUT', requestUri, headers: requestHeaders);
+      await requestFactory().put(uri: requestUri, headers: requestHeaders);
+    });
+
     test('custom HTTP method', () async {
       MockTransports.http.expect('COPY', requestUri);
       await requestFactory().send('COPY', uri: requestUri);
+    });
+
+    test('custom HTTP method with headers', () async {
+      MockTransports.http.expect('COPY', requestUri, headers: requestHeaders);
+      await requestFactory()
+          .send('COPY', uri: requestUri, headers: requestHeaders);
     });
 
     test('DELETE (streamed)', () async {
@@ -172,6 +215,16 @@ void _runCommonRequestSuiteFor(
       });
       await requestFactory(withBody: true).post(uri: requestUri);
       expect(await dataCompleter.future, isNotEmpty);
+    });
+
+    test('headers given to dispatch method should be merged with existing ones',
+        () async {
+      MockTransports.http.expect('GET', requestUri,
+          headers: {'x-one': '1', 'x-two': '2', 'x-three': '3'});
+      BaseRequest request = requestFactory()
+        ..headers = {'x-one': '1', 'x-two': '0'}
+        ..uri = requestUri;
+      await request.get(headers: {'x-two': '2', 'x-three': '3'});
     });
 
     test('request cancellation prior to dispatch should cancel request',

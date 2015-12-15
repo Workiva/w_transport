@@ -17,6 +17,11 @@
   and ["intercepting requests & responses from a client"](README.md#intercepting-requests--responses-from-a-client)
   in the README.
 
+### Bug Fixes
+
+- Headers passed into a request's dispatch method (ex: `.get(headers: {...})`)
+  are now merged with any existing headers on the request (previously they were
+  being ignored).
 
 ## 2.0.0
 

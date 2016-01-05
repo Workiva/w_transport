@@ -20,13 +20,15 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 
+import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/requests.dart';
 
 abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
   CommonJsonRequest() : super();
-  CommonJsonRequest.withClient(client) : super.withClient(client);
+  CommonJsonRequest.fromClient(Client wTransportClient, client)
+      : super.fromClient(wTransportClient, client);
 
   String _encodedJson;
   dynamic _source;
@@ -56,6 +58,11 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
   Uint8List get _bytes => _encodedJson != null
       ? encoding.encode(_encodedJson)
       : new Uint8List.fromList([]);
+
+  @override
+  JsonRequest clone() {
+    return (super.clone() as JsonRequest)..body = _source;
+  }
 
   @override
   Future<HttpBody> finalizeBody([body]) async {

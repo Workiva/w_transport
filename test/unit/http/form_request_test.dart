@@ -120,6 +120,13 @@ void main() {
           request.encoding = LATIN1;
         }, throwsStateError);
       });
+
+      test('clone()', () {
+        var fields = {'f1': 'v1', 'f2': 'v2'};
+        FormRequest orig = new FormRequest()..fields = fields;
+        FormRequest clone = orig.clone();
+        expect(clone.fields, equals(fields));
+      });
     });
   });
 }

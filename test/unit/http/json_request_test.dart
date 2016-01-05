@@ -146,6 +146,15 @@ void main() {
           request.encoding = LATIN1;
         }, throwsStateError);
       });
+
+      test('clone()', () {
+        var body = [
+          {'f1': 'v1', 'f2': 'v2'}
+        ];
+        JsonRequest orig = new JsonRequest()..body = body;
+        JsonRequest clone = orig.clone();
+        expect(clone.body, equals(body));
+      });
     });
   });
 }

@@ -18,6 +18,7 @@ import 'dart:async';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 
+import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/requests.dart';
@@ -25,7 +26,8 @@ import 'package:w_transport/src/http/requests.dart';
 abstract class CommonStreamedRequest extends CommonRequest
     implements StreamedRequest {
   CommonStreamedRequest() : super();
-  CommonStreamedRequest.withClient(client) : super.withClient(client);
+  CommonStreamedRequest.fromClient(Client wTransportClient, client)
+      : super.fromClient(wTransportClient, client);
 
   Stream<List<int>> _body;
 
@@ -55,6 +57,13 @@ abstract class CommonStreamedRequest extends CommonRequest
   @override
   MediaType get defaultContentType =>
       new MediaType('text', 'plain', {'charset': encoding.name});
+
+  @override
+  StreamedRequest clone() {
+    throw new UnsupportedError(
+        'StreamedRequests cannot be cloned because the streamed body can only '
+        'be read once.');
+  }
 
   @override
   Future<StreamedHttpBody> finalizeBody([body]) async {

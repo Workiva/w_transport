@@ -23,6 +23,7 @@ import 'package:http_parser/http_parser.dart'
 
 import 'package:w_transport/src/http/browser/form_data_body.dart';
 import 'package:w_transport/src/http/browser/request_mixin.dart';
+import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/multipart_file.dart';
 import 'package:w_transport/src/http/requests.dart';
@@ -32,7 +33,8 @@ class BrowserMultipartRequest extends CommonRequest
     with BrowserRequestMixin
     implements MultipartRequest {
   BrowserMultipartRequest() : super();
-  BrowserMultipartRequest.withClient(client) : super.withClient(client);
+  BrowserMultipartRequest.fromClient(Client wTransportClient)
+      : super.fromClient(wTransportClient, null);
 
   Map<String, String> _fields = {};
 
@@ -59,8 +61,25 @@ class BrowserMultipartRequest extends CommonRequest
   Map<String, String> get fields =>
       isSent ? new Map.unmodifiable(_fields) : _fields;
 
+  set fields(Map<String, String> fields) {
+    verifyUnsent();
+    _fields = new Map.from(fields);
+  }
+
   Map<String, dynamic> get files =>
       isSent ? new Map.unmodifiable(_files) : _files;
+
+  set files(Map<String, dynamic> files) {
+    verifyUnsent();
+    _files = new Map.from(files);
+  }
+
+  @override
+  MultipartRequest clone() {
+    return (super.clone() as MultipartRequest)
+      ..fields = fields
+      ..files = files;
+  }
 
   @override
   Map<String, String> finalizeHeaders() {

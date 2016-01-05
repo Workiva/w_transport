@@ -24,31 +24,42 @@ import '../../integration_paths.dart';
 
 void runCommonRequestSuite() {
   group('Common Request API', () {
-    _runCommonRequestSuiteFor('FormRequest', ({bool withBody: false}) {
+    formReqFactory({bool withBody: false}) {
       if (!withBody) return new FormRequest();
       return new FormRequest()..fields['field'] = 'value';
-    });
-    _runCommonRequestSuiteFor('JsonRequest', ({bool withBody: false}) {
+    }
+    jsonReqFactory({bool withBody: false}) {
       if (!withBody) return new JsonRequest();
       return new JsonRequest()
         ..body = [
           {'field': 'value'}
         ];
-    });
-    _runCommonRequestSuiteFor('MultipartRequest', ({bool withBody}) {
+    }
+    multipartReqFactory({bool withBody}) {
       // Multipart requests can't be empty.
       return new MultipartRequest()..fields['field'] = 'value';
-    });
-    _runCommonRequestSuiteFor('Request', ({bool withBody: false}) {
+    }
+    reqFactory({bool withBody: false}) {
       if (!withBody) return new Request();
       return new Request()..body = 'body';
-    });
-    _runCommonRequestSuiteFor('StreamedRequest', ({bool withBody: false}) {
+    }
+    streamedReqFactory({bool withBody: false}) {
       if (!withBody) return new StreamedRequest();
       return new StreamedRequest()
         ..body = new Stream.fromIterable([UTF8.encode('bytes')])
         ..contentLength = UTF8.encode('bytes').length;
-    });
+    }
+
+    _runCommonRequestSuiteFor('FormRequest', formReqFactory);
+    _runCommonRequestSuiteFor('JsonRequest', jsonReqFactory);
+    _runCommonRequestSuiteFor('MultipartRequest', multipartReqFactory);
+    _runCommonRequestSuiteFor('Request', reqFactory);
+    _runCommonRequestSuiteFor('StreamedRequest', streamedReqFactory);
+
+    _runAutoRetryTestSuiteFor('FormRequest', formReqFactory);
+    _runAutoRetryTestSuiteFor('JsonRequest', formReqFactory);
+    _runAutoRetryTestSuiteFor('MultipartRequest', formReqFactory);
+    _runAutoRetryTestSuiteFor('Request', formReqFactory);
   });
 }
 
@@ -397,4 +408,83 @@ void _runCommonRequestSuiteFor(
       })));
     });
   });
+}
+
+_runAutoRetryTestSuiteFor(
+    String name, BaseRequest requestFactory({bool withBody})) {
+  group(name, () {
+    group('auto retry', () {
+      test('disabled', () async {
+        BaseRequest request = requestFactory();
+
+        defineResponseChain(request, [500]);
+
+        expect(request.get(), throwsA(new isInstanceOf<RequestException>()));
+        await request.done;
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test('no retries', () async {
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        defineResponseChain(request, [200]);
+
+        await request.get();
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures, isEmpty);
+      });
+
+      test('1 successful retry', () async {
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        defineResponseChain(request, [500, 200]);
+
+        await request.get();
+        expect(request.autoRetry.numAttempts, equals(2));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test('1 failed retry, 1 successful retry', () async {
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        defineResponseChain(request, [500, 500, 200]);
+
+        await request.get();
+        expect(request.autoRetry.numAttempts, equals(3));
+        expect(request.autoRetry.failures.length, equals(2));
+      });
+
+      test('maximum retries exceeded', () async {
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        defineResponseChain(request, [500, 500, 500]);
+
+        expect(request.get(), throwsA(new isInstanceOf<RequestException>()));
+        await request.done;
+        expect(request.autoRetry.numAttempts, equals(3));
+        expect(request.autoRetry.failures.length, equals(3));
+      });
+    });
+  });
+}
+
+void defineResponseChain(BaseRequest request, List<int> statusCodes) {
+  request
+    ..uri = IntegrationPaths.customEndpointUri
+    ..requestInterceptor = (BaseRequest request) {
+      request.updateQuery({'status': statusCodes.removeAt(0).toString()});
+    };
 }

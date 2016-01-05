@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.http.reader;
+library w_transport.tool.server.handlers.test.http.echo;
 
 import 'dart:async';
 import 'dart:io';

@@ -16,12 +16,22 @@ library w_transport.src.http.common.client;
 
 import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
 
+import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/http_interceptor.dart';
 
 /// HTTP client logic that can be shared across platforms.
 abstract class CommonClient implements Client {
+  /// Configuration of automatic request retrying for failed requests. Use this
+  /// object to enable or disable automatic retrying, configure the criteria
+  /// that determines whether or not a request should be retried, as well as the
+  /// number of retries to attempt.
+  ///
+  /// Every request created by this client will inherit this automatic retry
+  /// configuration.
+  AutoRetryConfig autoRetry = new AutoRetryConfig();
+
   /// A base URI that all requests created by this client should inherit.
   @override
   Uri baseUri;
@@ -86,6 +96,7 @@ abstract class CommonClient implements Client {
   /// adding headers that are set on this client and setting the withCredentials
   /// flag.
   void registerAndDecorateRequest(BaseRequest request) {
+    _requests.add(request);
     request
       ..uri = baseUri
       ..headers = _headers
@@ -93,7 +104,11 @@ abstract class CommonClient implements Client {
     if (withCredentials == true) {
       request.withCredentials = true;
     }
-    _requests.add(request);
+    request.autoRetry
+      ..enabled = autoRetry.enabled
+      ..forHttpMethods = autoRetry.forHttpMethods
+      ..forStatusCodes = autoRetry.forStatusCodes
+      ..test = autoRetry.test;
     if (_requestPathway.hasInterceptors) {
       request.requestInterceptor = (request) async {
         await _requestPathway.process(new RequestPayload(request));

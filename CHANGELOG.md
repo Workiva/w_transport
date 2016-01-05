@@ -17,11 +17,16 @@
   and ["intercepting requests & responses from a client"](README.md#intercepting-requests--responses-from-a-client)
   in the README.
 
+- All request classes and the `Client` class now include an API for automatic
+  retrying via the `autoRetry` field. See ["automatic request retrying"](README.md#automatic-request-retrying)
+  in the README.
+
 ### Bug Fixes
 
 - Headers passed into a request's dispatch method (ex: `.get(headers: {...})`)
   are now merged with any existing headers on the request (previously they were
   being ignored).
+
 
 ## 2.0.0
 

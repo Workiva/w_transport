@@ -20,6 +20,7 @@ import 'dart:convert';
 import 'package:fluri/fluri.dart';
 import 'package:http_parser/http_parser.dart';
 
+import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/request_dispatchers.dart';
 import 'package:w_transport/src/http/request_exception.dart';
@@ -37,6 +38,16 @@ typedef Future<BaseResponse> ResponseInterceptor(
 /// or streamed). As such, that piece of the API is delegated to the specific
 /// request classes.
 abstract class BaseRequest implements FluriMixin, RequestDispatchers {
+  /// Configuration of automatic request retrying for failed requests. Use this
+  /// object to enable or disable automatic retrying, configure the criteria
+  /// that determines whether or not a request should be retried, as well as the
+  /// number of retries to attempt.
+  ///
+  /// Information about this request related to retries is also available here.
+  /// This includes the current number of attempts and the current list of
+  /// failures.
+  RequestAutoRetry autoRetry;
+
   /// Gets and sets the content-length of the request, in bytes. If the size of
   /// the request is not known in advance, set this to null.
   int contentLength;
@@ -106,7 +117,13 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
 
   /// Cancel this request. If the request has already finished, this will do
   /// nothing.
+  ///
+  /// If automatic retrying is enabled, this will also cancel a retry attempt if
+  /// one is in flight and prevent any further retry attempts.
   void abort([Object error]);
+
+  /// Returns an clone of this request.
+  BaseRequest clone();
 
   /// Allows more advanced configuration of this request prior to sending. The
   /// supplied callback [configure] will be called after opening, but prior to

@@ -14,6 +14,7 @@
 
 library w_transport.src.http.client;
 
+import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/http_interceptor.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
@@ -26,6 +27,15 @@ import 'package:w_transport/src/platform_adapter.dart';
 /// network connections between requests that share a client.
 abstract class Client {
   factory Client() => PlatformAdapter.retrieve().newClient();
+
+  /// Configuration of automatic request retrying for failed requests. Use this
+  /// object to enable or disable automatic retrying, configure the criteria
+  /// that determines whether or not a request should be retried, as well as the
+  /// number of retries to attempt.
+  ///
+  /// Every request created by this client will inherit this automatic retry
+  /// configuration.
+  AutoRetryConfig autoRetry;
 
   /// A base URI that all requests from this client should inherit.
   Uri baseUri;

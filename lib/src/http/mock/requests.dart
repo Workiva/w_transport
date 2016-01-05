@@ -14,6 +14,7 @@
 
 library w_transport.src.http.mock.requests;
 
+import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/form_request.dart';
 import 'package:w_transport/src/http/common/json_request.dart';
 import 'package:w_transport/src/http/common/multipart_request.dart';
@@ -21,14 +22,34 @@ import 'package:w_transport/src/http/common/plain_text_request.dart';
 import 'package:w_transport/src/http/common/streamed_request.dart';
 import 'package:w_transport/src/http/mock/request_mixin.dart';
 
-class MockFormRequest extends CommonFormRequest with MockRequestMixin {}
+class MockFormRequest extends CommonFormRequest with MockRequestMixin {
+  MockFormRequest() : super();
+  MockFormRequest.fromClient(Client wTransportClient)
+      : super.fromClient(wTransportClient, null);
+}
 
-class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {}
+class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {
+  MockJsonRequest() : super();
+  MockJsonRequest.fromClient(Client wTransportClient)
+      : super.fromClient(wTransportClient, null);
+}
 
 class MockMultipartRequest extends CommonMultipartRequest
-    with MockRequestMixin {}
+    with MockRequestMixin {
+  MockMultipartRequest() : super();
+  MockMultipartRequest.fromClient(Client wTransportClient)
+      : super.fromClient(wTransportClient, null);
+}
 
 class MockPlainTextRequest extends CommonPlainTextRequest
-    with MockRequestMixin {}
+    with MockRequestMixin {
+  MockPlainTextRequest() : super();
+  MockPlainTextRequest.fromClient(Client wTransportClient)
+      : super.fromClient(wTransportClient, null);
+}
 
-class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {}
+class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {
+  MockStreamedRequest() : super();
+  MockStreamedRequest.fromClient(Client wTransportClient)
+      : super.fromClient(wTransportClient, null);
+}

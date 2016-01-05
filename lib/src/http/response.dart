@@ -54,10 +54,10 @@ abstract class BaseResponse {
     _contentType = http_utils.parseContentTypeFromHeaders(_headers);
   }
 
-  /// Encoding that will be used when decoding the response body. This encoding
-  /// is selected based on [contentType]'s `charset` parameter. If `charset`
-  /// is not given or the encoding name is unrecognized, [LATIN1] is used by
-  /// default ([RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html)).
+  /// Encoding that will be used to decode the response body. This encoding is
+  /// selected based on [contentType]'s `charset` parameter. If `charset` is not
+  /// given or the encoding name is unrecognized, [LATIN1] is used by default
+  /// ([RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html)).
   Encoding get encoding => _encoding;
 
   /// Headers sent with the response to the HTTP request.
@@ -83,6 +83,11 @@ class Response extends BaseResponse {
 
   HttpBody _body;
 
+  Response._(
+      int status, String statusText, Map<String, String> headers, HttpBody body)
+      : _body = body,
+        super(status, statusText, headers);
+
   Response.fromBytes(int status, String statusText, Map<String, String> headers,
       List<int> bytes)
       : super(status, statusText, headers) {
@@ -95,6 +100,34 @@ class Response extends BaseResponse {
       : super(status, statusText, headers) {
     _body =
         new HttpBody.fromString(contentType, body, fallbackEncoding: encoding);
+  }
+
+  /// Create a new [Response] using all the values from this instance except
+  /// for the parameters specified.
+  Response replace(
+      {List<int> bodyBytes,
+      String bodyString,
+      int status,
+      String statusText,
+      Map<String, String> headers}) {
+    if (status == null) {
+      status = this.status;
+    }
+    if (statusText == null) {
+      statusText = this.statusText;
+    }
+    if (headers == null) {
+      headers = this.headers;
+    }
+    if (bodyBytes == null) {
+      if (bodyString == null) {
+        return new Response._(status, statusText, headers, _body);
+      } else {
+        return new Response.fromString(status, statusText, headers, bodyString);
+      }
+    } else {
+      return new Response.fromBytes(status, statusText, headers, bodyBytes);
+    }
   }
 }
 
@@ -115,10 +148,39 @@ class StreamedResponse extends BaseResponse {
 
   StreamedHttpBody _body;
 
+  StreamedResponse._(int status, String statusText, Map<String, String> headers,
+      StreamedHttpBody body)
+      : _body = body,
+        super(status, statusText, headers);
+
   StreamedResponse.fromByteStream(int status, String statusText,
       Map<String, String> headers, Stream<List<int>> byteStream)
       : super(status, statusText, headers) {
     _body = new StreamedHttpBody.fromByteStream(contentType, byteStream,
         contentLength: contentLength, fallbackEncoding: encoding);
+  }
+
+  /// Create a new [StreamedResponse] using all the values from this instance
+  /// except for the parameters specified.
+  StreamedResponse replace(
+      {Stream<List<int>> byteStream,
+      int status,
+      String statusText,
+      Map<String, String> headers}) {
+    if (status == null) {
+      status = this.status;
+    }
+    if (statusText == null) {
+      statusText = this.statusText;
+    }
+    if (headers == null) {
+      headers = this.headers;
+    }
+    if (byteStream == null) {
+      return new StreamedResponse._(status, statusText, headers, _body);
+    } else {
+      return new StreamedResponse.fromByteStream(
+          status, statusText, headers, byteStream);
+    }
   }
 }

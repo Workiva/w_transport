@@ -2,6 +2,26 @@
 
 ## 2.1.0
 
+### Deprecation: SockJS global configuration
+
+As of v2.0.0, this library could be configured to use SockJS under the hood when
+the `WSocket` class was used to establish WebSocket connections. This
+configuration occurred on a global basis (meaning it affected every `WSocket`
+instance) which is undesirable for applications with a mixed usage of native
+WebSockets and SockJS. **This global configuration has been deprecated.**
+
+As of v2.1.0, passing `useSockJS: true` to the `configureWTransportForBrowser()`
+method will cause a deprecation warning to be printed to the console.
+
+The SockJS configuration should now occur on a per-socket basis via the
+`WSocket.connect()` method:
+
+```dart
+Uri uri = Uri.parse('ws://echo.websocket.org');
+WSocket webSocket = await WSocket.connect(uri,
+   useSockJS: true, sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming']);
+```
+
 ### Features
 
 - Added a `baseUri` field to `Client` that all requests from the client will

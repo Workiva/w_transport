@@ -14,7 +14,6 @@
 - [**Importing**](#importing)
 - [**Platforms**](#platforms)
   - [Browser](#browser)
-  - [Browser (SockJS)](#browser-sockjs)
   - [Dart VM](#dart-vm)
   - [Tests](#tests)
 - [**HTTP**](#http)
@@ -43,6 +42,7 @@
   - [Receiving Data](#receiving-data)
   - [Sending Data](#sending-data)
   - [Listening for Completion](#listening-for-completion)
+  - [Using SockJS](#using-sockjs)
 - [**Testing & Mocks**](#testing--mocks)
   - [Mocking HTTP](#mocking-http)
   - [Mocking WebSockets](#mocking-websockets)
@@ -76,18 +76,6 @@ import 'package:w_transport/w_transport_browser.dart'
 
 void main() {
   configureWTransportForBrowser();
-}
-```
-
-### Browser (SockJS)
-```dart
-import 'package:w_transport/w_transport_browser.dart'
-    show configureWTransportForBrowser;
-
-void main() {
-  configureWTransportForBrowser(
-      useSockJS: true,
-      sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming']);
 }
 ```
 
@@ -707,6 +695,16 @@ webSocket.done.then((_) {
 }).catchError((error) {
   // Handle socket error, reopen socket, etc.
 });
+```
+
+### Using SockJS
+Sockets can be configured to use SockJS under the hood instead of native
+WebSockets. This configuration must occur on a per-socket basis.
+
+```dart
+Uri uri = Uri.parse('ws://echo.websocket.org');
+WSocket webSocket = await WSocket.connect(uri,
+   useSockJS: true, sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming']);
 ```
 
 ---

@@ -86,10 +86,19 @@ abstract class WSocket implements Stream, StreamSink {
   /// specified in [headers]. This only applies to server-side usage. See
   /// `dart:io`'s [WebSocket] for more information.
   static Future<WSocket> connect(Uri uri,
-      {Iterable<String> protocols, Map<String, dynamic> headers}) async {
-    return PlatformAdapter
-        .retrieve()
-        .newWSocket(uri, protocols: protocols, headers: headers);
+      {Map<String, dynamic> headers,
+      Iterable<String> protocols,
+      bool sockJSDebug,
+      bool sockJSNoCredentials,
+      List<String> sockJSProtocolsWhitelist,
+      bool useSockJS}) async {
+    return PlatformAdapter.retrieve().newWSocket(uri,
+        headers: headers,
+        protocols: protocols,
+        sockJSDebug: sockJSDebug,
+        sockJSNoCredentials: sockJSNoCredentials,
+        sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
+        useSockJS: useSockJS);
   }
 
   /// The close code set when the WebSocket connection is closed. If there is

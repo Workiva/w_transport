@@ -127,6 +127,12 @@ void main() {
         expect(
             response.contentType.parameters, containsPair('charset', 'utf-8'));
       });
+
+      test('replace', () {
+        Response response = new MockResponse.ok();
+        Response response2 = response.replace(status: 201);
+        expect(response2.status, equals(201));
+      });
     });
 
     group('MockStreamedResponse', () {
@@ -229,6 +235,12 @@ void main() {
         StreamedResponse response =
             new MockStreamedResponse(200, encoding: UTF8);
         expect(response.encoding, equals(UTF8));
+      });
+
+      test('replace', () {
+        StreamedResponse response = new MockStreamedResponse.ok();
+        StreamedResponse response2 = response.replace(status: 201);
+        expect(response2.status, equals(201));
       });
     });
   });

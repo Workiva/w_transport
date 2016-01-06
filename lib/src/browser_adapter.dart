@@ -69,12 +69,23 @@ class BrowserAdapter implements PlatformAdapter {
 
   /// Construct a new [ClientWSocket] instance that implements [WSocket].
   Future<WSocket> newWSocket(Uri uri,
-      {Iterable<String> protocols, Map<String, dynamic> headers}) {
-    if (_useSockJS) {
+      {Map<String, dynamic> headers,
+      Iterable<String> protocols,
+      bool sockJSDebug,
+      bool sockJSNoCredentials,
+      List<String> sockJSProtocolsWhitelist,
+      bool useSockJS}) {
+    sockJSDebug = sockJSDebug ?? _sockJSDebug;
+    sockJSNoCredentials = sockJSNoCredentials ?? _sockJSNoCredentials;
+    sockJSProtocolsWhitelist =
+        sockJSProtocolsWhitelist ?? _sockJSProtocolsWhitelist;
+    useSockJS = useSockJS ?? _useSockJS;
+
+    if (useSockJS) {
       return SockJSSocket.connect(uri,
-          debug: _sockJSDebug,
-          noCredentials: _sockJSNoCredentials,
-          protocolsWhitelist: _sockJSProtocolsWhitelist);
+          debug: sockJSDebug,
+          noCredentials: sockJSNoCredentials,
+          protocolsWhitelist: sockJSProtocolsWhitelist);
     } else {
       return BrowserWSocket.connect(uri,
           protocols: protocols, headers: headers);

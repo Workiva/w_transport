@@ -44,6 +44,14 @@ void configureWTransportForBrowser(
     bool sockJSDebug: false,
     bool sockJSNoCredentials: false,
     List<String> sockJSProtocolsWhitelist}) {
+  // Configuring SockJS at this level is deprecated. SockJS configuration should
+  // occur on a per-socket basis.
+  if (useSockJS == true) {
+    print('Deprecation Warning: Configuring all w_transport sockets to use '
+        'SockJS is deprecated. Instead, SockJS usage should be configured on a '
+        'per-socket basis via the optional parameters in WSocket.connect().');
+  }
+
   adapter = new BrowserAdapter(
       useSockJS: useSockJS,
       sockJSDebug: sockJSDebug,

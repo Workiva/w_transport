@@ -87,7 +87,7 @@
 ///
 /// Once connected, add items to the WebSocket like a sink to send data to the
 /// server, and listen to it like a stream to receive data from the server.
-library w_transport.w_http;
+library w_transport;
 
 export 'package:w_transport/src/http/base_request.dart' show BaseRequest;
 export 'package:w_transport/src/http/client.dart' show Client;

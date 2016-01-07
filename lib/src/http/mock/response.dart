@@ -119,6 +119,20 @@ class MockResponse implements Response {
           {body, Map<String, String> headers, String statusText}) =>
       new MockResponse(502,
           body: body, headers: headers, statusText: statusText);
+
+  Response replace(
+      {List<int> bodyBytes,
+      String bodyString,
+      int status,
+      String statusText,
+      Map<String, String> headers}) {
+    return _response.replace(
+        bodyBytes: bodyBytes,
+        bodyString: bodyString,
+        status: status,
+        statusText: statusText,
+        headers: headers);
+  }
 }
 
 class MockStreamedResponse implements StreamedResponse {
@@ -211,6 +225,18 @@ class MockStreamedResponse implements StreamedResponse {
           {byteStream, Map<String, String> headers, String statusText}) =>
       new MockStreamedResponse(502,
           byteStream: byteStream, headers: headers, statusText: statusText);
+
+  StreamedResponse replace(
+      {Stream<List<int>> byteStream,
+      int status,
+      String statusText,
+      Map<String, String> headers}) {
+    return _response.replace(
+        byteStream: byteStream,
+        status: status,
+        statusText: statusText,
+        headers: headers);
+  }
 }
 
 String _mapStatusToText(int status) {

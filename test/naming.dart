@@ -18,6 +18,10 @@ library w_transport.test.naming;
 const String platformBrowser = 'browser';
 const String platformBrowserSockjsWS = 'browser (SockJS WS)';
 const String platformBrowserSockjsXhr = 'browser (SockJS XHR)';
+const String platformBrowserSockjsWSDeprecated =
+    'browser (SockJS WS) [DEPRECATED]';
+const String platformBrowserSockjsXhrDeprecated =
+    'browser (SockJS XHR) [DEPRECATED]';
 const String platformMock = 'mock';
 const String platformVM = 'vm';
 

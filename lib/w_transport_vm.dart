@@ -21,7 +21,7 @@
 ///     void main() {
 ///       configureWTransportForVM();
 ///     }
-library w_transport.w_transport_server;
+library w_transport.w_transport_vm;
 
 import 'package:w_transport/src/platform_adapter.dart';
 import 'package:w_transport/src/vm_adapter.dart';

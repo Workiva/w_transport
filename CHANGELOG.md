@@ -21,6 +21,10 @@
   retrying via the `autoRetry` field. See ["automatic request retrying"](README.md#automatic-request-retrying)
   in the README.
 
+- Added a `replace` method to `Response` and `StreamedResponse` to allow simple
+  creation of new responses based on another response, while changing only the
+  fields you specify. This is particularly useful during response interception.
+
 ### Bug Fixes
 
 - Headers passed into a request's dispatch method (ex: `.get(headers: {...})`)

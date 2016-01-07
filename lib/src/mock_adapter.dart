@@ -53,6 +53,11 @@ class MockAdapter implements PlatformAdapter {
 
   /// Construct a new [MockWSocket] instance that implements [WSocket].
   Future<WSocket> newWSocket(Uri uri,
-          {Iterable<String> protocols, Map<String, dynamic> headers}) =>
+          {Map<String, dynamic> headers,
+          Iterable<String> protocols,
+          bool sockJSDebug,
+          bool sockJSNoCredentials,
+          List<String> sockJSProtocolsWhitelist,
+          bool useSockJS}) =>
       MockWSocket.connect(uri, protocols: protocols, headers: headers);
 }

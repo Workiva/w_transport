@@ -39,7 +39,39 @@ void main() {
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
+  Naming wsDeprecatedNaming = new Naming()
+    ..platform = platformBrowserSockjsWSDeprecated
+    ..testType = testTypeIntegration
+    ..topic = topicWebSocket;
+
+  Naming xhrDeprecatedNaming = new Naming()
+    ..platform = platformBrowserSockjsXhrDeprecated
+    ..testType = testTypeIntegration
+    ..topic = topicWebSocket;
+
   group(wsNaming.toString(), () {
+    setUp(() {
+      configureWTransportForBrowser();
+    });
+
+    sockJSSuite((Uri uri) => WSocket.connect(uri,
+        useSockJS: true,
+        sockJSNoCredentials: true,
+        sockJSProtocolsWhitelist: ['websocket']));
+  });
+
+  group(xhrNaming.toString(), () {
+    setUp(() {
+      configureWTransportForBrowser();
+    });
+
+    sockJSSuite((Uri uri) => WSocket.connect(uri,
+        useSockJS: true,
+        sockJSNoCredentials: true,
+        sockJSProtocolsWhitelist: ['xhr-streaming']));
+  });
+
+  group(wsDeprecatedNaming.toString(), () {
     setUp(() {
       configureWTransportForBrowser(
           useSockJS: true,
@@ -47,10 +79,10 @@ void main() {
           sockJSProtocolsWhitelist: ['websocket']);
     });
 
-    sockJSSuite();
+    sockJSSuite((Uri uri) => WSocket.connect(uri));
   });
 
-  group(xhrNaming.toString(), () {
+  group(xhrDeprecatedNaming.toString(), () {
     setUp(() {
       configureWTransportForBrowser(
           useSockJS: true,
@@ -58,19 +90,19 @@ void main() {
           sockJSProtocolsWhitelist: ['xhr-streaming']);
     });
 
-    sockJSSuite();
+    sockJSSuite((Uri uri) => WSocket.connect(uri));
   });
 }
 
-sockJSSuite() {
-  runCommonWebSocketIntegrationTests(port: sockjsPort);
+sockJSSuite(connect(Uri uri)) {
+  runCommonWebSocketIntegrationTests(connect: connect, port: sockjsPort);
 
   var echoUri = IntegrationPaths.echoUri.replace(port: sockjsPort);
   var pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
 
   test('should not support Blob', () async {
     Blob blob = new Blob(['one', 'two']);
-    WSocket socket = await WSocket.connect(pingUri);
+    WSocket socket = await connect(pingUri);
     expect(() {
       socket.add(blob);
     }, throwsArgumentError);
@@ -79,14 +111,14 @@ sockJSSuite() {
 
   test('should support String', () async {
     String data = 'data';
-    WSocket socket = await WSocket.connect(echoUri);
+    WSocket socket = await connect(echoUri);
     socket.add(data);
     socket.close();
   });
 
   test('should not support TypedData', () async {
     TypedData data = new Uint16List.fromList([1, 2, 3]);
-    WSocket socket = await WSocket.connect(echoUri);
+    WSocket socket = await connect(echoUri);
     expect(() {
       socket.add(data);
     }, throwsArgumentError);
@@ -94,7 +126,7 @@ sockJSSuite() {
   });
 
   test('should throw when attempting to send invalid data', () async {
-    WSocket socket = await WSocket.connect(pingUri);
+    WSocket socket = await connect(pingUri);
     expect(() {
       socket.add(true);
     }, throwsArgumentError);

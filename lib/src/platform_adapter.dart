@@ -75,5 +75,10 @@ abstract class PlatformAdapter {
 
   /// Constructs a new [WSocket] instance.
   Future<WSocket> newWSocket(Uri uri,
-      {Iterable<String> protocols, Map<String, dynamic> headers});
+      {Map<String, dynamic> headers,
+      Iterable<String> protocols,
+      bool sockJSDebug,
+      bool sockJSNoCredentials,
+      List<String> sockJSProtocolsWhitelist,
+      bool useSockJS});
 }

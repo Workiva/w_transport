@@ -49,6 +49,11 @@ class VMAdapter implements PlatformAdapter {
 
   /// Construct a new [ServerWSocket] instance that implements [WSocket].
   Future<WSocket> newWSocket(Uri uri,
-          {Iterable<String> protocols, Map<String, dynamic> headers}) =>
+          {Map<String, dynamic> headers,
+          Iterable<String> protocols,
+          bool sockJSDebug,
+          bool sockJSNoCredentials,
+          List<String> sockJSProtocolsWhitelist,
+          bool useSockJS}) =>
       VMWSocket.connect(uri, protocols: protocols, headers: headers);
 }

@@ -36,8 +36,8 @@ abstract class FormRequest extends BaseRequest {
   /// like so:
   ///
   ///     FormRequest request = new FormRequest()
-  ///       ..body['foo'] = 'bar'
-  ///       ..body['bar'] = 'baz';
+  ///       ..fields['foo'] = 'bar'
+  ///       ..fields['bar'] = 'baz';
   ///
   /// Prior to sending, this request body will be translated to the equivalent
   /// query string. Depending on the platform, this may then be encoded to

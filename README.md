@@ -401,9 +401,9 @@ incrementally set each field.
 ```dart
 FormRequest request = new FormRequest()
   ..uri = Uri.parse('/notes/')
-  ..body['title'] = 'My Note'
-  ..body['contents'] = '...'
-  ..body['date'] = new DateTime.now().toString();
+  ..fields['title'] = 'My Note'
+  ..fields['contents'] = '...'
+  ..fields['date'] = new DateTime.now().toString();
 await request.post();
 ```
 

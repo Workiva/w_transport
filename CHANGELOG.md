@@ -1,5 +1,26 @@
 # Changelog
 
+## 2.2.0
+
+### Features
+
+- Added an `autoRetry.forTimeouts` flag (defaults to `true`) to the `Client`
+  class and all request classes. This flag determines whether or not requests
+  that are canceled due to exceeding the timeout threshold should be retried.
+
+    ```dart
+    // This request will retry if the timeout is exceeded.
+    var request = new Request()
+      ..timeoutThreshold = new Duration(seconds: 10)
+      ..autoRetry.enabled = true;
+
+    // This request will NOT retry if the timeout is exceeded.
+    var request = new Request()
+      ..timeoutThreshold = new Duration(seconds: 10)
+      ..autoRetry.enabled = true
+      ..autoRetry.forTimeouts = false;
+    ```
+
 ## 2.1.0
 
 ### Deprecation: SockJS global configuration

@@ -900,6 +900,46 @@ _runAutoRetryTestSuiteFor(
               exception.toString().contains('Request canceled');
         })));
       });
+
+      test('request timeout should be retried by default', () async {
+        // 1st request = hangs until timeout, 2nd request succeeds
+        int c = 0;
+        MockTransports.http.when(requestUri, (request) async {
+          if (++c == 1) {
+            await new Future.delayed(new Duration(seconds: 1));
+          } else {
+            return new MockResponse.ok();
+          }
+        }, method: 'GET');
+
+        BaseRequest request = requestFactory();
+        request.timeoutThreshold = new Duration(milliseconds: 250);
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        await request.get(uri: requestUri);
+        expect(request.autoRetry.numAttempts, equals(2));
+      });
+
+      test('request timeout should not be retried if disabled', () async {
+        // 1st request = hangs until timeout
+        MockTransports.http.when(requestUri, (request) async {
+          await new Future.delayed(new Duration(seconds: 1));
+        }, method: 'GET');
+
+        BaseRequest request = requestFactory();
+        request.timeoutThreshold = new Duration(milliseconds: 250);
+        request.autoRetry
+          ..enabled = true
+          ..forTimeouts = false
+          ..maxRetries = 2;
+
+        var future = request.get(uri: requestUri);
+        expect(future, throwsA(new isInstanceOf<RequestException>()));
+        await future.catchError((_) {});
+        expect(request.autoRetry.numAttempts, equals(1));
+      });
     });
   });
 }

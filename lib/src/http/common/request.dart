@@ -71,6 +71,9 @@ abstract class CommonRequest extends Object
   /// Whether or not the request has been sent.
   bool isSent = false;
 
+  /// Whether or not the request timed out.
+  bool isTimedOut = false;
+
   /// HTTP method ('GET', 'POST', etc).
   String method;
 
@@ -110,6 +113,12 @@ abstract class CommonRequest extends Object
   /// Request headers. Stored in a case-insensitive map since HTTP headers are
   /// case-insensitive.
   CaseInsensitiveMap<String> _headers = new CaseInsensitiveMap();
+
+  /// Completes only when a request times out.
+  Completer _timeoutCompleter = new Completer();
+
+  /// Error associated with a cancellation.
+  Object _timeoutError;
 
   /// Whether or not to send the request with credentials.
   bool _withCredentials = false;
@@ -261,15 +270,13 @@ abstract class CommonRequest extends Object
       FinalizedRequest finalizedRequest,
       {bool streamResponse: false});
 
-  /// Cancel this request. If the request has already finished, this will do nothing.
+  /// Cancel this request. If the request has already finished, this will do
+  /// nothing.
   void abort([Object error]) {
     abortRequest();
     isCanceled = true;
     _cancellationError = error;
     _cancellationCompleter.complete();
-    if (!_done.isCompleted) {
-      _done.complete();
-    }
   }
 
   /// Check if this request has been canceled.
@@ -283,6 +290,13 @@ abstract class CommonRequest extends Object
           _cancellationError != null
               ? _cancellationError
               : new Exception('Request canceled.'));
+    }
+  }
+
+  /// Check if this request has exceeded the timeout threshold.
+  void checkForTimeout() {
+    if (isTimedOut) {
+      throw new RequestException(method, this.uri, this, null, _timeoutError);
     }
   }
 
@@ -442,12 +456,18 @@ abstract class CommonRequest extends Object
           body: body, headers: headers, streamResponse: true, uri: uri);
 
   /// Determine if this request failure is eligible for retry.
-  Future<bool> _canRetry(
-      FinalizedRequest request, BaseResponse response) async {
-    if (response == null) return false;
+  Future<bool> _canRetry(FinalizedRequest request, BaseResponse response,
+      RequestException requestException) async {
     if (!autoRetry.enabled ||
         !autoRetry.supported ||
         autoRetry.didExceedMaxNumberOfAttempts) return false;
+
+    // If the request failed due to exceeding the timeout threshold, check if
+    // it is configured to retry for timeouts.
+    if (requestException.error is TimeoutException && autoRetry.forTimeouts)
+      return true;
+
+    if (response == null) return false;
 
     bool willRetry = autoRetry.forHttpMethods.contains(method) &&
         autoRetry.forStatusCodes.contains(response.status);
@@ -461,6 +481,14 @@ abstract class CommonRequest extends Object
   Future<BaseResponse> _retry(bool streamResponse) async {
     BaseRequest retry = clone();
     return streamResponse ? retry.streamSend(method) : retry.send(method);
+  }
+
+  void _timeoutRequest() {
+    abortRequest();
+    isTimedOut = true;
+    _timeoutError = new TimeoutException(
+        'Request took too long to complete.', timeoutThreshold);
+    _timeoutCompleter.complete();
   }
 
   /// Send the HTTP request:
@@ -499,26 +527,26 @@ abstract class CommonRequest extends Object
     if (requestInterceptor != null) {
       await requestInterceptor(this);
       checkForCancellation();
+      checkForTimeout();
     }
 
     // No further changes should be made to the request at this point.
     FinalizedRequest finalizedRequest = await finalizeRequest(body);
     checkForCancellation();
+    checkForTimeout();
 
     BaseResponse response;
     bool responseInterceptorThrew = false;
     try {
       await openRequest(client);
       checkForCancellation();
+      checkForTimeout();
       Completer<BaseResponse> responseCompleter = new Completer();
 
       // Enforce a timeout threshold if set.
       Timer timeout;
       if (timeoutThreshold != null) {
-        timeout = new Timer(timeoutThreshold, () {
-          abort(new TimeoutException(
-              'Request took too long to complete.', timeoutThreshold));
-        });
+        timeout = new Timer(timeoutThreshold, _timeoutRequest);
       }
 
       // Attempt to fetch the response.
@@ -533,15 +561,20 @@ abstract class CommonRequest extends Object
         }
       });
 
-      // Listen for cancellation and break out of the response fetching early
-      // if cancellation occurs before the request has finished.
-      _cancellationCompleter.future.then((_) {
+      // Listen for cancellation and request timeout and break out of the
+      // response fetching early if it occurs before the request has finished.
+      void breakOutOfResponseFetching(_) {
         if (!responseCompleter.isCompleted) {
           responseCompleter.complete();
         }
-      });
+      }
+      _cancellationCompleter.future.then(breakOutOfResponseFetching);
+      _timeoutCompleter.future.then(breakOutOfResponseFetching);
 
       response = await responseCompleter.future;
+      if (response == null) {
+        checkForTimeout();
+      }
       checkForCancellation(response: response);
 
       // Response has been received, so the timeout timer can be canceled.
@@ -587,7 +620,7 @@ abstract class CommonRequest extends Object
 
       // Attempt to retry the request if configuration and state permit it.
       bool retrySucceeded = false;
-      if (await _canRetry(finalizedRequest, response)) {
+      if (await _canRetry(finalizedRequest, response, error)) {
         Completer<BaseResponse> retryCompleter = new Completer();
 
         _retry(streamResponse).then((retryResponse) {

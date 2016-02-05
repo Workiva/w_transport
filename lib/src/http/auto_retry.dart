@@ -66,6 +66,10 @@ class AutoRetryConfig {
   /// represent server errors that may be transient.
   List<int> forStatusCodes = [500, 502, 503, 504];
 
+  /// When [enabled] is true, this determines whether or not to retry requests
+  /// that fail due to exceeding the timeout threshold.
+  bool forTimeouts = true;
+
   /// Maximum number of retries to attempt. This excludes the original request.
   /// For example, a request with `maxRetries = 2` will produce up to 3 requests
   /// total - the first request and 2 retries.

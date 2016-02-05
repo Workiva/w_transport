@@ -603,24 +603,27 @@ abstract class CommonRequest extends Object
 
       c.complete();
     } catch (e, stackTrace) {
-      var error = e;
-      if (error is! RequestException) {
-        error = new RequestException(method, this.uri, this, response, error);
+      var requestException = e;
+      if (requestException is! RequestException) {
+        requestException = new RequestException(
+            method, this.uri, this, response, requestException);
       }
 
       // Apply the response interceptor even in the event of failure, unless the
       // response interceptor was the cause of failure.
       if (responseInterceptor != null && !responseInterceptorThrew) {
-        response = await responseInterceptor(finalizedRequest, response, error);
-        error = new RequestException(method, this.uri, this, response, error);
+        response = await responseInterceptor(
+            finalizedRequest, response, requestException);
+        requestException = new RequestException(
+            method, this.uri, this, response, requestException.error);
       }
 
       // Store the failure for context.
-      autoRetry.failures.add(error);
+      autoRetry.failures.add(requestException);
 
       // Attempt to retry the request if configuration and state permit it.
       bool retrySucceeded = false;
-      if (await _canRetry(finalizedRequest, response, error)) {
+      if (await _canRetry(finalizedRequest, response, requestException)) {
         Completer<BaseResponse> retryCompleter = new Completer();
 
         _retry(streamResponse).then((retryResponse) {
@@ -631,7 +634,7 @@ abstract class CommonRequest extends Object
           }
         }, onError: (retryError, retryStackTrace) {
           if (!retryCompleter.isCompleted) {
-            error = retryError;
+            requestException = retryError;
             // TODO: Combine stack trace from above with the retry stack trace?
             // TODO: Or is replacing with the retry stack trace enough?
             retryCompleter.complete();
@@ -650,7 +653,9 @@ abstract class CommonRequest extends Object
         checkForCancellation(response: response);
       }
 
-      retrySucceeded ? c.complete() : c.completeError(error, stackTrace);
+      retrySucceeded
+          ? c.complete()
+          : c.completeError(requestException, stackTrace);
     } finally {
       cleanUp();
       if (!_done.isCompleted) {

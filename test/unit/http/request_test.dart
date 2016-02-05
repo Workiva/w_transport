@@ -471,6 +471,20 @@ void _runCommonRequestSuiteFor(
       }, throwsStateError);
     });
 
+    test(
+        'should not double-wrap exception when applying responseInterceptor after failure',
+        () async {
+      var error = new Error();
+      MockTransports.http.expect('GET', requestUri, failWith: error);
+      BaseRequest request = requestFactory();
+      request.responseInterceptor =
+          (request, response, [exception]) async => response;
+      expect(request.get(uri: requestUri), throwsA(predicate((exception) {
+        return exception is RequestException &&
+            identical(exception.error, error);
+      })));
+    });
+
     test('timeoutThreshold is not enforced if not set', () async {
       BaseRequest request = requestFactory();
       Future future = request.get(uri: requestUri);

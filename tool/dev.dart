@@ -48,8 +48,8 @@ main(List<String> args) async {
 
   config.examples
     ..port = 9000
-    ..before = [_streamServer]
-    ..after = [_stopServer];
+    ..before = [_streamServer, _streamSockJSServer]
+    ..after = [_stopServer, _stopSockJSServer];
 
   config.format.directories = directories;
 
@@ -109,6 +109,17 @@ Future _streamServer() async {
     reporter.log(reporter.colorBlue('    $line'));
   });
   await _server.start();
+}
+
+Future _streamSockJSServer() async {
+  _sockJSServer = new TaskProcess('node', ['tool/server/sockjs.js']);
+  _sockJSServer.stdout.listen((line) {
+    reporter.log(reporter.colorBlue('    $line'));
+  });
+  _sockJSServer.stderr.listen((line) {
+    reporter.log(reporter.colorBlue('    $line'));
+  });
+  // todo: wait for server to start
 }
 
 /// Stop the server needed for integration tests and examples.

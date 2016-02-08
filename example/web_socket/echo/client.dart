@@ -26,10 +26,20 @@ import '../../common/global_example_menu_component.dart';
 import '../../common/loading_component.dart';
 
 final Uri wsServer = Uri.parse('ws://localhost:8024/example/ws/echo');
+final Uri sockJSServer = Uri.parse('ws://localhost:8026/example/ws/echo');
 
 String _echo(String message) =>
     JSON.encode({'action': 'echo', 'message': message});
 String _unecho(String response) => JSON.decode(response)['message'];
+
+ButtonElement connect = querySelector('#connect');
+FormElement form = querySelector('#prompt-form');
+TextInputElement prompt = querySelector('#prompt');
+PreElement logs = querySelector('#logs');
+NumberInputElement sockJSTimeout = querySelector('#sockjs-timeout');
+CheckboxInputElement sockJSWebSocket = querySelector('#sockjs-ws');
+CheckboxInputElement sockJSXhr = querySelector('#sockjs-xhr');
+CheckboxInputElement useSockJS = querySelector('#sockjs');
 
 main() async {
   react_client.setClientConfiguration();
@@ -39,29 +49,52 @@ main() async {
 
   WSocket webSocket;
 
-  // Send message upon form submit
-  (querySelector('#prompt-form') as FormElement).onSubmit.listen((e) {
+  // Connect (or reconnect) when the connect button is clicked.
+  connect.onClick.listen((e) async {
+    logs.appendText('Connecting...\n');
+
+    bool sockjs = useSockJS.checked;
+    Duration timeout = sockJSTimeout.value.isEmpty
+        ? null
+        : new Duration(milliseconds: sockJSTimeout.valueAsNumber);
+    var protocols = [];
+    if (sockJSWebSocket.checked) {
+      protocols.add('websocket');
+    }
+    if (sockJSXhr.checked) {
+      protocols.add('xhr-streaming');
+    }
+    Uri uri = sockjs ? sockJSServer : wsServer;
+
+    try {
+      webSocket = await WSocket.connect(uri,
+          useSockJS: sockjs,
+          sockJSTimeout: timeout,
+          sockJSProtocolsWhitelist: protocols);
+
+      // Display messages from web socket
+      webSocket.listen((message) {
+        logs.appendText('${_unecho(message)}\n');
+      });
+
+      logs.appendText('Connected.\n');
+    } on WSocketException catch (e, stackTrace) {
+      logs.appendText(
+          '> ERROR: Could not connect to web socket on $wsServer\n');
+      print('Could not connect to web socket.\n$e\n$stackTrace');
+    }
+  });
+
+  // Send message upon form submit.
+  form.onSubmit.listen((e) {
     e.preventDefault();
 
     if (webSocket == null) return;
 
-    String message = (querySelector('#prompt') as TextInputElement).value;
-    querySelector('#logs').appendText('> $message\n');
+    String message = prompt.value;
+    logs.appendText('> $message\n');
     webSocket.add(_echo(message));
   });
-
-  try {
-    webSocket = await WSocket.connect(wsServer);
-
-    // Display messages from web socket
-    webSocket.listen((message) {
-      querySelector('#logs').appendText('${_unecho(message)}\n');
-    });
-  } on WSocketException catch (e, stackTrace) {
-    querySelector('#logs')
-        .appendText('> ERROR: Could not connect to web socket on $wsServer');
-    print('Could not connect to web socket.\n$e\n$stackTrace');
-  }
 
   // Remove the loading overlay
   removeLoadingOverlay();

@@ -29,8 +29,39 @@ limitations under the License.
     <p>Connect to a WebSocket and send messages that will be echoed.</p>
 
     <form id="prompt-form">
+        <label for="sockjs">
+            <input type="checkbox" id="sockjs">
+            Use SockJS
+        </label>
+
+        <br>
+
+        <label for="sockjs-ws">
+            <input type="checkbox" id="sockjs-ws">
+            SockJS websocket
+        </label>
+
+        <br>
+
+        <label for="sockjs-xhr">
+            <input type="checkbox" id="sockjs-xhr">
+            SockJS xhr-streaming
+        </label>
+
+        <br>
+
+        <label for="sockjs-timeout">SockJS Timeout (ms)</label>
+        <input type="number" id="sockjs-timeout">
+
+        <br><br>
+
+        <button type="button" id="connect">Connect</button>
+
+        <br><br>
+
         <label for="prompt">Message</label>
         <input id="prompt" type="text">
+        <button type="submit">Send</button>
     </form>
 
     <pre id="logs"></pre>

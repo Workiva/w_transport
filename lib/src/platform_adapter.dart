@@ -80,5 +80,6 @@ abstract class PlatformAdapter {
       bool sockJSDebug,
       bool sockJSNoCredentials,
       List<String> sockJSProtocolsWhitelist,
+      Duration sockJSTimeout,
       bool useSockJS});
 }

@@ -77,5 +77,6 @@ ping.on('connection', function(conn) {
 var server = http.createServer();
 closeOnRequest.installHandlers(server, {prefix: '/test/ws/close'});
 echo.installHandlers(server, {prefix: '/test/ws/echo'});
+echo.installHandlers(server, {prefix: '/example/ws/echo'});
 ping.installHandlers(server, {prefix: '/test/ws/ping'});
 server.listen(8026, 'localhost');

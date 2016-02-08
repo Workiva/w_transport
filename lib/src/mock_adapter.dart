@@ -58,6 +58,7 @@ class MockAdapter implements PlatformAdapter {
           bool sockJSDebug,
           bool sockJSNoCredentials,
           List<String> sockJSProtocolsWhitelist,
+          Duration sockJSTimeout,
           bool useSockJS}) =>
       MockWSocket.connect(uri, protocols: protocols, headers: headers);
 }

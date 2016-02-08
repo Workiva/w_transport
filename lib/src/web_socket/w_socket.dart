@@ -91,6 +91,7 @@ abstract class WSocket implements Stream, StreamSink {
       bool sockJSDebug,
       bool sockJSNoCredentials,
       List<String> sockJSProtocolsWhitelist,
+      Duration sockJSTimeout,
       bool useSockJS}) async {
     return PlatformAdapter.retrieve().newWSocket(uri,
         headers: headers,
@@ -98,6 +99,7 @@ abstract class WSocket implements Stream, StreamSink {
         sockJSDebug: sockJSDebug,
         sockJSNoCredentials: sockJSNoCredentials,
         sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
+        sockJSTimeout: sockJSTimeout,
         useSockJS: useSockJS);
   }
 

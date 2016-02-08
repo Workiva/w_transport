@@ -33,16 +33,19 @@ class BrowserAdapter implements PlatformAdapter {
   final bool _sockJSDebug;
   final bool _sockJSNoCredentials;
   final List<String> _sockJSProtocolsWhitelist;
+  final Duration _sockJSTimeout;
 
   BrowserAdapter(
       {bool useSockJS: false,
       bool sockJSNoCredentials: false,
       bool sockJSDebug: false,
-      List<String> sockJSProtocolsWhitelist})
+      List<String> sockJSProtocolsWhitelist,
+      Duration sockJSTimeout})
       : _useSockJS = useSockJS == true,
         _sockJSDebug = sockJSDebug == true,
         _sockJSProtocolsWhitelist = sockJSProtocolsWhitelist,
-        _sockJSNoCredentials = sockJSNoCredentials == true;
+        _sockJSNoCredentials = sockJSNoCredentials == true,
+        _sockJSTimeout = sockJSTimeout;
 
   /// Construct a new [BrowserClient] instance that implements [Client].
   Client newClient() => new BrowserClient();
@@ -74,18 +77,21 @@ class BrowserAdapter implements PlatformAdapter {
       bool sockJSDebug,
       bool sockJSNoCredentials,
       List<String> sockJSProtocolsWhitelist,
+      Duration sockJSTimeout,
       bool useSockJS}) {
     sockJSDebug = sockJSDebug ?? _sockJSDebug;
     sockJSNoCredentials = sockJSNoCredentials ?? _sockJSNoCredentials;
     sockJSProtocolsWhitelist =
         sockJSProtocolsWhitelist ?? _sockJSProtocolsWhitelist;
+    sockJSTimeout = sockJSTimeout ?? _sockJSTimeout;
     useSockJS = useSockJS ?? _useSockJS;
 
     if (useSockJS) {
       return SockJSSocket.connect(uri,
           debug: sockJSDebug,
           noCredentials: sockJSNoCredentials,
-          protocolsWhitelist: sockJSProtocolsWhitelist);
+          protocolsWhitelist: sockJSProtocolsWhitelist,
+          timeout: sockJSTimeout);
     } else {
       return BrowserWSocket.connect(uri,
           protocols: protocols, headers: headers);

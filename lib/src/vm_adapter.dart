@@ -54,6 +54,7 @@ class VMAdapter implements PlatformAdapter {
           bool sockJSDebug,
           bool sockJSNoCredentials,
           List<String> sockJSProtocolsWhitelist,
+          Duration sockJSTimeout,
           bool useSockJS}) =>
       VMWSocket.connect(uri, protocols: protocols, headers: headers);
 }

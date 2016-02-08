@@ -19,6 +19,13 @@
       ..timeoutThreshold = new Duration(seconds: 10)
       ..autoRetry.enabled = true
       ..autoRetry.forTimeouts = false;
+
+- Added a `Duration sockJSTimeout` config option to `WSocket.connect()`.
+
+    ```dart
+    // browser only
+    var socket = await WSocket.connect(Uri.parse('...'),
+        useSockJS: true, sockJSTimeout: new Duration(seconds: 5));
     ```
 
 ## 2.1.0

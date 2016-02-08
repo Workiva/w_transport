@@ -27,7 +27,8 @@ class SockJSSocket extends CommonWSocket implements WSocket {
   static Future<WSocket> connect(Uri uri,
       {bool debug: false,
       bool noCredentials: false,
-      List<String> protocolsWhitelist}) async {
+      List<String> protocolsWhitelist,
+      Duration timeout}) async {
     if (uri.scheme == 'ws') {
       uri = uri.replace(scheme: 'http');
     } else if (uri.scheme == 'wss') {
@@ -37,7 +38,8 @@ class SockJSSocket extends CommonWSocket implements WSocket {
     sockjs.Client client = new sockjs.Client(uri.toString(),
         debug: debug == true,
         noCredentials: noCredentials == true,
-        protocolsWhitelist: protocolsWhitelist);
+        protocolsWhitelist: protocolsWhitelist,
+        timeout: timeout != null ? timeout.inMilliseconds : null);
 
     // Listen for and store the close event. This will determine whether or
     // not the socket connected successfully, and will also be used later

@@ -19,6 +19,7 @@
       ..timeoutThreshold = new Duration(seconds: 10)
       ..autoRetry.enabled = true
       ..autoRetry.forTimeouts = false;
+  ```
 
 - Added a `Duration sockJSTimeout` config option to `WSocket.connect()`.
 

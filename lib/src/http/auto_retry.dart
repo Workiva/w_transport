@@ -25,6 +25,9 @@ import 'package:w_transport/src/http/response.dart';
 typedef Future<bool> RetryTest(
     FinalizedRequest request, BaseResponse response, bool willRetry);
 
+/// The valid retry back-off methods.
+enum RetryBackOffMethod { exponential, fixed, none }
+
 /// Deciding whether or not to retry a failed request is determined by the
 /// settings defined in fields in this class.
 ///
@@ -51,6 +54,9 @@ typedef Future<bool> RetryTest(
 /// If, however, [test] is null, then the decision is made based solely on
 /// whether or not the HTTP method and status code checks passed.
 class AutoRetryConfig {
+  /// Back-off method to use between retries. By default, there is no back-off.
+  RetryBackOff backOff = const RetryBackOff.none();
+
   /// Whether or not automatic retrying is enabled.
   bool enabled = false;
 
@@ -148,4 +154,34 @@ class RequestAutoRetry extends AutoRetryConfig {
         (_request as MultipartRequest).files.isNotEmpty) return false;
     return true;
   }
+}
+
+/// Representation of the back-off method to use when retrying requests. A fixed
+/// back-off will space retries out by [duration]. An exponential back-off will
+/// delay retries by `d*2^n` where `d` is [duration] and `n` is the number of
+/// attempts so far.
+class RetryBackOff {
+  /// The base duration from which the delay between retries will be calculated.
+  /// For fixed back-off, the delay will always be this value. For exponential
+  /// back-off, the delay will be this value multiplied by 2^n where `n` is the
+  /// number of attempts so far.
+  final Duration duration;
+
+  /// The back-off method to use. One of none, fixed, or exponential.
+  final RetryBackOffMethod method;
+
+  /// Construct a new exponential back-off representation where [duration] is
+  /// the base duration from which each delay will be calculated.
+  const RetryBackOff.exponential(this.duration)
+      : method = RetryBackOffMethod.exponential;
+
+  /// Construct a new fixed back-off representation where [duration] is the
+  /// delay between each retry.
+  const RetryBackOff.fixed(this.duration) : method = RetryBackOffMethod.fixed;
+
+  /// Construct a null back-off representation, meaning no delay between retry
+  /// attempts.
+  const RetryBackOff.none()
+      : duration = null,
+        method = RetryBackOffMethod.none;
 }

@@ -1,6 +1,28 @@
 # Changelog
 
-## 2.2.0
+## [2.3.0](https://github.com/Workiva/w_transport/compare/2.2.0...2.3.0)
+
+### Features
+
+- Implemented retry back-off to allow fixed or exponential back-off between
+  request retries. By default, there is no back-off.
+
+    ```dart
+    // Fixed back-off: 1 second between attempts.
+    var request = new Request();
+    request.autoRetry
+      ..enabled = true
+      ..backOff = new RetryBackOff.fixed(new Duration(seconds: 1));
+
+    // Exponential back-off: 250ms, 500ms, 1s, 2s, etc (base*2^attempt)
+    var request = new Request();
+    request.autoRetry
+      ..enabled = true
+      ..backOff = new RetryBackOff.exponential(new Duration(milliseconds: 125));
+  ```
+
+## [2.2.0](https://github.com/Workiva/w_transport/compare/2.1.0...2.2.0)
+_February 8, 2016_
 
 ### Features
 
@@ -29,7 +51,8 @@
         useSockJS: true, sockJSTimeout: new Duration(seconds: 5));
     ```
 
-## 2.1.0
+## [2.1.0](https://github.com/Workiva/w_transport/compare/2.0.0...2.1.0)
+_January 7, 2016_
 
 ### Deprecation: SockJS global configuration
 
@@ -81,7 +104,8 @@ WSocket webSocket = await WSocket.connect(uri,
   being ignored).
 
 
-## 2.0.0
+## [2.0.0](https://github.com/Workiva/w_transport/compare/1.0.1...2.0.0)
+_November 24, 2015_
 
 > The 2.0.0 release is a major breaking release. While many of the patterns from
 > 1.0.x were maintained, the HTTP API was broken up into several request classes
@@ -154,7 +178,9 @@ This has been greatly improved by switching to two different response classes:
   available as a stream of bytes
 
 
-## 1.0.1
+## [1.0.1](https://github.com/Workiva/w_transport/compare/1.0.0...1.0.1)
+_June 23, 2015_
+
 **Bug Fixes:**
 
 - Allow request data to be set to `null`.
@@ -166,6 +192,8 @@ This has been greatly improved by switching to two different response classes:
   instance.
 
 
-## 1.0.0
+## [1.0.0](https://github.com/Workiva/w_transport/compare/f9a8277b552902db962b8eb3d41c82ded4900284...1.0.0)
+_May 21, 2015_
+
 - Initial version of w_transport: a fluent-style, platform-agnostic library with
   ready to use transport classes for sending and receiving data over HTTP.

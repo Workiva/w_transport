@@ -42,13 +42,30 @@ class RequestException implements Exception {
 
   /// Descriptive error message that includes the request method & URL and the response status.
   String get message {
-    String msg = '$method';
-    if (response != null) {
-      msg += ' ${response.status} ${response.statusText}';
-    }
-    msg += ' $uri';
-    if (error != null) {
-      msg += '\n\t$error';
+    String msg;
+    if (request != null && request.autoRetry.numAttempts > 1) {
+      msg = '$method $uri';
+      for (var i = 0; i < request.autoRetry.failures.length; i++) {
+        var failure = request.autoRetry.failures[i];
+        var attempt = '\n\tAttempt #${i+1}:';
+        if (failure.response != null) {
+          attempt +=
+              ' ${failure.response.status} ${failure.response.statusText}';
+        }
+        if (failure.error != null) {
+          attempt += ' (${failure.error})';
+        }
+        msg += attempt;
+      }
+    } else {
+      msg = '$method';
+      if (response != null) {
+        msg += ' ${response.status} ${response.statusText}';
+      }
+      msg += ' $uri';
+      if (error != null) {
+        msg += '\n\t$error';
+      }
     }
     return msg;
   }

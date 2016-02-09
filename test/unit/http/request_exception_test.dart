@@ -28,7 +28,7 @@ void main() {
 
   group(naming.toString(), () {
     group('RequestException', () {
-      test('should include the method and URi if given', () {
+      test('should include the method and URI if given', () {
         RequestException exception =
             new RequestException('POST', Uri.parse('/path'), null, null);
         expect(exception.toString(), contains('POST'));

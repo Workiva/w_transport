@@ -16,6 +16,7 @@ library w_transport.src.http.common.request;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' show pow;
 
 import 'package:fluri/fluri.dart';
 import 'package:http_parser/http_parser.dart';
@@ -625,6 +626,19 @@ abstract class CommonRequest extends Object
       bool retrySucceeded = false;
       if (await _canRetry(finalizedRequest, response, requestException)) {
         Completer<BaseResponse> retryCompleter = new Completer();
+
+        // If retry back-off is configured, wait as necessary.
+        var backOff;
+        if (autoRetry.backOff.method == RetryBackOffMethod.exponential) {
+          var base = autoRetry.backOff.duration.inMilliseconds;
+          var exponent = autoRetry.numAttempts;
+          backOff = new Duration(milliseconds: base * pow(2, exponent));
+        } else if (autoRetry.backOff.method == RetryBackOffMethod.fixed) {
+          backOff = autoRetry.backOff.duration;
+        }
+        if (backOff != null) {
+          await new Future.delayed(backOff);
+        }
 
         _retry(streamResponse).then((retryResponse) {
           if (!retryCompleter.isCompleted) {

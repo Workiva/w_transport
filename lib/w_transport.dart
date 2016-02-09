@@ -89,6 +89,8 @@
 /// server, and listen to it like a stream to receive data from the server.
 library w_transport;
 
+export 'package:w_transport/src/http/auto_retry.dart'
+    show RetryBackOff, RetryBackOffMethod;
 export 'package:w_transport/src/http/base_request.dart' show BaseRequest;
 export 'package:w_transport/src/http/client.dart' show Client;
 export 'package:w_transport/src/http/finalized_request.dart'

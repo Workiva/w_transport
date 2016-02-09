@@ -954,6 +954,89 @@ _runAutoRetryTestSuiteFor(
         await future.catchError((_) {});
         expect(request.autoRetry.numAttempts, equals(1));
       });
+
+      test('no retry back-off by default', () async {
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 3;
+        request.get(uri: requestUri);
+
+        // Wait an arbitrarily short amount of time to allow all retries to
+        // complete with confidence that no back-off occurred.
+        await new Future.delayed(new Duration(milliseconds: 20));
+        expect(request.autoRetry.numAttempts, equals(4));
+      });
+
+      test('fixed retry back-off', () async {
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 3
+          ..backOff = new RetryBackOff.fixed(new Duration(milliseconds: 50));
+        request.get(uri: requestUri);
+
+        // < 50ms = 1 attempt
+        // < 100ms = 2 attempts
+        // < 150ms = 3 attempts
+        // >= 150ms = 4 attempts
+        await new Future.delayed(new Duration(milliseconds: 25));
+        expect(request.autoRetry.numAttempts, equals(1));
+        await new Future.delayed(new Duration(milliseconds: 50));
+        expect(request.autoRetry.numAttempts, equals(2));
+        await new Future.delayed(new Duration(milliseconds: 50));
+        expect(request.autoRetry.numAttempts, equals(3));
+        await new Future.delayed(new Duration(milliseconds: 50));
+        expect(request.autoRetry.numAttempts, equals(4));
+      });
+
+      test('exponential retry back-off', () async {
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 3
+          ..backOff =
+              new RetryBackOff.exponential(new Duration(milliseconds: 25));
+        request.get(uri: requestUri);
+
+        // 1st attempt = immediate
+        // 2nd attempt = +50s (25*2^1)
+        // 3rd attempt = +100s (25*2^2)
+        // 4th attempt = +200s (25*2^3)
+
+        await new Future.delayed(new Duration(milliseconds: 1));
+        expect(request.autoRetry.numAttempts, equals(1));
+        await new Future.delayed(new Duration(milliseconds: 60));
+        expect(request.autoRetry.numAttempts, equals(2));
+        await new Future.delayed(new Duration(milliseconds: 120));
+        expect(request.autoRetry.numAttempts, equals(3));
+        await new Future.delayed(new Duration(milliseconds: 240));
+        expect(request.autoRetry.numAttempts, equals(4));
+      });
     });
   });
 }

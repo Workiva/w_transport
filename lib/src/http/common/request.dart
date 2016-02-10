@@ -283,14 +283,16 @@ abstract class CommonRequest extends Object
   /// Check if this request has been canceled.
   void checkForCancellation({BaseResponse response}) {
     if (isCanceled) {
-      throw new RequestException(
+      var error = new RequestException(
           method,
           this.uri,
           this,
           response,
           _cancellationError != null
               ? _cancellationError
-              : new Exception('Request canceled.'));
+              : new Exception('Request canceled'));
+      autoRetry.failures.add(error);
+      throw error;
     }
   }
 
@@ -650,7 +652,6 @@ abstract class CommonRequest extends Object
           if (!retryCompleter.isCompleted) {
             requestException = retryError;
             // TODO: Combine stack trace from above with the retry stack trace?
-            // TODO: Or is replacing with the retry stack trace enough?
             retryCompleter.complete();
           }
         });

@@ -21,6 +21,10 @@
       ..backOff = new RetryBackOff.exponential(new Duration(milliseconds: 125));
   ```
 
+- Improved error messaging around failed requests. If automatic retrying is
+  enabled, the error message for a failed request will include each individual
+  attempt and why it failed.
+
 ## [2.2.0](https://github.com/Workiva/w_transport/compare/2.1.0...2.2.0)
 _February 8, 2016_
 

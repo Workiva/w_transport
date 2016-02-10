@@ -1037,6 +1037,48 @@ _runAutoRetryTestSuiteFor(
         await new Future.delayed(new Duration(milliseconds: 240));
         expect(request.autoRetry.numAttempts, equals(4));
       });
+
+      test('RequestException should detail all attempts', () async {
+        // 1st = 400, 2nd = 403, 3rd = 500, 4th = error, 5th = timeout
+        int c = 0;
+        MockTransports.http.when(requestUri, (request) async {
+          switch (++c) {
+            case 1:
+              return new MockResponse.badRequest();
+            case 2:
+              return new MockResponse.forbidden();
+            case 3:
+              return new MockResponse.internalServerError();
+            case 4:
+              await new Future.delayed(new Duration(seconds: 1));
+              return new MockResponse.notImplemented();
+            case 5:
+              throw new Exception('Unexpected failure.');
+          }
+        });
+
+        BaseRequest request = requestFactory()
+          ..timeoutThreshold = new Duration(milliseconds: 100);
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 4
+          ..test = (request, response, willRetry) async => true;
+
+        expect(request.get(uri: requestUri), throwsA(predicate((error) {
+          var reqEx = error as RequestException;
+          expect(reqEx.toString(), contains('Attempt #1: 400 BAD REQUEST'));
+          expect(reqEx.toString(), contains('Attempt #2: 403 FORBIDDEN'));
+          expect(reqEx.toString(),
+              contains('Attempt #3: 500 INTERNAL SERVER ERROR'));
+          expect(
+              reqEx.toString(),
+              contains(
+                  'Attempt #4: (TimeoutException after 0:00:00.100000: Request took too long to complete.)'));
+          expect(reqEx.toString(),
+              contains('Attempt #5: (Exception: Unexpected failure.)'));
+          return true;
+        })));
+      });
     });
   });
 }

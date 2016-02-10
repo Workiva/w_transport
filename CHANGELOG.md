@@ -1,6 +1,7 @@
 # Changelog
 
 ## [2.3.0](https://github.com/Workiva/w_transport/compare/2.2.0...2.3.0)
+_February 11, 2016_
 
 ### Features
 

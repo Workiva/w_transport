@@ -577,7 +577,7 @@ _runAutoRetryTestSuiteFor(
       }
     });
 
-    group('auto retry', () {
+    group('retry', () {
       test('disabled', () async {
         MockTransports.http.expect('GET', requestUri,
             respondWith: new MockResponse.internalServerError());
@@ -1027,7 +1027,6 @@ _runAutoRetryTestSuiteFor(
         // 2nd attempt = +50s (25*2^1)
         // 3rd attempt = +100s (25*2^2)
         // 4th attempt = +200s (25*2^3)
-
         await new Future.delayed(new Duration(milliseconds: 1));
         expect(request.autoRetry.numAttempts, equals(1));
         await new Future.delayed(new Duration(milliseconds: 60));
@@ -1078,6 +1077,66 @@ _runAutoRetryTestSuiteFor(
               contains('Attempt #5: (Exception: Unexpected failure.)'));
           return true;
         })));
+      });
+
+      test('manual retry()', () async {
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.badRequest());
+        MockTransports.http.expect('GET', requestUri);
+        BaseRequest request = requestFactory();
+        await request.get(uri: requestUri).catchError((_) {});
+        await request.retry();
+      });
+
+      test('manual retry() throws if not yet sent', () async {
+        BaseRequest request = requestFactory();
+        expect(request.retry, throwsStateError);
+      });
+
+      test('manual retry() throws if not yet complete', () async {
+        MockTransports.http
+            .when(requestUri, (request) => new Completer().future);
+        BaseRequest request = requestFactory();
+        request.get(uri: requestUri);
+        await new Future.delayed(new Duration(milliseconds: 10));
+        expect(request.retry, throwsStateError);
+      });
+
+      test('manual retry() throws if did not fail', () async {
+        MockTransports.http.expect('GET', requestUri);
+        BaseRequest request = requestFactory();
+        await request.get(uri: requestUri);
+        expect(request.retry, throwsStateError);
+      });
+
+      test('manual streamRetry()', () async {
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.badRequest());
+        MockTransports.http.expect('GET', requestUri);
+        BaseRequest request = requestFactory();
+        await request.get(uri: requestUri).catchError((_) {});
+        await request.streamRetry();
+      });
+
+      test('manual streamRetry() throws if not yet sent', () async {
+        BaseRequest request = requestFactory();
+        expect(request.streamRetry, throwsStateError);
+      });
+
+      test('manual streamRetry() throws if not yet complete', () async {
+        MockTransports.http
+            .when(requestUri, (request) => new Completer().future);
+        BaseRequest request = requestFactory();
+        request.get(uri: requestUri);
+        await new Future.delayed(new Duration(milliseconds: 10));
+        expect(request.streamRetry, throwsStateError);
+      });
+
+      test('manual streamRetry() throws if did not fail', () async {
+        MockTransports.http.expect('GET', requestUri);
+        BaseRequest request = requestFactory();
+        await request.get(uri: requestUri);
+        expect(request.streamRetry, throwsStateError);
       });
     });
   });

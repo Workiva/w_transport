@@ -21,6 +21,18 @@
       ..backOff = new RetryBackOff.exponential(new Duration(milliseconds: 125));
   ```
 
+- Added methods to all request classes for manually retrying failures. This is
+  mainly useful for corner cases where the request's success is dependent on
+  something else and where automatic retrying won't help.
+
+    ```dart
+    var request = new Request();
+    // send request, catch failure
+
+    var response = await request.retry(); // normal
+    var response = await request.streamRetry(); // streamed
+    ```
+
 - Improved error messaging around failed requests. If automatic retrying is
   enabled, the error message for a failed request will include each individual
   attempt and why it failed.

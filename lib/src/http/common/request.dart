@@ -62,6 +62,9 @@ abstract class CommonRequest extends Object
   /// See [configure].
   Function configureFn;
 
+  /// Whether or not the request has completed successfully.
+  bool didSucceed = false;
+
   /// [RequestProgress] stream controller for this HTTP request's download.
   StreamController<RequestProgress> downloadProgressController =
       new StreamController<RequestProgress>();
@@ -458,6 +461,16 @@ abstract class CommonRequest extends Object
       _send(method,
           body: body, headers: headers, streamResponse: true, uri: uri);
 
+  Future<Response> retry() {
+    _verifyCanRetryManually();
+    return clone().send(method);
+  }
+
+  Future<StreamedResponse> streamRetry() {
+    _verifyCanRetryManually();
+    return clone().streamSend(method);
+  }
+
   /// Determine if this request failure is eligible for retry.
   Future<bool> _canRetry(FinalizedRequest request, BaseResponse response,
       RequestException requestException) async {
@@ -492,6 +505,17 @@ abstract class CommonRequest extends Object
     _timeoutError = new TimeoutException(
         'Request took too long to complete.', timeoutThreshold);
     _timeoutCompleter.complete();
+  }
+
+  void _verifyCanRetryManually() {
+    if (!isSent)
+      throw new StateError(
+          'Cannot retry a request that has not yet been sent.');
+    if (!_done.isCompleted)
+      throw new StateError(
+          'Cannot retry a request that has not yet completed.');
+    if (didSucceed)
+      throw new StateError('Cannot retry a request that did not fail.');
   }
 
   /// Send the HTTP request:
@@ -679,6 +703,7 @@ abstract class CommonRequest extends Object
     }
     await c.future;
     checkForCancellation(response: response);
+    didSucceed = true;
     return response;
   }
 }

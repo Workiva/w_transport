@@ -110,7 +110,7 @@ For one-off or simple requests, use the static methods on the `Http` class:
 await Http.get(Uri.parse('/ping'));
 await Http.post(Uri.parse('/tasks/2'), body: 'new task');
 ```
-
+a
 These standard HTTP methods are supported:
 
 * DELETE : `Http.delete()`

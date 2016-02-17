@@ -592,6 +592,7 @@ abstract class CommonRequest extends Object
       // response fetching early if it occurs before the request has finished.
       void breakOutOfResponseFetching(_) {
         if (!responseCompleter.isCompleted) {
+          response = null;
           responseCompleter.complete();
         }
       }

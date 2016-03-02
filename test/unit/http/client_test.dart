@@ -212,6 +212,35 @@ void main() {
         }
       });
 
+      test('autoRetry should be inherited by all requests', () async {
+        Client client = new Client();
+        client.autoRetry
+          ..backOff = const RetryBackOff.fixed(const Duration(seconds: 2))
+          ..enabled = true
+          ..forHttpMethods = ['GET']
+          ..forStatusCodes = [404]
+          ..forTimeouts = false
+          ..maxRetries = 4
+          ..test = (request, response, willRetry) async => true;
+
+        for (var request in createAllRequestTypes(client)) {
+          expect(request.autoRetry.backOff.duration,
+              equals(client.autoRetry.backOff.duration));
+          expect(request.autoRetry.backOff.method,
+              equals(client.autoRetry.backOff.method));
+          expect(request.autoRetry.enabled, equals(client.autoRetry.enabled));
+          expect(request.autoRetry.forHttpMethods,
+              equals(client.autoRetry.forHttpMethods));
+          expect(request.autoRetry.forStatusCodes,
+              equals(client.autoRetry.forStatusCodes));
+          expect(request.autoRetry.forTimeouts,
+              equals(client.autoRetry.forTimeouts));
+          expect(request.autoRetry.maxRetries,
+              equals(client.autoRetry.maxRetries));
+          expect(request.autoRetry.test, equals(client.autoRetry.test));
+        }
+      });
+
       test('addInterceptor() single interceptor (request only)', () async {
         Client client = new Client()..addInterceptor(new ReqInt());
         for (BaseRequest request in createAllRequestTypes(client)) {

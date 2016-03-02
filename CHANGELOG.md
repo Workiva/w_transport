@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.2](https://github.com/Workiva/w_transport/compare/2.3.0...2.3.2)
+_March 2, 2016_
+
+- **Bug Fix:** requests created from a `Client` now properly inherit all of the
+  `autoRetry` configuration. Previously the `backOff`, `forTimeouts`, and
+  `maxRetries` settings were missing.
+
 ## [2.3.0](https://github.com/Workiva/w_transport/compare/2.2.0...2.3.0)
 _February 11, 2016_
 

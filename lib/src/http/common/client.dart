@@ -105,9 +105,12 @@ abstract class CommonClient implements Client {
       request.withCredentials = true;
     }
     request.autoRetry
+      ..backOff = autoRetry.backOff
       ..enabled = autoRetry.enabled
       ..forHttpMethods = autoRetry.forHttpMethods
       ..forStatusCodes = autoRetry.forStatusCodes
+      ..forTimeouts = autoRetry.forTimeouts
+      ..maxRetries = autoRetry.maxRetries
       ..test = autoRetry.test;
     if (_requestPathway.hasInterceptors) {
       request.requestInterceptor = (request) async {

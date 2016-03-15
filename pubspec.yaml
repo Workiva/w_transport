@@ -22,7 +22,6 @@ dependencies:
     git:
       url: https://github.com/Workiva/sockjs-dart-client.git
       ref: 0.3.0
-  stack_trace: "^1.4.0"
 dev_dependencies:
   ansicolor: "^0.0.9"
   args: "^0.13.0"

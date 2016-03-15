@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.3.3](https://github.com/Workiva/w_transport/compare/2.3.4...2.3.3)
+_March 15, 2016_
+
+- **Bug Fix:** remove incorrect usage of `new Chain.current()` that was
+  resulting in uncaught exceptions when requests would time out.
+
 ## [2.3.2](https://github.com/Workiva/w_transport/compare/2.3.0...2.3.2)
 _March 2, 2016_
 

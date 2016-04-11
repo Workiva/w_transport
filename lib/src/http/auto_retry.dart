@@ -186,7 +186,7 @@ class RetryBackOff {
 
   Duration calculate(int numAttempts) {
     Random random = new Random();
-    if (enableJitter) {
+    if (enableJitter != null && enableJitter == true) {
       if (maxDurationInMs != null) {
         return new Duration(
             milliseconds: random.nextInt(

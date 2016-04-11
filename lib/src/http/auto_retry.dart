@@ -21,6 +21,7 @@ import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
+import 'dart:math';
 
 typedef Future<bool> RetryTest(
     FinalizedRequest request, BaseResponse response, bool willRetry);
@@ -170,18 +171,60 @@ class RetryBackOff {
   /// The back-off method to use. One of none, fixed, or exponential.
   final RetryBackOffMethod method;
 
+  /// Whether to enable jitter or not.
+  final bool enableJitter;
+
+  /// The maximum duration between retries.
+  final maxDurationInMs;
+
+  /// The default maximum duration between retries. (5 minutes)
+  static const defaultMaxDurationInMs = 5 * 60 * 1000;
+
+  int _baseBackOffFunction(int numAttempts) {
+    return this.duration.inMilliseconds * pow(2, numAttempts);
+  }
+
+  Duration calculate(int numAttempts) {
+    Random random = new Random();
+    if (enableJitter) {
+      if (maxDurationInMs != null) {
+        return new Duration(
+            milliseconds: random.nextInt(
+                min(this.maxDurationInMs, _baseBackOffFunction(numAttempts))));
+      } else {
+        return new Duration(
+            milliseconds: random.nextInt(_baseBackOffFunction(numAttempts)));
+      }
+    } else {
+      if (maxDurationInMs != null) {
+        return new Duration(
+            milliseconds:
+                min(this.maxDurationInMs, _baseBackOffFunction(numAttempts)));
+      } else {
+        return new Duration(milliseconds: _baseBackOffFunction(numAttempts));
+      }
+    }
+  }
+
   /// Construct a new exponential back-off representation where [duration] is
   /// the base duration from which each delay will be calculated.
-  const RetryBackOff.exponential(this.duration)
-      : method = RetryBackOffMethod.exponential;
+  const RetryBackOff.exponential(this.duration,
+      {bool this.enableJitter, maxDurationInMs})
+      : method = RetryBackOffMethod.exponential,
+        maxDurationInMs = maxDurationInMs ?? defaultMaxDurationInMs;
 
   /// Construct a new fixed back-off representation where [duration] is the
   /// delay between each retry.
-  const RetryBackOff.fixed(this.duration) : method = RetryBackOffMethod.fixed;
+  const RetryBackOff.fixed(this.duration)
+      : method = RetryBackOffMethod.fixed,
+        enableJitter = false,
+        maxDurationInMs = null;
 
   /// Construct a null back-off representation, meaning no delay between retry
   /// attempts.
   const RetryBackOff.none()
       : duration = null,
-        method = RetryBackOffMethod.none;
+        method = RetryBackOffMethod.none,
+        enableJitter = false,
+        maxDurationInMs = null;
 }

@@ -657,9 +657,7 @@ abstract class CommonRequest extends Object
         // If retry back-off is configured, wait as necessary.
         var backOff;
         if (autoRetry.backOff.method == RetryBackOffMethod.exponential) {
-          var base = autoRetry.backOff.duration.inMilliseconds;
-          var exponent = autoRetry.numAttempts;
-          backOff = new Duration(milliseconds: base * pow(2, exponent));
+          backOff = autoRetry.backOff.calculate(autoRetry.numAttempts);
         } else if (autoRetry.backOff.method == RetryBackOffMethod.fixed) {
           backOff = autoRetry.backOff.duration;
         }

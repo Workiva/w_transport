@@ -21,7 +21,6 @@ import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
-import 'dart:math';
 
 typedef Future<bool> RetryTest(
     FinalizedRequest request, BaseResponse response, bool willRetry);
@@ -158,73 +157,50 @@ class RequestAutoRetry extends AutoRetryConfig {
 }
 
 /// Representation of the back-off method to use when retrying requests. A fixed
-/// back-off will space retries out by [duration]. An exponential back-off will
-/// delay retries by `d*2^n` where `d` is [duration] and `n` is the number of
+/// back-off will space retries out by [interval]. An exponential back-off will
+/// delay retries by `d*2^n` where `d` is [interval] and `n` is the number of
 /// attempts so far.
 class RetryBackOff {
   /// The base duration from which the delay between retries will be calculated.
   /// For fixed back-off, the delay will always be this value. For exponential
   /// back-off, the delay will be this value multiplied by 2^n where `n` is the
   /// number of attempts so far.
-  final Duration duration;
+  final Duration interval;
 
   /// The back-off method to use. One of none, fixed, or exponential.
   final RetryBackOffMethod method;
 
   /// Whether to enable jitter or not.
-  final bool enableJitter;
+  final bool withJitter;
 
   /// The maximum duration between retries.
-  final maxDurationInMs;
+  final Duration maxInterval;
 
   /// The default maximum duration between retries. (5 minutes)
-  static const defaultMaxDurationInMs = 5 * 60 * 1000;
+  static const Duration defaultMaxDurationInMs =
+      const Duration(milliseconds: 5 * 60 * 1000);
 
-  int _baseBackOffFunction(int numAttempts) {
-    return this.duration.inMilliseconds * pow(2, numAttempts);
-  }
-
-  Duration calculate(int numAttempts) {
-    Random random = new Random();
-    if (enableJitter != null && enableJitter == true) {
-      if (maxDurationInMs != null) {
-        return new Duration(
-            milliseconds: random.nextInt(
-                min(this.maxDurationInMs, _baseBackOffFunction(numAttempts))));
-      } else {
-        return new Duration(
-            milliseconds: random.nextInt(_baseBackOffFunction(numAttempts)));
-      }
-    } else {
-      if (maxDurationInMs != null) {
-        return new Duration(
-            milliseconds:
-                min(this.maxDurationInMs, _baseBackOffFunction(numAttempts)));
-      } else {
-        return new Duration(milliseconds: _baseBackOffFunction(numAttempts));
-      }
-    }
-  }
-
-  /// Construct a new exponential back-off representation where [duration] is
+  /// Construct a new exponential back-off representation where [interval] is
   /// the base duration from which each delay will be calculated.
-  const RetryBackOff.exponential(this.duration,
-      {bool this.enableJitter, maxDurationInMs})
+  const RetryBackOff.exponential(this.interval,
+      {bool withJitter, Duration maxInterval})
       : method = RetryBackOffMethod.exponential,
-        maxDurationInMs = maxDurationInMs ?? defaultMaxDurationInMs;
+        withJitter = withJitter == true,
+        maxInterval =
+            maxInterval != null ? maxInterval : defaultMaxDurationInMs;
 
-  /// Construct a new fixed back-off representation where [duration] is the
+  /// Construct a new fixed back-off representation where [interval] is the
   /// delay between each retry.
-  const RetryBackOff.fixed(this.duration)
+  const RetryBackOff.fixed(this.interval)
       : method = RetryBackOffMethod.fixed,
-        enableJitter = false,
-        maxDurationInMs = null;
+        withJitter = false,
+        maxInterval = null;
 
   /// Construct a null back-off representation, meaning no delay between retry
   /// attempts.
   const RetryBackOff.none()
-      : duration = null,
+      : interval = null,
         method = RetryBackOffMethod.none,
-        enableJitter = false,
-        maxDurationInMs = null;
+        withJitter = false,
+        maxInterval = null;
 }

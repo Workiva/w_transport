@@ -46,6 +46,8 @@ abstract class CommonRequest extends Object
     autoRetry = new RequestAutoRetry(this);
   }
 
+  static const int defaultExponentialMultiplier = 2;
+
   /// Configuration of automatic request retrying for failed requests. Use this
   /// object to enable or disable automatic retrying, configure the criteria
   /// that determines whether or not a request should be retried, as well as the
@@ -703,37 +705,58 @@ abstract class CommonRequest extends Object
     return response;
   }
 
-  static const int defaultExponentialMultiplier = 2;
-
-  int _baseBackOffFunction(int numAttempts) {
+  int _baseExponentialBackOffFunction(int numAttempts) {
     return autoRetry.backOff.interval.inMilliseconds *
         pow(defaultExponentialMultiplier, numAttempts);
   }
 
-  Duration calculateBackOff() {
+  Duration _createExponentialBackOff() {
     Duration backOff;
     Random random = new Random();
-    if (autoRetry.backOff.method == RetryBackOffMethod.exponential) {
-      if (autoRetry.backOff.withJitter != null &&
-          autoRetry.backOff.withJitter == true) {
-        backOff = new Duration(
-            milliseconds: random.nextInt(min(
-                autoRetry.backOff.maxInterval.inMilliseconds,
-                _baseBackOffFunction(autoRetry.numAttempts))));
-      } else {
-        backOff = new Duration(
-            milliseconds: min(autoRetry.backOff.maxInterval.inMilliseconds,
-                _baseBackOffFunction(autoRetry.numAttempts)));
-      }
-    } else if (autoRetry.backOff.method == RetryBackOffMethod.fixed) {
-      if (autoRetry.backOff.withJitter != null &&
-          autoRetry.backOff.withJitter == true) {
-        backOff = new Duration(
-            milliseconds: random.nextInt(
-                (autoRetry.backOff.interval.inMilliseconds * 1.5).toInt()));
-      } else {
-        backOff = autoRetry.backOff.interval;
-      }
+
+    if (autoRetry.backOff.withJitter != null &&
+        autoRetry.backOff.withJitter == true) {
+      backOff = new Duration(
+          milliseconds: random.nextInt(min(
+              autoRetry.backOff.maxInterval.inMilliseconds,
+              _baseExponentialBackOffFunction(autoRetry.numAttempts))));
+    } else {
+      backOff = new Duration(
+          milliseconds: min(autoRetry.backOff.maxInterval.inMilliseconds,
+              _baseExponentialBackOffFunction(autoRetry.numAttempts)));
+    }
+
+    return backOff;
+  }
+
+  Duration _createFixedBackOff() {
+    Duration backOff;
+    Random random = new Random();
+
+    if (autoRetry.backOff.withJitter != null &&
+        autoRetry.backOff.withJitter == true) {
+      backOff = new Duration(
+          milliseconds: autoRetry.backOff.interval.inMilliseconds ~/ 2 + random.nextInt(
+              (autoRetry.backOff.interval.inMilliseconds).toInt()));
+    } else {
+      backOff = autoRetry.backOff.interval;
+    }
+
+    return backOff;
+  }
+
+  Duration calculateBackOff() {
+    Duration backOff;
+    switch(autoRetry.backOff.method) {
+      case RetryBackOffMethod.exponential:
+        backOff = _createExponentialBackOff();
+        break;
+      case RetryBackOffMethod.fixed:
+        backOff = _createFixedBackOff();
+        break;
+      case RetryBackOffMethod.none:
+      default:
+        break;
     }
     return backOff;
   }

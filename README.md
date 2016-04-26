@@ -799,13 +799,10 @@ MockTransports.verifyNoOutstandingExceptions();
 
 #### Expecting and accepting a websocket connection
 ```dart
+var ws = new MockWSocket();
 MockTransports.webSocket.expect(
     Uri.parse('/ws'),
-    handler: (Uri uri,
-              {Iterable<String> protocols,
-              Map<String, dynamic> headers}) async {
-      return new MockWSocket();
-    });
+    connectTo: ws);
 ```
 
 #### Expecting and rejecting a websocket connection
@@ -817,53 +814,42 @@ MockTransports.webSocket.expect(Uri.parse('/ws'), reject: true);
 
 #### Listening to outgoing data from a mock websocket connection
 ```dart
+var ws = new MockWSocket();
+ws.onOutgoing((data) { ... });
+
 MockTransports.webSocket.expect(
     Uri.parse('/ws'),
-    handler: (Uri uri,
-              {Iterable<String> protocols,
-              Map<String, dynamic> headers}) async {
-      MockWSocket ws = new MockWSocket();
-      ws.onOutgoing((data) { ... });
-      return ws;
-    });
+    connectTo: ws);
 ```
 
 #### Sending data to the client from a mock websocket connection
 ```dart
+var ws = new MockWSocket();
+// Echo.
+ws.onOutgoing((data) {
+  ws.addIncoming(data);
+});
+
 MockTransports.webSocket.expect(
     Uri.parse('/ws'),
-    handler: (Uri uri,
-              {Iterable<String> protocols,
-              Map<String, dynamic> headers}) async {
-      MockWSocket ws = new MockWSocket();
+    connectTo: ws);
 
-      // Connected message.
-      ws.add('Connected.');
+// Create a WSocket instance here...
 
-      // Echo.
-      ws.onOutgoing((data) {
-        ws.addIncoming(data);
-      });
-
-      return ws;
-    });
+// Connected message.
+ws.add('Connected.');
 ```
 
 #### Triggering a close event for a mock websocket connection
 ```dart
+var ws = new MockWSocket();
 MockTransports.webSocket.expect(
     Uri.parse('/ws'),
-    handler: (Uri uri,
-              {Iterable<String> protocols,
-              Map<String, dynamic> headers}) async {
-      MockWSocket ws = new MockWSocket();
+    connectTo: ws);
 
-      new Timer(new Duration(seconds: 5), () {
-        ws.triggerServerClose();
-      });
-
-      return ws;
-    });
+new Timer(new Duration(seconds: 5), () {
+  ws.triggerServerClose();
+});
 ```
 
 

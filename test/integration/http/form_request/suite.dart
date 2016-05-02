@@ -100,5 +100,24 @@ void runFormRequestSuite() {
       expect(echo, containsPair('field1', 'value1'));
       expect(echo, containsPair('field2', 'value2'));
     });
+
+    test('should support multiple values for a single field', () async {
+      FormRequest request = new FormRequest()
+        ..uri = IntegrationPaths.echoEndpointUri
+        ..fields['items'] = ['one', 'two'];
+      Response response = await request.post();
+      Map echo = http_utils.queryToMap(response.body.asString());
+      expect(echo['items'], equals(['one', 'two']));
+    });
+
+    test(
+        'should prevent unsupported value types (anything other than String and List<String>)',
+        () {
+      FormRequest request = new FormRequest()
+        ..uri = IntegrationPaths.echoEndpointUri
+        ..fields['invalid'] = 10;
+
+      expect(request.post(), throwsArgumentError);
+    });
   });
 }

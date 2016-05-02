@@ -3,6 +3,13 @@
 ## [HEAD](https://github.com/Workiva/w_transport/compare/2.3.2...master)
 _Not yet released._
 
+- **Improvement:** `FormRequest` now supports fields with multiple values.
+
+    ```dart
+    var request = new FormRequest()
+      ..fields['multi'] = ['one', 'two'];
+    ```
+
 - **SDK Compatibility:** Dart 1.16 exposed a new `Client` class from the
   `dart:html` library that conflicted with the `Client` class in this library.
   This has been fixed by adjusting our imports internally, but it may still

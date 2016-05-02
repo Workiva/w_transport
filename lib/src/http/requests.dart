@@ -30,7 +30,7 @@ abstract class FormRequest extends BaseRequest {
   /// Gets this request's body as a `Map` where each key-value pair is a form
   /// field's name and value.
   ///
-  /// By default, the body of this [FormRequest] will is an empty `Map`.
+  /// By default, the body of this [FormRequest] is an empty `Map`.
   ///
   /// The returned `Map` is modifiable, allowing incremental field assignment
   /// like so:
@@ -39,11 +39,16 @@ abstract class FormRequest extends BaseRequest {
   ///       ..fields['foo'] = 'bar'
   ///       ..fields['bar'] = 'baz';
   ///
+  /// To set multiple values for a single key, use a `Iterable<String>`:
+  ///
+  ///     FormRequest request = new FormRequest()
+  ///       ..fields['names'] = ['foo', 'bar'];
+  ///
   /// Prior to sending, this request body will be translated to the equivalent
   /// query string. Depending on the platform, this may then be encoded to
   /// bytes. Be sure to set [encoding] if this request body should be encoded
   /// with something other than the default UTF8.
-  Map<String, String> get fields;
+  Map<String, dynamic> get fields;
 
   /// Sets this request's form fields. The given `Map` should represent the form
   /// fields where each key-value pair is a field's name and value.
@@ -52,7 +57,7 @@ abstract class FormRequest extends BaseRequest {
   /// query string. Depending on the platform, this may then be encoded to
   /// bytes. Be sure to set [encoding] if this request body should be encoded
   /// with something other than the default UTF8.
-  set fields(Map<String, String> fields);
+  set fields(Map<String, dynamic> fields);
 
   factory FormRequest() => PlatformAdapter.retrieve().newFormRequest();
 

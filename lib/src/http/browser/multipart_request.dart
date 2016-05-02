@@ -16,7 +16,7 @@ library w_transport.src.http.browser.multipart_request;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html';
+import 'dart:html' hide Client;
 
 import 'package:http_parser/http_parser.dart'
     show CaseInsensitiveMap, MediaType;

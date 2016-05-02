@@ -705,39 +705,30 @@ abstract class CommonRequest extends Object
     return response;
   }
 
-  int _baseExponentialBackOffFunction(int numAttempts) {
-    return autoRetry.backOff.interval.inMilliseconds *
-        pow(defaultExponentialMultiplier, numAttempts);
-  }
-
   Duration _createExponentialBackOff() {
-    Duration backOff;
-    Random random = new Random();
+    int backOffInMs = autoRetry.backOff.interval.inMilliseconds *
+        pow(defaultExponentialMultiplier, autoRetry.numAttempts);
+    backOffInMs =
+        min(autoRetry.backOff.maxInterval.inMilliseconds, backOffInMs);
 
     if (autoRetry.backOff.withJitter != null &&
         autoRetry.backOff.withJitter == true) {
-      backOff = new Duration(
-          milliseconds: random.nextInt(min(
-              autoRetry.backOff.maxInterval.inMilliseconds,
-              _baseExponentialBackOffFunction(autoRetry.numAttempts))));
-    } else {
-      backOff = new Duration(
-          milliseconds: min(autoRetry.backOff.maxInterval.inMilliseconds,
-              _baseExponentialBackOffFunction(autoRetry.numAttempts)));
+      Random random = new Random();
+      backOffInMs = random.nextInt(backOffInMs);
     }
-
-    return backOff;
+    return new Duration(milliseconds: backOffInMs);
   }
 
   Duration _createFixedBackOff() {
     Duration backOff;
-    Random random = new Random();
 
     if (autoRetry.backOff.withJitter != null &&
         autoRetry.backOff.withJitter == true) {
+      Random random = new Random();
       backOff = new Duration(
-          milliseconds: autoRetry.backOff.interval.inMilliseconds ~/ 2 + random.nextInt(
-              (autoRetry.backOff.interval.inMilliseconds).toInt()));
+          milliseconds: autoRetry.backOff.interval.inMilliseconds ~/ 2 +
+              random.nextInt(
+                  (autoRetry.backOff.interval.inMilliseconds).toInt()));
     } else {
       backOff = autoRetry.backOff.interval;
     }
@@ -747,7 +738,7 @@ abstract class CommonRequest extends Object
 
   Duration calculateBackOff() {
     Duration backOff;
-    switch(autoRetry.backOff.method) {
+    switch (autoRetry.backOff.method) {
       case RetryBackOffMethod.exponential:
         backOff = _createExponentialBackOff();
         break;

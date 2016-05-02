@@ -177,8 +177,7 @@ class RetryBackOff {
   final Duration maxInterval;
 
   /// The default maximum duration between retries. (5 minutes)
-  static const Duration defaultMaxDurationInMs =
-      const Duration(milliseconds: 5 * 60 * 1000);
+  static const Duration defaultMaxInterval = const Duration(minutes: 5);
 
   /// Construct a new exponential back-off representation where [interval] is
   /// the base duration from which each delay will be calculated.
@@ -186,8 +185,7 @@ class RetryBackOff {
       {bool withJitter, Duration maxInterval})
       : method = RetryBackOffMethod.exponential,
         withJitter = withJitter == true,
-        maxInterval =
-            maxInterval != null ? maxInterval : defaultMaxDurationInMs;
+        maxInterval = maxInterval != null ? maxInterval : defaultMaxInterval;
 
   /// Construct a new fixed back-off representation where [interval] is the
   /// delay between each retry.

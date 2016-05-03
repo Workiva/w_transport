@@ -35,19 +35,20 @@ bool isAsciiOnly(String value) => _asciiOnly.hasMatch(value);
 String mapToQuery(Map<String, String> map, {Encoding encoding}) {
   List<String> params = [];
   map.forEach((key, value) {
-    var encoded;
-    if (encoding != null) {
-      encoded = [
-        Uri.encodeQueryComponent(key, encoding: encoding),
-        Uri.encodeQueryComponent(value, encoding: encoding)
-      ];
-    } else {
-      encoded = [
-        Uri.encodeQueryComponent(key),
-        Uri.encodeQueryComponent(value)
-      ];
+    // Support fields with multiple values.
+    var valueList = value is List ? value : [value];
+    for (var v in valueList) {
+      var encoded;
+      if (encoding != null) {
+        encoded = [
+          Uri.encodeQueryComponent(key, encoding: encoding),
+          Uri.encodeQueryComponent(v, encoding: encoding)
+        ];
+      } else {
+        encoded = [Uri.encodeQueryComponent(key), Uri.encodeQueryComponent(v)];
+      }
+      params.add(encoded.join('='));
     }
-    params.add(encoded.join('='));
   });
   return params.join('&');
 }
@@ -109,7 +110,7 @@ Encoding parseEncodingFromHeaders(Map<String, String> headers,
 
 /// Converts a query string to a [Map] of parameter names to values. Works for
 /// URI query string or an `application/x-www-form-urlencoded` body.
-Map<String, String> queryToMap(String query, {Encoding encoding}) {
+Map<String, dynamic> queryToMap(String query, {Encoding encoding}) {
   var fields = {};
   for (var pair in query.split('&')) {
     var pieces = pair.split('=');
@@ -123,7 +124,14 @@ Map<String, String> queryToMap(String query, {Encoding encoding}) {
       key = Uri.decodeQueryComponent(key);
       value = Uri.decodeQueryComponent(value);
     }
-    fields[key] = value;
+    if (fields.containsKey(key)) {
+      if (fields[key] is! List) {
+        fields[key] = [fields[key]];
+      }
+      fields[key].add(value);
+    } else {
+      fields[key] = value;
+    }
   }
   return fields;
 }

@@ -1,5 +1,16 @@
 # Changelog
 
+## [HEAD](https://github.com/Workiva/w_transport/compare/2.3.2...master)
+_Not yet released._
+
+- **SDK Compatibility:** Dart 1.16 exposed a new `Client` class from the
+  `dart:html` library that conflicted with the `Client` class in this library.
+  This has been fixed by adjusting our imports internally, but it may still
+  affect consumers of this library.
+
+- **Documentation:** fixed inaccurate documentation around mocking & testing
+  with WebSockets.
+
 ## [2.3.2](https://github.com/Workiva/w_transport/compare/2.3.0...2.3.2)
 _March 2, 2016_
 

@@ -711,8 +711,7 @@ abstract class CommonRequest extends Object
     backOffInMs =
         min(autoRetry.backOff.maxInterval.inMilliseconds, backOffInMs);
 
-    if (autoRetry.backOff.withJitter != null &&
-        autoRetry.backOff.withJitter == true) {
+    if (autoRetry.backOff.withJitter == true) {
       Random random = new Random();
       backOffInMs = random.nextInt(backOffInMs);
     }
@@ -722,8 +721,7 @@ abstract class CommonRequest extends Object
   Duration _createFixedBackOff() {
     Duration backOff;
 
-    if (autoRetry.backOff.withJitter != null &&
-        autoRetry.backOff.withJitter == true) {
+    if (autoRetry.backOff.withJitter == true) {
       Random random = new Random();
       backOff = new Duration(
           milliseconds: autoRetry.backOff.interval.inMilliseconds ~/ 2 +

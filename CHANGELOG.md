@@ -1,7 +1,7 @@
 # Changelog
 
-## [HEAD](https://github.com/Workiva/w_transport/compare/2.3.2...master)
-_Not yet released._
+## [2.4.0](https://github.com/Workiva/w_transport/compare/2.3.2...2.4.0)
+_May 4, 2016_
 
 - **Improvement:** `FormRequest` now supports fields with multiple values.
 

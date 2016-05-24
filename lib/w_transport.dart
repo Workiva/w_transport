@@ -109,6 +109,8 @@ export 'package:w_transport/src/http/requests.dart'
     show FormRequest, JsonRequest, MultipartRequest, Request, StreamedRequest;
 export 'package:w_transport/src/http/response.dart'
     show BaseResponse, Response, StreamedResponse;
+export 'package:w_transport/src/http/response_format_exception.dart'
+    show ResponseFormatException;
 
 export 'package:w_transport/src/web_socket/w_socket.dart' show WSocket;
 export 'package:w_transport/src/web_socket/w_socket_close_event.dart'

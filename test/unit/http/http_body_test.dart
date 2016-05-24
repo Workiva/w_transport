@@ -136,6 +136,52 @@ void main() {
             new HttpBody.fromBytes(contentType, ASCII.encode('body'));
         expect(body.asString(), equals('body'));
       });
+
+      test('should throw ResponseFormatException if body cannot be encoded',
+          () {
+        MediaType contentType =
+            new MediaType('application', 'json', {'charset': ASCII.name});
+        HttpBody body = new HttpBody.fromString(contentType, 'bodyçå®');
+        var exception;
+        try {
+          body.asBytes();
+        } catch (e) {
+          exception = e;
+        }
+        expect(exception, isNotNull,
+            reason: 'should throw if body cannot be encoded');
+        expect(exception, new isInstanceOf<ResponseFormatException>(),
+            reason:
+                'should throw ResponseFormatException if body cannot be encoded');
+        expect(exception.toString(), contains('Body could not be encoded'));
+        expect(exception.toString(), contains('Content-Type: $contentType'));
+        expect(exception.toString(), contains('Encoding: ${ASCII.name}'));
+        expect(exception.toString(), contains('bodyçå®'));
+      });
+
+      test('should throw ResponseFormatException if bytes cannot be decoded',
+          () {
+        MediaType contentType =
+            new MediaType('application', 'json', {'charset': ASCII.name});
+        HttpBody body =
+            new HttpBody.fromBytes(contentType, UTF8.encode('bodyçå®'));
+        var exception;
+        try {
+          body.asString();
+        } catch (e) {
+          exception = e;
+        }
+        expect(exception, isNotNull,
+            reason: 'should throw if bytes cannot be decoded');
+        expect(exception, new isInstanceOf<ResponseFormatException>(),
+            reason:
+                'should throw ResponseFormatException if bytes cannot be decoded');
+        expect(exception.toString(), contains('Bytes could not be decoded'));
+        expect(exception.toString(), contains('Content-Type: $contentType'));
+        expect(exception.toString(), contains('Encoding: ${ASCII.name}'));
+        expect(
+            exception.toString(), contains(UTF8.encode('bodyçå®').toString()));
+      });
     });
 
     group('StreamedHttpBody', () {

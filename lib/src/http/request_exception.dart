@@ -35,12 +35,13 @@ class RequestException implements Exception {
   /// URL of the attempted/unsuccessful request.
   final Uri uri;
 
-  /// Construct a new instance of [WHttpException] using information from
+  /// Construct a new instance of [RequestException] using information from
   /// an HTTP request and response.
   RequestException(this.method, this.uri, this.request, this.response,
       [this.error]);
 
-  /// Descriptive error message that includes the request method & URL and the response status.
+  /// Descriptive error message that includes the request method & URL and the
+  /// response status.
   String get message {
     String msg;
     if (request != null && request.autoRetry.numAttempts > 1) {

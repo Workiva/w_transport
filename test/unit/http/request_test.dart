@@ -1056,16 +1056,10 @@ _runAutoRetryTestSuiteFor(
         request.get(uri: requestUri);
 
         // 1st attempt = immediate
-        // 2nd attempt = +50s (25*2^1)
-        // 3rd attempt = +100s (25*2^2)
-        // 4th attempt = +200s (25*2^3)
-        await new Future.delayed(new Duration(milliseconds: 1));
-        expect(request.autoRetry.numAttempts, equals(1));
-        await new Future.delayed(new Duration(milliseconds: 60));
-        expect(request.autoRetry.numAttempts, equals(2));
-        await new Future.delayed(new Duration(milliseconds: 120));
-        expect(request.autoRetry.numAttempts, equals(3));
-        await new Future.delayed(new Duration(milliseconds: 240));
+        // 2nd attempt = +0 to 50s (25*2^1)
+        // 3rd attempt = +0 to 100s (25*2^2) + 2nd attempt
+        // 4th attempt = +0 to 200s (25*2^3) + 3rd attempt
+        await new Future.delayed(new Duration(milliseconds: 350));
         expect(request.autoRetry.numAttempts, equals(4));
       });
 

@@ -20,7 +20,6 @@ import 'dart:typed_data';
 
 import 'package:w_transport/src/web_socket/common/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket_close_event.dart';
 import 'package:w_transport/src/web_socket/w_socket_exception.dart';
 
 class BrowserWSocket extends CommonWSocket implements WSocket {
@@ -52,49 +51,62 @@ class BrowserWSocket extends CommonWSocket implements WSocket {
     return new BrowserWSocket._(socket, closed);
   }
 
-  /// The underlying [WebSocket] instance.
-  WebSocket _socket;
+  WebSocket _webSocket;
 
-  /// The close event Future from the [WebSocket] onClose stream.
-  Future<CloseEvent> _socketClosed;
-
-  BrowserWSocket._(
-      WebSocket this._socket, Future<CloseEvent> this._socketClosed)
+  BrowserWSocket._(this._webSocket, Future<CloseEvent> webSocketClosed)
       : super() {
-    // The outgoing communication will be handled by this stream controller.
-    // The sink from this controller will be used by [add] and [addStream].
-    outgoing = new StreamController();
-    outgoing.stream.listen((message) {
-      // Pipe messages through to the underlying socket.
-      _socket.send(message);
-    }, onError: handleOutgoingError, onDone: handleOutgoingDone);
-
-    // Map events from the underlying socket to the incoming controller.
-    incoming = new StreamController();
-    _socket.onMessage.listen((messageEvent) {
-      // Pipe messages from the socket through to the stream.
-      incoming.add(messageEvent.data);
+    webSocketSubscription = _webSocket.onMessage.listen((messageEvent) {
+      onIncomingData(messageEvent.data);
     });
-    _socket.onError.listen(handleSocketError);
-    _socketClosed.then((closeEvent) {
-      // Now that the socket has closed, capture the close code and reason.
-      var wCloseEvent =
-          new WSocketCloseEvent(closeEvent.code, closeEvent.reason);
-      handleSocketDone(wCloseEvent);
+    _webSocket.onError.listen(onIncomingError);
+    webSocketClosed.then((closeEvent) {
+      closeCode = closeEvent.code;
+      closeReason = closeEvent.reason;
+      onIncomingDone();
     });
   }
 
   @override
-  void closeSocket(int code, String reason) {
-    _socket.close(code, reason);
+  void closeWebSocket(int code, String reason) {
+    _webSocket.close(code, reason);
   }
 
-  /// Validate the WebSocket message data type. For client-side messages,
-  /// [Blob], [ByteBuffer], [String] and [TypedData] are valid types.
-  ///
-  /// Throws an [ArgumentError] if [data] is invalid.
   @override
-  void validateDataType(Object data) {
+  void onIncomingError(error, [StackTrace stackTrace]) {
+    shutDown(error: error, stackTrace: stackTrace);
+  }
+
+  @override
+  void onIncomingListen() {
+    // In the browser with a native WebSocket, we listen to the WebSocket
+    // immediately, so there's nothing to do here.
+  }
+
+  @override
+  void onIncomingPause() {
+    // In the browser with a native WebSocket, we are always listening to the
+    // WebSocket. Traditionally when a stream subscription is paused, the
+    // producer of events should stop producing events to avoid buffering that
+    // could lead to a memory leak. Instead of doing that, we check the status
+    // of the subscription to this [WSocket] instance whenever an event is
+    // dispatched and discard said event if it's paused. This is effectively the
+    // same.
+  }
+
+  @override
+  void onIncomingResume() {
+    // See the note in [onIncomingPause]. We don't actually pause the
+    // subscription to the WebSocket, so there's no need to resume it here.
+  }
+
+  @override
+  void onOutgoingData(data) {
+    // Pipe messages through to the underlying socket.
+    _webSocket.send(data);
+  }
+
+  @override
+  void validateOutgoingData(Object data) {
     if (data is! Blob &&
         data is! ByteBuffer &&
         data is! String &&

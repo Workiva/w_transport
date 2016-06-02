@@ -1,5 +1,39 @@
 # Changelog
 
+## [2.4.1](https://github.com/Workiva/w_transport/compare/2.4.0...2.4.1)
+_TBD_
+
+- **Bug Fix:** `WSocket` extends `Stream` and `StreamSink`, but was not
+  fulfilling those contracts in all scenarios. In particular:
+
+  - After obtaining a `StreamSubscription` instance from a call to
+    `WSocket.listen()`, reassigning the `onData()`, `onError()`, and `onDone()`
+    handlers had no effect.
+
+      ```dart
+      var webSocket = await WSocket.connect(...);
+      var subscription = webSocket.listen((data) { ... });
+
+      // This does nothing:
+      subscription.onData((data) { ... });
+      // Same goes for onError() and onDone()
+      ```
+
+  - A subscription to a `WSocket` instance did not properly respect pause and
+    resume signals. This could produce a memory leak by buffering WebSocket
+    events indefinitely.
+
+  - A `WSocket` instance was immediately listening to the underlying WebSocket
+    and buffering events from the underlying WebSocket until a listener was
+    registered. This is not how a standard Dart `Stream` works.
+
+  - The SockJS configuration was not properly handling the fact that the SockJS
+    `Client` produces WebSocket events with a broadcast stream.
+
+  - **All of these issues have been addressed, and every `WSocket` instance
+    should now behave exactly as a standard `Stream` and `StreamSink` would,
+    regardless of the platform (VM, browser, SockJS, or mock).**
+
 ## [2.4.0](https://github.com/Workiva/w_transport/compare/2.3.2...2.4.0)
 _May 4, 2016_
 

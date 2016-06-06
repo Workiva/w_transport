@@ -35,7 +35,7 @@ abstract class CommonWSocket extends Stream implements WSocket {
   bool isClosed = false;
 
   /// The subscription to the underlying WebSocket (either a browser WebSocket,
-  /// VM WebSocket, SockJS Client, or a mock WebSocket.
+  /// VM WebSocket, SockJS Client, or a mock WebSocket).
   StreamSubscription webSocketSubscription;
 
   /// A completer that completes when both the outgoing stream sink and the

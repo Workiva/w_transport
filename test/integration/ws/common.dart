@@ -65,7 +65,6 @@ void runCommonWebSocketIntegrationTests(
   test('add() should throw after sink has been closed', () async {
     var webSocket = await connect(echoUri);
     await webSocket.close();
-    print('closed');
     expect(() {
       webSocket.add('too late');
     }, throwsStateError);
@@ -168,17 +167,22 @@ void runCommonWebSocketIntegrationTests(
     await webSocket.close();
   });
 
-  test('should not lose messages if a listener is registered late', () async {
+  test('should lose messages if a listener is registered late', () async {
     var webSocket = await connect(pingUri);
-    webSocket.add('ping3');
+    // First two pings should be lost because no listener has been registered.
+    webSocket.add('ping2');
 
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await new Future.delayed(new Duration(milliseconds: 100));
     var helper = new WSHelper(webSocket);
+
+    // Next round of pings should now be received.
+    webSocket.add('ping3');
+    await new Future.delayed(new Duration(milliseconds: 100));
     await helper.messagesReceived(3);
 
     expect(helper.messages, unorderedEquals(['pong', 'pong', 'pong']));
     await webSocket.close();
-  }, skip: 'AC changed');
+  });
 
   test('should call onDone() when socket closes', () async {
     var webSocket = await connect(echoUri);
@@ -206,7 +210,7 @@ void runCommonWebSocketIntegrationTests(
 
     webSocket.add('echo');
 
-    new Timer(new Duration(milliseconds: 500), () {
+    new Timer(new Duration(milliseconds: 100), () {
       webSocket.close(4001, 'Closed.');
     });
 
@@ -288,7 +292,7 @@ void runCommonWebSocketIntegrationTests(
 
     webSocket.add('1');
     webSocket.add('2');
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await new Future.delayed(new Duration(milliseconds: 100));
 
     var messages = [];
     webSocket.listen((data) {
@@ -297,7 +301,7 @@ void runCommonWebSocketIntegrationTests(
 
     webSocket.add('3');
     webSocket.add('4');
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await new Future.delayed(new Duration(milliseconds: 100));
 
     await webSocket.close();
     expect(messages, orderedEquals(['3', '4']));
@@ -325,29 +329,131 @@ void runCommonWebSocketIntegrationTests(
 
     // no subscription yet, messages should be discarded
     webSocket.add('1');
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await new Future.delayed(new Duration(milliseconds: 100));
 
     // setup a subscription, messages should be recorded
     var sub = webSocket.listen((data) {
       messages.add(data);
     });
     webSocket.add('2');
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await new Future.delayed(new Duration(milliseconds: 100));
 
     // pause the subscription, messages should be discarded
     sub.pause();
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await new Future.delayed(new Duration(milliseconds: 100));
     webSocket.add('3');
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await new Future.delayed(new Duration(milliseconds: 100));
 
     // resume the subscription, messages should be recorded again
     sub.resume();
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await new Future.delayed(new Duration(milliseconds: 100));
     webSocket.add('4');
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await new Future.delayed(new Duration(milliseconds: 100));
 
     expect(messages, orderedEquals(['2', '4']));
     await webSocket.close();
+  });
+
+  test('should support calling pause() with a resume signal', () async {
+    var webSocket = await connect(echoUri);
+    var messages = [];
+
+    // setup a subscription, messages should be recorded
+    var sub = webSocket.listen((data) {
+      messages.add(data);
+    });
+    webSocket.add('1');
+    await new Future.delayed(new Duration(milliseconds: 100));
+
+    // pause the subscription, messages should be discarded until the resume
+    // signal future resolves.
+    var c = new Completer();
+    sub.pause(c.future);
+    await new Future.delayed(new Duration(milliseconds: 100));
+    webSocket.add('2');
+    await new Future.delayed(new Duration(milliseconds: 100));
+
+    // resume the subscription, messages should be recorded again
+    c.complete();
+    await new Future.delayed(new Duration(milliseconds: 100));
+    webSocket.add('3');
+    await new Future.delayed(new Duration(milliseconds: 100));
+
+    expect(messages, orderedEquals(['1', '3']));
+    await webSocket.close();
+  });
+
+  test(
+      'should support calling pause() with a resume signal even if it resolves with an error',
+      () async {
+    var webSocket = await connect(echoUri);
+    var messages = [];
+
+    // setup a subscription, messages should be recorded
+    var sub = webSocket.listen((data) {
+      messages.add(data);
+    });
+    webSocket.add('1');
+    await new Future.delayed(new Duration(milliseconds: 100));
+
+    // pause the subscription, messages should be discarded until the resume
+    // signal future resolves.
+    var c = new Completer();
+    sub.pause(c.future);
+    await new Future.delayed(new Duration(milliseconds: 100));
+    webSocket.add('2');
+    await new Future.delayed(new Duration(milliseconds: 100));
+
+    // resume the subscription, messages should be recorded again
+    c.completeError(new Exception('Ignore. This error is expected.'));
+    await new Future.delayed(new Duration(milliseconds: 100));
+    webSocket.add('3');
+    await new Future.delayed(new Duration(milliseconds: 100));
+
+    expect(messages, orderedEquals(['1', '3']));
+    await webSocket.close();
+  }, skip: 'Can\'t test without the exception causing the test to fail.');
+
+  test('should handle calling pause() multiple times', () async {
+    var webSocket = await connect(echoUri);
+    var messages = [];
+
+    // setup a subscription, messages should be recorded
+    var sub = webSocket.listen((data) {
+      messages.add(data);
+    });
+    webSocket.add('1');
+    await new Future.delayed(new Duration(milliseconds: 100));
+
+    // call pause() twice, this will require two calls to resume()
+    sub.pause();
+    sub.pause();
+    await new Future.delayed(new Duration(milliseconds: 100));
+    webSocket.add('2');
+    await new Future.delayed(new Duration(milliseconds: 100));
+
+    // call resume once - the subscription should remain in the paused state
+    sub.resume();
+    await new Future.delayed(new Duration(milliseconds: 100));
+    webSocket.add('3');
+    await new Future.delayed(new Duration(milliseconds: 100));
+
+    // call resume a second time - now the subscription should be active again
+    sub.resume();
+    await new Future.delayed(new Duration(milliseconds: 100));
+    webSocket.add('4');
+    await new Future.delayed(new Duration(milliseconds: 100));
+
+    expect(messages, orderedEquals(['1', '4']));
+    await webSocket.close();
+  });
+
+  test('should support converting StreamSubscription to a Future', () async {
+    var webSocket = await connect(pingUri);
+    var sub = webSocket.listen((_) {});
+    var future = sub.asFuture('futureValue');
+    webSocket.close();
+    expect(await future, equals('futureValue'));
   });
 
   test('should support reassigning the onData() handler', () async {
@@ -367,13 +473,13 @@ void runCommonWebSocketIntegrationTests(
     webSocket.add('1');
     webSocket.add('2');
     // SockJS requires a delay longer than 1 tick for the echos to be received.
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await new Future.delayed(new Duration(milliseconds: 100));
 
     subscription.onData(newOnData);
     webSocket.add('3');
     webSocket.add('4');
     // SockJS requires a delay longer than 1 tick for the echos to be received.
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await new Future.delayed(new Duration(milliseconds: 100));
 
     expect(origMessages, orderedEquals(['1', '2']));
     expect(newMessages, orderedEquals(['3', '4']));

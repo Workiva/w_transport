@@ -22,6 +22,10 @@ import 'package:w_transport/src/web_socket/common/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket_exception.dart';
 
+/// Implementation of the platform-dependent pieces of the [WSocket] class for
+/// the SockJS browser configuration. This class uses the SockJS library to
+/// establish a WebSocket-like connection (could be a native WebSocket, could
+/// be XHR-streaming).
 class SockJSSocket extends CommonWSocket implements WSocket {
   static Future<WSocket> connect(Uri uri,
       {bool debug: false,
@@ -60,6 +64,9 @@ class SockJSSocket extends CommonWSocket implements WSocket {
     return new SockJSSocket._(client, closed);
   }
 
+  /// The "WebSocket" - in this case, it's a SockJS Client that has an API
+  /// similar to that of a WebSocket, regardless of what protocol is actually
+  /// used.
   sockjs.Client _webSocket;
 
   SockJSSocket._(this._webSocket, Future webSocketClosed) : super() {
@@ -80,7 +87,7 @@ class SockJSSocket extends CommonWSocket implements WSocket {
     // [onIncomingResume].
 
     // Additional note: the SockJS Client has no error stream, so no need to
-    // listen to for errors.
+    // listen for errors.
   }
 
   @override

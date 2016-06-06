@@ -28,14 +28,33 @@ abstract class MockWSocket implements WSocket {
 
   factory MockWSocket() => new _MockWSocket();
 
+  /// Simulate an incoming message that the owner of this [WSocket] instance
+  /// will receive if listening.
   void addIncoming(data);
+
+  /// Register a callback that will be called for every outgoing data event that
+  /// the owner of this [WSocket] instance adds.
+  ///
+  /// [data] will either be the single data item or the stream, depending on
+  /// whether `add()` or `addStream()` was called.
   void onOutgoing(callback(data));
+
+  /// Cause the "server" to close, effectively severing the connection between
+  /// the server and client.
   void triggerServerClose([int code, String reason]);
+
+  /// Cause the "server" to add an error to the stream.
   void triggerServerError(error, [StackTrace stackTrace]);
 }
 
 class _MockWSocket extends CommonWSocket implements MockWSocket, WSocket {
+  /// List of "onOutgoing" callbacks that have been registered. Any time a piece
+  /// of data is added to the mock [WSocket], all callbacks in this list will be
+  /// called with said data, allowing them to react and mock out the server.
   List<Function> _callbacks = [];
+
+  /// The mock underlying WebSocket. Events are added manually via the
+  /// [MockWSocket] api.
   StreamController _mocket = new StreamController();
 
   _MockWSocket() : super() {
@@ -43,25 +62,22 @@ class _MockWSocket extends CommonWSocket implements MockWSocket, WSocket {
         onError: onIncomingError, onDone: onIncomingDone);
   }
 
-  /// Simulate an incoming message that the owner of this [WSocket] instance
-  /// will receive if listening.
+  @override
   void addIncoming(data) {
     _mocket.add(data);
   }
 
-  /// Register a callback that will be called for every outgoing data event that
-  /// the owner of this [WSocket] instance adds.
-  ///
-  /// [data] will either be the single data item or the stream, depending on
-  /// whether `add()` or `addStream()` was called.
+  @override
   void onOutgoing(callback(data)) {
     _callbacks.add(callback);
   }
 
+  @override
   void triggerServerClose([int code, String reason]) {
     close(code, reason);
   }
 
+  @override
   void triggerServerError(error, [StackTrace stackTrace]) {
     _mocket.addError(error, stackTrace);
   }

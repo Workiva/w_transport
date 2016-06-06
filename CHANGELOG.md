@@ -34,6 +34,9 @@ _TBD_
     should now behave exactly as a standard `Stream` and `StreamSink` would,
     regardless of the platform (VM, browser, SockJS, or mock).**
 
+> The `WSocketCloseEvent` class has been deprecated. This class was only used
+> internally and should not have been exported as a part of the public API.
+
 ## [2.4.0](https://github.com/Workiva/w_transport/compare/2.3.2...2.4.0)
 _May 4, 2016_
 

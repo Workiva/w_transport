@@ -22,6 +22,8 @@ import 'package:w_transport/src/web_socket/common/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket_exception.dart';
 
+/// Implementation of the platform-dependent pieces of the [WSocket] class for
+/// the browser. This class uses native WebSockets.
 class BrowserWSocket extends CommonWSocket implements WSocket {
   static Future<WSocket> connect(Uri uri,
       {Iterable<String> protocols, Map<String, dynamic> headers}) async {
@@ -51,6 +53,7 @@ class BrowserWSocket extends CommonWSocket implements WSocket {
     return new BrowserWSocket._(socket, closed);
   }
 
+  /// The underlying native WebSocket.
   WebSocket _webSocket;
 
   BrowserWSocket._(this._webSocket, Future<CloseEvent> webSocketClosed)

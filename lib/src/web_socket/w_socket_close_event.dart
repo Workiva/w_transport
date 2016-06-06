@@ -15,6 +15,7 @@
 library w_transport.src.web_socket.w_socket_close_event;
 
 /// Represents the close event from a WebSocket.
+@Deprecated('in 3.0.0')
 class WSocketCloseEvent {
   final int code;
   final String reason;

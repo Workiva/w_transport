@@ -44,8 +44,6 @@ handleMockRequest(MockBaseRequest request) {
     if (e.headers == null) {
       // Ignore headers check if expectation didn't specify.
       headersMatch = true;
-    } else if (e.headers.isEmpty) {
-      headersMatch = request.headers.isEmpty;
     } else {
       headersMatch = true;
       e.headers.forEach((header, value) {

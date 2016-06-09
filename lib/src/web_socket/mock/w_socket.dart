@@ -44,6 +44,12 @@ abstract class MockWSocket implements WSocket {
   void triggerServerClose([int code, String reason]);
 
   /// Cause the "server" to add an error to the stream.
+  ///
+  /// In practice, this cannot happen. If an error is added to the stream on the
+  /// server side, it will cause the connection to close, but it will not send
+  /// the error and thus an error will not be received by the client. For this
+  /// reason, this method has been deprecated. Use [triggerServerClose] instead.
+  @Deprecated('in 3.0.0. Use triggerServerClose() instead.')
   void triggerServerError(error, [StackTrace stackTrace]);
 }
 
@@ -58,8 +64,8 @@ class _MockWSocket extends CommonWSocket implements MockWSocket, WSocket {
   StreamController _mocket = new StreamController();
 
   _MockWSocket() : super() {
-    webSocketSubscription = _mocket.stream.listen(onIncomingData,
-        onError: onIncomingError, onDone: onIncomingDone);
+    webSocketSubscription =
+        _mocket.stream.listen(onIncomingData, onDone: onIncomingDone);
   }
 
   @override
@@ -77,9 +83,8 @@ class _MockWSocket extends CommonWSocket implements MockWSocket, WSocket {
     close(code, reason);
   }
 
-  @override
   void triggerServerError(error, [StackTrace stackTrace]) {
-    _mocket.addError(error, stackTrace);
+    close();
   }
 
   @override
@@ -87,11 +92,6 @@ class _MockWSocket extends CommonWSocket implements MockWSocket, WSocket {
     closeCode = code;
     closeReason = reason;
     _mocket.close();
-  }
-
-  @override
-  void onIncomingError(error, [StackTrace stackTrace]) {
-    shutDown(error: error, stackTrace: stackTrace);
   }
 
   @override

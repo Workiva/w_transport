@@ -61,7 +61,6 @@ class BrowserWSocket extends CommonWSocket implements WSocket {
     webSocketSubscription = _webSocket.onMessage.listen((messageEvent) {
       onIncomingData(messageEvent.data);
     });
-    _webSocket.onError.listen(onIncomingError);
     webSocketClosed.then((closeEvent) {
       closeCode = closeEvent.code;
       closeReason = closeEvent.reason;
@@ -72,11 +71,6 @@ class BrowserWSocket extends CommonWSocket implements WSocket {
   @override
   void closeWebSocket(int code, String reason) {
     _webSocket.close(code, reason);
-  }
-
-  @override
-  void onIncomingError(error, [StackTrace stackTrace]) {
-    shutDown(error: error, stackTrace: stackTrace);
   }
 
   @override

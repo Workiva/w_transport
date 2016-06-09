@@ -206,14 +206,14 @@ void main() {
         webSocket.addError(new Exception('web socket consumer error'));
       });
 
-      test('error from the socket should be stored and close the socket',
-          () async {
+      // TODO: remove this test once triggerServerError has been removed
+      test('DEPRECATED: error should close the socket', () async {
         var mockWebSocket = new MockWSocket();
         MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
         var webSocket = await WSocket.connect(webSocketUri);
 
-        expect(webSocket.done, throwsException);
         mockWebSocket.triggerServerError(new Exception('Server Exception'));
+        await webSocket.done;
       });
 
       test('server closing the connection should close the socket', () async {

@@ -15,6 +15,10 @@
 library w_transport.src.web_socket.w_socket_close_event;
 
 /// Represents the close event from a WebSocket.
+///
+/// This was previously only used internally, but was erroneously exported as a
+/// part of the public API. It is no longer used at all, and has thus been
+/// deprecated and will be removed in 3.0.0.
 @Deprecated('in 3.0.0')
 class WSocketCloseEvent {
   final int code;

@@ -37,6 +37,13 @@ _TBD_
 > The `WSocketCloseEvent` class has been deprecated. This class was only used
 > internally and should not have been exported as a part of the public API.
 
+> The WSocket implementations are no longer registering an `onError` handler for
+> the underlying WebSocket stream. If an error occurs on the server, it will not
+> add the error to the stream, it will just close the connection. As a result,
+> the `MockWSocket.triggerServerError()` method has been deprecated - use
+> `MockWSocket.triggerServerClose()` instead.
+
+
 ## [2.4.0](https://github.com/Workiva/w_transport/compare/2.3.2...2.4.0)
 _May 4, 2016_
 

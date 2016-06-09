@@ -38,6 +38,7 @@ import 'mocks/mock_response_test.dart' as mock_response_test;
 import 'mocks/mock_web_socket_test.dart' as mock_web_socket_test;
 
 import 'ws/w_socket_exception_test.dart' as ws_w_socket_exception_test;
+import 'ws/w_socket_subscription_test.dart' as ws_w_socket_subscription_test;
 import 'ws/w_socket_test.dart' as ws_w_socket_test;
 
 void main() {
@@ -62,5 +63,6 @@ void main() {
   mock_web_socket_test.main();
 
   ws_w_socket_exception_test.main();
+  ws_w_socket_subscription_test.main();
   ws_w_socket_test.main();
 }

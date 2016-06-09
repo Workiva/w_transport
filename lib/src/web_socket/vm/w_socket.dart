@@ -41,8 +41,7 @@ class VMWSocket extends CommonWSocket implements WSocket {
   WebSocket _webSocket;
 
   VMWSocket._(this._webSocket) : super() {
-    webSocketSubscription =
-        _webSocket.listen(onIncomingData, onError: onIncomingError, onDone: () {
+    webSocketSubscription = _webSocket.listen(onIncomingData, onDone: () {
       closeCode = _webSocket.closeCode;
       closeReason = _webSocket.closeReason;
       onIncomingDone();
@@ -52,11 +51,6 @@ class VMWSocket extends CommonWSocket implements WSocket {
   @override
   void closeWebSocket(int code, String reason) {
     _webSocket.close(code, reason);
-  }
-
-  @override
-  void onIncomingError(error, [StackTrace stackTrace]) {
-    shutDown(error: error, stackTrace: stackTrace);
   }
 
   @override

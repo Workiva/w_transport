@@ -96,11 +96,6 @@ class SockJSSocket extends CommonWSocket implements WSocket {
   }
 
   @override
-  void onIncomingError(error, [StackTrace stackTrace]) {
-    shutDown(error: error, stackTrace: stackTrace);
-  }
-
-  @override
   void onIncomingListen() {
     // When this [WSocket] instance is listened to, start listening to the
     // SockJS client's broadcast stream.

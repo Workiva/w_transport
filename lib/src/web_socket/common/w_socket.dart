@@ -232,10 +232,6 @@ abstract class CommonWSocket extends Stream implements WSocket {
   /// [reason].
   void closeWebSocket(int code, String reason);
 
-  /// Called when the incoming `StreamController` receives an [error]. This
-  /// should trigger the shut down of this [WSocket] instance.
-  void onIncomingError(error, [StackTrace stackTrace]);
-
   /// Called when the incoming `StreamController` receives a listener. This
   /// should effectively trigger a subscription to the WebSocket's events. Up
   /// until this point, events from the WebSocket should have been discarded.

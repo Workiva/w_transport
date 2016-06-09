@@ -40,7 +40,9 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   @override
   Future cancel() async {
     await _sub.cancel();
-    return _onCancel();
+    if (_onCancel != null) {
+      await _onCancel();
+    }
   }
 
   @override

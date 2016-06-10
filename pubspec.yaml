@@ -27,7 +27,7 @@ dev_dependencies:
   ansicolor: "^0.0.9"
   args: "^0.13.0"
   browser: "^0.10.0+2"
-  coverage: "^0.7.2"
+  coverage: "^0.7.4"
   dart_dev: "^1.0.0"
   dart_style: "^0.2.1"
   dartdoc: ">=0.4.0 <0.7.0"

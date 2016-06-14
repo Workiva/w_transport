@@ -1063,6 +1063,32 @@ _runAutoRetryTestSuiteFor(
         expect(request.autoRetry.numAttempts, equals(4));
       });
 
+      test('fixed retry back-off with jitter', () async {
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 3
+          ..backOff = new RetryBackOff.fixed(
+              new Duration(milliseconds: 25),
+              withJitter: true);
+        request.get(uri: requestUri);
+
+        // 1st attempt = immediate
+        // 2nd attempt = +0 to 25s
+        // 3rd attempt = +0 to 25s
+        // 4th attempt = +0 to 25s
+        await new Future.delayed(new Duration(milliseconds: 101));
+        expect(request.autoRetry.numAttempts, equals(4));
+      });
+
       test('RequestException should detail all attempts', () async {
         // 1st = 400, 2nd = 403, 3rd = 500, 4th = error, 5th = timeout
         int c = 0;

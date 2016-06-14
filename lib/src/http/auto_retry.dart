@@ -189,9 +189,10 @@ class RetryBackOff {
 
   /// Construct a new fixed back-off representation where [interval] is the
   /// delay between each retry.
-  const RetryBackOff.fixed(this.interval)
+  const RetryBackOff.fixed(this.interval,
+  {bool withJitter})
       : method = RetryBackOffMethod.fixed,
-        withJitter = false,
+        withJitter = withJitter,
         maxInterval = null;
 
   /// Construct a null back-off representation, meaning no delay between retry

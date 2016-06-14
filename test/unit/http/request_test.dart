@@ -1076,8 +1076,7 @@ _runAutoRetryTestSuiteFor(
         request.autoRetry
           ..enabled = true
           ..maxRetries = 3
-          ..backOff = new RetryBackOff.fixed(
-              new Duration(milliseconds: 25),
+          ..backOff = new RetryBackOff.fixed(new Duration(milliseconds: 25),
               withJitter: true);
         request.get(uri: requestUri);
 

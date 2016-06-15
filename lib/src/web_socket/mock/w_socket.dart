@@ -20,7 +20,6 @@ import 'package:w_transport/src/mocks/web_socket.dart'
     show handleWebSocketConnection;
 import 'package:w_transport/src/web_socket/common/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket_close_event.dart';
 
 abstract class MockWSocket implements WSocket {
   static Future<WSocket> connect(Uri uri,
@@ -29,72 +28,101 @@ abstract class MockWSocket implements WSocket {
 
   factory MockWSocket() => new _MockWSocket();
 
-  void addIncoming(data);
-  void onOutgoing(callback(data));
-  void triggerServerClose([int code, String reason]);
-  void triggerServerError(error, [StackTrace stackTrace]);
-}
-
-class _MockWSocket extends CommonWSocket implements MockWSocket, WSocket {
-  List<Function> _callbacks = [];
-
-  int _code;
-
-  StreamController _mocket = new StreamController();
-
-  String _reason;
-
-  _MockWSocket() : super() {
-    outgoing = new StreamController();
-    incoming = new StreamController();
-
-    outgoing.stream.listen((data) {
-      _callbacks.forEach((f) => f(data));
-    }, onError: handleOutgoingError, onDone: handleOutgoingDone);
-
-    _mocket.stream.listen(
-        (message) {
-          incoming.add(message);
-        },
-        onError: handleSocketError,
-        onDone: () {
-          var closeEvent = new WSocketCloseEvent(_code, _reason);
-          handleSocketDone(closeEvent);
-        });
-  }
-
   /// Simulate an incoming message that the owner of this [WSocket] instance
   /// will receive if listening.
-  void addIncoming(data) {
-    _mocket.add(data);
-  }
-
-  @override
-  void closeSocket(int code, String reason) {
-    _code = code;
-    _reason = reason;
-    _mocket.close();
-  }
+  void addIncoming(data);
 
   /// Register a callback that will be called for every outgoing data event that
   /// the owner of this [WSocket] instance adds.
   ///
   /// [data] will either be the single data item or the stream, depending on
   /// whether `add()` or `addStream()` was called.
+  void onOutgoing(callback(data));
+
+  /// Cause the "server" to close, effectively severing the connection between
+  /// the server and client.
+  void triggerServerClose([int code, String reason]);
+
+  /// Cause the "server" to add an error to the stream.
+  ///
+  /// In practice, this cannot happen. If an error is added to the stream on the
+  /// server side, it will cause the connection to close, but it will not send
+  /// the error and thus an error will not be received by the client. For this
+  /// reason, this method has been deprecated. Use [triggerServerClose] instead.
+  @Deprecated('in 3.0.0. Use triggerServerClose() instead.')
+  void triggerServerError(error, [StackTrace stackTrace]);
+}
+
+class _MockWSocket extends CommonWSocket implements MockWSocket, WSocket {
+  /// List of "onOutgoing" callbacks that have been registered. Any time a piece
+  /// of data is added to the mock [WSocket], all callbacks in this list will be
+  /// called with said data, allowing them to react and mock out the server.
+  List<Function> _callbacks = [];
+
+  /// The mock underlying WebSocket. Events are added manually via the
+  /// [MockWSocket] api.
+  StreamController _mocket = new StreamController();
+
+  _MockWSocket() : super() {
+    webSocketSubscription =
+        _mocket.stream.listen(onIncomingData, onDone: onIncomingDone);
+  }
+
+  @override
+  void addIncoming(data) {
+    _mocket.add(data);
+  }
+
+  @override
   void onOutgoing(callback(data)) {
     _callbacks.add(callback);
   }
 
+  @override
   void triggerServerClose([int code, String reason]) {
-    closeSocket(code, reason);
+    close(code, reason);
   }
 
   void triggerServerError(error, [StackTrace stackTrace]) {
-    _mocket.addError(error, stackTrace);
+    close();
   }
 
-  /// Validate the WebSocket message data type.
-  void validateDataType(Object data) {
+  @override
+  void closeWebSocket(int code, String reason) {
+    closeCode = code;
+    closeReason = reason;
+    _mocket.close();
+  }
+
+  @override
+  void onIncomingListen() {
+    // With the mock WebSocket, we listen to the mock stream immediately, so
+    // there's nothing to do here.
+  }
+
+  @override
+  void onIncomingPause() {
+    // With the mock WebSocket, we are always listening to the WebSocket stream.
+    // Traditionally when a stream subscription is paused, the producer of
+    // events should stop producing events to avoid buffering that could lead to
+    // a memory leak. Instead of doing that, we check the status of the
+    // subscription to this [WSocket] instance whenever an event is dispatched
+    // and discard said event if it's paused. This is effectively the same.
+  }
+
+  @override
+  void onIncomingResume() {
+    // See the note in [onIncomingPause]. We don't actually pause the
+    // subscription to the mock WebSocket, so there's no need to resume it here.
+  }
+
+  @override
+  void onOutgoingData(data) {
+    _callbacks.forEach((f) => f(data));
+  }
+
+  @override
+  void validateOutgoingData(Object data) {
     // Since this is a mock, we cannot make assumptions about which data types
     // are valid.
   }

@@ -43,7 +43,7 @@ main(List<String> args) async {
 
   config.coverage
     ..reportOn = ['lib/']
-    ..before = [_startServer, _startSockJSServer]
+    ..before = [_streamServer, _streamSockJSServer]
     ..after = [_stopServer, _stopSockJSServer];
 
   config.examples
@@ -64,7 +64,7 @@ main(List<String> args) async {
       'test/integration/vm_integration_test.dart'
     ]
     ..platforms = ['vm', 'content-shell']
-    ..before = [_startServer, _startSockJSServer]
+    ..before = [_streamServer, _streamSockJSServer]
     ..after = [_stopServer, _stopSockJSServer];
 
   await dev(args);
@@ -81,24 +81,6 @@ List<String> _serverOutput;
 
 /// Output from the SockJS server.
 List<String> _sockJSServerOutput;
-
-/// Start the server needed for integration tests and examples and cache the
-/// server output until the task requiring the server has finished. Then, the
-/// server output will be dumped all at once.
-Future _startServer() async {
-  _serverOutput = [];
-  _server = new Server();
-  _server.output.listen(_serverOutput.add);
-  await _server.start();
-}
-
-Future _startSockJSServer() async {
-  _sockJSServerOutput = [];
-  _sockJSServer = new TaskProcess('node', ['tool/server/sockjs.js']);
-  _sockJSServer.stdout.listen(_sockJSServerOutput.add);
-  _sockJSServer.stderr.listen(_sockJSServerOutput.add);
-  // todo: wait for server to start
-}
 
 /// Start the server needed for integration tests and examples and stream the
 /// server output as it arrives. The output will be mixed in with output from

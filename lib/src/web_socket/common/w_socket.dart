@@ -17,8 +17,10 @@ library w_transport.src.web_socket.common.w_socket;
 import 'dart:async';
 
 import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket_close_event.dart';
+import 'package:w_transport/src/web_socket/w_socket_subscription.dart';
 
+/// Implementation of the [WSocket] class that is common across all platforms.
+/// Platform-dependent pieces are left as unimplemented abstract members.
 abstract class CommonWSocket extends Stream implements WSocket {
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
@@ -28,73 +30,79 @@ abstract class CommonWSocket extends Stream implements WSocket {
   /// no close reason available this property will be `null`.
   String closeReason;
 
-  /// Incoming communication. Data from the web socket will be piped
-  /// to this controller's sink. The stream will be exposed, allowing
-  /// users to listen to the incoming data.
-  StreamController incoming;
+  /// Whether or not this [WSocket] instance is closed or in the process of
+  /// closing.
+  bool isClosed = false;
 
-  /// Outgoing communication. Sink will be exposed, allowing users to
-  /// add items to the outgoing stream.
-  StreamController outgoing;
+  /// The subscription to the underlying WebSocket (either a browser WebSocket,
+  /// VM WebSocket, SockJS Client, or a mock WebSocket).
+  StreamSubscription webSocketSubscription;
 
-  /// Completer that will complete when the outgoing sink has finished closing
-  /// and the socket connection has finished closing.
+  /// A completer that completes when both the outgoing stream sink and the
+  /// incoming stream have been closed. This is used to determine when this
+  /// [WSocket] instance can be considered completely closed.
   Completer<Null> _allClosed = new Completer();
 
-  /// The close event with close code and reason from the socket connection.
-  /// Will only be populated once the socket has actually closed.
-  WSocketCloseEvent _closeEvent;
-
-  /// Completer that will complete when [_allClosed] has completed and the close
-  /// code and reason have been set. If the socket closed due to an error, this
-  /// will complete with an error. Otherwise, it will complete normally.
+  /// A completer that completes when this [WSocket] instance is completely
+  /// "done" - both outgoing and incoming.
   Completer<Null> _done = new Completer();
 
-  /// The error that was either added to the socket sink or received from the
-  /// socket stream. This will only be populated if an error occurs.
+  /// Any error that may be caught during the life of the underlying WebSocket.
   var _error;
 
-  /// Whether or not the web socket is in the process of closing (or already has
-  /// closed). This prevents duplicate behavior if [close] is called multiple
-  /// times.
-  bool _isClosed = false;
+  /// A `StreamController` used to expose the incoming stream of events from the
+  /// underlying WebSocket.
+  StreamController _incoming;
 
-  /// Whether or not the outgoing sink has been closed.
-  bool _isSinkClosed = false;
+  /// Whether or not the incoming stream of WebSocket events is closed.
+  bool _isIncomingClosed = false;
 
-  /// Whether or not the incoming socket stream connection has been closed.
-  bool _isSocketClosed = false;
+  /// Whether or not the outgoing stream of WebSocket events is closed.
+  bool _isOutgoingClosed = false;
 
-  /// The stack trace from the error that was either added to the socket sink or
-  /// received from the socket stream. This will only be populated if an error
-  /// occurs.
+  /// A `StreamController` used to pipe outgoing events to the underlying
+  /// WebSocket.
+  StreamController _outgoing;
+
+  /// The stack trace for any error that may be caught during the life of the
+  /// underlying WebSocket.
   StackTrace _stackTrace;
 
+  /// The custom `StreamSubscription` that is used to proxy the subscription to
+  /// the underlying WebSocket.
+  WSocketSubscription _incomingSubscription;
+
   CommonWSocket() {
-    // Wait for both the sink and the socket to finish closing before exposing
-    // the close code, close reason, and completing the [_done] completer.
-    // If the socket closed due to an error, the [_done] completer will be
-    // completed with that error.
     _allClosed.future.then((_) {
-      closeCode = _closeEvent.code;
-      closeReason = _closeEvent.reason;
-      _isClosed = true;
+      if (_incomingSubscription != null &&
+          _incomingSubscription.doneHandler != null) {
+        _incomingSubscription.doneHandler();
+      }
+
       if (_error != null) {
         _done.completeError(_error, _stackTrace);
       } else {
         _done.complete();
       }
     });
+
+    // Outgoing communication will be handled by this stream controller.
+    _outgoing = new StreamController();
+    _outgoing.stream.listen(onOutgoingData,
+        onError: onOutgoingError, onDone: onOutgoingDone);
+
+    // Map events from the underlying socket to the incoming controller.
+    // It is important to have handlers for start/stop/pause/resume so that the
+    // controller properly respects the StreamSubscription API.
+    _incoming = new StreamController(
+        onListen: onIncomingListen,
+        onPause: onIncomingPause,
+        onResume: onIncomingResume,
+        onCancel: onIncomingCancel);
   }
 
   /// Future that resolves when this WebSocket connection has completely closed.
   Future get done => _done.future;
-
-  /// The stream sink for outgoing messages.
-  StreamSink get sink => outgoing.sink;
-
-  /// The stream for incoming messages.
-  Stream get stream => incoming.stream;
 
   /// Sends a message over the WebSocket connection.
   ///
@@ -107,14 +115,14 @@ abstract class CommonWSocket extends Stream implements WSocket {
   /// On the server:
   ///   - String
   ///   - List<int>
-  void add(message) {
-    validateDataType(message);
-    sink.add(message);
+  void add(data) {
+    validateOutgoingData(data);
+    _outgoing.add(data);
   }
 
   /// Add an error to the sink. This will cause the WebSocket connection to close.
   void addError(errorEvent, [StackTrace stackTrace]) {
-    shutDown(error: errorEvent, stackTrace: stackTrace);
+    _outgoing.addError(errorEvent, stackTrace);
   }
 
   /// Adds a stream of data to send over the WebSocket connection.
@@ -126,31 +134,64 @@ abstract class CommonWSocket extends Stream implements WSocket {
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
   Future addStream(Stream stream) async {
-    await sink.addStream(stream);
+    return _outgoing.addStream(stream);
   }
 
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
   Future close([int code, String reason]) {
-    if (_isClosed) return done;
-    _isClosed = true;
     shutDown(code: code, reason: reason);
     return done;
   }
 
-  void closeSocket(int code, String reason);
-
-  void handleOutgoingError(error, [StackTrace stackTrace]) {
-    // Don't pass the error on to the socket. It will cause the socket to
-    // close anyway, so we will preempt this and handle the shut down
-    // by ourselves. This allows us to prevent the error from propagating to
-    // the root zone where it cannot be caught.
-    shutDown(error: error, stackTrace: stackTrace);
+  @override
+  StreamSubscription listen(void onData(event),
+      {Function onError, void onDone(), bool cancelOnError}) {
+    var sub = _incoming.stream
+        .listen(onData, onError: onError, cancelOnError: cancelOnError);
+    _incomingSubscription = new WSocketSubscription(sub, onDone, onCancel: () {
+      _incomingSubscription = null;
+      return done;
+    });
+    return _incomingSubscription;
   }
 
-  void handleOutgoingDone() {
-    _isSinkClosed = true;
-    if (_isSocketClosed) {
+  /// Called when the subscription to the incoming `StreamController` is
+  /// canceled.
+  Future onIncomingCancel() async {
+    webSocketSubscription.cancel();
+    return _incoming.close();
+  }
+
+  /// Called when a message event with [data] is received from the underlying
+  /// WebSocket.
+  void onIncomingData(data) {
+    // Pipe messages from the socket through to the stream, but only if a
+    // listener has been registered and is not paused. Otherwise we risk leaking
+    // resources by adding events to the controller that may be buffered
+    // indefinitely.
+    if (!_incoming.isPaused && !_incoming.isClosed) {
+      _incoming.add(data);
+    }
+  }
+
+  /// Called when the incoming `StreamController` is closed (due to the
+  /// underlying WebSocket closing).
+  void onIncomingDone() {
+    isClosed = true;
+    _isIncomingClosed = true;
+
+    if (_isOutgoingClosed) {
+      _allClosed.complete();
+    } else {
+      _outgoing.close().catchError((_) {});
+    }
+  }
+
+  /// Called when the outgoing `StreamController` is closed.
+  void onOutgoingDone() {
+    _isOutgoingClosed = true;
+    if (_isIncomingClosed) {
       _allClosed.complete();
     }
 
@@ -162,43 +203,54 @@ abstract class CommonWSocket extends Stream implements WSocket {
     // - the sink receives an error during a call to [addStream]
   }
 
-  void handleSocketError(error, [StackTrace stackTrace]) {
+  /// Called when an error is added to the outgoing `StreamController`.
+  void onOutgoingError(error, [StackTrace stackTrace]) {
+    // Don't pass the error on to the socket. It will cause the socket to close
+    // anyway, so we will preempt this and handle the shut down by ourselves.
+    // This allows us to prevent the error from propagating to the root zone
+    // where it cannot be caught.
     shutDown(error: error, stackTrace: stackTrace);
   }
 
-  void handleSocketDone(WSocketCloseEvent closeEvent) {
-    _closeEvent = closeEvent;
-
-    _isSocketClosed = true;
-    if (_isSinkClosed) {
-      _allClosed.complete();
-    } else {
-      outgoing.close().catchError((_) {});
-    }
-  }
-
-  StreamSubscription listen(void onData(event),
-      {Function onError, void onDone(), bool cancelOnError}) {
-    if (onDone != null) {
-      done.then((_) => onDone());
-    }
-    return stream.listen(onData,
-        onError: onError, cancelOnError: cancelOnError);
-  }
-
-  /// Close the WebSocket connection if one has been established.
+  /// Shuts down the connection to the underling WebSocket. The outgoing
+  /// `StreamController` is closed and the WebSocket is closed.
   void shutDown({int code, error, String reason, StackTrace stackTrace}) {
+    if (isClosed) return;
+    isClosed = true;
+
     // Store the error and stack trace. When everything has finished closing,
     // they will be indicators that the socket connection closed with an error.
     _error = error;
     _stackTrace = stackTrace;
 
     // Close both incoming and outgoing communication.
-    closeSocket(code, reason);
-    sink.close();
+    _outgoing.close();
+    closeWebSocket(code, reason);
   }
 
-  /// Validate the data type of the message being sent. Throws an ArgumentError
-  /// if [message] is of invalid type.
-  void validateDataType(message);
+  /// Closes the underlying WebSocket connection with the given [code] and
+  /// [reason].
+  void closeWebSocket(int code, String reason);
+
+  /// Called when the incoming `StreamController` receives a listener. This
+  /// should effectively trigger a subscription to the WebSocket's events. Up
+  /// until this point, events from the WebSocket should have been discarded.
+  void onIncomingListen();
+
+  /// Called when the subscription to the incoming `StreamController` is paused.
+  /// From this point until the subscription is resumed, events from the
+  /// WebSocket should be discarded.
+  void onIncomingPause();
+
+  /// Called when a paused subscription to the incoming `StreamController` is
+  /// resumed. At this point, events from the WebSocket should once again be
+  /// delivered to the listener.
+  void onIncomingResume();
+
+  /// Called when a piece of data should be added to the outgoing
+  /// `StreamController`.
+  void onOutgoingData(Object data);
+
+  /// Called prior to adding a piece of data to the underlying WebSocket.
+  void validateOutgoingData(Object data);
 }

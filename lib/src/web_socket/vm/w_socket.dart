@@ -19,72 +19,70 @@ import 'dart:io';
 
 import 'package:w_transport/src/web_socket/common/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket_close_event.dart';
 import 'package:w_transport/src/web_socket/w_socket_exception.dart';
 
+/// Implementation of the platform-dependent pieces of the [WSocket] class for
+/// the Dart VM. This class uses native Dart WebSockets.
 class VMWSocket extends CommonWSocket implements WSocket {
   static Future<WSocket> connect(Uri uri,
       {Iterable<String> protocols, Map<String, dynamic> headers}) async {
-    WebSocket socket;
+    WebSocket webSocket;
     try {
-      socket = await WebSocket.connect(uri.toString(),
+      webSocket = await WebSocket.connect(uri.toString(),
           protocols: protocols, headers: headers);
     } on SocketException catch (e) {
       throw new WSocketException(e.toString());
     }
 
-    return new VMWSocket._(socket);
+    return new VMWSocket._(webSocket);
   }
 
-  /// The underlying [WebSocket] instance.
-  WebSocket _socket;
+  /// The underlying native WebSocket.
+  WebSocket _webSocket;
 
-  /// Subscription to the incoming web socket data. Will be mapped to
-  /// the incoming stream controller.
-  StreamSubscription _socketSubscription;
-
-  VMWSocket._(WebSocket this._socket) : super() {
-    // The outgoing communication will be handled by this stream controller.
-    // The sink from this controller will be used by [add] and [addStream].
-    outgoing = new StreamController();
-    outgoing.stream.listen((message) {
-      // Pipe messages through to the underlying socket.
-      _socket.add(message);
-    }, onError: handleOutgoingError, onDone: handleOutgoingDone);
-
-    // The incoming communication will be handled by mapping a stream
-    // controller to a subscription to the underlying socket.
-    _socketSubscription = _socket.listen(
-        (data) {
-          // Pipe messages from the socket through to the stream.
-          incoming.add(data);
-        },
-        onError: handleSocketError,
-        onDone: () {
-          // Now that the socket has closed, capture the close code and reason.
-          var closeEvent =
-              new WSocketCloseEvent(_socket.closeCode, _socket.closeReason);
-          handleSocketDone(closeEvent);
-        });
-
-    // Map the incoming controller to this subscription to the web socket.
-    incoming = new StreamController(
-        onListen: _socketSubscription.resume,
-        onPause: _socketSubscription.pause,
-        onResume: _socketSubscription.resume);
+  VMWSocket._(this._webSocket) : super() {
+    webSocketSubscription = _webSocket.listen(onIncomingData, onDone: () {
+      closeCode = _webSocket.closeCode;
+      closeReason = _webSocket.closeReason;
+      onIncomingDone();
+    });
   }
 
   @override
-  void closeSocket(int code, String reason) {
-    _socket.close(code, reason);
+  void closeWebSocket(int code, String reason) {
+    _webSocket.close(code, reason);
   }
 
-  /// Validate the WebSocket message data type. For server-side messages,
-  /// [String] and [List<int>] are valid types.
-  ///
-  /// Throws an [ArgumentError] if [data] is invalid.
   @override
-  void validateDataType(Object data) {
+  void onIncomingListen() {
+    // On the VM, we listen to the WebSocket immediately, so there's nothing to
+    // do here.
+  }
+
+  @override
+  void onIncomingPause() {
+    // On the VM, we are always listening to the WebSocket. Traditionally when
+    // a stream subscription is paused, the producer of events should stop
+    // producing events to avoid buffering that could lead to a memory leak.
+    // Instead of doing that, we check the status of the subscription to this
+    // [WSocket] instance whenever an event is dispatched and discard said event
+    // if it's paused. This is effectively the same.
+  }
+
+  @override
+  void onIncomingResume() {
+    // See the note in [onIncomingPause]. We don't actually pause the
+    // subscription to the WebSocket, so there's no need to resume it here.
+  }
+
+  @override
+  void onOutgoingData(data) {
+    // Pipe messages through to the underlying socket.
+    _webSocket.add(data);
+  }
+
+  @override
+  void validateOutgoingData(Object data) {
     if (data is! String && data is! List<int>) {
       throw new ArgumentError(
           'WSocket data type must be a String or a List<int>.');

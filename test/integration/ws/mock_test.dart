@@ -79,7 +79,7 @@ void main() {
             numPongs = int.parse(data);
           } catch (e) {}
           for (int i = 0; i < numPongs; i++) {
-            await new Future.delayed(new Duration(milliseconds: 50));
+            await new Future.delayed(new Duration(milliseconds: 5));
             webSocket.addIncoming('pong');
           }
         });

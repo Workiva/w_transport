@@ -20,9 +20,12 @@ import 'package:sockjs_client/sockjs_client.dart' as sockjs;
 
 import 'package:w_transport/src/web_socket/common/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket_close_event.dart';
 import 'package:w_transport/src/web_socket/w_socket_exception.dart';
 
+/// Implementation of the platform-dependent pieces of the [WSocket] class for
+/// the SockJS browser configuration. This class uses the SockJS library to
+/// establish a WebSocket-like connection (could be a native WebSocket, could
+/// be XHR-streaming).
 class SockJSSocket extends CommonWSocket implements WSocket {
   static Future<WSocket> connect(Uri uri,
       {bool debug: false,
@@ -61,46 +64,74 @@ class SockJSSocket extends CommonWSocket implements WSocket {
     return new SockJSSocket._(client, closed);
   }
 
-  /// The underlying SockJS Client instance.
-  sockjs.Client _socket;
+  /// The "WebSocket" - in this case, it's a SockJS Client that has an API
+  /// similar to that of a WebSocket, regardless of what protocol is actually
+  /// used.
+  sockjs.Client _webSocket;
 
-  /// The close event Future from the SockJS Client onClose stream.
-  var _socketClosed;
-
-  SockJSSocket._(sockjs.Client this._socket, this._socketClosed) : super() {
-    // The outgoing communication will be handled by this stream controller.
-    // The sink from this controller will be used by [add] and [addStream].
-    outgoing = new StreamController();
-    outgoing.stream.listen((message) {
-      // Pipe messages through to the underlying socket.
-      _socket.send(message);
-    }, onError: handleOutgoingError, onDone: handleOutgoingDone);
-
-    // Map events from the underlying socket to the incoming controller.
-    incoming = new StreamController();
-    _socket.onMessage.listen((messageEvent) {
-      // Pipe messages from the socket through to the stream.
-      incoming.add(messageEvent.data);
+  SockJSSocket._(this._webSocket, Future webSocketClosed) : super() {
+    webSocketClosed.then((closeEvent) {
+      closeCode = closeEvent.code;
+      closeReason = closeEvent.reason;
+      onIncomingDone();
     });
-    _socketClosed.then((closeEvent) {
-      // Now that the socket has closed, capture the close code and reason.
-      var wCloseEvent =
-          new WSocketCloseEvent(closeEvent.code, closeEvent.reason);
-      handleSocketDone(wCloseEvent);
+
+    // Note: We don't listen to the SockJS client for messages immediately like
+    // we do with the native WebSockets. This is because the event streams from
+    // the SockJS client are all drawn from a single broadcast stream. To make
+    // it act like a single subscription stream (and thus make it fit the
+    // interface of a standard Stream), we create a subscription when a consumer
+    // listens to this WSocket instance, cancel that subscription when the
+    // consumer's subscription is paused, and re-listen when the consumer
+    // resumes listening. See [onIncomingListen], [onIncomingPause], and
+    // [onIncomingResume].
+
+    // Additional note: the SockJS Client has no error stream, so no need to
+    // listen for errors.
+  }
+
+  @override
+  void closeWebSocket(int code, String reason) {
+    _webSocket.close(code, reason);
+  }
+
+  @override
+  void onIncomingListen() {
+    // When this [WSocket] instance is listened to, start listening to the
+    // SockJS client's broadcast stream.
+    webSocketSubscription = _webSocket.onMessage.listen((messageEvent) {
+      onIncomingData(messageEvent.data);
     });
   }
 
   @override
-  void closeSocket(int code, String reason) {
-    _socket.close(code, reason);
+  void onIncomingPause() {
+    // When this [WSocket]'s subscription is paused, cancel the subscription to
+    // the SockJS client's broadcast stream. This is the recommended behavior
+    // when proxying a subscription to a broadcast stream. This effectively
+    // prevents buffering events indefinitely (a possible memory leak) by
+    // canceling the subscription altogether. When the subscription to this
+    // [WSocket] instance is resumed, we will re-subscribe.
+    webSocketSubscription.cancel();
   }
 
-  /// Validate the WebSocket message data type. When using SockJS, only [String]
-  /// messages are valid.
-  ///
-  /// Throws an [ArgumentError] if [data] is invalid.
   @override
-  void validateDataType(Object data) {
+  void onIncomingResume() {
+    // Resubscribe to the SockJS client's broadcast stream to effectively resume
+    // the consumer's subscription to this [WSocket] instance.
+    webSocketSubscription = _webSocket.onMessage.listen((messageEvent) {
+      onIncomingData(messageEvent.data);
+    });
+  }
+
+  @override
+  void onOutgoingData(data) {
+    // Pipe messages through to the underlying socket.
+    _webSocket.send(data);
+  }
+
+  @override
+  void validateOutgoingData(Object data) {
     if (data is! String) {
       throw new ArgumentError(
           'WSocket data type must be a String when using SockJS.');

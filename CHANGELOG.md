@@ -1,7 +1,7 @@
 # Changelog
 
-## [2.4.1](https://github.com/Workiva/w_transport/compare/2.4.0...2.4.1)
-_TBD_
+## [2.5.0](https://github.com/Workiva/w_transport/compare/2.4.0...2.5.0)
+_June 15, 2015_
 
 - **Bug Fix:** `WSocket` extends `Stream` and `StreamSink`, but was not
   fulfilling those contracts in all scenarios. In particular:

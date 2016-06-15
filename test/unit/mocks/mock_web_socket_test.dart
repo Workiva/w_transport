@@ -72,12 +72,50 @@ void main() {
         });
       });
 
+      group('expectPattern()', () {
+        test('expected web socket connection completes automatically',
+            () async {
+          WSocket webSocket = new MockWSocket();
+          MockTransports.webSocket
+              .expectPattern(webSocketUri.toString(), connectTo: webSocket);
+          expect(await WSocket.connect(webSocketUri), equals(webSocket));
+        });
+
+        test('expected web socket connection rejected', () async {
+          MockTransports.webSocket
+              .expectPattern(webSocketUri.toString(), reject: true);
+          expect(WSocket.connect(webSocketUri), throwsA(predicate((error) {
+            return error.toString().contains('rejected');
+          })));
+        });
+
+        test('supports connectTo OR reject, but not both', () {
+          expect(() {
+            MockTransports.webSocket.expectPattern(webSocketUri.toString(),
+                connectTo: new MockWSocket(), reject: true);
+          }, throwsArgumentError);
+        });
+
+        test('requires connectTo OR reject', () {
+          expect(() {
+            MockTransports.webSocket.expectPattern(webSocketUri.toString());
+          }, throwsArgumentError);
+        });
+      });
+
       test('reset() should clear all expectations and handlers', () async {
         Future<WSocket> handler(uri, {protocols, headers}) async =>
             new MockWSocket();
+        Future<WSocket> patternHandler(uri,
+                {protocols, headers, match}) async =>
+            new MockWSocket();
         MockTransports.webSocket.when(webSocketUri, handler: handler);
         MockTransports.webSocket
+            .whenPattern(webSocketUri.toString(), handler: patternHandler);
+        MockTransports.webSocket
             .expect(webSocketUri, connectTo: new MockWSocket());
+        MockTransports.webSocket.expectPattern(webSocketUri.toString(),
+            connectTo: new MockWSocket());
 
         MockTransports.webSocket.reset();
 
@@ -131,6 +169,96 @@ void main() {
           expect(() {
             MockTransports.webSocket.when(webSocketUri);
           }, throwsArgumentError);
+        });
+      });
+
+      group('whenPattern()', () {
+        test(
+            'registers a handler for all web socket connections with matching URI',
+            () async {
+          WSocket webSocket = new MockWSocket();
+          Future<WSocket> handler(uri, {protocols, headers, match}) async =>
+              webSocket;
+          MockTransports.webSocket
+              .whenPattern(webSocketUri.toString(), handler: handler);
+
+          // Multiple matching connections succeed.
+          expect(await WSocket.connect(webSocketUri), equals(webSocket));
+          expect(await WSocket.connect(webSocketUri), equals(webSocket));
+
+          // Non-matching connection fails.
+          expect(WSocket.connect(Uri.parse('/other')), throws);
+        });
+
+        test('registers a rejection for all requests with matching URI',
+            () async {
+          MockTransports.webSocket
+              .whenPattern(webSocketUri.toString(), reject: true);
+
+          // Multiple matching connections work as expected.
+          expect(WSocket.connect(webSocketUri), throwsA(predicate((error) {
+            return error.toString().contains('rejected');
+          })));
+          expect(WSocket.connect(webSocketUri), throwsA(predicate((error) {
+            return error.toString().contains('rejected');
+          })));
+
+          // Non-matching connection fails correctly.
+          expect(WSocket.connect(Uri.parse('/other')),
+              throwsA(predicate((error) {
+            return error.toString().contains('Unexpected');
+          })));
+        });
+
+        test('supports handler OR reject, but not both', () {
+          expect(() {
+            MockTransports.webSocket.whenPattern(webSocketUri.toString(),
+                handler: (uri, {protocols, headers, match}) async =>
+                    new MockWSocket(),
+                reject: true);
+          }, throwsArgumentError);
+        });
+
+        test('requires handler OR reject', () {
+          expect(() {
+            MockTransports.webSocket.whenPattern(webSocketUri.toString());
+          }, throwsArgumentError);
+        });
+
+        test(
+            'registers a handler with a pattern that catches any connection with a matching URI',
+            () async {
+          var uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
+          WSocket webSocket = new MockWSocket();
+          Future<WSocket> handler(uri, {protocols, headers, match}) async =>
+              webSocket;
+          MockTransports.webSocket.whenPattern(uriPattern, handler: handler);
+
+          // Multiple matching connections succeed.
+          expect(await WSocket.connect(Uri.parse('ws://google.com/ws')),
+              equals(webSocket));
+          expect(await WSocket.connect(Uri.parse('ws://github.com/ws/listen')),
+              equals(webSocket));
+
+          // Non-matching connection fails.
+          expect(WSocket.connect(Uri.parse('/other')), throws);
+        });
+
+        test(
+            'registers a handler that will receive the uri Match on connection',
+            () async {
+          var uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
+          Match uriMatch;
+          Future<WSocket> handler(uri, {protocols, headers, match}) async {
+            uriMatch = match;
+            return new MockWSocket();
+          }
+          ;
+          MockTransports.webSocket.whenPattern(uriPattern, handler: handler);
+
+          await WSocket.connect(Uri.parse('ws://github.com/ws/listen'));
+          expect(uriMatch.group(0), equals('ws://github.com/ws/listen'));
+          expect(uriMatch.group(1), equals('github'));
         });
       });
     });

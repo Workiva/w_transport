@@ -1,7 +1,45 @@
 # Changelog
 
-## [2.5.1](https://github.com/Workiva/w_transport/compare/2.5.0...2.5.1)
+## [2.6.0](https://github.com/Workiva/w_transport/compare/2.5.1...2.6.0)
 _TBD_
+
+- **Improvement:** The `MockTransport` utilities now support expecting
+  and registering handlers for HTTP requests and WS connections that
+  match a `Pattern` instead of exactly matching a URI. Handlers will
+  also receive the `Match` instance.
+
+    ```dart
+    var response = new MockResponse.ok();
+    var webSocket = new MockWSocket();
+
+    var uriPattern = new RegExp('(http|ws)s:\/\/example.com\/(.*)');
+
+    // Capture any GET request to example.com/
+    MockTransports.http.expectPattern('GET', uriPattern, respondWith: response);
+
+    // Register a handler for any GET request to https://example.com/
+    // The `Match` instance will be given to the handler, where it can be used
+    // to read any of the captured groups.
+    MockTransports.http.whenPattern(uriPattern, (request, match) async {
+      print('path: ${match.group(2)}');
+      return response;
+    }, method: 'GET');
+
+    // Capture any WS connection attempt to example.com/
+    MockTransports.webSocket.expectPattern(uriPattern, connectTo: webSocket);
+    
+    // Register a handler for an WS connection attempt to example.com/
+    // The `Match` instance will be given to the handler, where it can be used
+    // to read any of the captured groups.
+    MockTransports.webSocket.whenPattern(uriPattern, handler:
+        (uri, {protocols, headers, match}) async {
+      print('path: ${match.group(2)}');
+      return webSocket;
+    });
+    ```
+
+## [2.5.1](https://github.com/Workiva/w_transport/compare/2.5.0...2.5.1)
+_June 16, 2016_
 
 - **Error Messaging:** When a response body cannot be properly decoded/encoded
   using the `Encoding` dictated by the `content-type` header, a
@@ -9,7 +47,7 @@ _TBD_
   message. The content-type, encoding, and body will be included.
 
 ## [2.5.0](https://github.com/Workiva/w_transport/compare/2.4.0...2.5.0)
-_June 15, 2015_
+_June 15, 2016_
 
 - **Bug Fix:** `WSocket` extends `Stream` and `StreamSink`, but was not
   fulfilling those contracts in all scenarios. In particular:

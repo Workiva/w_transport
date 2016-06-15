@@ -41,6 +41,8 @@ export 'package:w_transport/src/http/mock/requests.dart'
 export 'package:w_transport/src/http/mock/response.dart'
     show MockResponse, MockStreamedResponse;
 
+export 'package:w_transport/src/mocks/http.dart'
+    show PatternRequestHandler, RequestHandler;
 export 'package:w_transport/src/mocks/transport.dart' show MockTransports;
 
 export 'package:w_transport/src/web_socket/mock/w_socket.dart' show MockWSocket;

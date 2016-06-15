@@ -101,6 +101,59 @@ void main() {
         });
       });
 
+      group('expectPattern()', () {
+        test('expected request completes automatically with 200 OK by default',
+            () async {
+          MockTransports.http.expectPattern('GET', requestUri.toString());
+          expect((await Http.get(requestUri)).status, equals(200));
+        });
+
+        test('expected request with custom response', () async {
+          Response response = new MockResponse(202);
+          MockTransports.http.expectPattern('POST', requestUri.toString(),
+              respondWith: response);
+          expect((await Http.post(requestUri)).status, equals(202));
+        });
+
+        test('expected request failure', () async {
+          Exception exception = new Exception('Custom exception');
+          MockTransports.http.expectPattern('DELETE', requestUri.toString(),
+              failWith: exception);
+          expect(Http.delete(requestUri), throwsA(predicate((error) {
+            return error.toString().contains('Custom exception');
+          })));
+        });
+
+        test('expected request has to match URI and method', () async {
+          MockTransports.http.expectPattern('GET', requestUri.toString());
+          Http.delete(requestUri); // Wrong method
+          Http.get(Uri.parse('/wrong')); // Wrong URI
+          await Http.get(requestUri); // Correct
+          expect(MockTransports.http.numPendingRequests, equals(2));
+        });
+
+        test('supports failWith, or respondWith, but not both', () {
+          expect(() {
+            MockTransports.http.expectPattern('GET', requestUri.toString(),
+                failWith: new Exception(), respondWith: new MockResponse.ok());
+          }, throwsArgumentError);
+        });
+
+        test('handles requests that match a pattern', () async {
+          var pattern = new RegExp('https:\/\/(google|github)\.com');
+
+          Http.get(Uri.parse('https://example.com')); // Wrong URI.
+
+          MockTransports.http.expectPattern('GET', pattern);
+          await Http.get(Uri.parse('https://google.com'));
+
+          MockTransports.http.expectPattern('GET', pattern);
+          await Http.get(Uri.parse('https://github.com'));
+
+          expect(MockTransports.http.numPendingRequests, equals(1));
+        });
+      });
+
       group('failRequest()', () {
         test('causes request to throw', () async {
           Request request = new Request();
@@ -132,7 +185,10 @@ void main() {
           () async {
         MockTransports.http
             .when(requestUri, (req) async => new MockResponse.ok());
+        MockTransports.http.whenPattern(
+            requestUri.toString(), (req, match) async => new MockResponse.ok());
         MockTransports.http.expect('GET', Uri.parse('/expected'));
+        MockTransports.http.expectPattern('GET', '/expected');
         Request request = new Request();
         request.get(uri: Uri.parse('/other'));
         await (request as MockBaseRequest).onSent;
@@ -140,7 +196,8 @@ void main() {
 
         MockTransports.http.reset();
 
-        // Would have been handled by our handler, but should no longer be:
+        // Would have been handled by either of the handlers, but should no
+        // longer be:
         Request request2 = new Request();
         request2.delete(uri: requestUri);
         await (request2 as MockBaseRequest).onSent;
@@ -207,6 +264,72 @@ void main() {
           MockTransports.http
               .when(requestUri, (_) async => throw new Exception());
           expect(Http.get(requestUri), throws);
+        });
+      });
+
+      group('whenPattern()', () {
+        test(
+            'registers a handler for all requests with a matching URI and method',
+            () async {
+          var ok = new MockResponse.ok();
+          MockTransports.http.whenPattern(
+              requestUri.toString(), (_1, _2) async => ok,
+              method: 'GET');
+          Http.get(Uri.parse('/wrong')); // Wrong URI.
+          Http.delete(requestUri); // Wrong method.
+          await Http.get(requestUri); // Matches.
+          await Http.get(requestUri); // Matches again.
+          expect(MockTransports.http.numPendingRequests, equals(2));
+        });
+
+        test(
+            'registers a handler for all requests with a matching URI and ANY method',
+            () async {
+          var ok = new MockResponse.ok();
+          MockTransports.http
+              .whenPattern(requestUri.toString(), (_1, _2) async => ok);
+          Http.get(Uri.parse('/wrong')); // Wrong URI.
+          await Http.delete(requestUri); // Matches.
+          await Http.get(requestUri); // Matches.
+          await Http.get(requestUri); // Matches again.
+          expect(MockTransports.http.numPendingRequests, equals(1));
+        });
+
+        test('registers a handler that throws to cause request failure',
+            () async {
+          MockTransports.http.whenPattern(
+              requestUri.toString(), (_1, _2) async => throw new Exception());
+          expect(Http.get(requestUri), throws);
+        });
+
+        test(
+            'registers a handler for all requests with a partially matching URI',
+            () async {
+          var pattern = new RegExp('https:\/\/(google|github)\.com.*');
+          var ok = new MockResponse.ok();
+          MockTransports.http.whenPattern(pattern, (_1, _2) async => ok);
+          Http.get(Uri.parse('/wrong')); // Wrong URI.
+          await Http.get(Uri.parse('https://google.com'));
+          await Http.get(Uri.parse('https://github.com/Workiva/w_transport'));
+          expect(MockTransports.http.numPendingRequests, equals(1));
+        });
+
+        test('handler should recieve the Match instance from the pattern test',
+            () async {
+          var pattern = new RegExp('https:\/\/(google|github)\.com');
+          var matches = <Match>[];
+          MockTransports.http.whenPattern(pattern, (_, match) async {
+            matches.add(match);
+            return new MockResponse.ok();
+          });
+          await Http.get(Uri.parse('https://google.com'));
+          await Http.get(Uri.parse('https://github.com'));
+
+          expect(matches[0].group(0), equals('https://google.com'));
+          expect(matches[0].group(1), equals('google'));
+
+          expect(matches[1].group(0), equals('https://github.com'));
+          expect(matches[1].group(1), equals('github'));
         });
       });
     });

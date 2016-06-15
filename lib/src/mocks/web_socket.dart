@@ -22,13 +22,22 @@ import 'package:w_transport/src/web_socket/w_socket_exception.dart';
 
 typedef Future<WSocket> WSocketConnectHandler(Uri uri,
     {Iterable<String> protocols, Map<String, dynamic> headers});
+typedef Future<WSocket> WSocketPatternConnectHandler(Uri uri,
+    {Iterable<String> protocols, Map<String, dynamic> headers, Match match});
 
 List<_WebSocketConnectExpectation> _expectations = [];
 Map<String, WSocketConnectHandler> _handlers = {};
+Map<Pattern, WSocketPatternConnectHandler> _patternHandlers = {};
 
 Future<WSocket> handleWebSocketConnection(Uri uri,
     {Iterable<String> protocols, Map<String, dynamic> headers}) async {
-  Iterable matchingExpectations = _expectations.where((e) => e.uri == uri);
+  Iterable matchingExpectations = _expectations.where((e) {
+    if (e.uri is Uri) {
+      return e.uri == uri;
+    } else if (e.uri is Pattern) {
+      return (e.uri as Pattern).allMatches(uri.toString()).isNotEmpty;
+    }
+  });
   if (matchingExpectations.isNotEmpty) {
     /// If this connection was expected, resolve it as planned.
     _WebSocketConnectExpectation expectation = matchingExpectations.first;
@@ -44,6 +53,22 @@ Future<WSocket> handleWebSocketConnection(Uri uri,
         protocols: protocols, headers: headers);
   }
 
+  Match match;
+  var matchingHandlerKey = _patternHandlers.keys.firstWhere((uriPattern) {
+    var matches = uriPattern.allMatches(uri.toString());
+    if (matches.isNotEmpty) {
+      match = matches.first;
+      return true;
+    }
+    return false;
+  }, orElse: () => null);
+
+  if (matchingHandlerKey != null) {
+    /// The uri matched the pattern specified by this handler.
+    return _patternHandlers[matchingHandlerKey](uri,
+        protocols: protocols, headers: headers, match: match);
+  }
+
   throw new StateError('Unexpected WSocket connection: $uri');
 }
 
@@ -51,6 +76,43 @@ class MockWebSocket {
   const MockWebSocket();
 
   void expect(Uri uri, {MockWSocket connectTo, bool reject}) {
+    _expect(uri, connectTo: connectTo, reject: reject);
+  }
+
+  void expectPattern(Pattern uriPattern, {MockWSocket connectTo, bool reject}) {
+    _expect(uriPattern, connectTo: connectTo, reject: reject);
+  }
+
+  void reset() {
+    _expectations = [];
+    _handlers = {};
+    _patternHandlers = {};
+  }
+
+  void when(Uri uri, {WSocketConnectHandler handler, bool reject}) {
+    _validateWhenParams(handler: handler, reject: reject);
+    if (reject != null && reject) {
+      _handlers[uri.toString()] = (uri, {protocols, headers}) {
+        throw new WSocketException('Mock connection to $uri rejected.');
+      };
+    } else {
+      _handlers[uri.toString()] = handler;
+    }
+  }
+
+  void whenPattern(Pattern uriPattern,
+      {WSocketPatternConnectHandler handler, bool reject}) {
+    _validateWhenParams(handler: handler, reject: reject);
+    if (reject != null && reject) {
+      _patternHandlers[uriPattern] = (uri, {protocols, headers, match}) {
+        throw new WSocketException('Mock connection to $uri rejected.');
+      };
+    } else {
+      _patternHandlers[uriPattern] = handler;
+    }
+  }
+
+  void _expect(dynamic uri, {MockWSocket connectTo, bool reject}) {
     if (connectTo != null && reject != null) {
       throw new ArgumentError('Use connectTo OR reject, but not both.');
     }
@@ -61,24 +123,12 @@ class MockWebSocket {
         connectTo: connectTo, reject: reject));
   }
 
-  void reset() {
-    _expectations = [];
-    _handlers = {};
-  }
-
-  void when(Uri uri, {WSocketConnectHandler handler, bool reject}) {
+  void _validateWhenParams({WSocketConnectHandler handler, bool reject}) {
     if (handler != null && reject != null) {
       throw new ArgumentError('Use handler OR reject, but not both.');
     }
     if (handler == null && reject == null) {
       throw new ArgumentError('Either handler OR reject must be set.');
-    }
-    if (reject != null && reject) {
-      _handlers[uri.toString()] = (uri, {protocols, headers}) {
-        throw new WSocketException('Mock connection to $uri rejected.');
-      };
-    } else {
-      _handlers[uri.toString()] = handler;
     }
   }
 }
@@ -86,8 +136,7 @@ class MockWebSocket {
 class _WebSocketConnectExpectation {
   WSocket connectTo;
   bool reject;
-  final Uri uri;
+  final dynamic uri;
 
-  _WebSocketConnectExpectation(Uri this.uri,
-      {WSocket this.connectTo, bool this.reject});
+  _WebSocketConnectExpectation(this.uri, {this.connectTo, this.reject});
 }

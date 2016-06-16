@@ -989,7 +989,8 @@ _runAutoRetryTestSuiteFor(
         request.autoRetry
           ..enabled = true
           ..maxRetries = 3
-          ..backOff = new RetryBackOff.fixed(new Duration(milliseconds: 50));
+          ..backOff = new RetryBackOff.fixed(new Duration(milliseconds: 50),
+              withJitter: false);
         request.get(uri: requestUri);
 
         // < 50ms = 1 attempt
@@ -1019,8 +1020,9 @@ _runAutoRetryTestSuiteFor(
         request.autoRetry
           ..enabled = true
           ..maxRetries = 3
-          ..backOff =
-              new RetryBackOff.exponential(new Duration(milliseconds: 25));
+          ..backOff = new RetryBackOff.exponential(
+              new Duration(milliseconds: 25),
+              withJitter: false);
         request.get(uri: requestUri);
 
         // 1st attempt = immediate
@@ -1077,7 +1079,7 @@ _runAutoRetryTestSuiteFor(
           ..enabled = true
           ..maxRetries = 3
           ..backOff = new RetryBackOff.fixed(new Duration(milliseconds: 25),
-              withJitter: true);
+              withJitter: false);
         request.get(uri: requestUri);
 
         // 1st attempt = immediate

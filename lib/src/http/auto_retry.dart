@@ -182,14 +182,14 @@ class RetryBackOff {
   /// Construct a new exponential back-off representation where [interval] is
   /// the base duration from which each delay will be calculated.
   const RetryBackOff.exponential(this.interval,
-      {bool withJitter, Duration maxInterval})
+      {bool withJitter: false, Duration maxInterval})
       : method = RetryBackOffMethod.exponential,
-        withJitter = withJitter == true,
+        withJitter = withJitter,
         maxInterval = maxInterval != null ? maxInterval : defaultMaxInterval;
 
   /// Construct a new fixed back-off representation where [interval] is the
   /// delay between each retry.
-  const RetryBackOff.fixed(this.interval, {bool withJitter})
+  const RetryBackOff.fixed(this.interval, {bool withJitter: false})
       : method = RetryBackOffMethod.fixed,
         withJitter = withJitter,
         maxInterval = null;

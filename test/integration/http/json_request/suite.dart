@@ -54,6 +54,18 @@ void runJsonRequestSuite() {
       expect(contentType.mimeType, equals('application/json'));
     });
 
+    test('content-type should be overridable', () async {
+      var contentType = new MediaType('application', 'x-custom');
+      JsonRequest request = new JsonRequest()
+        ..uri = IntegrationPaths.reflectEndpointUri
+        ..body = {'field1': 'value1', 'field2': 'value2'}
+        ..contentType = contentType;
+      Response response = await request.post();
+      var reflectedContentType = new MediaType.parse(
+          response.body.asJson()['headers']['content-type']);
+      expect(reflectedContentType.mimeType, equals(contentType.mimeType));
+    });
+
     test('UTF8', () async {
       JsonRequest request = new JsonRequest()
         ..uri = IntegrationPaths.echoEndpointUri

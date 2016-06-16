@@ -50,11 +50,6 @@ abstract class CommonStreamedRequest extends CommonRequest
   }
 
   @override
-  set contentType(MediaType contentType) {
-    updateContentType(contentType);
-  }
-
-  @override
   MediaType get defaultContentType =>
       new MediaType('text', 'plain', {'charset': encoding.name});
 

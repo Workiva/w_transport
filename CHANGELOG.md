@@ -1,7 +1,7 @@
 # Changelog
 
-## [2.6.0](https://github.com/Workiva/w_transport/compare/2.5.1...2.6.0)
-_TBD_
+## [2.6.0](https://github.com/Workvia/w_transport/compare/2.5.1...2.6.0)
+_June 20, 2016_
 
 - **Improvement:** The `MockTransport` utilities now support expecting
   and registering handlers for HTTP requests and WS connections that
@@ -37,6 +37,28 @@ _TBD_
       return webSocket;
     });
     ```
+
+- **Improvement:** the content-type for HTTP requests can now be set manually.
+
+    ```dart
+    var request = new Request()
+      ..uri = Uri.parse('/example')
+      ..contentType =
+          new MediaType('application', 'x-custom', {'charset': UTF8.name});
+    ```
+
+  - The content-type still has a default value based on the type of request
+    (`Request` - text/plain, `JsonRequest` - application/json, etc.).
+
+  - The content-type's charset parameter will still be updated automatically
+    when you set the `encoding`, **but once you manually set `contentType`, this
+    behavior will stop.** In other words, we are assuming that if you set
+    `contentType` manually, you are intentionally overriding the defaults and
+    are taking responsibility of setting the `charset` parameter appropriately.
+
+- **Bug Fix:** the `StreamedRequest` now properly verifies that the request has
+  not been sent when setting `contentType`. It will now throw a `StateError`
+  like the rest of the request types.
 
 ## [2.5.1](https://github.com/Workiva/w_transport/compare/2.5.0...2.5.1)
 _June 16, 2016_

@@ -69,6 +69,19 @@ void runStreamedRequestSuite() {
       expect(contentType.mimeType, equals('text/plain'));
     });
 
+    test('content-type should be overridable', () async {
+      var contentType = new MediaType('application', 'x-custom');
+      StreamedRequest request = new StreamedRequest()
+        ..uri = IntegrationPaths.reflectEndpointUri
+        ..body = new Stream.fromIterable([])
+        ..contentLength = 0
+        ..contentType = contentType;
+      Response response = await request.post();
+      var reflectedContentType = new MediaType.parse(
+          response.body.asJson()['headers']['content-type']);
+      expect(reflectedContentType.mimeType, equals(contentType.mimeType));
+    });
+
     test('UTF8', () async {
       StreamedRequest request = new StreamedRequest()
         ..uri = IntegrationPaths.echoEndpointUri

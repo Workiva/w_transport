@@ -35,11 +35,6 @@ void main() {
         configureWTransportForTest();
       });
 
-      test('content-type cannot be set manually', () {
-        FormRequest request = new FormRequest();
-        expect(() => request.contentType = null, throwsUnsupportedError);
-      });
-
       test('setting fields defaults to empty map if null', () {
         FormRequest request = new FormRequest()..fields = null;
         expect(request.fields, equals({}));
@@ -109,6 +104,33 @@ void main() {
 
         request.encoding = ASCII;
         expect(request.contentType.parameters['charset'], equals(ASCII.name));
+      });
+
+      test(
+          'setting encoding should not update content-type if content-type has been set manually',
+          () {
+        FormRequest request = new FormRequest();
+        expect(request.contentType.parameters['charset'], equals(UTF8.name));
+
+        // Manually override content-type.
+        request.contentType =
+            new MediaType('application', 'x-custom', {'charset': LATIN1.name});
+        expect(request.contentType.mimeType, equals('application/x-custom'));
+        expect(request.contentType.parameters['charset'], equals(LATIN1.name));
+
+        // Changes to encoding should no longer update the content-type.
+        request.encoding = ASCII;
+        expect(request.contentType.parameters['charset'], equals(LATIN1.name));
+      });
+
+      test('setting content-type should not be allowed once sent', () async {
+        Uri uri = Uri.parse('/test');
+        MockTransports.http.expect('GET', uri);
+        FormRequest request = new FormRequest();
+        await request.get(uri: uri);
+        expect(() {
+          request.contentType = new MediaType('application', 'x-custom');
+        }, throwsStateError);
       });
 
       test('setting encoding should not be allowed once sent', () async {

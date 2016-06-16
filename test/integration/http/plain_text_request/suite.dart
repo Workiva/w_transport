@@ -54,6 +54,18 @@ void runPlainTextRequestSuite() {
       expect(contentType.mimeType, equals('text/plain'));
     });
 
+    test('content-type should be overridable', () async {
+      var contentType = new MediaType('application', 'x-custom');
+      Request request = new Request()
+        ..uri = IntegrationPaths.reflectEndpointUri
+        ..body = 'data'
+        ..contentType = contentType;
+      Response response = await request.post();
+      var reflectedContentType = new MediaType.parse(
+          response.body.asJson()['headers']['content-type']);
+      expect(reflectedContentType.mimeType, equals(contentType.mimeType));
+    });
+
     test('UTF8', () async {
       Request request = new Request()
         ..uri = IntegrationPaths.echoEndpointUri

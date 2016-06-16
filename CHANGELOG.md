@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.5.1](https://github.com/Workiva/w_transport/compare/2.5.0...2.5.1)
+_TBD_
+
+- **Error Messaging:** When a response body cannot be properly decoded/encoded
+  using the `Encoding` dictated by the `content-type` header, a
+  `ResponseFormatException` will now be thrown with a much more descriptive
+  message. The content-type, encoding, and body will be included.
+
 ## [2.5.0](https://github.com/Workiva/w_transport/compare/2.4.0...2.5.0)
 _June 15, 2015_
 
@@ -42,7 +50,6 @@ _June 15, 2015_
 > add the error to the stream, it will just close the connection. As a result,
 > the `MockWSocket.triggerServerError()` method has been deprecated - use
 > `MockWSocket.triggerServerClose()` instead.
-
 
 ## [2.4.0](https://github.com/Workiva/w_transport/compare/2.3.2...2.4.0)
 _May 4, 2016_

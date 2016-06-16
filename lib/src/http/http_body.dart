@@ -20,6 +20,7 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 
+import 'package:w_transport/src/http/response_format_exception.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
 
 abstract class BaseHttpBody {
@@ -82,7 +83,13 @@ class HttpBody extends BaseHttpBody {
   /// Returns this request/response body as a list of bytes.
   Uint8List asBytes() {
     if (_bytes == null) {
-      _bytes = new Uint8List.fromList(encoding.encode(_body));
+      var encoded;
+      try {
+        encoded = encoding.encode(_body);
+      } catch (e) {
+        throw new ResponseFormatException(contentType, encoding, body: _body);
+      }
+      _bytes = new Uint8List.fromList(encoded);
     }
     return _bytes;
   }
@@ -90,7 +97,11 @@ class HttpBody extends BaseHttpBody {
   /// Returns this request/response body as a String.
   String asString() {
     if (_body == null) {
-      _body = encoding.decode(_bytes);
+      try {
+        _body = encoding.decode(_bytes);
+      } catch (e) {
+        throw new ResponseFormatException(contentType, encoding, bytes: _bytes);
+      }
     }
     return _body;
   }

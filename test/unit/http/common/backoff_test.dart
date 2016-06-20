@@ -26,11 +26,6 @@ import 'package:w_transport/src/http/common/backoff.dart';
 import 'package:w_transport/w_transport_mock.dart';
 import 'dart:math';
 
-reqFactory({bool withBody: false}) {
-  if (!withBody) return new Request();
-  return new Request()..body = 'body';
-}
-
 void main() {
   configureWTransportForTest();
 

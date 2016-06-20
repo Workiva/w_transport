@@ -989,7 +989,8 @@ _runAutoRetryTestSuiteFor(
         request.autoRetry
           ..enabled = true
           ..maxRetries = 3
-          ..backOff = new RetryBackOff.fixed(new Duration(milliseconds: 50));
+          ..backOff = new RetryBackOff.fixed(new Duration(milliseconds: 50),
+              withJitter: false);
         request.get(uri: requestUri);
 
         // < 50ms = 1 attempt
@@ -1019,8 +1020,9 @@ _runAutoRetryTestSuiteFor(
         request.autoRetry
           ..enabled = true
           ..maxRetries = 3
-          ..backOff =
-              new RetryBackOff.exponential(new Duration(milliseconds: 25));
+          ..backOff = new RetryBackOff.exponential(
+              new Duration(milliseconds: 25),
+              withJitter: false);
         request.get(uri: requestUri);
 
         // 1st attempt = immediate
@@ -1034,6 +1036,57 @@ _runAutoRetryTestSuiteFor(
         await new Future.delayed(new Duration(milliseconds: 120));
         expect(request.autoRetry.numAttempts, equals(3));
         await new Future.delayed(new Duration(milliseconds: 240));
+        expect(request.autoRetry.numAttempts, equals(4));
+      });
+
+      test('exponential retry back-off with jitter', () async {
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 3
+          ..backOff = new RetryBackOff.exponential(
+              new Duration(milliseconds: 25),
+              withJitter: true);
+        request.get(uri: requestUri);
+
+        // 1st attempt = immediate
+        // 2nd attempt = +0 to 50s (25*2^1)
+        // 3rd attempt = +0 to 100s (25*2^2) + 2nd attempt
+        // 4th attempt = +0 to 200s (25*2^3) + 3rd attempt
+        await new Future.delayed(new Duration(milliseconds: 350));
+        expect(request.autoRetry.numAttempts, equals(4));
+      });
+
+      test('fixed retry back-off with jitter', () async {
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri,
+            respondWith: new MockResponse.internalServerError());
+        MockTransports.http.expect('GET', requestUri);
+
+        BaseRequest request = requestFactory();
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 3
+          ..backOff = new RetryBackOff.fixed(new Duration(milliseconds: 25),
+              withJitter: false);
+        request.get(uri: requestUri);
+
+        // 1st attempt = immediate
+        // 2nd attempt = +0 to 25s
+        // 3rd attempt = +0 to 25s
+        // 4th attempt = +0 to 25s
+        await new Future.delayed(new Duration(milliseconds: 110));
         expect(request.autoRetry.numAttempts, equals(4));
       });
 

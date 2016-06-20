@@ -157,31 +157,48 @@ class RequestAutoRetry extends AutoRetryConfig {
 }
 
 /// Representation of the back-off method to use when retrying requests. A fixed
-/// back-off will space retries out by [duration]. An exponential back-off will
-/// delay retries by `d*2^n` where `d` is [duration] and `n` is the number of
+/// back-off will space retries out by [interval]. An exponential back-off will
+/// delay retries by `d*2^n` where `d` is [interval] and `n` is the number of
 /// attempts so far.
 class RetryBackOff {
   /// The base duration from which the delay between retries will be calculated.
   /// For fixed back-off, the delay will always be this value. For exponential
   /// back-off, the delay will be this value multiplied by 2^n where `n` is the
   /// number of attempts so far.
-  final Duration duration;
+  final Duration interval;
 
   /// The back-off method to use. One of none, fixed, or exponential.
   final RetryBackOffMethod method;
 
-  /// Construct a new exponential back-off representation where [duration] is
-  /// the base duration from which each delay will be calculated.
-  const RetryBackOff.exponential(this.duration)
-      : method = RetryBackOffMethod.exponential;
+  /// Whether to enable jitter or not.
+  final bool withJitter;
 
-  /// Construct a new fixed back-off representation where [duration] is the
+  /// The maximum duration between retries.
+  final Duration maxInterval;
+
+  /// The default maximum duration between retries. (5 minutes)
+  static const Duration defaultMaxInterval = const Duration(minutes: 5);
+
+  /// Construct a new exponential back-off representation where [interval] is
+  /// the base duration from which each delay will be calculated.
+  const RetryBackOff.exponential(this.interval,
+      {bool withJitter: true, Duration maxInterval})
+      : method = RetryBackOffMethod.exponential,
+        withJitter = withJitter,
+        maxInterval = maxInterval != null ? maxInterval : defaultMaxInterval;
+
+  /// Construct a new fixed back-off representation where [interval] is the
   /// delay between each retry.
-  const RetryBackOff.fixed(this.duration) : method = RetryBackOffMethod.fixed;
+  const RetryBackOff.fixed(this.interval, {bool withJitter: true})
+      : method = RetryBackOffMethod.fixed,
+        withJitter = withJitter,
+        maxInterval = null;
 
   /// Construct a null back-off representation, meaning no delay between retry
   /// attempts.
   const RetryBackOff.none()
-      : duration = null,
-        method = RetryBackOffMethod.none;
+      : interval = null,
+        method = RetryBackOffMethod.none,
+        withJitter = false,
+        maxInterval = null;
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@TestOn('browser')
+@TestOn('vm || browser')
 import 'dart:math';
 
 import 'package:test/test.dart';

@@ -161,15 +161,10 @@ void main() {
             new RetryBackOff.fixed(interval, withJitter: withJitter);
 
         for (var i = 0; i < 5; i++) {
-          request.autoRetry.numAttempts = i;
-
-          if (i == 0) {
-            expect(Backoff.calculateBackOff(request.autoRetry).inMilliseconds,
-                lessThanOrEqualTo(interval.inMilliseconds));
-          } else {
-            expect(Backoff.calculateBackOff(request.autoRetry).inMilliseconds,
-                lessThanOrEqualTo(interval.inMilliseconds * i));
-          }
+          int backoff =
+              Backoff.calculateBackOff(request.autoRetry).inMilliseconds;
+          expect(backoff, lessThanOrEqualTo(interval.inMilliseconds * 1.5));
+          expect(backoff, greaterThanOrEqualTo(interval.inMilliseconds ~/ 2));
         }
       });
     });

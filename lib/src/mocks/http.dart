@@ -25,9 +25,12 @@ import 'package:w_transport/src/http/mock/response.dart';
 import 'package:w_transport/src/http/response.dart';
 
 typedef Future<BaseResponse> RequestHandler(FinalizedRequest request);
+typedef Future<BaseResponse> PatternRequestHandler(
+    FinalizedRequest request, Match match);
 
 List<_RequestExpectation> _expectations = [];
-Map<String, Map<String, RequestHandler>> _handlers = {};
+Map<String, Map<String, RequestHandler>> _requestHandlers = {};
+Map<Pattern, Map<String, PatternRequestHandler>> _patternRequestHandlers = {};
 List<MockBaseRequest> _pending = [];
 
 void cancelMockRequest(MockBaseRequest request) {
@@ -37,9 +40,15 @@ void cancelMockRequest(MockBaseRequest request) {
 }
 
 handleMockRequest(MockBaseRequest request) {
-  Iterable matchingExpectations = _expectations.where((e) {
+  var matchingExpectations = _expectations.where((e) {
     bool methodMatches = e.method == request.method;
-    bool uriMatches = e.uri == request.uri;
+    bool uriMatches = false;
+    if (e.uri is Uri) {
+      uriMatches = e.uri == request.uri;
+    } else if (e.uri is Pattern) {
+      uriMatches =
+          (e.uri as Pattern).allMatches(request.uri.toString()).isNotEmpty;
+    }
     bool headersMatch;
     if (e.headers == null) {
       // Ignore headers check if expectation didn't specify.
@@ -68,27 +77,59 @@ handleMockRequest(MockBaseRequest request) {
     return;
   }
 
-  if (_handlers.containsKey(_getUriKey(request.uri))) {
-    var reqHandlers = _handlers[_getUriKey(request.uri)];
+  var matchingRequestHandlerKey = _requestHandlers.keys.firstWhere((key) {
+    return key == _getUriKey(request.uri);
+  }, orElse: () => null);
 
+  Match match;
+  var matchingPatternRequestHandlerKey =
+      _patternRequestHandlers.keys.firstWhere((pattern) {
+    var matches = pattern.allMatches(request.uri.toString());
+    if (matches.isNotEmpty) {
+      match = matches.first;
+      return true;
+    }
+    return false;
+  }, orElse: () => null);
+
+  var handlersByMethod = [];
+  if (matchingRequestHandlerKey != null) {
+    handlersByMethod = _requestHandlers[matchingRequestHandlerKey];
+  } else if (matchingPatternRequestHandlerKey != null) {
+    handlersByMethod =
+        _patternRequestHandlers[matchingPatternRequestHandlerKey];
+  }
+
+  if (handlersByMethod.isNotEmpty) {
     /// Try to find an applicable handler.
     var handler;
-    if (reqHandlers.containsKey(request.method)) {
-      handler = reqHandlers[request.method];
-    } else if (reqHandlers.containsKey('*')) {
-      handler = reqHandlers['*'];
+    if (handlersByMethod.containsKey(request.method)) {
+      handler = handlersByMethod[request.method];
+    } else if (handlersByMethod.containsKey('*')) {
+      handler = handlersByMethod['*'];
     }
 
     /// If a handler was set up for this type of request, call the handler.
     if (handler != null) {
-      request.onSent.then((FinalizedRequest finalizedRequest) {
-        handler(finalizedRequest).then((response) {
-          request.complete(response: response);
-        }, onError: (error) {
-          request.completeError(error: error);
+      if (handler is RequestHandler) {
+        request.onSent.then((FinalizedRequest finalizedRequest) {
+          handler(finalizedRequest).then((response) {
+            request.complete(response: response);
+          }, onError: (error) {
+            request.completeError(error: error);
+          });
         });
-      });
-      return;
+        return;
+      } else if (handler is PatternRequestHandler) {
+        request.onSent.then((FinalizedRequest finalizedRequest) {
+          handler(finalizedRequest, match).then((response) {
+            request.complete(response: response);
+          }, onError: (error) {
+            request.completeError(error: error);
+          });
+        });
+        return;
+      }
     }
   }
 
@@ -118,15 +159,16 @@ class MockHttp {
       {Object failWith,
       Map<String, String> headers,
       BaseResponse respondWith}) {
-    if (failWith != null && respondWith != null) {
-      throw new ArgumentError('Use failWith OR respondWith, but not both.');
-    }
-    if (failWith == null && respondWith == null) {
-      respondWith = new MockResponse.ok();
-    }
-    _expectations.add(new _RequestExpectation(method, uri,
-        headers == null ? null : new CaseInsensitiveMap.from(headers),
-        failWith: failWith, respondWith: respondWith));
+    _expect(method, uri,
+        failWith: failWith, headers: headers, respondWith: respondWith);
+  }
+
+  void expectPattern(String method, Pattern uriPattern,
+      {Object failWith,
+      Map<String, String> headers,
+      BaseResponse respondWith}) {
+    _expect(method, uriPattern,
+        failWith: failWith, headers: headers, respondWith: respondWith);
   }
 
   void failRequest(BaseRequest request, {Object error, BaseResponse response}) {
@@ -138,7 +180,8 @@ class MockHttp {
 
   void reset() {
     _expectations = [];
-    _handlers = {};
+    _requestHandlers = {};
+    _patternRequestHandlers = {};
     _pending = [];
   }
 
@@ -160,15 +203,47 @@ class MockHttp {
   }
 
   void when(Uri uri, RequestHandler handler, {String method}) {
+    // Note: there's really no reason to use `_getUriKey()` here - it strips the
+    // fragment and query from the uri, but neither of those pieces of info are
+    // used anywhere else. The consumer should just be expected to pass in an
+    // exact match here. At the next breaking release, this method and related
+    // ones should be cleaned up & clarified.
     String uriKey = _getUriKey(uri);
-    if (!_handlers.containsKey(uriKey)) {
-      _handlers[uriKey] = {};
+    if (!_requestHandlers.containsKey(uriKey)) {
+      _requestHandlers[uriKey] = {};
     }
     if (method == null) {
-      _handlers[uriKey]['*'] = handler;
+      _requestHandlers[uriKey]['*'] = handler;
     } else {
-      _handlers[uriKey][method.toUpperCase()] = handler;
+      _requestHandlers[uriKey][method.toUpperCase()] = handler;
     }
+  }
+
+  void whenPattern(Pattern uriPattern, PatternRequestHandler handler,
+      {String method}) {
+    if (!_patternRequestHandlers.containsKey(uriPattern)) {
+      _patternRequestHandlers[uriPattern] = {};
+    }
+    if (method == null) {
+      _patternRequestHandlers[uriPattern]['*'] = handler;
+    } else {
+      _patternRequestHandlers[uriPattern][method.toUpperCase()] = handler;
+    }
+  }
+
+  void _expect(String method, dynamic uri,
+      {Object failWith,
+      Map<String, String> headers,
+      BaseResponse respondWith}) {
+    if (failWith != null && respondWith != null) {
+      throw new ArgumentError('Use failWith OR respondWith, but not both.');
+    }
+    if (failWith == null && respondWith == null) {
+      respondWith = new MockResponse.ok();
+    }
+    _expectations.add(new _RequestExpectation(method, uri,
+        headers == null ? null : new CaseInsensitiveMap.from(headers),
+        failWith: failWith, respondWith: respondWith));
   }
 
   void _verifyRequestIsMock(BaseRequest request) {
@@ -184,9 +259,8 @@ class _RequestExpectation {
   final Map<String, String> headers;
   final String method;
   BaseResponse respondWith;
-  final Uri uri;
+  final dynamic uri;
 
-  _RequestExpectation(
-      String this.method, Uri this.uri, Map<String, String> this.headers,
-      {Object this.failWith, BaseResponse this.respondWith});
+  _RequestExpectation(this.method, this.uri, this.headers,
+      {this.failWith, this.respondWith});
 }

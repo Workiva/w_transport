@@ -13,18 +13,16 @@
 // limitations under the License.
 
 @TestOn('browser')
-import 'dart:async';
-import 'dart:html';
+import 'dart:math';
 
 import 'package:test/test.dart';
 
 import 'package:w_transport/src/http/auto_retry.dart';
-
-import '../../../naming.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/common/backoff.dart';
 import 'package:w_transport/w_transport_mock.dart';
-import 'dart:math';
+
+import '../../../naming.dart';
 
 void main() {
   configureWTransportForTest();

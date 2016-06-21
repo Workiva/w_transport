@@ -113,13 +113,20 @@ abstract class CommonMultipartRequest extends CommonRequest
   }
 
   @override
+  set contentType(MediaType contentType) {
+    throw new UnsupportedError(
+        'The content-type of a multipart request cannot be set manually.');
+  }
+
+  @override
   MediaType get defaultContentType =>
       new MediaType('multipart', 'form-data', {'boundary': boundary});
 
   @override
   set encoding(Encoding encoding) {
     throw new UnsupportedError(
-        'A multipart request has many individually-encoded parts. An encoding cannot be set for the entire request.');
+        'A multipart request has many individually-encoded parts. An encoding '
+        'cannot be set for the entire request.');
   }
 
   Map<String, String> get fields =>

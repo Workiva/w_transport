@@ -107,6 +107,11 @@ abstract class CommonRequest extends Object
   /// Content-type of this request.
   MediaType _contentType;
 
+  /// Whether or not the content-type was set manually. If `false`, the
+  /// content-type will continue to be updated automatically when the [encoding]
+  /// is set/changed. If `true`, the content-type will be left alone.
+  bool _contentTypeSetManually = false;
+
   /// Completer that should complete when the request has finished (successful
   /// or otherwise).
   Completer<Null> _done = new Completer();
@@ -155,12 +160,16 @@ abstract class CommonRequest extends Object
     return _contentType;
   }
 
-  /// By default, the content-type cannot be set manually because it's set
-  /// automatically based on the type of request. Streamed requests will be the
-  /// exception to this rule because the body is not known in advance.
+  /// Manually set the content-type for this request.
+  ///
+  /// NOTE: By default, the content-type will be set automatically based on the
+  /// request type and the [encoding]. Once you set the content-type manually,
+  /// we assume you are intentionally overriding this behavior and the
+  /// content-type will no longer be updated when [encoding] changes.
   set contentType(MediaType contentType) {
-    throw new UnsupportedError(
-        'The content-type is set automatically when the request body and type is known in advance.');
+    verifyUnsent();
+    _contentTypeSetManually = true;
+    updateContentType(contentType);
   }
 
   /// Set the content-type of this request. Used to update the charset
@@ -189,8 +198,10 @@ abstract class CommonRequest extends Object
   set encoding(Encoding encoding) {
     verifyUnsent();
     _encoding = encoding;
-    updateContentType(
-        contentType.change(parameters: {'charset': encoding.name}));
+    if (!_contentTypeSetManually) {
+      updateContentType(
+          contentType.change(parameters: {'charset': encoding.name}));
+    }
   }
 
   /// Get the request headers to be sent with this HTTP request.

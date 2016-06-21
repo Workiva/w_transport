@@ -59,6 +59,18 @@ void runFormRequestSuite() {
       expect(contentType.mimeType, equals('application/x-www-form-urlencoded'));
     });
 
+    test('content-type should be overridable', () async {
+      var contentType = new MediaType('application', 'x-custom');
+      FormRequest request = new FormRequest()
+        ..uri = IntegrationPaths.reflectEndpointUri
+        ..fields['field'] = 'value'
+        ..contentType = contentType;
+      Response response = await request.post();
+      var reflectedContentType = new MediaType.parse(
+          response.body.asJson()['headers']['content-type']);
+      expect(reflectedContentType.mimeType, equals(contentType.mimeType));
+    });
+
     test('UTF8', () async {
       FormRequest request = new FormRequest()
         ..uri = IntegrationPaths.echoEndpointUri

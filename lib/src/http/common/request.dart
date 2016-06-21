@@ -16,7 +16,6 @@ library w_transport.src.http.common.request;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math' show pow;
 
 import 'package:fluri/fluri.dart';
 import 'package:http_parser/http_parser.dart';
@@ -31,6 +30,7 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
+import 'package:w_transport/src/http/common/backoff.dart';
 
 abstract class CommonRequest extends Object
     with FluriMixin
@@ -666,14 +666,8 @@ abstract class CommonRequest extends Object
         Completer<BaseResponse> retryCompleter = new Completer();
 
         // If retry back-off is configured, wait as necessary.
-        var backOff;
-        if (autoRetry.backOff.method == RetryBackOffMethod.exponential) {
-          var base = autoRetry.backOff.duration.inMilliseconds;
-          var exponent = autoRetry.numAttempts;
-          backOff = new Duration(milliseconds: base * pow(2, exponent));
-        } else if (autoRetry.backOff.method == RetryBackOffMethod.fixed) {
-          backOff = autoRetry.backOff.duration;
-        }
+        Duration backOff = Backoff.calculateBackOff(autoRetry);
+
         if (backOff != null) {
           await new Future.delayed(backOff);
         }

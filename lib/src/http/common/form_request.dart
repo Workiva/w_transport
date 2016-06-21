@@ -70,6 +70,7 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
     if (body != null) {
       this.fields = body;
     }
-    return new HttpBody.fromBytes(contentType, _encodedQuery);
+    return new HttpBody.fromBytes(contentType, _encodedQuery,
+        fallbackEncoding: encoding);
   }
 }

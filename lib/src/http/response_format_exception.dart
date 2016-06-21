@@ -50,9 +50,10 @@ class ResponseFormatException implements Exception {
       bodyLine = 'Bytes: $bytes';
     }
 
-    String msg = description;
+    var msg = description;
+    var encodingName = encoding != null ? encoding.name : 'null';
     msg += '\n\tContent-Type: $contentType';
-    msg += '\n\tEncoding: ${encoding.name}';
+    msg += '\n\tEncoding: $encodingName';
     msg += '\n\t$bodyLine';
 
     return msg;

@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.6.1](https://github.com/Workvia/w_transport/compare/2.6.0...2.6.1)
+_TBD_
+
+- **Bug Fix:** A request's `encoding` property can no longer be set to null.
+  This would have most likely caused an RTE when the request was sent, so now an
+  `ArgumentError` will be thrown immediately.
+
+- **Bug Fix:** As of 2.6.0, if you were to set a request's content-type manually
+  without a charset or with an unknown charset, it was possible to hit an RTE
+  due to a null `encoding`. The `HttpBody` class has been updated to be more
+  resilient to a missing encoding or charset. Additionally, all request classes
+  will now pass in the value of its `encoding` property, which should now always
+  be non-null.
+
 ## [2.6.0](https://github.com/Workvia/w_transport/compare/2.5.1...2.6.0)
 _June 20, 2016_
 

@@ -224,8 +224,8 @@ void main() {
           ..test = (request, response, willRetry) async => true;
 
         for (var request in createAllRequestTypes(client)) {
-          expect(request.autoRetry.backOff.duration,
-              equals(client.autoRetry.backOff.duration));
+          expect(request.autoRetry.backOff.interval,
+              equals(client.autoRetry.backOff.interval));
           expect(request.autoRetry.backOff.method,
               equals(client.autoRetry.backOff.method));
           expect(request.autoRetry.enabled, equals(client.autoRetry.enabled));

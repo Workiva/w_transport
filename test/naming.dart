@@ -30,6 +30,7 @@ const String testTypeIntegration = 'integration';
 const String testTypeUnit = 'unit';
 
 /// Topics
+const String topicBackoff = 'Backoff';
 const String topicHttp = 'HTTP';
 const String topicMocks = 'Mocks';
 const String topicPlatformAdapter = 'Platform Adapter';

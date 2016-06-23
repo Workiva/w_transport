@@ -95,6 +95,13 @@ void main() {
         }, throwsUnsupportedError);
       });
 
+      test('setting encoding to null should throw', () {
+        var request = new FormRequest();
+        expect(() {
+          request.encoding = null;
+        }, throwsArgumentError);
+      });
+
       test('setting encoding should update content-type', () {
         FormRequest request = new FormRequest();
         expect(request.contentType.parameters['charset'], equals(UTF8.name));
@@ -141,6 +148,15 @@ void main() {
         expect(() {
           request.encoding = LATIN1;
         }, throwsStateError);
+      });
+
+      test('custom content-type without inferrable encoding', () async {
+        Uri uri = Uri.parse('/test');
+        MockTransports.http.expect('POST', uri);
+        var request = new FormRequest()
+          ..contentType = new MediaType('application', 'x-custom')
+          ..fields['foo'] = 'bar';
+        await request.post(uri: uri);
       });
 
       test('clone()', () {

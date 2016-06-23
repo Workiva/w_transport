@@ -36,18 +36,51 @@ void main() {
         expect(body.asBytes(), isEmpty);
       });
 
+      test('should use encoding if one is explicitly given', () {
+        var contentType = new MediaType('text', 'plain');
+
+        var stringBody =
+            new HttpBody.fromString(contentType, 'body', encoding: ASCII);
+        expect(stringBody.encoding, equals(ASCII));
+
+        var bytesBody = new HttpBody.fromBytes(contentType, UTF8.encode('body'),
+            encoding: ASCII);
+        expect(bytesBody.encoding, equals(ASCII));
+      });
+
       test('should parse encoding from content-type', () {
-        MediaType contentType =
+        var contentType =
             new MediaType('text', 'plain', {'charset': ASCII.name});
-        HttpBody body = new HttpBody.fromString(contentType, 'body');
-        expect(body.encoding.name, equals(ASCII.name));
+
+        var stringBody = new HttpBody.fromString(contentType, 'body');
+        expect(stringBody.encoding, equals(ASCII));
+
+        var bytesBody =
+            new HttpBody.fromBytes(contentType, UTF8.encode('body'));
+        expect(bytesBody.encoding, equals(ASCII));
       });
 
       test('should allow a fallback encoding', () {
-        MediaType contentType = new MediaType('text', 'plain');
-        HttpBody body = new HttpBody.fromString(contentType, 'body',
-            fallbackEncoding: LATIN1);
-        expect(body.encoding.name, equals(LATIN1.name));
+        var contentType = new MediaType('text', 'plain');
+
+        var stringBody = new HttpBody.fromString(contentType, 'body',
+            fallbackEncoding: ASCII);
+        expect(stringBody.encoding, equals(ASCII));
+
+        var bytesBody = new HttpBody.fromBytes(contentType, UTF8.encode('body'),
+            fallbackEncoding: ASCII);
+        expect(bytesBody.encoding, equals(ASCII));
+      });
+
+      test('should use UTF8 by default', () {
+        var contentType = new MediaType('text', 'plain');
+
+        var stringBody = new HttpBody.fromString(contentType, 'body');
+        expect(stringBody.encoding, equals(UTF8));
+
+        var bytesBody =
+            new HttpBody.fromBytes(contentType, UTF8.encode('body'));
+        expect(bytesBody.encoding, equals(UTF8));
       });
 
       test('content-length should be calculated automaticlaly', () {

@@ -30,6 +30,8 @@ import 'http/plain_text_request_test.dart' as http_plain_text_request_test;
 import 'http/request_exception_test.dart' as http_request_exception_test;
 import 'http/request_progress_test.dart' as http_request_progress_test;
 import 'http/request_test.dart' as http_request_test;
+import 'http/response_format_exception_test.dart'
+    as http_response_format_exception_test;
 import 'http/response_test.dart' as http_response_test;
 import 'http/streamed_request_test.dart' as http_streamed_request_test;
 import 'http/utils_test.dart' as http_utils_test;
@@ -56,6 +58,7 @@ void main() {
   http_request_exception_test.main();
   http_request_progress_test.main();
   http_request_test.main();
+  http_response_format_exception_test.main();
   http_response_test.main();
   http_streamed_request_test.main();
   http_utils_test.main();

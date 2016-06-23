@@ -197,6 +197,7 @@ abstract class CommonRequest extends Object
   /// will update the [contentType] `charset` parameter.
   set encoding(Encoding encoding) {
     verifyUnsent();
+    if (encoding == null) throw new ArgumentError.notNull('encoding');
     _encoding = encoding;
     if (!_contentTypeSetManually) {
       updateContentType(

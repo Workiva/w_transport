@@ -56,10 +56,31 @@ class HttpBody extends BaseHttpBody {
   Encoding _encoding;
 
   /// Construct the body to an HTTP request or an HTTP response from bytes.
+  ///
+  /// If [encoding] is given, it will be used to encode/decode the body.
+  ///
+  /// Otherwise, the `charset` parameter from [contentType] will be mapped to an
+  /// Encoding supported by Dart.
+  ///
+  /// If a `charset` parameter is not available or the value is unrecognized,
+  /// [fallbackEncoding] will be used.
+  ///
+  /// If [fallbackEncoding] is `null`, UTF8 will be the default encoding.
+  ///
+  /// If an encoding cannot be parsed from the content-type header (via the
+  /// `charset` param), then [fallbackEncoding] will be used (UTF8 by default).
   HttpBody.fromBytes(MediaType this.contentType, List<int> bytes,
-      {Encoding fallbackEncoding}) {
-    _encoding = http_utils.parseEncodingFromContentType(contentType,
-        fallback: fallbackEncoding);
+      {Encoding encoding, Encoding fallbackEncoding}) {
+    if (fallbackEncoding == null) {
+      fallbackEncoding = UTF8;
+    }
+    if (encoding != null) {
+      _encoding = encoding;
+    } else {
+      _encoding = http_utils.parseEncodingFromContentType(contentType,
+          fallback: fallbackEncoding);
+    }
+
     if (bytes == null) {
       bytes = [];
     }
@@ -67,10 +88,31 @@ class HttpBody extends BaseHttpBody {
   }
 
   /// Construct the body to an HTTP request or an HTTP response from text.
+  ///
+  /// If [encoding] is given, it will be used to encode/decode the body.
+  ///
+  /// Otherwise, the `charset` parameter from [contentType] will be mapped to an
+  /// Encoding supported by Dart.
+  ///
+  /// If a `charset` parameter is not available or the value is unrecognized,
+  /// [fallbackEncoding] will be used.
+  ///
+  /// If [fallbackEncoding] is `null`, UTF8 will be the default encoding.
+  ///
+  /// If an encoding cannot be parsed from the content-type header (via the
+  /// `charset` param), then [fallbackEncoding] will be used (UTF8 by default).
   HttpBody.fromString(MediaType this.contentType, String body,
-      {Encoding fallbackEncoding}) {
-    _encoding = http_utils.parseEncodingFromContentType(contentType,
-        fallback: fallbackEncoding);
+      {Encoding encoding, Encoding fallbackEncoding}) {
+    if (fallbackEncoding == null) {
+      fallbackEncoding = UTF8;
+    }
+    if (encoding != null) {
+      _encoding = encoding;
+    } else {
+      _encoding = http_utils.parseEncodingFromContentType(contentType,
+          fallback: fallbackEncoding);
+    }
+
     if (body == null) {
       body = '';
     }
@@ -86,7 +128,7 @@ class HttpBody extends BaseHttpBody {
       var encoded;
       try {
         encoded = encoding.encode(_body);
-      } catch (e) {
+      } on ArgumentError {
         throw new ResponseFormatException(contentType, encoding, body: _body);
       }
       _bytes = new Uint8List.fromList(encoded);
@@ -99,7 +141,7 @@ class HttpBody extends BaseHttpBody {
     if (_body == null) {
       try {
         _body = encoding.decode(_bytes);
-      } catch (e) {
+      } on FormatException {
         throw new ResponseFormatException(contentType, encoding, bytes: _bytes);
       }
     }

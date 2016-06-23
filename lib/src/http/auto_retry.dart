@@ -16,6 +16,8 @@ library w_transport.src.http.auto_retry;
 
 import 'dart:async';
 
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
+
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/request_exception.dart';
@@ -161,23 +163,23 @@ class RequestAutoRetry extends AutoRetryConfig {
 /// delay retries by `d*2^n` where `d` is [interval] and `n` is the number of
 /// attempts so far.
 class RetryBackOff {
+  /// The default maximum duration between retries. (5 minutes)
+  static const Duration defaultMaxInterval = const Duration(minutes: 5);
+
   /// The base duration from which the delay between retries will be calculated.
   /// For fixed back-off, the delay will always be this value. For exponential
   /// back-off, the delay will be this value multiplied by 2^n where `n` is the
   /// number of attempts so far.
   final Duration interval;
 
+  /// The maximum duration between retries.
+  final Duration maxInterval;
+
   /// The back-off method to use. One of none, fixed, or exponential.
   final RetryBackOffMethod method;
 
   /// Whether to enable jitter or not.
   final bool withJitter;
-
-  /// The maximum duration between retries.
-  final Duration maxInterval;
-
-  /// The default maximum duration between retries. (5 minutes)
-  static const Duration defaultMaxInterval = const Duration(minutes: 5);
 
   /// Construct a new exponential back-off representation where [interval] is
   /// the base duration from which each delay will be calculated.
@@ -201,4 +203,8 @@ class RetryBackOff {
         method = RetryBackOffMethod.none,
         withJitter = false,
         maxInterval = null;
+
+  /// Use [interval] instead.
+  @Deprecated(v3Deprecation)
+  Duration get duration => interval;
 }

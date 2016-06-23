@@ -22,7 +22,7 @@ import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/common/backoff.dart';
 import 'package:w_transport/w_transport_mock.dart';
 
-import '../../../naming.dart';
+import '../../naming.dart';
 
 void main() {
   configureWTransportForTest();
@@ -34,6 +34,13 @@ void main() {
 
   group(naming.toString(), () {
     group('ExponentialBackOff : ', () {
+      test('deprecated `duration` should be forwarded to `interval`', () {
+        var interval = new Duration(seconds: 10);
+        var backOff = new RetryBackOff.exponential(interval);
+        expect(backOff.duration, equals(interval));
+        expect(backOff.duration, equals(backOff.interval));
+      });
+
       test('no jitter, maxInterval not exceeded', () async {
         var request = new Request();
         Duration interval = new Duration(milliseconds: 5);
@@ -134,6 +141,13 @@ void main() {
     });
 
     group('FixedBackOff : ', () {
+      test('deprecated `duration` should be forwarded to `interval`', () {
+        var interval = new Duration(seconds: 10);
+        var backOff = new RetryBackOff.fixed(interval);
+        expect(backOff.duration, equals(interval));
+        expect(backOff.duration, equals(backOff.interval));
+      });
+
       test('no jitter', () async {
         var request = new Request();
         Duration interval = new Duration(milliseconds: 5);
@@ -164,6 +178,14 @@ void main() {
           expect(backoff, lessThanOrEqualTo(interval.inMilliseconds * 1.5));
           expect(backoff, greaterThanOrEqualTo(interval.inMilliseconds ~/ 2));
         }
+      });
+    });
+
+    group('No Backoff', () {
+      test('deprecated `duration` should be forwarded to `interval`', () {
+        var backOff = new RetryBackOff.none();
+        expect(backOff.duration, isNull);
+        expect(backOff.duration, equals(backOff.interval));
       });
     });
   });

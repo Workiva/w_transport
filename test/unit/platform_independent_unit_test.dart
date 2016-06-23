@@ -18,6 +18,7 @@ library w_transport.test.unit.unit_test_suite;
 import 'package:test/test.dart';
 
 import 'http/client_test.dart' as http_client_test;
+import 'http/common/backoff_test.dart' as backoff_test;
 import 'http/form_request_test.dart' as http_form_request_test;
 import 'http/http_body_test.dart' as http_body_test;
 import 'http/http_interceptor_test.dart' as http_interceptor_test;
@@ -42,6 +43,7 @@ import 'ws/w_socket_subscription_test.dart' as ws_w_socket_subscription_test;
 import 'ws/w_socket_test.dart' as ws_w_socket_test;
 
 void main() {
+  backoff_test.main();
   http_client_test.main();
   http_body_test.main();
   http_interceptor_test.main();

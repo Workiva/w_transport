@@ -1,7 +1,22 @@
 # Changelog
 
-## [2.6.1](https://github.com/Workvia/w_transport/compare/2.6.0...2.6.1)
-_TBD_
+## [2.7.0](https://github.com/Workvia/w_transport/compare/2.6.0...2.7.0)
+_June 23, 2016_
+
+- **Deprecation:** `autoRetry.backOff.duration` has been deprecated in
+  favor of the more aptly named `autoRetry.backOff.interval`.
+
+- **Improvement:** Automatic request retrying will now add
+  [jitter](https://www.awsarchitectureblog.com/2015/03/backoff.html) to the
+  backoff intervals by default. To disable jitter, set
+  `autoRetry.backOff.withJitter = false;`.
+
+- **Improvement:** You can now put a cap on the backoff interval used during
+  automatic request retrying.
+
+    ```dart
+    request.autoRetry.backOff.maxInterval = new Duration(minutes: 2);
+    ```
 
 - **Bug Fix:** A request's `encoding` property can no longer be set to null.
   This would have most likely caused an RTE when the request was sent, so now an

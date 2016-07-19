@@ -16,8 +16,10 @@
 library w_transport.test.integration.http.common_request.browser_test;
 
 import 'package:test/test.dart';
+import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_browser.dart';
 
+import '../../integration_paths.dart';
 import '../../../naming.dart';
 import 'suite.dart';
 
@@ -33,5 +35,41 @@ void main() {
     });
 
     runCommonRequestSuite();
+
+    group('autoRetry browser', () {
+      test('null response default behavior', () async {
+        BaseRequest request = new Request()
+          ..headers.addAll({'x-custom': 'causes-CORS-request'})
+          ..uri = IntegrationPaths.errorEndpointUri;
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2;
+
+        expect(request.get(), throwsA(new isInstanceOf<RequestException>()));
+        await request.done;
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures.length, equals(1));
+      });
+
+      test('null response should be retried', () async {
+        BaseRequest request = new Request()
+          ..headers.addAll({'x-custom': 'causes-CORS-request'})
+          ..uri = IntegrationPaths.errorEndpointUri;
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2
+          ..test = (request, response, willRetry) {
+            if (response == null) {
+              return true;
+            }
+            return willRetry;
+          };
+
+        expect(request.get(), throwsA(new isInstanceOf<RequestException>()));
+        await request.done;
+        expect(request.autoRetry.numAttempts, equals(3));
+        expect(request.autoRetry.failures.length, equals(3));
+      });
+    });
   });
 }

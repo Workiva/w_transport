@@ -259,6 +259,34 @@ void main() {
           expect(MockTransports.http.numPendingRequests, equals(1));
         });
 
+        test('supports all standard methods', () async {
+          var ok = new MockResponse.ok();
+          MockTransports.http
+              .when(requestUri, (_) async => ok, method: 'DELETE');
+          MockTransports.http.when(requestUri, (_) async => ok, method: 'GET');
+          MockTransports.http.when(requestUri, (_) async => ok, method: 'HEAD');
+          MockTransports.http
+              .when(requestUri, (_) async => ok, method: 'OPTIONS');
+          MockTransports.http
+              .when(requestUri, (_) async => ok, method: 'PATCH');
+          MockTransports.http.when(requestUri, (_) async => ok, method: 'POST');
+          MockTransports.http.when(requestUri, (_) async => ok, method: 'PUT');
+
+          await Http.delete(requestUri);
+          await Http.get(requestUri);
+          await Http.head(requestUri);
+          await Http.options(requestUri);
+          await Http.patch(requestUri);
+          await Http.post(requestUri);
+          await Http.put(requestUri);
+        });
+
+        test('supports custom method', () async {
+          var ok = new MockResponse.ok();
+          MockTransports.http.when(requestUri, (_) async => ok, method: 'COPY');
+          await Http.send('COPY', requestUri);
+        });
+
         test('registers handler that throws to cause request failure',
             () async {
           MockTransports.http

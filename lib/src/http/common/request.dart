@@ -492,13 +492,17 @@ abstract class CommonRequest extends Object
 
     // If the request failed due to exceeding the timeout threshold, check if
     // it is configured to retry for timeouts.
-    if (requestException.error is TimeoutException && autoRetry.forTimeouts)
-      return true;
+    if (requestException.error is TimeoutException) {
+      return autoRetry.forTimeouts;
+    }
 
-    if (response == null) return false;
-
-    bool willRetry = autoRetry.forHttpMethods.contains(method) &&
-        autoRetry.forStatusCodes.contains(response.status);
+    bool willRetry = autoRetry.forHttpMethods.contains(method);
+    if (response != null && response.status != null) {
+      willRetry =
+          willRetry && autoRetry.forStatusCodes.contains(response.status);
+    } else {
+      willRetry = false;
+    }
     if (autoRetry.test != null) {
       willRetry = await autoRetry.test(request, response, willRetry);
     }

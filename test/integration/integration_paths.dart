@@ -25,6 +25,7 @@ class IntegrationPaths {
   static final Uri downloadEndpointUri =
       hostUri.replace(path: '/test/http/download');
   static final Uri echoEndpointUri = hostUri.replace(path: '/test/http/echo');
+  static final Uri errorEndpointUri = hostUri.replace(path: '/test/http/error');
   static final Uri fourOhFourEndpointUri =
       hostUri.replace(path: '/test/http/404');
   static final Uri pingEndpointUri = hostUri.replace(path: '/test/http/ping');

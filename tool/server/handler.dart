@@ -143,7 +143,6 @@ abstract class Handler {
       setCorsHeaders(request);
     } else {
       request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
-      setCorsHeaders(request);
     }
   }
 }

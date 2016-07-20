@@ -20,6 +20,7 @@ import 'custom.dart';
 import 'download.dart';
 import 'ping_handler.dart';
 import 'echo.dart';
+import 'error.dart';
 import 'reflect_handler.dart';
 import 'timeout_handler.dart';
 import 'upload.dart';
@@ -30,6 +31,7 @@ Map<String, Handler> testHttpIntegrationRoutes = {
   '$pathPrefix/custom': new CustomHandler(),
   '$pathPrefix/download': new DownloadHandler(),
   '$pathPrefix/echo': new EchoHandler(),
+  '$pathPrefix/error': new ErrorHandler(),
   '$pathPrefix/ping': new PingHandler(),
   '$pathPrefix/reflect': new ReflectHandler(),
   '$pathPrefix/timeout': new TimeoutHandler(),

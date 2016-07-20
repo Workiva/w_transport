@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.7.1](https://github.com/Workvia/w_transport/compare/2.6.0...2.7.0)
+_July 20, 2016_
+
+- **Bug Fix:** previously, you could not retry a request that failed with a
+  `null` response. This is now allowed, but still has the same default behavior.
+  To retry a request with a `null` response, use the `autoRetry.test` method
+  accordingly:
+
+    ```dart
+    var request = new Request();
+    request.autoRetry
+      ..enabled = true
+      ..test = (request, response, willRetry) {
+        if (response == null) return true;
+        return willRetry;
+      };
+    ```
+
 ## [2.7.0](https://github.com/Workvia/w_transport/compare/2.6.0...2.7.0)
 _June 23, 2016_
 

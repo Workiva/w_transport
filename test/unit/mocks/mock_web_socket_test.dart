@@ -170,6 +170,43 @@ void main() {
             MockTransports.webSocket.when(webSocketUri);
           }, throwsArgumentError);
         });
+
+        test('registers a handler that can be canceled', () async {
+          var webSocket = new MockWSocket();
+          var handler = MockTransports.webSocket.when(webSocketUri,
+              handler: (uri, {protocols, headers}) async => webSocket);
+
+          expect(await WSocket.connect(webSocketUri), equals(webSocket));
+          handler.cancel();
+          expect(WSocket.connect(webSocketUri), throwsStateError);
+        });
+
+        test('canceling a handler does nothing if handler no longer exists',
+            () async {
+          var webSocket = new MockWSocket();
+          var oldHandler =
+              MockTransports.webSocket.when(webSocketUri, reject: true);
+          MockTransports.webSocket.when(webSocketUri,
+              handler: (uri, {protocols, headers}) async => webSocket);
+
+          expect(() {
+            oldHandler.cancel();
+          }, returnsNormally);
+          expect(await WSocket.connect(webSocketUri), equals(webSocket));
+        });
+
+        test('canceling a handler does nothing if handler was reset', () async {
+          var webSocket = new MockWSocket();
+          var oldHandler = MockTransports.webSocket.when(webSocketUri,
+              handler: (uri, {protocols, headers}) async => webSocket);
+          MockTransports.reset();
+
+          expect(() {
+            oldHandler.cancel();
+          }, returnsNormally);
+
+          expect(WSocket.connect(webSocketUri), throwsStateError);
+        });
       });
 
       group('whenPattern()', () {
@@ -259,6 +296,45 @@ void main() {
           await WSocket.connect(Uri.parse('ws://github.com/ws/listen'));
           expect(uriMatch.group(0), equals('ws://github.com/ws/listen'));
           expect(uriMatch.group(1), equals('github'));
+        });
+
+        test('registers a handler that can be canceled', () async {
+          var webSocket = new MockWSocket();
+          var handler = MockTransports.webSocket.whenPattern(
+              webSocketUri.toString(),
+              handler: (uri, {protocols, headers, match}) async => webSocket);
+
+          expect(await WSocket.connect(webSocketUri), equals(webSocket));
+          handler.cancel();
+          expect(WSocket.connect(webSocketUri), throwsStateError);
+        });
+
+        test('canceling a handler does nothing if handler no longer exists',
+            () async {
+          var webSocket = new MockWSocket();
+          var oldHandler = MockTransports.webSocket
+              .whenPattern(webSocketUri.toString(), reject: true);
+          MockTransports.webSocket.whenPattern(webSocketUri.toString(),
+              handler: (uri, {protocols, headers, match}) async => webSocket);
+
+          expect(() {
+            oldHandler.cancel();
+          }, returnsNormally);
+          expect(await WSocket.connect(webSocketUri), equals(webSocket));
+        });
+
+        test('canceling a handler does nothing if handler was reset', () async {
+          var webSocket = new MockWSocket();
+          var oldHandler = MockTransports.webSocket.whenPattern(
+              webSocketUri.toString(),
+              handler: (uri, {protocols, headers, match}) async => webSocket);
+          MockTransports.reset();
+
+          expect(() {
+            oldHandler.cancel();
+          }, returnsNormally);
+
+          expect(WSocket.connect(webSocketUri), throwsStateError);
         });
       });
     });

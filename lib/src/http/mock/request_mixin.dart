@@ -24,7 +24,7 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/response.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
-import 'package:w_transport/src/mocks/http.dart';
+import 'package:w_transport/src/mocks/http.dart' show MockHttpInternal;
 
 abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   Completer _canceled = new Completer();
@@ -137,10 +137,10 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     if (_mockHandlersRegistered) return;
     _mockHandlersRegistered = true;
     onCanceled.then((_) {
-      cancelMockRequest(this);
+      MockHttpInternal.cancelMockRequest(this);
     });
     onSent.then((_) {
-      handleMockRequest(this);
+      MockHttpInternal.handleMockRequest(this);
     });
   }
 }

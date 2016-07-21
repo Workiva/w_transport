@@ -1,6 +1,26 @@
 # Changelog
 
-## [2.7.1](https://github.com/Workvia/w_transport/compare/2.6.0...2.7.0)
+## [2.8.0](https://github.com/Workvia/w_transport/compare/2.7.1...2.8.0)
+_TBD_
+
+- **Improvement:** Mock transport handlers can now be canceled. This will allow
+  consumers to remove HTTP or WebSocket mock handlers without having to call
+  `MockTransports.reset()` or `MockTransports.uninstall`.
+
+    ```dart
+    var uri = Uri.parse('/example');
+
+    var myHttpHandler = MockTransports.http.when(uri, (request) { ... });
+    myHttpHandler.cancel();
+
+    var myWebSocketHandler = MockTransports.webSocket.when(uri,
+        handler: (protocols, headers) { ... });
+    myWebSocketHandler.cancel();
+
+    /// The same works for the `whenPattern()` methods, as well.
+    ```
+
+## [2.7.1](https://github.com/Workvia/w_transport/compare/2.7.0...2.7.1)
 _July 20, 2016_
 
 - **Bug Fix:** previously, you could not retry a request that failed with a

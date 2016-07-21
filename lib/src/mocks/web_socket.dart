@@ -25,94 +25,119 @@ typedef Future<WSocket> WSocketConnectHandler(Uri uri,
 typedef Future<WSocket> WSocketPatternConnectHandler(Uri uri,
     {Iterable<String> protocols, Map<String, dynamic> headers, Match match});
 
-List<_WebSocketConnectExpectation> _expectations = [];
-Map<String, WSocketConnectHandler> _handlers = {};
-Map<Pattern, WSocketPatternConnectHandler> _patternHandlers = {};
-
-Future<WSocket> handleWebSocketConnection(Uri uri,
-    {Iterable<String> protocols, Map<String, dynamic> headers}) async {
-  Iterable matchingExpectations = _expectations.where((e) {
-    if (e.uri is Uri) {
-      return e.uri == uri;
-    } else if (e.uri is Pattern) {
-      return (e.uri as Pattern).allMatches(uri.toString()).isNotEmpty;
-    }
-  });
-  if (matchingExpectations.isNotEmpty) {
-    /// If this connection was expected, resolve it as planned.
-    _WebSocketConnectExpectation expectation = matchingExpectations.first;
-    _expectations.remove(expectation);
-    if (expectation.reject != null && expectation.reject)
-      throw new WSocketException('Mock connection to $uri rejected.');
-    return expectation.connectTo;
-  }
-
-  if (_handlers.containsKey(uri.toString())) {
-    /// If a handler was set up for this type of connection, call the handler.
-    return _handlers[uri.toString()](uri,
-        protocols: protocols, headers: headers);
-  }
-
-  Match match;
-  var matchingHandlerKey = _patternHandlers.keys.firstWhere((uriPattern) {
-    var matches = uriPattern.allMatches(uri.toString());
-    if (matches.isNotEmpty) {
-      match = matches.first;
-      return true;
-    }
-    return false;
-  }, orElse: () => null);
-
-  if (matchingHandlerKey != null) {
-    /// The uri matched the pattern specified by this handler.
-    return _patternHandlers[matchingHandlerKey](uri,
-        protocols: protocols, headers: headers, match: match);
-  }
-
-  throw new StateError('Unexpected WSocket connection: $uri');
-}
-
 class MockWebSocket {
   const MockWebSocket();
 
   void expect(Uri uri, {MockWSocket connectTo, bool reject}) {
-    _expect(uri, connectTo: connectTo, reject: reject);
+    MockWebSocketInternal._expect(uri, connectTo: connectTo, reject: reject);
   }
 
   void expectPattern(Pattern uriPattern, {MockWSocket connectTo, bool reject}) {
-    _expect(uriPattern, connectTo: connectTo, reject: reject);
+    MockWebSocketInternal._expect(uriPattern,
+        connectTo: connectTo, reject: reject);
   }
 
   void reset() {
-    _expectations = [];
-    _handlers = {};
-    _patternHandlers = {};
+    MockWebSocketInternal._expectations = [];
+    MockWebSocketInternal._handlers = {};
+    MockWebSocketInternal._patternHandlers = {};
   }
 
-  void when(Uri uri, {WSocketConnectHandler handler, bool reject}) {
-    _validateWhenParams(handler: handler, reject: reject);
+  MockWebSocketHandler when(Uri uri,
+      {WSocketConnectHandler handler, bool reject}) {
+    MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
     if (reject != null && reject) {
-      _handlers[uri.toString()] = (uri, {protocols, headers}) {
+      handler = (uri, {protocols, headers}) {
         throw new WSocketException('Mock connection to $uri rejected.');
       };
-    } else {
-      _handlers[uri.toString()] = handler;
     }
+    MockWebSocketInternal._handlers[uri.toString()] = handler;
+
+    return new MockWebSocketHandler._(() {
+      var currentHandler = MockWebSocketInternal._handlers[uri.toString()];
+      if (currentHandler != null && currentHandler == handler) {
+        MockWebSocketInternal._handlers.remove(uri.toString());
+      }
+    });
   }
 
-  void whenPattern(Pattern uriPattern,
+  MockWebSocketHandler whenPattern(Pattern uriPattern,
       {WSocketPatternConnectHandler handler, bool reject}) {
-    _validateWhenParams(handler: handler, reject: reject);
+    MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
     if (reject != null && reject) {
-      _patternHandlers[uriPattern] = (uri, {protocols, headers, match}) {
+      handler = (uri, {protocols, headers, match}) {
         throw new WSocketException('Mock connection to $uri rejected.');
       };
-    } else {
-      _patternHandlers[uriPattern] = handler;
     }
+    MockWebSocketInternal._patternHandlers[uriPattern] = handler;
+
+    return new MockWebSocketHandler._(() {
+      var currentHandler = MockWebSocketInternal._patternHandlers[uriPattern];
+      if (currentHandler != null && currentHandler == handler) {
+        MockWebSocketInternal._patternHandlers.remove(uriPattern);
+      }
+    });
+  }
+}
+
+class MockWebSocketHandler {
+  Function _cancel;
+  MockWebSocketHandler._(this._cancel);
+
+  void cancel() {
+    _cancel();
+  }
+}
+
+class MockWebSocketInternal {
+  static List<_WebSocketConnectExpectation> _expectations = [];
+  static Map<String, WSocketConnectHandler> _handlers = {};
+  static Map<Pattern, WSocketPatternConnectHandler> _patternHandlers = {};
+
+  static Future<WSocket> handleWebSocketConnection(Uri uri,
+      {Iterable<String> protocols, Map<String, dynamic> headers}) async {
+    Iterable matchingExpectations = _expectations.where((e) {
+      if (e.uri is Uri) {
+        return e.uri == uri;
+      } else if (e.uri is Pattern) {
+        return (e.uri as Pattern).allMatches(uri.toString()).isNotEmpty;
+      }
+    });
+    if (matchingExpectations.isNotEmpty) {
+      /// If this connection was expected, resolve it as planned.
+      _WebSocketConnectExpectation expectation = matchingExpectations.first;
+      _expectations.remove(expectation);
+      if (expectation.reject != null && expectation.reject)
+        throw new WSocketException('Mock connection to $uri rejected.');
+      return expectation.connectTo;
+    }
+
+    if (_handlers.containsKey(uri.toString())) {
+      /// If a handler was set up for this type of connection, call the handler.
+      return _handlers[uri.toString()](uri,
+          protocols: protocols, headers: headers);
+    }
+
+    Match match;
+    var matchingHandlerKey = _patternHandlers.keys.firstWhere((uriPattern) {
+      var matches = uriPattern.allMatches(uri.toString());
+      if (matches.isNotEmpty) {
+        match = matches.first;
+        return true;
+      }
+      return false;
+    }, orElse: () => null);
+
+    if (matchingHandlerKey != null) {
+      /// The uri matched the pattern specified by this handler.
+      return _patternHandlers[matchingHandlerKey](uri,
+          protocols: protocols, headers: headers, match: match);
+    }
+
+    throw new StateError('Unexpected WSocket connection: $uri');
   }
 
-  void _expect(dynamic uri, {MockWSocket connectTo, bool reject}) {
+  static void _expect(dynamic uri, {MockWSocket connectTo, bool reject}) {
     if (connectTo != null && reject != null) {
       throw new ArgumentError('Use connectTo OR reject, but not both.');
     }
@@ -123,7 +148,8 @@ class MockWebSocket {
         connectTo: connectTo, reject: reject));
   }
 
-  void _validateWhenParams({WSocketConnectHandler handler, bool reject}) {
+  static void _validateWhenParams(
+      {WSocketConnectHandler handler, bool reject}) {
     if (handler != null && reject != null) {
       throw new ArgumentError('Use handler OR reject, but not both.');
     }

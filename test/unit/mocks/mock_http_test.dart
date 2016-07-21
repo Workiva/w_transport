@@ -20,6 +20,7 @@ import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_mock.dart';
 
 import '../../naming.dart';
+import '../../utils.dart' show nextTick;
 
 void main() {
   Naming naming = new Naming()
@@ -293,6 +294,53 @@ void main() {
               .when(requestUri, (_) async => throw new Exception());
           expect(Http.get(requestUri), throws);
         });
+
+        test('registers a handler that can be canceled', () async {
+          var ok = new MockResponse.ok();
+          var handler = MockTransports.http.when(requestUri, (_) async => ok);
+          await Http.get(requestUri);
+          handler.cancel();
+          Http.get(requestUri);
+          await nextTick();
+          expect(MockTransports.http.numPendingRequests, equals(1));
+        });
+
+        test('canceling a handler does nothing if handler no longer exists',
+            () async {
+          var oldHandler = MockTransports.http
+              .when(requestUri, (_) async => new MockResponse.notFound());
+          MockTransports.http
+              .when(requestUri, (_) async => new MockResponse.ok());
+          expect(() {
+            oldHandler.cancel();
+          }, returnsNormally);
+          await Http.get(requestUri);
+
+          // Test the same, but with a specific method.
+          oldHandler = MockTransports.http.when(
+              requestUri, (_) async => new MockResponse.notFound(),
+              method: 'DELETE');
+          MockTransports.http.when(
+              requestUri, (_) async => new MockResponse.ok(),
+              method: 'DELETE');
+          expect(() {
+            oldHandler.cancel();
+          }, returnsNormally);
+          await Http.get(requestUri);
+        });
+
+        test('canceling a handler does nothing if handler was reset', () async {
+          var oldHandler = MockTransports.http
+              .when(requestUri, (_) async => new MockResponse.ok());
+          MockTransports.reset();
+          expect(() {
+            oldHandler.cancel();
+          }, returnsNormally);
+
+          Http.get(requestUri);
+          await nextTick();
+          expect(MockTransports.http.numPendingRequests, equals(1));
+        });
       });
 
       group('whenPattern()', () {
@@ -358,6 +406,55 @@ void main() {
 
           expect(matches[1].group(0), equals('https://github.com'));
           expect(matches[1].group(1), equals('github'));
+        });
+
+        test('registers a handler that can be canceled', () async {
+          var ok = new MockResponse.ok();
+          var handler = MockTransports.http
+              .whenPattern(requestUri.toString(), (_1, _2) async => ok);
+          await Http.get(requestUri);
+          handler.cancel();
+          Http.get(requestUri);
+          await nextTick();
+          expect(MockTransports.http.numPendingRequests, equals(1));
+        });
+
+        test('canceling a handler does nothing if handler no longer exists',
+            () async {
+          var oldHandler = MockTransports.http.whenPattern(
+              requestUri.toString(),
+              (_1, _2) async => new MockResponse.notFound());
+          MockTransports.http.whenPattern(
+              requestUri.toString(), (_1, _2) async => new MockResponse.ok());
+          expect(() {
+            oldHandler.cancel();
+          }, returnsNormally);
+          await Http.get(requestUri);
+
+          // Test the same, but with a specific method.
+          oldHandler = MockTransports.http.whenPattern(requestUri.toString(),
+              (_1, _2) async => new MockResponse.notFound(),
+              method: 'DELETE');
+          MockTransports.http.whenPattern(
+              requestUri.toString(), (_1, _2) async => new MockResponse.ok(),
+              method: 'DELETE');
+          expect(() {
+            oldHandler.cancel();
+          }, returnsNormally);
+          await Http.get(requestUri);
+        });
+
+        test('canceling a handler does nothing if handler was reset', () async {
+          var oldHandler = MockTransports.http.whenPattern(
+              requestUri.toString(), (_1, _2) async => new MockResponse.ok());
+          MockTransports.reset();
+          expect(() {
+            oldHandler.cancel();
+          }, returnsNormally);
+
+          Http.get(requestUri);
+          await nextTick();
+          expect(MockTransports.http.numPendingRequests, equals(1));
         });
       });
     });

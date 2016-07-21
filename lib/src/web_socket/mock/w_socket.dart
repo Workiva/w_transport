@@ -17,14 +17,15 @@ library w_transport.src.web_socket.mock.w_socket;
 import 'dart:async';
 
 import 'package:w_transport/src/mocks/web_socket.dart'
-    show handleWebSocketConnection;
+    show MockWebSocketInternal;
 import 'package:w_transport/src/web_socket/common/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
 
 abstract class MockWSocket implements WSocket {
   static Future<WSocket> connect(Uri uri,
           {Iterable<String> protocols, Map<String, dynamic> headers}) =>
-      handleWebSocketConnection(uri, protocols: protocols, headers: headers);
+      MockWebSocketInternal.handleWebSocketConnection(uri,
+          protocols: protocols, headers: headers);
 
   factory MockWSocket() => new _MockWSocket();
 

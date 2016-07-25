@@ -71,7 +71,7 @@ The end consumer will make the decision between browser and VM, most likely in a
 
 ### Browser
 ```dart
-import 'package:w_transport/w_transport_browser.dart'
+import 'package:w_transport/browser.dart'
     show configureWTransportForBrowser;
 
 void main() {
@@ -81,7 +81,7 @@ void main() {
 
 ### Dart VM
 ```dart
-import 'package:w_transport/w_transport_vm.dart'
+import 'package:w_transport/vm.dart'
     show configureWTransportForVM;
 
 void main() {
@@ -91,7 +91,7 @@ void main() {
 
 ### Tests
 ```dart
-import 'package:w_transport/w_transport_mock.dart'
+import 'package:w_transport/mock.dart'
     show configureWTransportForTest;
 
 void main() {
@@ -716,7 +716,7 @@ this library can be configured. By configuring `w_transport` for tests, mock
 implementations of all classes will be used.
 
 ```dart
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 main() {
   configureWTransportForTest();
@@ -725,8 +725,8 @@ main() {
 
 That's it. No changes to your source code are necessary! Once configured for
 test, you are in control of every HTTP request and every WebSocket connection.
-The APIs for controlling these transports are exported with the
-`w_transport_mock.dart` entry point as static APIs on a `MockTransports` class.
+The APIs for controlling these transports are exported with the `mock.dart`
+entry point as static APIs on a `MockTransports` class.
 
 > **Resetting Mocks:**
 >

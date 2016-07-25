@@ -16,7 +16,7 @@
 library w_transport.test.integration.http.http_static.vm_test;
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport_vm.dart';
+import 'package:w_transport/vm.dart';
 
 import '../../../naming.dart';
 import 'suite.dart';

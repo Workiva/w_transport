@@ -12,14 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.mock_endpoints.timeout;
+/// Transport for the server. This exposes a single configuration method that
+/// must be called before instantiating any of the transport classes.
+///
+///     import 'package:w_transport/vm.dart'
+///         show configureWTransportForServer;
+///
+///     void main() {
+///       configureWTransportForVM();
+///     }
+library w_transport.vm;
 
-import 'dart:async';
+import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/vm_adapter.dart';
 
-import 'package:w_transport/mock.dart';
-
-void mockTimeoutEndpoint(Uri uri) {
-  MockTransports.http.when(uri, (_) async {
-    return new Completer().future;
-  });
+/// Configure w_transport for use on the server via dart:io.
+void configureWTransportForVM() {
+  adapter = new VMAdapter();
 }

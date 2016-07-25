@@ -1,7 +1,7 @@
 # Changelog
 
 ## [2.8.0](https://github.com/Workvia/w_transport/compare/2.7.1...2.8.0)
-_TBD_
+_July 21, 2016_
 
 - **Improvement:** Mock transport handlers can now be canceled. This will allow
   consumers to remove HTTP or WebSocket mock handlers without having to call

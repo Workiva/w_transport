@@ -17,7 +17,7 @@ library w_transport.test.integration.platforms.browser_platform_test;
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_browser.dart';
+import 'package:w_transport/browser.dart';
 
 import 'package:w_transport/src/http/browser/client.dart';
 import 'package:w_transport/src/http/browser/requests.dart';

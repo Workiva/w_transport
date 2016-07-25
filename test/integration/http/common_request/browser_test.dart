@@ -17,7 +17,7 @@ library w_transport.test.integration.http.common_request.browser_test;
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_browser.dart';
+import 'package:w_transport/browser.dart';
 
 import '../../integration_paths.dart';
 import '../../../naming.dart';

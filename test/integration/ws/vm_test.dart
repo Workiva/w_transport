@@ -17,7 +17,7 @@ library w_transport.test.integration.ws.vm_test;
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_vm.dart';
+import 'package:w_transport/vm.dart';
 
 import '../../naming.dart';
 import '../integration_paths.dart';

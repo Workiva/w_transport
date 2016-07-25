@@ -16,7 +16,7 @@
 library w_transport.test.integration.http.client.browser_test;
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport_browser.dart';
+import 'package:w_transport/browser.dart';
 
 import '../../../naming.dart';
 import 'suite.dart';

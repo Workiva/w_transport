@@ -17,7 +17,7 @@ library w_transport.test.integration.platforms.vm_platform_test;
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_vm.dart';
+import 'package:w_transport/vm.dart';
 
 import 'package:w_transport/src/http/vm/client.dart';
 import 'package:w_transport/src/http/vm/requests.dart';

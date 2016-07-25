@@ -19,7 +19,7 @@ import 'dart:html';
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_browser.dart';
+import 'package:w_transport/browser.dart';
 
 import '../../../naming.dart';
 import '../../integration_paths.dart';

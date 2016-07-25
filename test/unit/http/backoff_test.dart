@@ -20,7 +20,7 @@ import 'package:test/test.dart';
 import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/common/backoff.dart';
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 import '../../naming.dart';
 

@@ -18,7 +18,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_vm.dart' show configureWTransportForVM;
+import 'package:w_transport/vm.dart' show configureWTransportForVM;
 
 import '../../../handler.dart';
 

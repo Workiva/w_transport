@@ -222,6 +222,10 @@ abstract class CommonRequest extends Object
     _headers = new CaseInsensitiveMap.from(headers);
   }
 
+  /// Returns `true` if this request is complete (successful or failed), `false`
+  /// otherwise.
+  bool get isDone => isCanceled || _done.isCompleted;
+
   /// Request interceptor. Called right before request is sent.
   RequestInterceptor get requestInterceptor => _requestInterceptor;
 
@@ -289,8 +293,10 @@ abstract class CommonRequest extends Object
   /// Cancel this request. If the request has already finished, this will do
   /// nothing.
   void abort([Object error]) {
-    abortRequest();
+    if (isCanceled) return;
     isCanceled = true;
+
+    abortRequest();
     _cancellationError = error;
     _cancellationCompleter.complete();
   }

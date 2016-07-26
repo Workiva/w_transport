@@ -17,7 +17,7 @@ library w_transport.test.unit.http.request_exception_test;
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' show RequestException, Response;
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 import '../../naming.dart';
 

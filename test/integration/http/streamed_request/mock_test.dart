@@ -16,7 +16,7 @@
 library w_transport.test.integration.http.streamed_request.mock_test;
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 import '../../../naming.dart';
 import '../../integration_paths.dart';

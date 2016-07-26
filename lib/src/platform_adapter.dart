@@ -21,9 +21,9 @@ import 'package:w_transport/w_transport.dart';
 /// The currently selected platform adapter. Will be set by the configuration
 /// methods exposed in the platform-specific entry points:
 ///
-/// - w_transport/w_transport_browser.dart
-/// - w_transport/w_transport_mock.dart
-/// - w_transport/w_transport_server.dart
+/// - w_transport/browser.dart
+/// - w_transport/mock.dart
+/// - w_transport/vm.dart
 PlatformAdapter adapter;
 
 /// Defines how to construct the appropriate class instances for a certain

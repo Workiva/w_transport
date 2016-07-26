@@ -17,7 +17,7 @@ library w_transport.test.integration.platforms.mock_platform_test;
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 import 'package:w_transport/src/http/mock/client.dart';
 import 'package:w_transport/src/http/mock/requests.dart';

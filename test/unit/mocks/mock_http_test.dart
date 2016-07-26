@@ -17,7 +17,7 @@ library w_transport.test.unit.mocks.mock_http_test;
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 import '../../naming.dart';
 import '../../utils.dart' show nextTick;

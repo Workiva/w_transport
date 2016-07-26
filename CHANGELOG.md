@@ -1,11 +1,14 @@
 # Changelog
 
-## [2.9.0](https://github.com/Workvia/w_transport/compare/2.8.1...2.9.0)
-_TBD_
+## [2.9.0](https://github.com/Workvia/w_transport/compare/2.8.0...2.9.0)
+_July 26, 2016_
 
 - **Improvement:** All request classes now have a `bool isDone` getter that can
   be read to determine whether or not a request is complete (i.e. succeeded,
   failed, or canceled).
+
+- **Bug Fix:** Calling `request.abort()` more than once will no longer throw a
+  `StateError`.
 
 ## [2.8.0](https://github.com/Workvia/w_transport/compare/2.7.1...2.8.0)
 _July 21, 2016_

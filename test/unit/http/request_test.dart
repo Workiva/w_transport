@@ -310,6 +310,16 @@ void _runCommonRequestSuiteFor(
       })));
     });
 
+    test('request cancellation should do nothing if already called', () async {
+      var request = requestFactory();
+      request.abort();
+      expect(() {
+        request.abort();
+      }, returnsNormally);
+      expect(request.get(uri: requestUri),
+          throwsA(new isInstanceOf<RequestException>()));
+    });
+
     test('should wrap an unexpected exception in RequestException', () async {
       BaseRequest request = requestFactory();
       MockTransports.http.causeFailureOnOpen(request);
@@ -354,6 +364,39 @@ void _runCommonRequestSuiteFor(
       Future first = request.get(uri: requestUri);
       expect(request.get(uri: requestUri), throwsStateError);
       await first;
+    });
+
+    test('isDone should be false prior to request completion', () async {
+      MockTransports.http.expect('GET', requestUri);
+      var request = requestFactory();
+      var future = request.get(uri: requestUri);
+      expect(request.isDone, isFalse);
+      await future;
+    });
+
+    test('isDone should be true after completion', () async {
+      MockTransports.http.expect('GET', requestUri);
+      var request = requestFactory();
+      await request.get(uri: requestUri);
+      expect(request.isDone, isTrue);
+    });
+
+    test('isDone should be true after failure', () async {
+      MockTransports.http
+          .expect('GET', requestUri, respondWith: new MockResponse.notFound());
+      var request = requestFactory();
+      var future = request.get(uri: requestUri);
+      expect(future, throws);
+      await future.catchError((_) {});
+      expect(request.isDone, isTrue);
+    });
+
+    test('isDone should be true after cancellation', () async {
+      var request = requestFactory();
+      var future = request.get(uri: requestUri);
+      request.abort();
+      await future.catchError((_) {});
+      expect(request.isDone, isTrue);
     });
 
     test('requestInterceptor allows async modification of request', () async {

@@ -78,6 +78,10 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// type of data in this request's body and the [encoding].
   Map<String, String> headers = {};
 
+  /// Returns `true` if this request is complete (successful or failed), `false`
+  /// otherwise.
+  bool get isDone;
+
   /// Hook into the request lifecycle right before the request is sent.
   ///
   /// If not null, this function will be called with the [BaseRequest] instance

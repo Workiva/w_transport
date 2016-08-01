@@ -22,8 +22,10 @@ import 'dart:async';
 class WSocketSubscription<T> implements StreamSubscription<T> {
   /// The callback given by the listener to be called when this subscription
   /// is completely done.
-  Function get doneHandler => _doneHandler;
+  Function get doneHandler => _isCanceled ? null : _doneHandler;
   Function _doneHandler;
+
+  bool _isCanceled = false;
 
   /// The callback given by the [WSocket] implementation to be called when this
   /// subscription is canceled. This allows the [WSocket] instance to perform
@@ -39,7 +41,15 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
 
   @override
   Future cancel() async {
-    await _sub.cancel();
+    if (_isCanceled) return;
+
+    // Make the onData, onError, and onDone handlers no-ops.
+    onData((_) {});
+    onError((_) {});
+    onDone(() {});
+
+    _isCanceled = true;
+
     if (_onCancel != null) {
       await _onCancel();
     }
@@ -59,11 +69,13 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
 
   @override
   void resume() {
+    if (_isCanceled) return;
     _sub.resume();
   }
 
   @override
   void pause([Future resumeSignal]) {
+    if (_isCanceled) return;
     _sub.pause();
     if (resumeSignal != null) {
       () async {
@@ -80,16 +92,19 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
 
   @override
   void onDone(void handleDone()) {
+    if (_isCanceled) return;
     _doneHandler = handleDone;
   }
 
   @override
   void onError(Function handleError) {
+    if (_isCanceled) return;
     _sub.onError(handleError);
   }
 
   @override
   void onData(void handleData(T data)) {
+    if (_isCanceled) return;
     _sub.onData(handleData);
   }
 }

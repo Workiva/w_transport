@@ -217,6 +217,43 @@ void runCommonWebSocketIntegrationTests(
     await c.future;
   });
 
+  test(
+      'should close successfully if a subscription is canceled prior to closing',
+      () async {
+    var webSocket = await connect(echoUri);
+
+    var subscription = webSocket.listen((_) {});
+    subscription.cancel();
+
+    await webSocket.close(4001, 'Closed.');
+    expect(webSocket.closeCode, equals(4001));
+    expect(webSocket.closeReason, equals('Closed.'));
+  });
+
+  test('should not receive events once the subscription is canceled', () async {
+    var webSocket = await connect(echoUri);
+
+    bool doneEventReceived = false;
+    int messagesReceived = 0;
+
+    var subscription = webSocket.listen((_) {
+      messagesReceived++;
+    }, onDone: () {
+      doneEventReceived = true;
+    });
+    webSocket.add('one');
+    await new Future.delayed(new Duration(milliseconds: 50));
+
+    subscription.cancel();
+
+    webSocket.add('two');
+    await new Future.delayed(new Duration(milliseconds: 50));
+    expect(messagesReceived, equals(1));
+
+    await webSocket.close();
+    expect(doneEventReceived, isFalse);
+  });
+
   test('should work as a broadcast stream', () async {
     var webSocket = await connect(pingUri);
     Stream stream = webSocket.asBroadcastStream();

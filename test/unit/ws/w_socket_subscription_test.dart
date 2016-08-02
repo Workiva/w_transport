@@ -33,16 +33,14 @@ void main() {
     group('WSocketSubscription', () {
       test('cancel() should cancel underlying subscription and call callback',
           () async {
-        var subCanceled = new Completer();
         var onCancelCalled = new Completer();
 
-        var sc = new StreamController(onCancel: subCanceled.complete);
+        var sc = new StreamController();
         var sub = sc.stream.listen((_) {});
         var wsub = new WSocketSubscription(sub, () {},
             onCancel: onCancelCalled.complete);
 
-        await Future
-            .wait([wsub.cancel(), subCanceled.future, onCancelCalled.future,]);
+        await Future.wait([wsub.cancel(), onCancelCalled.future,]);
       });
 
       test('isPaused should return the status of the underlying subscription',

@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.9.1](https://github.com/Workvia/w_transport/compare/2.9.0...2.9.1)
+_August 2, 2016_
+
+- **Bug Fix:** previously, listening to a `WSocket` instance and then canceling
+  the subscription before closing the socket would result in the "done" state
+  never being reached. This is fixed now and the `Future` returned from
+  `WSocket.done` and `WSocket.close()` will always resolve once the connection
+  is closed.
+
 ## [2.9.0](https://github.com/Workvia/w_transport/compare/2.8.0...2.9.0)
 _July 26, 2016_
 

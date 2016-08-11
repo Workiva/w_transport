@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.browser.client;
-
 import 'package:w_transport/src/http/browser/requests.dart';
 import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/client.dart';

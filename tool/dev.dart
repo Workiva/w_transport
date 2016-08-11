@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library tool.dev;
-
 import 'dart:async';
 
 import 'package:dart_dev/dart_dev.dart' show dev, config;

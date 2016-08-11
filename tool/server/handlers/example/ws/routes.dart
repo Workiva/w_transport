@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.example.ws.routes;
-
 import '../../../handler.dart';
 import '../../../logger.dart';
 import 'echo_handler.dart';

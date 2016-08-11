@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('vm')
-library w_transport.test.integration.vm_suite_test;
-
 import 'package:test/test.dart';
 
 import 'http/client/vm_test.dart' as http_client_vm;

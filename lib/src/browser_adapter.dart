@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.browser_adapter;
-
 import 'dart:async';
 
 import 'package:w_transport/src/http/browser/client.dart';

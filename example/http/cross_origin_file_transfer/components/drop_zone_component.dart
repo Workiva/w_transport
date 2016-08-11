@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_file_transfer.components.drop_zone_component;
-
 import 'dart:async';
 import 'dart:html';
 

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.common.finalized_request;
-
 import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
 
 import 'package:w_transport/src/http/http_body.dart';

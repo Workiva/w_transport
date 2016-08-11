@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('vm || browser')
-library w_transport.test.unit.http.request_test;
-
 import 'dart:async';
 import 'dart:convert';
 

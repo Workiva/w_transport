@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.request_exception;
-
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/response.dart';
 

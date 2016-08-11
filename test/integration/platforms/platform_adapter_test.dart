@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('vm || browser')
-library w_transport.test.unit.platform_adapter_test;
-
 import 'package:test/test.dart';
 
 import 'package:w_transport/src/platform_adapter.dart';

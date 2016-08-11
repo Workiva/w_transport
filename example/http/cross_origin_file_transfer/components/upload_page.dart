@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_file_transfer.components.upload_page;
-
 import 'package:react/react.dart' as react;
 
 import '../services/file_transfer.dart';

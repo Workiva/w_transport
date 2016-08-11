@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('vm || browser')
-library w_transport.test.unit.ws.w_socket_exception_test;
-
 import 'package:test/test.dart';
 
 import 'package:w_transport/src/web_socket/w_socket_exception.dart';

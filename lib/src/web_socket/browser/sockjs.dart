@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.web_socket.browser.sockjs;
-
 import 'dart:async';
 
 import 'package:sockjs_client/sockjs_client.dart' as sockjs;

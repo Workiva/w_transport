@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.unit.http.request_progress_test;
-
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 

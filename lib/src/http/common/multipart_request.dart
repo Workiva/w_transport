@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.vm.multipart_request;
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';

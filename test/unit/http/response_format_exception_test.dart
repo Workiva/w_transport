@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.unit.http.response_format_exception_test;
-
 import 'dart:convert';
 
 import 'package:http_parser/http_parser.dart' show MediaType;

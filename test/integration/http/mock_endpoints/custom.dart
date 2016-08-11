@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.mock_endpoints.custom;
-
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
 

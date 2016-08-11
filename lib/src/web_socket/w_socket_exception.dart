@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.web_socket.w_socket_exception;
-
 /// Represents an exception in the connection process of a Web Socket.
 class WSocketException {
   String message;

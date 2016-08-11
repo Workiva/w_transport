@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.request_progress;
-
 /// A representation of a progress event at a specific point in time
 /// either for an HTTP request upload or download. Based on [ProgressEvent]
 /// but with an additional [percent] property for convenience.

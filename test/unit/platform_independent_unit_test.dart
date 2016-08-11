@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('browser || vm')
-library w_transport.test.unit.unit_test_suite;
-
 import 'package:test/test.dart';
 
 import 'http/client_test.dart' as http_client_test;

@@ -28,6 +28,7 @@ void runCommonRequestSuite() {
       if (!withBody) return new FormRequest();
       return new FormRequest()..fields['field'] = 'value';
     }
+
     jsonReqFactory({bool withBody: false}) {
       if (!withBody) return new JsonRequest();
       return new JsonRequest()
@@ -35,14 +36,17 @@ void runCommonRequestSuite() {
           {'field': 'value'}
         ];
     }
+
     multipartReqFactory({bool withBody}) {
       // Multipart requests can't be empty.
       return new MultipartRequest()..fields['field'] = 'value';
     }
+
     reqFactory({bool withBody: false}) {
       if (!withBody) return new Request();
       return new Request()..body = 'body';
     }
+
     streamedReqFactory({bool withBody: false}) {
       if (!withBody) return new StreamedRequest();
       return new StreamedRequest()

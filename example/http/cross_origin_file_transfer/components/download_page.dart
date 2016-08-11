@@ -35,7 +35,9 @@ class DownloadPage extends react.Component {
   StreamSubscription fileStreamErrorSubscription;
 
   Map getDefaultProps() {
-    return {'active': false,};
+    return {
+      'active': false,
+    };
   }
 
   Map getInitialState() {
@@ -53,7 +55,10 @@ class DownloadPage extends react.Component {
     remoteFiles = RemoteFiles.connect();
     fileStreamSubscription = remoteFiles.stream
         .listen((List<RemoteFileDescription> fileDescriptions) {
-      this.setState({'fileDescriptions': fileDescriptions, 'error': null,});
+      this.setState({
+        'fileDescriptions': fileDescriptions,
+        'error': null,
+      });
     });
     fileStreamErrorSubscription = remoteFiles.errorStream.listen((error) {
       this.setState({'error': error});
@@ -134,7 +139,9 @@ class DownloadPage extends react.Component {
         'key': rfd.name,
         'onClick': _createDownloadFileCallback(rfd)
       }, [
-        react.div({'className': 'file-name',}, rfd.name),
+        react.div({
+          'className': 'file-name',
+        }, rfd.name),
         react.div({'className': 'file-size'}, _humanizeFileSize(rfd.size)),
       ]));
     });

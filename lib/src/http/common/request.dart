@@ -618,6 +618,7 @@ abstract class CommonRequest extends Object
           responseCompleter.complete();
         }
       }
+
       _cancellationCompleter.future.then(breakOutOfResponseFetching);
       _timeoutCompleter.future.then(breakOutOfResponseFetching);
 

@@ -26,7 +26,9 @@ var appComponent = react.registerComponent(() => new AppComponent());
 
 class AppComponent extends react.Component {
   Map getInitialState() {
-    return {'page': 'upload',};
+    return {
+      'page': 'upload',
+    };
   }
 
   void _goToUploadPage(e) {

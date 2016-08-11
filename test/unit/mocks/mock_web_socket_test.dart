@@ -290,7 +290,7 @@ void main() {
             uriMatch = match;
             return new MockWSocket();
           }
-          ;
+
           MockTransports.webSocket.whenPattern(uriPattern, handler: handler);
 
           await WSocket.connect(Uri.parse('ws://github.com/ws/listen'));

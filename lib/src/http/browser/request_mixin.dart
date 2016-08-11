@@ -88,6 +88,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         c.completeError(error, new Chain.current());
       }
     }
+
     _request.onError.listen(onError);
     _request.onAbort.listen(onError);
 

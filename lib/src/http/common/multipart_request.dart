@@ -176,6 +176,7 @@ abstract class CommonMultipartRequest extends CommonRequest
     void write(String content) {
       controller.add(UTF8.encode(content));
     }
+
     Future writeByteStream(Stream<List<int>> byteStream) {
       var c = new Completer();
       byteStream.listen(controller.add,

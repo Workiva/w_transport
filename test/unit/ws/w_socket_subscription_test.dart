@@ -40,7 +40,10 @@ void main() {
         var wsub = new WSocketSubscription(sub, () {},
             onCancel: onCancelCalled.complete);
 
-        await Future.wait([wsub.cancel(), onCancelCalled.future,]);
+        await Future.wait([
+          wsub.cancel(),
+          onCancelCalled.future,
+        ]);
       });
 
       test('isPaused should return the status of the underlying subscription',

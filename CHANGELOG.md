@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.9.2](https://github.com/Workvia/w_transport/compare/2.9.1...2.9.2)
+_August 11, 2016_
+
+- Widen the version range for the `http_parser` dependency to speed up and/or
+  fix downstream consumers experiencing version conflicts.
+
 ## [2.9.1](https://github.com/Workvia/w_transport/compare/2.9.0...2.9.1)
 _August 2, 2016_
 

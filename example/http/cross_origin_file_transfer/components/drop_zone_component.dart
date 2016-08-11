@@ -39,7 +39,11 @@ class DropZoneComponent extends react.Component {
   }
 
   Map getDefaultProps() {
-    return {'onNewUploads': (_) {}, 'onDragStart': () {}, 'onDragEnd': () {},};
+    return {
+      'onNewUploads': (_) {},
+      'onDragStart': () {},
+      'onDragEnd': () {},
+    };
   }
 
   void componentWillMount() {

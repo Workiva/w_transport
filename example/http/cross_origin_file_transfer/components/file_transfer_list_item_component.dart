@@ -30,11 +30,18 @@ var fileTransferListItemComponent =
 
 class FileTransferListItemComponent extends react.Component {
   Map getInitialState() {
-    return {'done': false, 'success': false, 'will-remove': false,};
+    return {
+      'done': false,
+      'success': false,
+      'will-remove': false,
+    };
   }
 
   Map getDefaultProps() {
-    return {'transfer': null, 'onTransferDone': (_) {},};
+    return {
+      'transfer': null,
+      'onTransferDone': (_) {},
+    };
   }
 
   void componentWillMount() {

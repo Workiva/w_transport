@@ -24,7 +24,9 @@ var uploadPage = react.registerComponent(() => new UploadPage());
 
 class UploadPage extends react.Component {
   Map getDefaultProps() {
-    return {'active': true,};
+    return {
+      'active': true,
+    };
   }
 
   Map getInitialState() {

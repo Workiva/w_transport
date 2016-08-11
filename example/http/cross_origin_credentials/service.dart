@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_credentials.service;
-
 import 'dart:async';
 
 import 'package:w_transport/w_transport.dart';
@@ -37,7 +35,6 @@ Future<bool> checkStatus() async {
     // Server probably isn't running
     return false;
   }
-  return false;
 }
 
 /// Login by sending a POST request to the /session endpoint.

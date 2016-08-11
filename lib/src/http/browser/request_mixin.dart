@@ -12,12 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.browser.request_mixin;
-
 import 'dart:async';
 import 'dart:html';
-
-import 'package:stack_trace/stack_trace.dart';
 
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/browser/form_data_body.dart';
@@ -85,9 +81,10 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         BaseResponse response =
             await _createResponse(streamResponse: streamResponse);
         error = new RequestException(method, uri, this, response, error);
-        c.completeError(error, new Chain.current());
+        c.completeError(error, StackTrace.current);
       }
     }
+
     _request.onError.listen(onError);
     _request.onAbort.listen(onError);
 

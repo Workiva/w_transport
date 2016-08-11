@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.common_request.suite;
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -28,6 +26,7 @@ void runCommonRequestSuite() {
       if (!withBody) return new FormRequest();
       return new FormRequest()..fields['field'] = 'value';
     }
+
     jsonReqFactory({bool withBody: false}) {
       if (!withBody) return new JsonRequest();
       return new JsonRequest()
@@ -35,14 +34,17 @@ void runCommonRequestSuite() {
           {'field': 'value'}
         ];
     }
+
     multipartReqFactory({bool withBody}) {
       // Multipart requests can't be empty.
       return new MultipartRequest()..fields['field'] = 'value';
     }
+
     reqFactory({bool withBody: false}) {
       if (!withBody) return new Request();
       return new Request()..body = 'body';
     }
+
     streamedReqFactory({bool withBody: false}) {
       if (!withBody) return new StreamedRequest();
       return new StreamedRequest()

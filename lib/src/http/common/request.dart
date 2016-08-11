@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.common.request;
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -612,6 +610,7 @@ abstract class CommonRequest extends Object
           responseCompleter.complete();
         }
       }
+
       _cancellationCompleter.future.then(breakOutOfResponseFetching);
       _timeoutCompleter.future.then(breakOutOfResponseFetching);
 

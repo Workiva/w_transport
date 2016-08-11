@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.web_socket.w_socket_close_event;
-
 /// Represents the close event from a WebSocket.
 ///
 /// This was previously only used internally, but was erroneously exported as a

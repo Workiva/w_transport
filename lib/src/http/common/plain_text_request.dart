@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.common.plain_text_request;
-
 import 'dart:async';
 import 'dart:typed_data';
 

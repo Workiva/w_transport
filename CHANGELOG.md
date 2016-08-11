@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.0](https://github.com/Workvia/w_transport/compare/2.9.2...3.0.0)
+_TBD_
+
+### Breaking Changes
+- Minimum Dart SDK version bumped to 1.14.0
+
 ## [2.8.0](https://github.com/Workvia/w_transport/compare/2.7.1...2.8.0)
 _TBD_
 

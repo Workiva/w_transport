@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.http.routes;
-
 import '../../../handler.dart';
 import '404_handler.dart';
 import 'custom.dart';

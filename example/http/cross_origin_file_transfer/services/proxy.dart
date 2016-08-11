@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_file_transfer.services.proxy;
-
 // Whether or not to route requests through a proxy server.
 bool proxyEnabled = false;
 

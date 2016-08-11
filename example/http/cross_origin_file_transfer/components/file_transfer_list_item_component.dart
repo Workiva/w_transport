@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_file_transfer.components.file_transfer_list_item_component;
-
 import 'dart:async';
 
 import 'package:react/react.dart' as react;
@@ -30,11 +28,18 @@ var fileTransferListItemComponent =
 
 class FileTransferListItemComponent extends react.Component {
   Map getInitialState() {
-    return {'done': false, 'success': false, 'will-remove': false,};
+    return {
+      'done': false,
+      'success': false,
+      'will-remove': false,
+    };
   }
 
   Map getDefaultProps() {
-    return {'transfer': null, 'onTransferDone': (_) {},};
+    return {
+      'transfer': null,
+      'onTransferDone': (_) {},
+    };
   }
 
   void componentWillMount() {

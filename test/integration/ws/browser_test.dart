@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.integration.ws.browser_test;
-
 import 'dart:html';
 import 'dart:typed_data';
 

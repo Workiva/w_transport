@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.form_request.suite;
-
 import 'dart:convert';
 
 import 'package:http_parser/http_parser.dart';

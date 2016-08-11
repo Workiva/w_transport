@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.integration.http.multipart_request.browser_test;
-
 import 'dart:html';
 import 'dart:convert';
 

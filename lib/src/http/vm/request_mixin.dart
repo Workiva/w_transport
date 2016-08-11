@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.vm.request_mixin;
-
 import 'dart:async';
 import 'dart:io';
 

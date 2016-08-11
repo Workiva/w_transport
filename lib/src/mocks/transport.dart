@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.mocks.transport;
-
 import 'package:w_transport/src/mocks/http.dart';
 import 'package:w_transport/src/mocks/web_socket.dart';
 

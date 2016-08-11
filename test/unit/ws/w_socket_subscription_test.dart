@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('vm || browser')
-library w_transport.test.unit.ws.w_socket_subscription_test;
-
 import 'dart:async';
 
 import 'package:mockito/mockito.dart';
@@ -41,8 +39,11 @@ void main() {
         var wsub = new WSocketSubscription(sub, () {},
             onCancel: onCancelCalled.complete);
 
-        await Future
-            .wait([wsub.cancel(), subCanceled.future, onCancelCalled.future,]);
+        await Future.wait([
+          wsub.cancel(),
+          subCanceled.future,
+          onCancelCalled.future,
+        ]);
       });
 
       test('isPaused should return the status of the underlying subscription',

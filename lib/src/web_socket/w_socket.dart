@@ -18,8 +18,6 @@
 /// If possible, APIs built using these classes should also avoid
 /// importing `dart:html` and `dart:io` in order to remain platform-agnostic,
 /// as it provides much greater reuse value.
-library w_transport.src.web_socket.w_socket;
-
 import 'dart:async';
 
 import 'package:w_transport/src/platform_adapter.dart';

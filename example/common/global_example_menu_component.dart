@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.common.global_example_menu_component;
-
 import 'dart:async';
 import 'dart:html';
 

@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.unit.http.browser_utils_test;
-
 import 'dart:async';
 import 'dart:html';
 

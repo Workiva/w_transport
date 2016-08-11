@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.example.http.cross_origin_credentials_handlers;
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';

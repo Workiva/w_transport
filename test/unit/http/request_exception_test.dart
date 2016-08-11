@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('vm || browser')
-library w_transport.test.unit.http.request_exception_test;
-
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' show RequestException, Response;
 import 'package:w_transport/mock.dart';

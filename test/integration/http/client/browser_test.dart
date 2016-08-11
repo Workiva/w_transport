@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.integration.http.client.browser_test;
-
 import 'package:test/test.dart';
 import 'package:w_transport/browser.dart';
 

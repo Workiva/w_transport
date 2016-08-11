@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('vm')
-library w_transport.test.integration.http.multipart_request.vm_test;
-
 import 'dart:io';
 
 import 'package:test/test.dart';

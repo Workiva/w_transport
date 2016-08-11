@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('vm || browser')
-library w_transport.test.unit.ws.w_socket_test;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

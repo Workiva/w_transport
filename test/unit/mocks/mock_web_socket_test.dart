@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('vm || browser')
-library w_transport.test.unit.mocks.mock_web_socket_test;
-
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -290,6 +288,7 @@ void main() {
             uriMatch = match;
             return new MockWSocket();
           }
+
           ;
           MockTransports.webSocket.whenPattern(uriPattern, handler: handler);
 

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.mock_endpoints.timeout;
-
 import 'dart:async';
 
 import 'package:w_transport/mock.dart';

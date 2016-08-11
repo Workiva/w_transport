@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.http_static.suite;
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';

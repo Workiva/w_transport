@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.logger;
-
 import 'dart:async';
 import 'dart:io';
 

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.index;
-
 import 'package:react/react_client.dart' as react_client;
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 

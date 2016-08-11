@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('browser || vm')
-library w_transport.test.unit.http.multipart_request_test;
-
 import 'dart:convert';
 
 import 'package:test/test.dart';

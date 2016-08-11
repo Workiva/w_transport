@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('browser || vm')
-library w_transport.test.integration.http.http_static.mock_test;
-
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 

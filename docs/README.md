@@ -1,0 +1,35 @@
+## Table of Contents
+
+- [Introduction](Introduction.md)
+- [Platforms: Browser/Dart VM](Platforms.md)
+- Basics
+  - HTTP
+    - [Sending a request and receiving a response](guides/HttpSendRequestReceiveResponse.md)
+    - [Types of requests (JSON, form, multipart)](guides/HttpRequestTypes.md)
+    - [Using an `HttpTransportClient`](guides/HttpTransportClient.md)
+  - WebSocket
+    - [Establishing a connection](guides/WebSocketConnect.md)
+    - [Sending and receiving data](guides/WebSocketSendReceive.md)
+    - [Listening for completion/close/done](guides/WebSocketCompletion.md)
+- Advanced Usage
+  - HTTP
+    - [Sending secure cookies (withCredentials)](guides/HttpSecureCookies.md)
+    - [Content-length, content-type, and encoding](guides/HttpContentEncoding.md)
+    - [Canceling and timing-out requests](guides/HttpCancellationAndTimeout.md)
+    - [Streaming requests and responses](guides/HttpStreaming.md)
+    - [Intercepting requests and responses](guides/HttpIntercepting.md)
+    - [Automatic request retrying](guides/HttpAutoRetry.md)
+  - WebSocket
+    - [Using SockJS](guides/WebSocketSockJS.md)
+- Testing/Mocks
+  - [Installing/uninstalling the test harness](guides/MockInstallation.md)
+  - HTTP
+    - [Expecting requests (one-time use)](guides/MockHttpExpectations.md)
+    - [Request handlers (many-time use)](guides/MockHttpHandlers.md)
+    - [Handling unresolved requests and unsatisfied expectations](guides/MockHttpUnresolved.md)
+  - WebSocket
+    - [Expecting and handling WebSocket connections](guides/MockWebSocketConnections.md)
+    - [Acting as the server (sending and receiving data)](guides/MockWebSocketData.md)
+- [Changelog](/CHANGELOG.md)
+  - [Upgrading to v3.0.0](/docs/upgrade-guides/v3.0.0)
+- [API docs](https://www.dartdocs.org/documentation/w_transport/latest/index.html)

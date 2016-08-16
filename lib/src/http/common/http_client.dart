@@ -16,11 +16,11 @@ import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
 
 import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/base_request.dart';
-import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/http_interceptor.dart';
+import 'package:w_transport/src/http/http_client.dart';
 
 /// HTTP client logic that can be shared across platforms.
-abstract class CommonClient implements Client {
+abstract class CommonHttpClient implements HttpClient {
   /// Configuration of automatic request retrying for failed requests. Use this
   /// object to enable or disable automatic retrying, configure the criteria
   /// that determines whether or not a request should be retried, as well as the

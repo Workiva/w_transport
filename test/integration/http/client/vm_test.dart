@@ -30,6 +30,6 @@ void main() {
       configureWTransportForVM();
     });
 
-    runClientSuite();
+    runHttpTransportClientSuite();
   });
 }

@@ -37,7 +37,7 @@ void main() {
       mockTimeoutEndpoint(IntegrationPaths.timeoutEndpointUri);
     });
 
-    runClientSuite();
+    runHttpTransportClientSuite();
 
     tearDown(() {
       MockTransports.verifyNoOutstandingExceptions();

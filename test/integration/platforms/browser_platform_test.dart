@@ -17,7 +17,7 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/browser.dart';
 
-import 'package:w_transport/src/http/browser/client.dart';
+import 'package:w_transport/src/http/browser/http_client.dart';
 import 'package:w_transport/src/http/browser/requests.dart';
 
 import '../../naming.dart';
@@ -34,7 +34,11 @@ void main() {
     });
 
     test('newClient()', () {
-      expect(new Client(), new isInstanceOf<BrowserClient>());
+      expect(new Client(), new isInstanceOf<BrowserHttpClient>());
+    });
+
+    test('newHttpClient()', () {
+      expect(new HttpClient(), new isInstanceOf<BrowserHttpClient>());
     });
 
     test('newFormRequest()', () {

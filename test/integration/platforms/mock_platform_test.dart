@@ -17,7 +17,7 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
 
-import 'package:w_transport/src/http/mock/client.dart';
+import 'package:w_transport/src/http/mock/http_client.dart';
 import 'package:w_transport/src/http/mock/requests.dart';
 import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 
@@ -35,7 +35,11 @@ void main() {
     });
 
     test('newClient()', () {
-      expect(new Client(), new isInstanceOf<MockClient>());
+      expect(new Client(), new isInstanceOf<MockHttpClient>());
+    });
+
+    test('newHttpTransportClient()', () {
+      expect(new HttpClient(), new isInstanceOf<MockHttpClient>());
     });
 
     test('newFormRequest()', () {

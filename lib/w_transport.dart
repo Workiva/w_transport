@@ -100,6 +100,7 @@ export 'package:w_transport/src/http/http_body.dart'
     show HttpBody, StreamedHttpBody;
 export 'package:w_transport/src/http/http_interceptor.dart'
     show HttpInterceptor, RequestPayload, ResponsePayload;
+export 'package:w_transport/src/http/http_client.dart' show HttpClient;
 export 'package:w_transport/src/http/multipart_file.dart' show MultipartFile;
 export 'package:w_transport/src/http/request_exception.dart'
     show RequestException;

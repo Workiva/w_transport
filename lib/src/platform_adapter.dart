@@ -28,7 +28,7 @@ PlatformAdapter adapter;
 /// platform. The platform-agnostic API in w_transport is created by exposing
 /// several public abstract classes:
 ///
-/// - [Client]
+/// - [HttpClient]
 /// - [FormRequest]
 /// - [JsonRequest]
 /// - [MultipartRequest]
@@ -53,8 +53,8 @@ abstract class PlatformAdapter {
     return adapter;
   }
 
-  /// Constructs a new [Client] instance.
-  Client newClient();
+  /// Constructs a new [HttpClient] instance.
+  HttpClient newHttpClient();
 
   /// Constructs a new [FormRequest] instance.
   FormRequest newFormRequest();

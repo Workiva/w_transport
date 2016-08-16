@@ -14,9 +14,9 @@
 
 import 'dart:async';
 
-import 'package:w_transport/src/http/browser/client.dart';
+import 'package:w_transport/src/http/browser/http_client.dart';
 import 'package:w_transport/src/http/browser/requests.dart';
-import 'package:w_transport/src/http/client.dart';
+import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 import 'package:w_transport/src/web_socket/browser/sockjs.dart';
@@ -45,8 +45,8 @@ class BrowserAdapter implements PlatformAdapter {
         _sockJSNoCredentials = sockJSNoCredentials == true,
         _sockJSTimeout = sockJSTimeout;
 
-  /// Construct a new [BrowserClient] instance that implements [Client].
-  Client newClient() => new BrowserClient();
+  /// Construct a new [BrowserHttpClient] instance that implements [HttpClient].
+  HttpClient newHttpClient() => new BrowserHttpClient();
 
   /// Construct a new [BrowserFormRequest] instance that implements
   /// [FormRequest].

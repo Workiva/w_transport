@@ -14,8 +14,8 @@
 
 import 'dart:async';
 
-import 'package:w_transport/src/http/client.dart';
-import 'package:w_transport/src/http/mock/client.dart';
+import 'package:w_transport/src/http/http_client.dart';
+import 'package:w_transport/src/http/mock/http_client.dart';
 import 'package:w_transport/src/http/mock/requests.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
@@ -26,8 +26,8 @@ import 'package:w_transport/src/web_socket/w_socket.dart';
 /// transport classes that return mock implementations that can be controlled
 /// by the mock transport API.
 class MockAdapter implements PlatformAdapter {
-  /// Construct a new [MockClient] instance that implements [Client].
-  Client newClient() => new MockClient();
+  /// Construct a new [MockHttpClient] instance that implements [HttpClient].
+  HttpClient newHttpClient() => new MockHttpClient();
 
   /// Construct a new [MockFormRequest] instance that implements
   /// [FormRequest].

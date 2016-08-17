@@ -12,11 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:w_transport/src/http/mock/http_client.dart';
-import 'package:w_transport/src/http/http_client.dart';
+import 'package:w_transport/src/http/client.dart';
+import 'package:w_transport/src/platform_adapter.dart';
 
-/// A mock implementation of an HTTP client. Factory methods simply return the
-/// mock implementations of each request. Since the mock request implementations
-/// don't ever actually send an HTTP request, this client doesn't need to do
-/// anything else.
-class MockClient extends MockHttpClient implements HttpClient {}
+/// An HTTP client acts as a single point from which many requests can be
+/// constructed. All requests constructed from a client will inherit [headers],
+/// the [withCredentials] flag, and the [timeoutThreshold].
+///
+/// On the server, the Dart VM will also be able to take advantage of cached
+/// network connections between requests that share a client.
+abstract class HttpClient extends Client {
+  factory HttpClient() => PlatformAdapter.retrieve().newHttpClient();
+}

@@ -14,9 +14,9 @@
 
 import 'dart:async';
 
-import 'package:w_transport/src/http/client.dart';
+import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/requests.dart';
-import 'package:w_transport/src/http/vm/client.dart';
+import 'package:w_transport/src/http/vm/http_client.dart';
 import 'package:w_transport/src/http/vm/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
@@ -25,8 +25,8 @@ import 'package:w_transport/src/web_socket/vm/w_socket.dart';
 /// Adapter for the Dart VM. Exposes factories for all of the transport classes
 /// that return VM-specific implementations that leverage dart:io.
 class VMAdapter implements PlatformAdapter {
-  /// Construct a new [VMClient] instance that implements [Client].
-  Client newClient() => new VMClient();
+  /// Construct a new [VMHttpClient] instance that implements [HttpClient].
+  HttpClient newHttpClient() => new VMHttpClient();
 
   /// Construct a new [VMFormRequest] instance that implements [FormRequest].
   FormRequest newFormRequest() => new VMFormRequest();

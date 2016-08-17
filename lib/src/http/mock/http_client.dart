@@ -12,34 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:io';
-
-import 'package:w_transport/src/http/client.dart';
-import 'package:w_transport/src/http/common/client.dart';
+import 'package:w_transport/src/http/mock/requests.dart';
+import 'package:w_transport/src/http/common/http_client.dart';
+import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/requests.dart';
-import 'package:w_transport/src/http/vm/requests.dart';
 
-/// VM-specific implementation of an HTTP client. All requests created from this
-/// client will use the same dart:io.HttpClient. This allows for network
-/// connections to be cached.
-class VMClient extends CommonClient implements Client {
-  /// The underlying HTTP client used to open and send requests.
-  HttpClient _client = new HttpClient();
-
-  /// Close the underlying HTTP client.
-  @override
-  void closeClient() {
-    if (_client != null) {
-      _client.close();
-    }
-  }
-
+/// A mock implementation of an HTTP client. Factory methods simply return the
+/// mock implementations of each request. Since the mock request implementations
+/// don't ever actually send an HTTP request, this client doesn't need to do
+/// anything else.
+class MockHttpClient extends CommonHttpClient implements HttpClient {
   /// Constructs a new [FormRequest] that will use this client to send the
   /// request. Throws a [StateError] if this client has been closed.
   @override
   FormRequest newFormRequest() {
     verifyNotClosed();
-    FormRequest request = new VMFormRequest.fromClient(this, _client);
+    FormRequest request = new MockFormRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -49,7 +37,7 @@ class VMClient extends CommonClient implements Client {
   @override
   JsonRequest newJsonRequest() {
     verifyNotClosed();
-    JsonRequest request = new VMJsonRequest.fromClient(this, _client);
+    JsonRequest request = new MockJsonRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -59,7 +47,7 @@ class VMClient extends CommonClient implements Client {
   @override
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
-    MultipartRequest request = new VMMultipartRequest.fromClient(this, _client);
+    MultipartRequest request = new MockMultipartRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -69,7 +57,7 @@ class VMClient extends CommonClient implements Client {
   @override
   Request newRequest() {
     verifyNotClosed();
-    Request request = new VMPlainTextRequest.fromClient(this, _client);
+    Request request = new MockPlainTextRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -79,7 +67,7 @@ class VMClient extends CommonClient implements Client {
   @override
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
-    StreamedRequest request = new VMStreamedRequest.fromClient(this, _client);
+    StreamedRequest request = new MockStreamedRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }

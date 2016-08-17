@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/http_interceptor.dart';
 import 'package:w_transport/src/http/requests.dart';
@@ -23,8 +24,11 @@ import 'package:w_transport/src/platform_adapter.dart';
 ///
 /// On the server, the Dart VM will also be able to take advantage of cached
 /// network connections between requests that share a client.
+///
+/// TODO: Remove this class in 4.0.0 and move the abstract definition into the `HttpClient` class.
+@Deprecated(v3Deprecation + 'Use `HttpClient` instead.')
 abstract class Client {
-  factory Client() => PlatformAdapter.retrieve().newClient();
+  factory Client() => PlatformAdapter.retrieve().newHttpClient();
 
   /// Configuration of automatic request retrying for failed requests. Use this
   /// object to enable or disable automatic retrying, configure the criteria

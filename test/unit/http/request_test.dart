@@ -77,7 +77,7 @@ void main() {
         await new Future.delayed(new Duration(seconds: 10));
       }, method: 'GET');
 
-      Client client = new Client();
+      var client = new HttpClient();
       var clientReqs = [
         client.newFormRequest(),
         client.newJsonRequest(),

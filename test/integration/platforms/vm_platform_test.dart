@@ -17,7 +17,7 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/vm.dart';
 
-import 'package:w_transport/src/http/vm/client.dart';
+import 'package:w_transport/src/http/vm/http_client.dart';
 import 'package:w_transport/src/http/vm/requests.dart';
 
 import '../../naming.dart';
@@ -34,7 +34,11 @@ void main() {
     });
 
     test('newClient()', () {
-      expect(new Client(), new isInstanceOf<VMClient>());
+      expect(new Client(), new isInstanceOf<VMHttpClient>());
+    });
+
+    test('newHttpTransportClient()', () {
+      expect(new HttpClient(), new isInstanceOf<VMHttpClient>());
     });
 
     test('newFormRequest()', () {

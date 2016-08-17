@@ -19,88 +19,93 @@ import 'package:w_transport/w_transport.dart';
 
 import '../../integration_paths.dart';
 
-void runClientSuite() {
+void runHttpTransportClientSuite() {
   group('Client', () {
-    test('newFormRequest()', () async {
-      Client client = new Client();
-      FormRequest request = client.newFormRequest();
-      await _testRequest(request);
-      client.close();
-    });
+    _runHttpClientSuite(() => new Client());
+  });
 
-    test('newJsonRequest()', () async {
-      Client client = new Client();
-      JsonRequest request = client.newJsonRequest();
-      await _testRequest(request);
-      client.close();
-    });
+  group('HttpClient', () {
+    _runHttpClientSuite(() => new HttpClient());
+  });
+}
 
-    test('newMultipartRequest()', () async {
-      Client client = new Client();
-      MultipartRequest request = client.newMultipartRequest();
-      request.fields['key'] = 'value';
-      await _testRequest(request);
-      client.close();
-    });
+_runHttpClientSuite(Client getClient()) {
+  Client client;
 
-    test('newRequest()', () async {
-      Client client = new Client();
-      Request request = client.newRequest();
-      await _testRequest(request);
-      client.close();
-    });
+  setUp(() {
+    client = getClient();
+  });
 
-    test('newStreamedRequest()', () async {
-      Client client = new Client();
-      StreamedRequest request = client.newStreamedRequest();
-      await _testRequest(request);
-      client.close();
-    });
+  test('newFormRequest()', () async {
+    FormRequest request = client.newFormRequest();
+    await _testRequest(request);
+    client.close();
+  });
 
-    test('should support multiple concurrent requests', () async {
-      Client client = new Client();
-      List<Future> requests = [
-        client.newFormRequest().post(uri: IntegrationPaths.reflectEndpointUri),
-        client.newJsonRequest().put(uri: IntegrationPaths.reflectEndpointUri),
-        (client.newMultipartRequest()..fields['f'] = 'v')
-            .patch(uri: IntegrationPaths.reflectEndpointUri),
-        client.newRequest().get(uri: IntegrationPaths.reflectEndpointUri),
-        client
-            .newStreamedRequest()
-            .delete(uri: IntegrationPaths.reflectEndpointUri),
-        client
-            .newRequest()
-            .send('OPTIONS', uri: IntegrationPaths.reflectEndpointUri),
-      ];
-      await Future.wait(requests);
-    });
+  test('newJsonRequest()', () async {
+    JsonRequest request = client.newJsonRequest();
+    await _testRequest(request);
+    client.close();
+  });
 
-    test('close() should prevent new requests from being created', () async {
-      Client client = new Client();
-      client.close();
-      expect(() {
-        client.newRequest();
-      }, throwsStateError);
-    });
+  test('newMultipartRequest()', () async {
+    MultipartRequest request = client.newMultipartRequest();
+    request.fields['key'] = 'value';
+    await _testRequest(request);
+    client.close();
+  });
 
-    test('close() should abort all in-flight requests', () async {
-      Client client = new Client();
+  test('newRequest()', () async {
+    Request request = client.newRequest();
+    await _testRequest(request);
+    client.close();
+  });
 
-      // We will let this request finish before closing the client.
-      Request willComplete = client.newRequest();
-      await willComplete.get(uri: IntegrationPaths.pingEndpointUri);
+  test('newStreamedRequest()', () async {
+    StreamedRequest request = client.newStreamedRequest();
+    await _testRequest(request);
+    client.close();
+  });
 
-      // This request should be canceled before it times out.
-      Request willNotComplete = client.newRequest();
-      Future willThrow =
-          willNotComplete.get(uri: IntegrationPaths.timeoutEndpointUri);
+  test('should support multiple concurrent requests', () async {
+    List<Future> requests = [
+      client.newFormRequest().post(uri: IntegrationPaths.reflectEndpointUri),
+      client.newJsonRequest().put(uri: IntegrationPaths.reflectEndpointUri),
+      (client.newMultipartRequest()..fields['f'] = 'v')
+          .patch(uri: IntegrationPaths.reflectEndpointUri),
+      client.newRequest().get(uri: IntegrationPaths.reflectEndpointUri),
+      client
+          .newStreamedRequest()
+          .delete(uri: IntegrationPaths.reflectEndpointUri),
+      client
+          .newRequest()
+          .send('OPTIONS', uri: IntegrationPaths.reflectEndpointUri),
+    ];
+    await Future.wait(requests);
+  });
 
-      // Closing the client should not affect the completed request, but should
-      // abort the pending request.
-      client.close();
+  test('close() should prevent new requests from being created', () async {
+    client.close();
+    expect(() {
+      client.newRequest();
+    }, throwsStateError);
+  });
 
-      expect(willThrow, throwsA(new isInstanceOf<RequestException>()));
-    });
+  test('close() should abort all in-flight requests', () async {
+    // We will let this request finish before closing the client.
+    Request willComplete = client.newRequest();
+    await willComplete.get(uri: IntegrationPaths.pingEndpointUri);
+
+    // This request should be canceled before it times out.
+    Request willNotComplete = client.newRequest();
+    Future willThrow =
+        willNotComplete.get(uri: IntegrationPaths.timeoutEndpointUri);
+
+    // Closing the client should not affect the completed request, but should
+    // abort the pending request.
+    client.close();
+
+    expect(willThrow, throwsA(new isInstanceOf<RequestException>()));
   });
 }
 

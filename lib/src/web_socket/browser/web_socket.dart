@@ -13,48 +13,48 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:html';
+import 'dart:html' as html;
 import 'dart:typed_data';
 
-import 'package:w_transport/src/web_socket/common/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket_exception.dart';
+import 'package:w_transport/src/web_socket/common/web_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 
-/// Implementation of the platform-dependent pieces of the [WSocket] class for
+/// Implementation of the platform-dependent pieces of the [WebSocket] class for
 /// the browser. This class uses native WebSockets.
-class BrowserWSocket extends CommonWSocket implements WSocket {
-  static Future<WSocket> connect(Uri uri,
+class BrowserWebSocket extends CommonWebSocket implements WebSocket {
+  static Future<WebSocket> connect(Uri uri,
       {Iterable<String> protocols, Map<String, dynamic> headers}) async {
     // Establish a Web Socket connection.
-    WebSocket socket = new WebSocket(uri.toString(), protocols);
-    if (socket == null) {
-      throw new WSocketException('Could not connect to $uri');
+    var webSocket = new html.WebSocket(uri.toString(), protocols);
+    if (webSocket == null) {
+      throw new WebSocketException('Could not connect to $uri');
     }
 
     // Listen for and store the close event. This will determine whether or
     // not the socket connected successfully, and will also be used later
     // to handle the web socket closing.
-    Future<CloseEvent> closed = socket.onClose.first;
+    Future<html.CloseEvent> closed = webSocket.onClose.first;
 
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
     Completer connected = new Completer();
-    socket.onOpen.first.then(connected.complete);
+    webSocket.onOpen.first.then(connected.complete);
     closed.then((_) {
       if (!connected.isCompleted) {
         connected
-            .completeError(new WSocketException('Could not connect to $uri'));
+            .completeError(new WebSocketException('Could not connect to $uri'));
       }
     });
 
     await connected.future;
-    return new BrowserWSocket._(socket, closed);
+    return new BrowserWebSocket._(webSocket, closed);
   }
 
   /// The underlying native WebSocket.
-  WebSocket _webSocket;
+  html.WebSocket _webSocket;
 
-  BrowserWSocket._(this._webSocket, Future<CloseEvent> webSocketClosed)
+  BrowserWebSocket._(this._webSocket, Future<html.CloseEvent> webSocketClosed)
       : super() {
     webSocketSubscription = _webSocket.onMessage.listen((messageEvent) {
       onIncomingData(messageEvent.data);
@@ -102,7 +102,7 @@ class BrowserWSocket extends CommonWSocket implements WSocket {
 
   @override
   void validateOutgoingData(Object data) {
-    if (data is! Blob &&
+    if (data is! html.Blob &&
         data is! ByteBuffer &&
         data is! String &&
         data is! TypedData) {

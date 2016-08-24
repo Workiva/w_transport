@@ -19,7 +19,7 @@ import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/vm/http_client.dart';
 import 'package:w_transport/src/http/vm/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
-import 'package:w_transport/src/web_socket/w_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket.dart';
 import 'package:w_transport/src/web_socket/vm/w_socket.dart';
 
 /// Adapter for the Dart VM. Exposes factories for all of the transport classes
@@ -45,8 +45,8 @@ class VMAdapter implements PlatformAdapter {
   /// [StreamedRequest].
   StreamedRequest newStreamedRequest() => new VMStreamedRequest();
 
-  /// Construct a new [ServerWSocket] instance that implements [WSocket].
-  Future<WSocket> newWSocket(Uri uri,
+  /// Construct a new [VMWebSocket] instance that implements [WebSocket].
+  Future<WebSocket> newWebSocket(Uri uri,
           {Map<String, dynamic> headers,
           Iterable<String> protocols,
           bool sockJSDebug,
@@ -54,5 +54,5 @@ class VMAdapter implements PlatformAdapter {
           List<String> sockJSProtocolsWhitelist,
           Duration sockJSTimeout,
           bool useSockJS}) =>
-      VMWSocket.connect(uri, protocols: protocols, headers: headers);
+      VMWebSocket.connect(uri, protocols: protocols, headers: headers);
 }

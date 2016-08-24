@@ -20,8 +20,8 @@
 /// as it provides much greater reuse value.
 import 'dart:async';
 
-import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/web_socket/w_socket.dart';
 
 /// A two-way communication object for WebSocket clients. Establishes
 /// a WebSocket connection, sends data or streams of data to the server,
@@ -75,9 +75,7 @@ import 'package:w_transport/src/platform_adapter.dart';
 ///     // registering an "onDone()" handler also works
 ///     webSocket.listen((_) {}, onDone: () { ... });
 ///
-/// TODO: Remove this class in 4.0.0 and move the abstract definition into the `WebSocket` class.
-@Deprecated(v3Deprecation + 'Use `WebSocket` instead.')
-abstract class WSocket implements Stream, StreamSink {
+abstract class WebSocket extends WSocket implements Stream, StreamSink {
   /// Create a new WebSocket connection. The given [uri] must use the scheme
   /// `ws` or `wss`.
   ///
@@ -86,7 +84,7 @@ abstract class WSocket implements Stream, StreamSink {
   /// Additional headers to be used in setting up the connection can be
   /// specified in [headers]. This only applies to server-side usage. See
   /// `dart:io`'s [WebSocket] for more information.
-  static Future<WSocket> connect(Uri uri,
+  static Future<WebSocket> connect(Uri uri,
       {Map<String, dynamic> headers,
       Iterable<String> protocols,
       bool sockJSDebug,

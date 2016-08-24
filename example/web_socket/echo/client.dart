@@ -75,7 +75,7 @@ main() async {
       });
 
       logs.appendText('Connected.\n');
-    } on WSocketException catch (e, stackTrace) {
+    } on WebSocketException catch (e, stackTrace) {
       logs.appendText(
           '> ERROR: Could not connect to web socket on $wsServer\n');
       print('Could not connect to web socket.\n$e\n$stackTrace');

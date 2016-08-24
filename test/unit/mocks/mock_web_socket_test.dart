@@ -19,6 +19,8 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
 
+import 'package:w_transport/src/web_socket/mock/web_socket.dart';
+
 import '../../naming.dart';
 
 void main() {
@@ -27,6 +29,10 @@ void main() {
     ..topic = topicMocks;
 
   group(naming.toString(), () {
+    test('MockWebSocket extends MockWSocket', () {
+      expect(new MockWebSocket(), new isInstanceOf<MockWSocket>());
+    });
+
     group('TransportMocks.webSocket', () {
       Uri webSocketUri = Uri.parse('/mock/ws');
 

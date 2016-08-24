@@ -71,8 +71,8 @@ abstract class PlatformAdapter {
   /// Constructs a new [StreamedRequest] instance.
   StreamedRequest newStreamedRequest();
 
-  /// Constructs a new [WSocket] instance.
-  Future<WSocket> newWSocket(Uri uri,
+  /// Constructs a new [WebSocket] instance.
+  Future<WebSocket> newWebSocket(Uri uri,
       {Map<String, dynamic> headers,
       Iterable<String> protocols,
       bool sockJSDebug,

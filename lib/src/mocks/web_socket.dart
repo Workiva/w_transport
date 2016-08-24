@@ -16,7 +16,7 @@ import 'dart:async';
 
 import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket_exception.dart';
+import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 
 typedef Future<WSocket> WSocketConnectHandler(Uri uri,
     {Iterable<String> protocols, Map<String, dynamic> headers});
@@ -46,7 +46,7 @@ class MockWebSocket {
     MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
     if (reject != null && reject) {
       handler = (uri, {protocols, headers}) {
-        throw new WSocketException('Mock connection to $uri rejected.');
+        throw new WebSocketException('Mock connection to $uri rejected.');
       };
     }
     MockWebSocketInternal._handlers[uri.toString()] = handler;
@@ -64,7 +64,7 @@ class MockWebSocket {
     MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
     if (reject != null && reject) {
       handler = (uri, {protocols, headers, match}) {
-        throw new WSocketException('Mock connection to $uri rejected.');
+        throw new WebSocketException('Mock connection to $uri rejected.');
       };
     }
     MockWebSocketInternal._patternHandlers[uriPattern] = handler;
@@ -106,7 +106,7 @@ class MockWebSocketInternal {
       _WebSocketConnectExpectation expectation = matchingExpectations.first;
       _expectations.remove(expectation);
       if (expectation.reject != null && expectation.reject)
-        throw new WSocketException('Mock connection to $uri rejected.');
+        throw new WebSocketException('Mock connection to $uri rejected.');
       return expectation.connectTo;
     }
 

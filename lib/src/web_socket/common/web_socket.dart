@@ -14,12 +14,12 @@
 
 import 'dart:async';
 
-import 'package:w_transport/src/web_socket/w_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket_subscription.dart';
 
-/// Implementation of the [WSocket] class that is common across all platforms.
+/// Implementation of the [WebSocket] class that is common across all platforms.
 /// Platform-dependent pieces are left as unimplemented abstract members.
-abstract class CommonWSocket extends Stream implements WSocket {
+abstract class CommonWebSocket extends Stream implements WebSocket {
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
   int closeCode;
@@ -28,7 +28,7 @@ abstract class CommonWSocket extends Stream implements WSocket {
   /// no close reason available this property will be `null`.
   String closeReason;
 
-  /// Whether or not this [WSocket] instance is closed or in the process of
+  /// Whether or not this [WebSocket] instance is closed or in the process of
   /// closing.
   bool isClosed = false;
 
@@ -38,10 +38,10 @@ abstract class CommonWSocket extends Stream implements WSocket {
 
   /// A completer that completes when both the outgoing stream sink and the
   /// incoming stream have been closed. This is used to determine when this
-  /// [WSocket] instance can be considered completely closed.
+  /// [WebSocket] instance can be considered completely closed.
   Completer<Null> _allClosed = new Completer();
 
-  /// A completer that completes when this [WSocket] instance is completely
+  /// A completer that completes when this [WebSocket] instance is completely
   /// "done" - both outgoing and incoming.
   Completer<Null> _done = new Completer();
 
@@ -70,7 +70,7 @@ abstract class CommonWSocket extends Stream implements WSocket {
   /// the underlying WebSocket.
   WSocketSubscription _incomingSubscription;
 
-  CommonWSocket() {
+  CommonWebSocket() {
     _allClosed.future.then((_) {
       if (_incomingSubscription != null &&
           _incomingSubscription.doneHandler != null) {

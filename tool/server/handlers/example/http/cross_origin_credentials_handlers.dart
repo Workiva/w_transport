@@ -53,7 +53,7 @@ class SessionHandler extends Handler {
     enableCors(credentials: true);
   }
 
-  Map createSessionHeaders(String sessionCookieValue) {
+  Map<String, String> createSessionHeaders(String sessionCookieValue) {
     Cookie sessionCookie = new Cookie('session', sessionCookieValue);
     sessionCookie.httpOnly = true;
     sessionCookie.path = '/';

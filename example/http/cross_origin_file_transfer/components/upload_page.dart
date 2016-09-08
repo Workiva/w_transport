@@ -40,7 +40,7 @@ class UploadPage extends react.Component {
   /// Listen for new file uploads and forward them to the file transfer list component.
   void _newUploads(List<Upload> newUploads) {
     List<Upload> uploads = [];
-    uploads.addAll(this.state['uploads']);
+    uploads.addAll(this.state['uploads'] as Iterable<Upload>);
     uploads.addAll(newUploads);
     this.setState({'uploads': uploads});
   }
@@ -50,7 +50,7 @@ class UploadPage extends react.Component {
   /// from memory.
   void _removeUpload(Upload upload) {
     List<Upload> uploads = [];
-    uploads.addAll(this.state['uploads']);
+    uploads.addAll(this.state['uploads'] as Iterable<Upload>);
     uploads.remove(upload);
     this.setState({'uploads': uploads});
   }

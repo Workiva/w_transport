@@ -117,7 +117,7 @@ class DownloadPage extends react.Component {
   /// from memory.
   void _removeDownload(Download download) {
     List<Download> downloads = [];
-    downloads.addAll(this.state['downloads']);
+    downloads.addAll(this.state['downloads'] as Iterable<Download>);
     downloads.remove(download);
     this.setState({'downloads': downloads});
   }

@@ -35,8 +35,7 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   /// The `StreamSubscription` being proxied.
   StreamSubscription<T> _sub;
 
-  WSocketSubscription(StreamSubscription this._sub, this._doneHandler,
-      {Function onCancel})
+  WSocketSubscription(this._sub, this._doneHandler, {Function onCancel})
       : _onCancel = onCancel;
 
   @override
@@ -56,8 +55,8 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   }
 
   @override
-  Future asFuture([var futureValue]) {
-    var c = new Completer();
+  Future/*<E>*/ asFuture/*<E>*/([var/*=E*/ futureValue]) {
+    var c = new Completer/*<E>*/();
     _doneHandler = () {
       c.complete(futureValue);
     };

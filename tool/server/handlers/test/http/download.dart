@@ -26,7 +26,7 @@ class DownloadHandler extends Handler {
 
   Future download(HttpRequest request) async {
     File file = new File('tool/server/handlers/test/http/file.txt');
-    Stream downloadStream = file.openRead();
+    var downloadStream = file.openRead();
     request.response.statusCode = HttpStatus.OK;
     request.response.headers
         .set('content-length', file.lengthSync().toString());

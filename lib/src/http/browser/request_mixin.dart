@@ -121,7 +121,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
 
     BaseResponse response;
     if (streamResponse) {
-      Completer result = new Completer();
+      var result = new Completer<List<int>>();
       FileReader reader = new FileReader();
       reader.onLoad.first.then((_) {
         result.complete(reader.result);

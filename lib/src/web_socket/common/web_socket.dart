@@ -100,7 +100,8 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   }
 
   /// Future that resolves when this WebSocket connection has completely closed.
-  Future get done => _done.future;
+  @override
+  Future<Null> get done => _done.future;
 
   /// Sends a message over the WebSocket connection.
   ///

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 @TestOn('browser')
+import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
@@ -92,7 +93,7 @@ void main() {
   });
 }
 
-sockJSSuite(connect(Uri uri)) {
+sockJSSuite(Future<WSocket> connect(Uri uri)) {
   runCommonWebSocketIntegrationTests(connect: connect, port: sockjsPort);
 
   var echoUri = IntegrationPaths.echoUri.replace(port: sockjsPort);

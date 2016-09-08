@@ -180,47 +180,65 @@ class MockStreamedResponse implements StreamedResponse {
   String get statusText => _response.statusText;
 
   factory MockStreamedResponse.ok(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(200,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.badRequest(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(400,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.unauthorized(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(401,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.forbidden(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(403,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.notFound(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(404,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.methodNotAllowed(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(405,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.internalServerError(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(500,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.notImplemented(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(501,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.badGateway(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(502,
           byteStream: byteStream, headers: headers, statusText: statusText);
 

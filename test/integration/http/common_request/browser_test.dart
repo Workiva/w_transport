@@ -56,7 +56,7 @@ void main() {
         request.autoRetry
           ..enabled = true
           ..maxRetries = 2
-          ..test = (request, response, willRetry) {
+          ..test = (request, response, willRetry) async {
             if (response == null) {
               return true;
             }

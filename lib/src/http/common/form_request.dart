@@ -66,7 +66,7 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
   @override
   Future<HttpBody> finalizeBody([body]) async {
     if (body != null) {
-      this.fields = body;
+      this.fields = body as Map<String, dynamic>;
     }
     return new HttpBody.fromBytes(contentType, _encodedQuery,
         fallbackEncoding: encoding);

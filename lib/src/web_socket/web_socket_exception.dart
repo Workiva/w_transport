@@ -12,18 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
+import 'package:w_transport/src/web_socket/w_socket_exception.dart';
 
-import 'package:w_transport/src/mocks/web_socket.dart'
-    show MockWebSocketInternal;
-import 'package:w_transport/src/web_socket/mock/web_socket.dart';
-import 'package:w_transport/src/web_socket/web_socket.dart';
-
-abstract class MockWSocket extends MockWebSocket implements WebSocket {
-  static Future<WebSocket> connect(Uri uri,
-          {Iterable<String> protocols, Map<String, dynamic> headers}) =>
-      MockWebSocketInternal.handleWebSocketConnection(uri,
-          protocols: protocols, headers: headers);
-
-  factory MockWSocket() => new MockWebSocket();
+/// Represents an exception in the connection process of a Web Socket.
+class WebSocketException extends WSocketException {
+  WebSocketException([String message]) : super(message);
+  String toString() => 'WebSocketException: $message';
 }

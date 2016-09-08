@@ -20,7 +20,7 @@ import 'package:w_transport/src/http/mock/requests.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 import 'package:w_transport/src/web_socket/mock/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket.dart';
 
 /// Adapter for the testing environment. Exposes factories for all of the
 /// transport classes that return mock implementations that can be controlled
@@ -49,8 +49,8 @@ class MockAdapter implements PlatformAdapter {
   /// [StreamedRequest].
   StreamedRequest newStreamedRequest() => new MockStreamedRequest();
 
-  /// Construct a new [MockWSocket] instance that implements [WSocket].
-  Future<WSocket> newWSocket(Uri uri,
+  /// Construct a new [MockWebSocket] instance that implements [WebSocket].
+  Future<WebSocket> newWebSocket(Uri uri,
           {Map<String, dynamic> headers,
           Iterable<String> protocols,
           bool sockJSDebug,

@@ -20,8 +20,8 @@ import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/platform_adapter.dart';
 import 'package:w_transport/src/web_socket/browser/sockjs.dart';
-import 'package:w_transport/src/web_socket/browser/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket.dart';
+import 'package:w_transport/src/web_socket/browser/web_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket.dart';
 
 /// Adapter for the browser platform. Exposes factories for all of the transport
 /// classes that return browser-specific implementations that leverage
@@ -68,8 +68,9 @@ class BrowserAdapter implements PlatformAdapter {
   /// [StreamedRequest].
   StreamedRequest newStreamedRequest() => new BrowserStreamedRequest();
 
-  /// Construct a new [ClientWSocket] instance that implements [WSocket].
-  Future<WSocket> newWSocket(Uri uri,
+  /// Construct a new [BrowserWebSocket] or [SockJSWebSocket] instance that
+  /// implements [WebSocket].
+  Future<WebSocket> newWebSocket(Uri uri,
       {Map<String, dynamic> headers,
       Iterable<String> protocols,
       bool sockJSDebug,
@@ -85,13 +86,13 @@ class BrowserAdapter implements PlatformAdapter {
     useSockJS = useSockJS ?? _useSockJS;
 
     if (useSockJS) {
-      return SockJSSocket.connect(uri,
+      return SockJSWebSocket.connect(uri,
           debug: sockJSDebug,
           noCredentials: sockJSNoCredentials,
           protocolsWhitelist: sockJSProtocolsWhitelist,
           timeout: sockJSTimeout);
     } else {
-      return BrowserWSocket.connect(uri,
+      return BrowserWebSocket.connect(uri,
           protocols: protocols, headers: headers);
     }
   }

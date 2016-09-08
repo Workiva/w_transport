@@ -16,16 +16,16 @@ import 'dart:async';
 
 import 'package:sockjs_client/sockjs_client.dart' as sockjs;
 
-import 'package:w_transport/src/web_socket/common/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket_exception.dart';
+import 'package:w_transport/src/web_socket/common/web_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 
-/// Implementation of the platform-dependent pieces of the [WSocket] class for
+/// Implementation of the platform-dependent pieces of the [WebSocket] class for
 /// the SockJS browser configuration. This class uses the SockJS library to
 /// establish a WebSocket-like connection (could be a native WebSocket, could
 /// be XHR-streaming).
-class SockJSSocket extends CommonWSocket implements WSocket {
-  static Future<WSocket> connect(Uri uri,
+class SockJSWebSocket extends CommonWebSocket implements WebSocket {
+  static Future<WebSocket> connect(Uri uri,
       {bool debug: false,
       bool noCredentials: false,
       List<String> protocolsWhitelist,
@@ -54,12 +54,12 @@ class SockJSSocket extends CommonWSocket implements WSocket {
     closed.then((_) {
       if (!connected.isCompleted) {
         connected
-            .completeError(new WSocketException('Could not connect to $uri'));
+            .completeError(new WebSocketException('Could not connect to $uri'));
       }
     });
 
     await connected.future;
-    return new SockJSSocket._(client, closed);
+    return new SockJSWebSocket._(client, closed);
   }
 
   /// The "WebSocket" - in this case, it's a SockJS Client that has an API
@@ -67,7 +67,7 @@ class SockJSSocket extends CommonWSocket implements WSocket {
   /// used.
   sockjs.Client _webSocket;
 
-  SockJSSocket._(this._webSocket, Future webSocketClosed) : super() {
+  SockJSWebSocket._(this._webSocket, Future webSocketClosed) : super() {
     webSocketClosed.then((closeEvent) {
       closeCode = closeEvent.code;
       closeReason = closeEvent.reason;

@@ -13,32 +13,32 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' as io;
 
-import 'package:w_transport/src/web_socket/common/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket_exception.dart';
+import 'package:w_transport/src/web_socket/common/web_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 
-/// Implementation of the platform-dependent pieces of the [WSocket] class for
+/// Implementation of the platform-dependent pieces of the [WebSocket] class for
 /// the Dart VM. This class uses native Dart WebSockets.
-class VMWSocket extends CommonWSocket implements WSocket {
-  static Future<WSocket> connect(Uri uri,
+class VMWebSocket extends CommonWebSocket implements WebSocket {
+  static Future<WebSocket> connect(Uri uri,
       {Iterable<String> protocols, Map<String, dynamic> headers}) async {
-    WebSocket webSocket;
+    io.WebSocket webSocket;
     try {
-      webSocket = await WebSocket.connect(uri.toString(),
-          protocols: protocols, headers: headers);
-    } on SocketException catch (e) {
-      throw new WSocketException(e.toString());
+      webSocket = await io.WebSocket
+          .connect(uri.toString(), protocols: protocols, headers: headers);
+    } on io.SocketException catch (e) {
+      throw new WebSocketException(e.toString());
     }
 
-    return new VMWSocket._(webSocket);
+    return new VMWebSocket._(webSocket);
   }
 
   /// The underlying native WebSocket.
-  WebSocket _webSocket;
+  io.WebSocket _webSocket;
 
-  VMWSocket._(this._webSocket) : super() {
+  VMWebSocket._(this._webSocket) : super() {
     webSocketSubscription = _webSocket.listen(onIncomingData, onDone: () {
       closeCode = _webSocket.closeCode;
       closeReason = _webSocket.closeReason;
@@ -83,7 +83,7 @@ class VMWSocket extends CommonWSocket implements WSocket {
   void validateOutgoingData(Object data) {
     if (data is! String && data is! List<int>) {
       throw new ArgumentError(
-          'WSocket data type must be a String or a List<int>.');
+          'WebSocket data type must be a String or a List<int>.');
     }
   }
 }

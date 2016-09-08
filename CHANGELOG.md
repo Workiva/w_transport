@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.3](https://github.com/Workvia/w_transport/compare/2.9.2...2.9.3)
+_September 8, 2016_
+
+- **Bug Fix:** if a request is canceled right before it would also have exceeded
+  the timeout threshold, a `StateError` may be thrown due to a `Completer` being
+  completed more than once. This is fixed now.
+
 ## [2.9.2](https://github.com/Workvia/w_transport/compare/2.9.1...2.9.2)
 _August 11, 2016_
 

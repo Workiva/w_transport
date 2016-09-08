@@ -522,7 +522,9 @@ abstract class CommonRequest extends Object
   }
 
   void _timeoutRequest() {
-    abortRequest();
+    if (!isCanceled) {
+      abortRequest();
+    }
     isTimedOut = true;
     _timeoutError = new TimeoutException(
         'Request took too long to complete.', timeoutThreshold);

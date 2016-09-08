@@ -65,7 +65,7 @@ class BrowserMultipartRequest extends CommonRequest
   }
 
   Map<String, dynamic> get files =>
-      isSent ? new Map.unmodifiable(_files) : _files;
+      (isSent ? new Map.unmodifiable(_files) : _files) as Map<String, dynamic>;
 
   set files(Map<String, dynamic> files) {
     verifyUnsent();

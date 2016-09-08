@@ -78,7 +78,10 @@ class Pathway<T> {
   Future<T> process(T payload) async {
     for (var interceptor in _interceptors) {
       var result = interceptor(payload);
-      payload = (result is Future) ? await result : result;
+      if (result is Future) {
+        result = await result;
+      }
+      payload = result as T;
     }
     return payload;
   }

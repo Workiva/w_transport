@@ -54,7 +54,7 @@ main() async {
     Duration timeout = sockJSTimeout.value.isEmpty
         ? null
         : new Duration(milliseconds: sockJSTimeout.valueAsNumber);
-    var protocols = [];
+    var protocols = <String>[];
     if (sockJSWebSocket.checked) {
       protocols.add('websocket');
     }

@@ -123,7 +123,7 @@ class HttpBody extends BaseHttpBody {
   /// Returns this request/response body as a list of bytes.
   Uint8List asBytes() {
     if (_bytes == null) {
-      var encoded;
+      List<int> encoded;
       try {
         encoded = encoding.encode(_body);
       } on ArgumentError {

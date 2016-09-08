@@ -49,7 +49,8 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
   }
 
   @override
-  Future openRequest([HttpClient client]) async {
+  Future openRequest([client]) async {
+    client = client as HttpClient;
     if (client != null) {
       _client = client;
       _isSingle = false;

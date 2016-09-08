@@ -108,7 +108,7 @@ void main() {
       });
 
       test('parseContentTypeFromHeaders() no content-type header', () {
-        var headers = {};
+        var headers = <String, String>{};
         MediaType ct = http_utils.parseContentTypeFromHeaders(headers);
         expect(ct.mimeType, equals('application/octet-stream'),
             reason:
@@ -185,7 +185,7 @@ void main() {
       });
 
       test('parseEncodingFromHeaders()', () {
-        var headers;
+        Map<String, String> headers;
         headers = {'content-type': 'text/plain; charset=utf-8'};
         expect(http_utils.parseEncodingFromHeaders(headers), equals(UTF8));
         headers = {'content-type': 'text/plain; charset=iso-8859-1'};
@@ -204,7 +204,7 @@ void main() {
       });
 
       test('parseEncodingFromHeaders() no content-type', () {
-        var headers = {};
+        var headers = <String, String>{};
         expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII),
             equals(ASCII));
       });
@@ -216,7 +216,7 @@ void main() {
       });
 
       test('reduceByteStream()', () async {
-        Stream byteStream = new Stream.fromIterable([
+        var byteStream = new Stream<List<int>>.fromIterable([
           [1, 2, 3],
           [4, 5],
           [6, 7, 8]
@@ -226,12 +226,12 @@ void main() {
       });
 
       test('reduceByteStream() empty', () async {
-        Stream byteStream = new Stream.fromIterable([]);
+        var byteStream = new Stream<List<int>>.fromIterable([]);
         expect(await http_utils.reduceByteStream(byteStream), isEmpty);
       });
 
       test('reduceByteStream() single element', () async {
-        Stream byteStream = new Stream.fromIterable([
+        var byteStream = new Stream<List<int>>.fromIterable([
           [1, 2]
         ]);
         var expected = new Uint8List.fromList([1, 2]);
@@ -239,7 +239,7 @@ void main() {
       });
 
       test('ByteStreamProgressListener', () async {
-        Stream byteStream = new Stream.fromIterable([
+        var byteStream = new Stream<List<int>>.fromIterable([
           [1, 2, 3],
           [4, 5, 6],
           [7, 8, 9, 10]
@@ -267,7 +267,7 @@ void main() {
       });
 
       test('ByteStreamProgressListener pause/resume', () async {
-        Stream byteStream = new Stream.fromIterable([
+        var byteStream = new Stream<List<int>>.fromIterable([
           [1, 2, 3],
           [4, 5, 6],
         ]);

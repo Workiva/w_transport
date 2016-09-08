@@ -33,14 +33,14 @@ Directory filesDirectory =
     new Directory('example/http/cross_origin_file_transfer/files');
 
 Future<String> _readFileUploadAsString(HttpMultipartFormData formData) async {
-  List<String> parts = await formData.toList();
+  var parts = (await formData.toList() as List<String>);
   return parts.join('');
 }
 
 Future<List<int>> _readFileUploadAsBytes(HttpMultipartFormData formData) async {
   List<int> bytes = [];
-  await for (List<int> data in formData) {
-    bytes.addAll(data);
+  await for (var data in formData) {
+    bytes.addAll(data as List<int>);
   }
   return bytes;
 }
@@ -151,15 +151,14 @@ class UploadHandler extends Handler {
 class FilesHandler extends Handler {
   FileWatcher fw;
   FilesHandler()
-      : super(),
-        fw = new FileWatcher(filesDirectory) {
+      : fw = new FileWatcher(filesDirectory),
+        super() {
     enableCors();
   }
 
   Future get(HttpRequest request) async {
-    List<Map> filesPayload = fw.files
-        .where(
-            (FileSystemEntity entity) => entity is File && entity.existsSync())
+    List<Map> filesPayload = (fw.files.where((FileSystemEntity entity) =>
+            entity is File && entity.existsSync()) as Iterable<File>)
         .map((File entity) => {
               'name': Uri.parse(entity.path).pathSegments.last,
               'size': entity.lengthSync()
@@ -171,9 +170,8 @@ class FilesHandler extends Handler {
   }
 
   Future delete(HttpRequest request) async {
-    fw.files
-        .where((FileSystemEntity entity) => entity is File)
-        .forEach((File entity) {
+    (fw.files.where((FileSystemEntity entity) => entity is File)
+        as Iterable<File>).forEach((File entity) {
       entity.deleteSync();
     });
     request.response.statusCode = HttpStatus.OK;

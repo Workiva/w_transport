@@ -206,7 +206,7 @@ class MockHttpInternal {
       return false;
     }, orElse: () => null);
 
-    var handlersByMethod = [];
+    var handlersByMethod = <String, dynamic>{};
     if (matchingRequestHandlerKey != null) {
       handlersByMethod = _requestHandlers[matchingRequestHandlerKey];
     } else if (matchingPatternRequestHandlerKey != null) {

@@ -99,8 +99,8 @@ void main() {
 void _runCommonRequestSuiteFor(
     String name, BaseRequest requestFactory({bool withBody})) {
   group(name, () {
-    Uri requestUri = Uri.parse('/mock/request');
-    Map requestHeaders = {'x-custom': 'header'};
+    var requestUri = Uri.parse('/mock/request');
+    var requestHeaders = <String, String>{'x-custom': 'header'};
 
     setUp(() {
       MockTransports.reset();
@@ -549,9 +549,13 @@ _runAutoRetryTestSuiteFor(
     });
 
     test('clone()', () {
+      Future<Null> reqInt(BaseRequest request) async {}
+      Future<BaseResponse> respInt(
+              FinalizedRequest request, BaseResponse response,
+              [RequestException exception]) async =>
+          response;
+
       var headers = {'x-custom': 'header'};
-      var reqInt = (request) async {};
-      var respInt = (request, response, [exception]) async {};
       var tt = new Duration(seconds: 10);
       var encoding = LATIN1;
 
@@ -1149,8 +1153,8 @@ _runAutoRetryTestSuiteFor(
       });
 
       test('manual retry() throws if not yet complete', () async {
-        MockTransports.http
-            .when(requestUri, (request) => new Completer().future);
+        MockTransports.http.when(
+            requestUri, (request) => new Completer<BaseResponse>().future);
         BaseRequest request = requestFactory();
         request.get(uri: requestUri);
         await new Future.delayed(new Duration(milliseconds: 10));
@@ -1179,8 +1183,8 @@ _runAutoRetryTestSuiteFor(
       });
 
       test('manual streamRetry() throws if not yet complete', () async {
-        MockTransports.http
-            .when(requestUri, (request) => new Completer().future);
+        MockTransports.http.when(
+            requestUri, (request) => new Completer<BaseResponse>().future);
         BaseRequest request = requestFactory();
         request.get(uri: requestUri);
         await new Future.delayed(new Duration(milliseconds: 10));

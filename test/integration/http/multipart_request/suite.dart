@@ -33,7 +33,7 @@ void runMultipartRequestSuite() {
       chunks.forEach((chunk) {
         size += chunk.length;
       });
-      Stream fileStream = new Stream.fromIterable(chunks);
+      var fileStream = new Stream<List<int>>.fromIterable(chunks);
       MultipartFile file = new MultipartFile(fileStream, size);
 
       MultipartRequest request = new MultipartRequest()

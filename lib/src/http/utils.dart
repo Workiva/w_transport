@@ -30,7 +30,7 @@ bool isAsciiOnly(String value) => _asciiOnly.hasMatch(value);
 /// Converts a [Map] of field names to values to a query string. The resulting
 /// query string can be used as a URI query string or the body of a
 /// `application/x-www-form-urlencoded` request or response.
-String mapToQuery(Map<String, String> map, {Encoding encoding}) {
+String mapToQuery(Map<String, dynamic> map, {Encoding encoding}) {
   List<String> params = [];
   map.forEach((key, value) {
     // Support fields with multiple values.
@@ -109,7 +109,7 @@ Encoding parseEncodingFromHeaders(Map<String, String> headers,
 /// Converts a query string to a [Map] of parameter names to values. Works for
 /// URI query string or an `application/x-www-form-urlencoded` body.
 Map<String, dynamic> queryToMap(String query, {Encoding encoding}) {
-  var fields = {};
+  var fields = <String, dynamic>{};
   for (var pair in query.split('&')) {
     var pieces = pair.split('=');
     if (pieces.isEmpty) continue;
@@ -138,7 +138,7 @@ Map<String, dynamic> queryToMap(String query, {Encoding encoding}) {
 Future<Uint8List> reduceByteStream(Stream<List<int>> byteStream) async {
   try {
     List<int> bytes = await byteStream.reduce((prev, next) {
-      var combined = new List.from(prev)..addAll(next);
+      var combined = new List<int>.from(prev)..addAll(next);
       return combined;
     });
     return new Uint8List.fromList(bytes);
@@ -165,17 +165,17 @@ class ByteStreamProgressListener {
   Stream<List<int>> _listenTo(Stream<List<int>> byteStream, {int total}) {
     int loaded = 0;
 
-    var progressListener =
-        new StreamTransformer((Stream<List<int>> input, bool cancelOnError) {
-      StreamController controller;
-      StreamSubscription subscription;
+    var progressListener = new StreamTransformer<List<int>, List<int>>(
+        (Stream<List<int>> input, bool cancelOnError) {
+      StreamController<List<int>> controller;
+      StreamSubscription<List<int>> subscription;
 
-      controller = new StreamController(onListen: () {
+      controller = new StreamController<List<int>>(onListen: () {
         subscription = input.listen(
             (bytes) {
               controller.add(bytes);
               try {
-                loaded += (bytes as List<int>).length;
+                loaded += bytes.length;
                 _progressController.add(new RequestProgress(loaded, total));
               } catch (e) {}
             },

@@ -558,6 +558,19 @@ void _runCommonRequestSuiteFor(
       })));
     });
 
+    test(
+        'timeoutThreshold cancels the request if exceeded but not if it has already been canceled',
+        () async {
+      BaseRequest request = requestFactory()
+        ..timeoutThreshold = new Duration(milliseconds: 500);
+      var future = request.get(uri: requestUri);
+      await new Future.delayed(new Duration(milliseconds: 250));
+      request.abort();
+      expect(future, throwsA(predicate((error) {
+        return error is RequestException && error.error is! TimeoutException;
+      })));
+    });
+
     test('configure() should throw if called after request has been sent',
         () async {
       MockTransports.http.expect('GET', requestUri);

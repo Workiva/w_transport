@@ -38,14 +38,14 @@ void main() {
       List<int> data = [1, 2, 3];
       WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(data);
-      socket.close();
+      await socket.close();
     });
 
     test('should support String', () async {
       String data = 'data';
       WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(data);
-      socket.close();
+      await socket.close();
     });
 
     test('should throw when attempting to send invalid data', () async {
@@ -53,7 +53,7 @@ void main() {
       expect(() {
         socket.add(true);
       }, throwsArgumentError);
-      socket.close();
+      await socket.close();
     });
   });
 }

@@ -19,12 +19,12 @@ void mockEchoEndpoint(Uri uri) {
   MockTransports.http.when(uri, (FinalizedRequest request) async {
     var headers = {'content-type': request.headers['content-type']};
     if (request.body is HttpBody) {
-      return new MockResponse.ok(
-          body: (request.body as HttpBody).asString(), headers: headers);
+      HttpBody body = request.body;
+      return new MockResponse.ok(body: body.asString(), headers: headers);
     } else {
+      StreamedHttpBody body = request.body;
       return new MockStreamedResponse.ok(
-          byteStream: (request.body as StreamedHttpBody).byteStream,
-          headers: headers);
+          byteStream: body.byteStream, headers: headers);
     }
   });
 }

@@ -25,19 +25,24 @@ final num _gb = math.pow(2, 30);
 final num _mb = math.pow(2, 20);
 final num _kb = math.pow(2, 10);
 
-var downloadPage = react.registerComponent(() => new DownloadPage());
+dynamic downloadPage = react.registerComponent(() => new DownloadPage());
 
 class DownloadPage extends react.Component {
   RemoteFiles remoteFiles;
   StreamSubscription fileStreamSubscription;
   StreamSubscription fileStreamErrorSubscription;
 
+  Iterable<Download> get currentDownloads =>
+      new List<Download>.from(this.state['downloads']);
+
+  @override
   Map getDefaultProps() {
     return {
       'active': false,
     };
   }
 
+  @override
   Map getInitialState() {
     return {
       // List of in-progress or completed downloads
@@ -49,6 +54,7 @@ class DownloadPage extends react.Component {
     };
   }
 
+  @override
   void componentWillMount() {
     remoteFiles = RemoteFiles.connect();
     fileStreamSubscription = remoteFiles.stream
@@ -63,6 +69,7 @@ class DownloadPage extends react.Component {
     });
   }
 
+  @override
   void componentWillUnmount() {
     remoteFiles.close();
     fileStreamSubscription.cancel();
@@ -109,7 +116,7 @@ class DownloadPage extends react.Component {
       unit = 'KB';
     }
 
-    return '${size.toStringAsFixed(1)} ${unit}';
+    return '${size.toStringAsFixed(1)} $unit';
   }
 
   /// Called when the file transfer list component is done with the transfer
@@ -117,12 +124,13 @@ class DownloadPage extends react.Component {
   /// from memory.
   void _removeDownload(Download download) {
     List<Download> downloads = [];
-    downloads.addAll(this.state['downloads'] as Iterable<Download>);
+    downloads.addAll(currentDownloads);
     downloads.remove(download);
     this.setState({'downloads': downloads});
   }
 
-  render() {
+  @override
+  dynamic render() {
     var error = '';
     if (this.state['error'] != null) {
       error = react.p({'className': 'error'},

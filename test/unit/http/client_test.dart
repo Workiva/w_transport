@@ -34,11 +34,9 @@ abstract class RespIntMixin implements HttpInterceptor {
   Future<ResponsePayload> interceptResponse(ResponsePayload payload) async {
     var newHeaders = new Map<String, String>.from(payload.response.headers);
     newHeaders['x-intercepted'] = 'true';
-    payload.response = new Response.fromString(
-        payload.response.status,
-        payload.response.statusText,
-        newHeaders,
-        (payload.response as Response).body.asString());
+    Response response = payload.response;
+    payload.response = new Response.fromString(payload.response.status,
+        payload.response.statusText, newHeaders, response.body.asString());
     return payload;
   }
 }
@@ -61,13 +59,11 @@ class AsyncInt extends HttpInterceptor {
   Future<ResponsePayload> interceptResponse(ResponsePayload payload) async {
     await new Future.delayed(new Duration(milliseconds: 500));
     var headers = new Map<String, String>.from(payload.response.headers);
+    Response response = payload.response;
     headers['x-interceptor'] =
         payload.request.uri.queryParameters['interceptor'];
-    payload.response = new Response.fromString(
-        payload.response.status,
-        payload.response.statusText,
-        headers,
-        (payload.response as Response).body.asString());
+    payload.response = new Response.fromString(payload.response.status,
+        payload.response.statusText, headers, response.body.asString());
     return payload;
   }
 }
@@ -103,7 +99,7 @@ void main() {
   });
 }
 
-_runHttpClientSuite(Client getClient()) {
+void _runHttpClientSuite(Client getClient()) {
   Client client;
 
   setUp(() {

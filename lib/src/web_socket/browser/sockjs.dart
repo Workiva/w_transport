@@ -25,6 +25,32 @@ import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 /// establish a WebSocket-like connection (could be a native WebSocket, could
 /// be XHR-streaming).
 class SockJSWebSocket extends CommonWebSocket implements WebSocket {
+  /// The "WebSocket" - in this case, it's a SockJS Client that has an API
+  /// similar to that of a WebSocket, regardless of what protocol is actually
+  /// used.
+  sockjs.Client _webSocket;
+
+  SockJSWebSocket._(this._webSocket, Future webSocketClosed) : super() {
+    webSocketClosed.then((closeEvent) {
+      closeCode = closeEvent.code;
+      closeReason = closeEvent.reason;
+      onIncomingDone();
+    });
+
+    // Note: We don't listen to the SockJS client for messages immediately like
+    // we do with the native WebSockets. This is because the event streams from
+    // the SockJS client are all drawn from a single broadcast stream. To make
+    // it act like a single subscription stream (and thus make it fit the
+    // interface of a standard Stream), we create a subscription when a consumer
+    // listens to this WSocket instance, cancel that subscription when the
+    // consumer's subscription is paused, and re-listen when the consumer
+    // resumes listening. See [onIncomingListen], [onIncomingPause], and
+    // [onIncomingResume].
+
+    // Additional note: the SockJS Client has no error stream, so no need to
+    // listen for errors.
+  }
+
   static Future<WebSocket> connect(Uri uri,
       {bool debug: false,
       bool noCredentials: false,
@@ -50,7 +76,9 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
     Completer connected = new Completer();
+    // ignore: unawaited_futures
     client.onOpen.first.then(connected.complete);
+    // ignore: unawaited_futures
     closed.then((_) {
       if (!connected.isCompleted) {
         connected
@@ -60,32 +88,6 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
 
     await connected.future;
     return new SockJSWebSocket._(client, closed);
-  }
-
-  /// The "WebSocket" - in this case, it's a SockJS Client that has an API
-  /// similar to that of a WebSocket, regardless of what protocol is actually
-  /// used.
-  sockjs.Client _webSocket;
-
-  SockJSWebSocket._(this._webSocket, Future webSocketClosed) : super() {
-    webSocketClosed.then((closeEvent) {
-      closeCode = closeEvent.code;
-      closeReason = closeEvent.reason;
-      onIncomingDone();
-    });
-
-    // Note: We don't listen to the SockJS client for messages immediately like
-    // we do with the native WebSockets. This is because the event streams from
-    // the SockJS client are all drawn from a single broadcast stream. To make
-    // it act like a single subscription stream (and thus make it fit the
-    // interface of a standard Stream), we create a subscription when a consumer
-    // listens to this WSocket instance, cancel that subscription when the
-    // consumer's subscription is paused, and re-listen when the consumer
-    // resumes listening. See [onIncomingListen], [onIncomingPause], and
-    // [onIncomingResume].
-
-    // Additional note: the SockJS Client has no error stream, so no need to
-    // listen for errors.
   }
 
   @override
@@ -123,7 +125,7 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   @override
-  void onOutgoingData(data) {
+  void onOutgoingData(dynamic data) {
     // Pipe messages through to the underlying socket.
     _webSocket.send(data);
   }

@@ -20,7 +20,7 @@ import 'package:w_transport/w_transport.dart';
 
 const int _pollingInterval = 10; // 10 seconds
 
-void renderGlobalExampleMenu({nav: true, serverStatus: false}) {
+void renderGlobalExampleMenu({bool nav: true, bool serverStatus: false}) {
   // Insert a container div within which we will mount the global example menu.
   var container = document.createElement('div');
   container.id = 'global-example-menu';
@@ -44,20 +44,23 @@ Future<bool> _ping(Uri uri) async {
 Future<bool> _pingServer() async =>
     _ping(Uri.parse('http://localhost:8024/ping'));
 
-var globalExampleMenuComponent =
+dynamic globalExampleMenuComponent =
     react.registerComponent(() => new GlobalExampleMenuComponent());
 
 class GlobalExampleMenuComponent extends react.Component {
   Timer serverPolling;
 
+  @override
   Map getDefaultProps() {
     return {'nav': true, 'serverStatus': false};
   }
 
+  @override
   Map getInitialState() {
     return {'serverOnline': false};
   }
 
+  @override
   void componentWillMount() {
     if (this.props['serverStatus']) {
       _pingServer().then((bool status) {
@@ -71,13 +74,14 @@ class GlobalExampleMenuComponent extends react.Component {
     }
   }
 
+  @override
   void componentWillUnmount() {
     if (serverPolling != null) {
       serverPolling.cancel();
     }
   }
 
-  _buildServerStatusComponent(String name, bool online) {
+  Object _buildServerStatusComponent(String name, bool online) {
     String statusClass = 'server-status';
     String statusDesc = '$name offline';
     if (online) {
@@ -93,7 +97,8 @@ class GlobalExampleMenuComponent extends react.Component {
     ]);
   }
 
-  render() {
+  @override
+  dynamic render() {
     var nav;
     if (this.props['nav']) {
       nav = react.a({'href': '/'}, '\u2190 All Examples');

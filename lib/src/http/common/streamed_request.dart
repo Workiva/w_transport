@@ -31,8 +31,10 @@ abstract class CommonStreamedRequest extends CommonRequest
 
   int _contentLength;
 
+  @override
   Stream<List<int>> get body => _body;
 
+  @override
   set body(Stream<List<int>> byteStream) {
     verifyUnsent();
     _body = byteStream;
@@ -59,7 +61,7 @@ abstract class CommonStreamedRequest extends CommonRequest
   }
 
   @override
-  Future<StreamedHttpBody> finalizeBody([body]) async {
+  Future<StreamedHttpBody> finalizeBody([dynamic body]) async {
     if (body != null) {
       if (body is Stream<List<int>>) {
         this.body = body;

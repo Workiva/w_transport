@@ -21,8 +21,15 @@ import 'package:w_transport/src/http/http_body.dart';
 
 class FormDataBody extends BaseHttpBody {
   final FormData formData;
-  FormDataBody(FormData this.formData);
+
+  FormDataBody(this.formData);
+
+  @override
   int get contentLength => null;
+
+  @override
   MediaType get contentType => null;
+
+  @override
   Encoding get encoding => null;
 }

@@ -54,15 +54,6 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   static final Random _random = new Random();
 
-  static String _generateBoundaryString() {
-    String senderPrefix = 'dart-w-transport-boundary-';
-    var boundaryChars =
-        new List<int>.generate(_boundaryLength - senderPrefix.length, (_) {
-      return _boundaryChars[_random.nextInt(_boundaryChars.length)];
-    }, growable: false);
-    return '$senderPrefix${new String.fromCharCodes(boundaryChars)}';
-  }
-
   String _boundary;
 
   Map<String, String> _fields = {};
@@ -72,6 +63,15 @@ abstract class CommonMultipartRequest extends CommonRequest
   CommonMultipartRequest() : super();
   CommonMultipartRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
+
+  static String _generateBoundaryString() {
+    String senderPrefix = 'dart-w-transport-boundary-';
+    var boundaryChars =
+        new List<int>.generate(_boundaryLength - senderPrefix.length, (_) {
+      return _boundaryChars[_random.nextInt(_boundaryChars.length)];
+    }, growable: false);
+    return '$senderPrefix${new String.fromCharCodes(boundaryChars)}';
+  }
 
   String get boundary {
     if (_boundary == null) {
@@ -127,17 +127,21 @@ abstract class CommonMultipartRequest extends CommonRequest
         'cannot be set for the entire request.');
   }
 
+  @override
   Map<String, String> get fields =>
       isSent ? new Map.unmodifiable(_fields) : _fields;
 
+  @override
   set fields(Map<String, String> fields) {
     verifyUnsent();
     _fields = new Map.from(fields);
   }
 
+  @override
   Map<String, dynamic> get files =>
       isSent ? new Map.unmodifiable(_files) : _files;
 
+  @override
   set files(Map<String, dynamic> files) {
     verifyUnsent();
     _files = new Map.from(files);
@@ -145,7 +149,8 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   @override
   MultipartRequest clone() {
-    return (super.clone() as MultipartRequest)
+    MultipartRequest requestClone = super.clone();
+    return requestClone
       ..fields = fields
       ..files = files;
   }
@@ -159,7 +164,7 @@ abstract class CommonMultipartRequest extends CommonRequest
   }
 
   @override
-  Future<StreamedHttpBody> finalizeBody([body]) async {
+  Future<StreamedHttpBody> finalizeBody([dynamic body]) async {
     if (body != null) {
       throw new UnsupportedError(
           'The body of a Multipart request must be set via `fields` and/or `files`.');
@@ -197,13 +202,23 @@ abstract class CommonMultipartRequest extends CommonRequest
       });
     });
 
+    // ignore: unawaited_futures
     Future.forEach(fileList, (Map file) {
+      // TODO: make this better
+      Stream<List<int>> byteStream;
+      var bs = file['byteStream'];
+      if (bs is Stream<List<int>>) {
+        byteStream = bs;
+      } else {
+        throw new Exception('Expected Multipart file to have a '
+            '`Stream<List<int>> byteStream` property.');
+      }
+
       write('$_boundaryHyphens$boundary$_crlf'); // Boundary delimiter.
       write(file['headers']); // File headers.
 
       // File bytes and ending newline.
-      return writeByteStream(file['byteStream'] as Stream<List<int>>)
-          .then((_) => write(_crlf));
+      return writeByteStream(byteStream).then((_) => write(_crlf));
     }).then((_) {
       // Ending boundary delimiter.
       write('$_boundaryHyphens$boundary$_boundaryHyphens$_crlf');

@@ -22,11 +22,13 @@ import '../services/file_transfer.dart';
 /// File drop zone. Listens to drag and drop events and accepts
 /// one or many dropped files. Uploads each dropped file to a
 /// server via a POST request with a FormData payload.
-var dropZoneComponent = react.registerComponent(() => new DropZoneComponent());
+dynamic dropZoneComponent =
+    react.registerComponent(() => new DropZoneComponent());
 
 class DropZoneComponent extends react.Component {
   Timer _hideDropTargetTimer;
 
+  @override
   Map getInitialState() {
     return {
       // True when user is dragging something over the drop zone
@@ -36,6 +38,7 @@ class DropZoneComponent extends react.Component {
     };
   }
 
+  @override
   Map getDefaultProps() {
     return {
       'onNewUploads': (_) {},
@@ -44,6 +47,7 @@ class DropZoneComponent extends react.Component {
     };
   }
 
+  @override
   void componentWillMount() {
     // Show the drop zone and drop target whenever a user
     // drags something onto the document.
@@ -52,13 +56,14 @@ class DropZoneComponent extends react.Component {
     document.addEventListener('drop', preventNavigateOnDrop);
   }
 
+  @override
   void componentWillUnmount() {
     document.removeEventListener('dragover', showDropTarget);
     document.removeEventListener('dragleave', hideDropTarget);
     document.removeEventListener('drop', preventNavigateOnDrop);
   }
 
-  void showDropTarget(e) {
+  void showDropTarget(Event e) {
     if (_hideDropTargetTimer != null) {
       _hideDropTargetTimer.cancel();
     }
@@ -67,7 +72,7 @@ class DropZoneComponent extends react.Component {
     this.setState({'overDropZone': true});
   }
 
-  void hideDropTarget(e) {
+  void hideDropTarget(Event e) {
     // Delay this action slightly to allow it to be canceled.
     // This helps prevent a flicker when moving from the drop zone
     // to the drop target.
@@ -77,18 +82,18 @@ class DropZoneComponent extends react.Component {
     });
   }
 
-  void preventNavigateOnDrop(e) {
+  void preventNavigateOnDrop(Event e) {
     e.preventDefault();
     hideDropTarget(e);
   }
 
-  void enlargeDropTarget(e) {
+  void enlargeDropTarget(react.SyntheticMouseEvent e) {
     // Prevent default to allow the drop
     e.preventDefault();
     this.setState({'overDropTarget': true, 'overDropZone': true});
   }
 
-  void shrinkDropTarget(e) {
+  void shrinkDropTarget(react.SyntheticMouseEvent e) {
     this.setState({'overDropTarget': false, 'overDropZone': true});
   }
 
@@ -109,7 +114,8 @@ class DropZoneComponent extends react.Component {
     this.setState({'overDropZone': false, 'overDropTarget': false});
   }
 
-  render() {
+  @override
+  dynamic render() {
     String dropZoneClass = 'drop-zone';
     String dropTargetClass = 'drop-target';
 

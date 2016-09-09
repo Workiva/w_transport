@@ -98,7 +98,8 @@ class MockWebSocketInternal {
       if (e.uri is Uri) {
         return e.uri == uri;
       } else if (e.uri is Pattern) {
-        return (e.uri as Pattern).allMatches(uri.toString()).isNotEmpty;
+        Pattern pattern = e.uri;
+        return pattern.allMatches(uri.toString()).isNotEmpty;
       }
     });
     if (matchingExpectations.isNotEmpty) {
@@ -135,7 +136,7 @@ class MockWebSocketInternal {
     throw new StateError('Unexpected WSocket connection: $uri');
   }
 
-  static void _expect(dynamic uri, {MockWSocket connectTo, bool reject}) {
+  static void _expect(Object uri, {MockWSocket connectTo, bool reject}) {
     if (connectTo != null && reject != null) {
       throw new ArgumentError('Use connectTo OR reject, but not both.');
     }
@@ -146,8 +147,7 @@ class MockWebSocketInternal {
         connectTo: connectTo, reject: reject));
   }
 
-  static void _validateWhenParams(
-      {WSocketConnectHandler handler, bool reject}) {
+  static void _validateWhenParams({dynamic handler, bool reject}) {
     if (handler != null && reject != null) {
       throw new ArgumentError('Use handler OR reject, but not both.');
     }
@@ -160,7 +160,7 @@ class MockWebSocketInternal {
 class _WebSocketConnectExpectation {
   WSocket connectTo;
   bool reject;
-  final dynamic uri;
+  final Object uri;
 
   _WebSocketConnectExpectation(this.uri, {this.connectTo, this.reject});
 }

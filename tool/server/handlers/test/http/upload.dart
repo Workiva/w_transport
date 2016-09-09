@@ -46,12 +46,27 @@ class UploadHandler extends Handler {
     setCorsHeaders(request);
   }
 
+  @override
   Future delete(HttpRequest request) async => upload(request);
+
+  @override
   Future get(HttpRequest request) async => upload(request);
+
+  @override
   Future head(HttpRequest request) async => upload(request);
+
+  @override
   Future options(HttpRequest request) async => upload(request);
+
+  @override
   Future patch(HttpRequest request) async => upload(request);
+
+  @override
   Future post(HttpRequest request) async => upload(request);
+
+  @override
   Future put(HttpRequest request) async => upload(request);
+
+  @override
   Future trace(HttpRequest request) async => upload(request);
 }

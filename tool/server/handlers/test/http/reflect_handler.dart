@@ -63,13 +63,30 @@ class ReflectHandler extends Handler {
     request.response.write(JSON.encode(reflection));
   }
 
+  @override
   Future copy(HttpRequest request) async => reflect(request);
+
+  @override
   Future delete(HttpRequest request) async => reflect(request);
+
+  @override
   Future get(HttpRequest request) async => reflect(request);
+
+  @override
   Future head(HttpRequest request) async => reflect(request);
+
+  @override
   Future options(HttpRequest request) async => reflect(request);
+
+  @override
   Future patch(HttpRequest request) async => reflect(request);
+
+  @override
   Future post(HttpRequest request) async => reflect(request);
+
+  @override
   Future put(HttpRequest request) async => reflect(request);
+
+  @override
   Future trace(HttpRequest request) async => reflect(request);
 }

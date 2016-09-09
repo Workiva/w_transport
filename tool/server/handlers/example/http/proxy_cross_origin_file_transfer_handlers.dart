@@ -48,6 +48,7 @@ class FilesProxy extends Handler {
     enableCors();
   }
 
+  @override
   Future get(HttpRequest request) async {
     Map<String, String> headers = {};
     request.headers.forEach((name, values) {
@@ -65,6 +66,7 @@ class FilesProxy extends Handler {
     await request.response.addStream(proxyResponse.body.byteStream);
   }
 
+  @override
   Future delete(HttpRequest request) async {
     Map<String, String> headers = {};
     request.headers.forEach((name, values) {
@@ -88,6 +90,7 @@ class UploadProxy extends Handler {
     enableCors();
   }
 
+  @override
   Future post(HttpRequest request) async {
     Map<String, String> headers = {};
     request.headers.forEach((name, values) {
@@ -127,6 +130,7 @@ class DownloadProxy extends Handler {
     enableCors();
   }
 
+  @override
   Future get(HttpRequest request) async {
     Map<String, String> headers = {};
     request.headers.forEach((name, values) {

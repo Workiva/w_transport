@@ -19,7 +19,7 @@ import 'package:w_transport/src/http/response.dart';
 /// an unsuccessful status code.
 class RequestException implements Exception {
   /// Original error, if any.
-  final error;
+  final Object error;
 
   /// HTTP method.
   final String method;

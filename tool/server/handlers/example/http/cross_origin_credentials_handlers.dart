@@ -60,6 +60,7 @@ class SessionHandler extends Handler {
     return {'set-cookie': sessionCookie.toString()};
   }
 
+  @override
   Future get(HttpRequest request) async {
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
@@ -67,6 +68,7 @@ class SessionHandler extends Handler {
         .write(JSON.encode({'authenticated': isValidSession(request)}));
   }
 
+  @override
   Future post(HttpRequest request) async {
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
@@ -77,6 +79,7 @@ class SessionHandler extends Handler {
     request.response.write(JSON.encode({'authenticated': true}));
   }
 
+  @override
   Future delete(HttpRequest request) async {
     session = null;
     request.response.statusCode = HttpStatus.OK;
@@ -94,6 +97,7 @@ class CredentialedRequestHandler extends Handler {
     enableCors(credentials: true);
   }
 
+  @override
   Future get(HttpRequest request) async {
     // Verify the request has a valid session cookie
     if (isValidSession(request)) {

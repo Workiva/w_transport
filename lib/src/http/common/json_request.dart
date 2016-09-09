@@ -31,8 +31,10 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
   String _encodedJson;
   dynamic _source;
 
+  @override
   dynamic get body => _source;
 
+  @override
   set body(dynamic json) {
     verifyUnsent();
     // Store the source so it can be returned from the getter without having to
@@ -59,11 +61,12 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
 
   @override
   JsonRequest clone() {
-    return (super.clone() as JsonRequest)..body = _source;
+    JsonRequest requestClone = super.clone();
+    return requestClone..body = _source;
   }
 
   @override
-  Future<HttpBody> finalizeBody([body]) async {
+  Future<HttpBody> finalizeBody([dynamic body]) async {
     if (body != null) {
       this.body = body;
     }

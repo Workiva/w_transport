@@ -32,7 +32,7 @@ class Router implements Function {
   Logger logger;
   Map<String, Handler> routes;
 
-  Router(Logger this.logger) {
+  Router(this.logger) {
     routes = {'/ping': new PingHandler()}
       ..addAll(exampleHttpCrossOriginCredentialsRoutes)
       ..addAll(exampleHttpCrossOriginFileTransferRoutes)
@@ -47,7 +47,7 @@ class Router implements Function {
       await routes[request.uri.path].processRequest(request);
     } else {
       request.response.statusCode = HttpStatus.NOT_FOUND;
-      request.response.close();
+      await request.response.close();
     }
   }
 }

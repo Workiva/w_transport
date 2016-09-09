@@ -28,12 +28,27 @@ class FourzerofourHandler extends Handler {
     setCorsHeaders(request);
   }
 
+  @override
   Future delete(HttpRequest request) => notFound(request);
+
+  @override
   Future get(HttpRequest request) => notFound(request);
+
+  @override
   Future head(HttpRequest request) => notFound(request);
+
+  @override
   Future options(HttpRequest request) => notFound(request);
+
+  @override
   Future patch(HttpRequest request) => notFound(request);
+
+  @override
   Future post(HttpRequest request) => notFound(request);
+
+  @override
   Future put(HttpRequest request) => notFound(request);
+
+  @override
   Future trace(HttpRequest request) => notFound(request);
 }

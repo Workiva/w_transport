@@ -39,7 +39,8 @@ void main() {
     test('underlying HttpRequest configuration', () async {
       JsonRequest request = new JsonRequest()
         ..uri = IntegrationPaths.reflectEndpointUri;
-      request.configure((HttpClientRequest ioRequest) async {
+      request.configure((request) async {
+        HttpClientRequest ioRequest = request;
         ioRequest.headers.set('x-configured', 'true');
       });
       Response response = await request.get();

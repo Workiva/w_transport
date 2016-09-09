@@ -40,7 +40,7 @@ class FileTransfer {
       : id = 'fileTransfer${_transferNum++}',
         _canceled = false,
         _doneCompleter = new Completer(),
-        _percentComplete = 0.0 {}
+        _percentComplete = 0.0;
 
   /// Unique file transfer identifier.
   final String id;
@@ -74,11 +74,6 @@ class FileTransfer {
 
 /// Encapsulates the upload of a file from the client to the server.
 class Upload extends FileTransfer {
-  /// Start a new file upload. This will begin the upload to the server immediately.
-  static Upload start(File file) {
-    return new Upload._fromFile(file);
-  }
-
   /// Construct a new file upload.
   Upload._fromFile(File file) : super(file.name) {
     // Prepare the upload request.
@@ -98,14 +93,14 @@ class Upload extends FileTransfer {
         .then((_) => _doneCompleter.complete())
         .catchError((error, sT) => _doneCompleter.completeError(error, sT));
   }
+
+  /// Start a new file upload. This will begin the upload to the server immediately.
+  static Upload start(File file) {
+    return new Upload._fromFile(file);
+  }
 }
 
 class Download extends FileTransfer {
-  /// Start a new file download. This will begin the download from the server immediately.
-  static Download start(RemoteFileDescription rfd) {
-    return new Download._ofRemoteFile(rfd);
-  }
-
   int _bytesLoaded;
 
   /// Construct a new file download.
@@ -155,4 +150,9 @@ class Download extends FileTransfer {
   /// File being downloaded.
   File get file => _file;
   File _file;
+
+  /// Start a new file download. This will begin the download from the server immediately.
+  static Download start(RemoteFileDescription rfd) {
+    return new Download._ofRemoteFile(rfd);
+  }
 }

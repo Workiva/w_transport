@@ -35,12 +35,8 @@ class FinalizedRequest {
   /// request. Applicable only to the browser platform.
   final bool withCredentials;
 
-  FinalizedRequest(
-      String this.method,
-      Uri this.uri,
-      Map<String, String> headers,
-      BaseHttpBody this.body,
-      bool this.withCredentials)
+  FinalizedRequest(this.method, this.uri, Map<String, String> headers,
+      this.body, this.withCredentials)
       : this.headers =
             new Map.unmodifiable(new CaseInsensitiveMap.from(headers));
 }

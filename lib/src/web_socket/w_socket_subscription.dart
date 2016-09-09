@@ -20,11 +20,6 @@ import 'dart:async';
 /// this subscription is exactly the same, except that it isn't considered
 /// "done" until both the incoming and the outgoing subscriptions are closed.
 class WSocketSubscription<T> implements StreamSubscription<T> {
-  /// The callback given by the listener to be called when this subscription
-  /// is completely done.
-  Function get doneHandler => _doneHandler;
-  Function _doneHandler;
-
   /// The callback given by the [WSocket] implementation to be called when this
   /// subscription is canceled. This allows the [WSocket] instance to perform
   /// necessary cleanup.
@@ -36,13 +31,13 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   WSocketSubscription(this._sub, this._doneHandler, {Function onCancel})
       : _onCancel = onCancel;
 
+  /// The callback given by the listener to be called when this subscription
+  /// is completely done.
+  Function get doneHandler => _doneHandler;
+  Function _doneHandler;
+
   @override
-  Future cancel() async {
-    await _sub.cancel();
-    if (_onCancel != null) {
-      await _onCancel();
-    }
-  }
+  bool get isPaused => _sub.isPaused;
 
   @override
   Future/*<E>*/ asFuture/*<E>*/([var/*=E*/ futureValue]) {
@@ -54,11 +49,26 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   }
 
   @override
-  bool get isPaused => _sub.isPaused;
+  Future cancel() async {
+    await _sub.cancel();
+    if (_onCancel != null) {
+      await _onCancel();
+    }
+  }
 
   @override
-  void resume() {
-    _sub.resume();
+  void onDone(void handleDone()) {
+    _doneHandler = handleDone;
+  }
+
+  @override
+  void onError(Function handleError) {
+    _sub.onError(handleError);
+  }
+
+  @override
+  void onData(void handleData(T data)) {
+    _sub.onData(handleData);
   }
 
   @override
@@ -78,17 +88,7 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   }
 
   @override
-  void onDone(void handleDone()) {
-    _doneHandler = handleDone;
-  }
-
-  @override
-  void onError(Function handleError) {
-    _sub.onError(handleError);
-  }
-
-  @override
-  void onData(void handleData(T data)) {
-    _sub.onData(handleData);
+  void resume() {
+    _sub.resume();
   }
 }

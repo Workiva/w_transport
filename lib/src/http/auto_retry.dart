@@ -149,9 +149,9 @@ class RequestAutoRetry extends AutoRetryConfig {
   /// field/value pairs. If the request contains files (byte streams or blobs),
   /// it cannot be retried because they cannot be read more than once.
   bool get supported {
-    if (_request is StreamedRequest) return false;
-    if (_request is MultipartRequest &&
-        (_request as MultipartRequest).files.isNotEmpty) return false;
+    var request = _request;
+    if (request is StreamedRequest) return false;
+    if (request is MultipartRequest && request.files.isNotEmpty) return false;
     return true;
   }
 }

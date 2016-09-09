@@ -65,24 +65,26 @@ void main() {
       test('setting body in request dispatcher is supported (Map)', () async {
         Uri uri = Uri.parse('/test');
 
-        Completer body = new Completer();
+        Completer c = new Completer();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          body.complete((request.body as HttpBody).asString());
+          HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         });
 
         JsonRequest request = new JsonRequest();
         Map json = {'field': 'value'};
         await request.post(uri: uri, body: json);
-        expect(await body.future, equals(JSON.encode(json)));
+        expect(await c.future, equals(JSON.encode(json)));
       });
 
       test('setting body in request dispatcher is supported (List)', () async {
         Uri uri = Uri.parse('/test');
 
-        Completer body = new Completer();
+        Completer c = new Completer();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          body.complete((request.body as HttpBody).asString());
+          HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         });
 
@@ -91,7 +93,7 @@ void main() {
           {'field': 'value'}
         ];
         await request.post(uri: uri, body: json);
-        expect(await body.future, equals(JSON.encode(json)));
+        expect(await c.future, equals(JSON.encode(json)));
       });
 
       test('setting body in request dispatcher should throw if invalid',

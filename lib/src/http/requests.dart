@@ -25,6 +25,8 @@ import 'package:w_transport/src/platform_adapter.dart';
 /// This request will be sent with content-type:
 /// application/x-www-form-urlencoded
 abstract class FormRequest extends BaseRequest {
+  factory FormRequest() => PlatformAdapter.retrieve().newFormRequest();
+
   /// Gets this request's body as a `Map` where each key-value pair is a form
   /// field's name and value.
   ///
@@ -57,8 +59,6 @@ abstract class FormRequest extends BaseRequest {
   /// with something other than the default UTF8.
   set fields(Map<String, dynamic> fields);
 
-  factory FormRequest() => PlatformAdapter.retrieve().newFormRequest();
-
   /// Returns an clone of this request.
   @override
   FormRequest clone();
@@ -69,6 +69,8 @@ abstract class FormRequest extends BaseRequest {
 ///
 /// This request will be sent with content-type: application/json
 abstract class JsonRequest extends BaseRequest {
+  factory JsonRequest() => PlatformAdapter.retrieve().newJsonRequest();
+
   /// Gets this request's body as a JSON `Map` or `List`.
   ///
   /// By default, the body of this [FormRequest] will is an empty `Map`.
@@ -94,8 +96,6 @@ abstract class JsonRequest extends BaseRequest {
   /// bytes. Be sure to set [encoding] if this request body should be encoded
   /// with something other than the default UTF8.
   set body(dynamic body);
-
-  factory JsonRequest() => PlatformAdapter.retrieve().newJsonRequest();
 
   /// Returns an clone of this request.
   @override
@@ -139,6 +139,8 @@ abstract class MultipartRequest extends BaseRequest {
 ///
 /// This request will be sent with content-type: text/plain
 abstract class Request extends BaseRequest {
+  factory Request() => PlatformAdapter.retrieve().newRequest();
+
   /// Gets this request's body.
   String get body;
 
@@ -159,8 +161,6 @@ abstract class Request extends BaseRequest {
   /// something other than the default UTF8.
   set bodyBytes(List<int> bytes);
 
-  factory Request() => PlatformAdapter.retrieve().newRequest();
-
   /// Returns an clone of this request.
   @override
   Request clone();
@@ -169,6 +169,8 @@ abstract class Request extends BaseRequest {
 /// Representation of an HTTP request where the request body is sent
 /// asynchronously as a stream. The [content-type] should be set manually.
 abstract class StreamedRequest extends BaseRequest {
+  factory StreamedRequest() => PlatformAdapter.retrieve().newStreamedRequest();
+
   /// Get the byte stream that will be sent as this request's body.
   Stream<List<int>> get body;
 
@@ -179,8 +181,6 @@ abstract class StreamedRequest extends BaseRequest {
   /// Be sure to set [encoding] if the byte stream should be decoded with
   /// something other than the default UTF8.
   set body(Stream<List<int>> byteStream);
-
-  factory StreamedRequest() => PlatformAdapter.retrieve().newStreamedRequest();
 
   /// Cloning a StreamedRequest is not supported. This will throw an
   /// [UnsupportedError].

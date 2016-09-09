@@ -37,7 +37,7 @@ class HttpInterceptor {
 /// necessary.
 class RequestPayload {
   final BaseRequest request;
-  RequestPayload(BaseRequest this.request);
+  RequestPayload(this.request);
 }
 
 /// Representation of a response payload. Contains the [response] instance, the
@@ -50,8 +50,7 @@ class ResponsePayload {
   final FinalizedRequest request;
   BaseResponse response;
   final RequestException exception;
-  ResponsePayload(FinalizedRequest this.request, BaseResponse this.response,
-      [RequestException this.exception]);
+  ResponsePayload(this.request, this.response, [this.exception]);
 }
 
 /// Representation of a pathway on which..
@@ -78,10 +77,16 @@ class Pathway<T> {
   Future<T> process(T payload) async {
     for (var interceptor in _interceptors) {
       var result = interceptor(payload);
-      if (result is Future) {
-        result = await result;
+      if (result is Future<T>) {
+        payload = await result;
+      } else if (result is T) {
+        payload = result;
+      } else {
+        var msg = 'Interceptor returned a value of the incorrect type.\n'
+            '  Expected: ${T.runtimeType}\n'
+            '  Actual:   ${result.runtimeType}';
+        throw new Exception(msg);
       }
-      payload = result as T;
     }
     return payload;
   }

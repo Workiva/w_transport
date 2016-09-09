@@ -85,7 +85,7 @@ void main() {
         subscription.resume();
         eventController.add(new MockProgressEvent.nonComputable());
 
-        eventController.close();
+        await eventController.close();
         await c.future;
         expect(eventCount, equals(4));
       });
@@ -94,14 +94,20 @@ void main() {
 }
 
 class MockProgressEvent implements ProgressEvent {
+  @override
   bool lengthComputable;
+
+  @override
   int loaded;
+
+  @override
   int total;
 
-  MockProgressEvent.computable(int this.loaded, int this.total)
+  MockProgressEvent.computable(this.loaded, this.total)
       : lengthComputable = true;
   MockProgressEvent.nonComputable() : lengthComputable = false;
 
   // Silence dart analyzer warnings.
-  noSuchMethod(i) => super.noSuchMethod(i);
+  @override
+  dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
 }

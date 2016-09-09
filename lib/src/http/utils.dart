@@ -21,7 +21,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 
 /// RegExp that only matches strings containing only ASCII-compatible chars.
-final RegExp _asciiOnly = new RegExp(r"^[\x00-\x7F]+$");
+final RegExp _asciiOnly = new RegExp(r'^[\x00-\x7F]+$');
 
 /// Returns true if all characters in [value] are ASCII-compatible chars.
 /// Returns false otherwise.
@@ -31,19 +31,22 @@ bool isAsciiOnly(String value) => _asciiOnly.hasMatch(value);
 /// query string can be used as a URI query string or the body of a
 /// `application/x-www-form-urlencoded` request or response.
 String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
-  List<String> params = [];
+  final params = <String>[];
   map.forEach((key, value) {
     // Support fields with multiple values.
-    var valueList = value is List ? value : [value];
-    for (var v in valueList) {
-      var encoded;
+    final valueList = value is List ? value : [value];
+    for (final v in valueList) {
+      Iterable<String> encoded;
       if (encoding != null) {
-        encoded = [
+        encoded = <String>[
           Uri.encodeQueryComponent(key, encoding: encoding),
           Uri.encodeQueryComponent(v, encoding: encoding)
         ];
       } else {
-        encoded = [Uri.encodeQueryComponent(key), Uri.encodeQueryComponent(v)];
+        encoded = <String>[
+          Uri.encodeQueryComponent(key),
+          Uri.encodeQueryComponent(v)
+        ];
       }
       params.add(encoded.join('='));
     }
@@ -58,7 +61,7 @@ String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
 /// http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html#sec7.2.1).
 MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
   // Ensure the headers are case-insensitive.
-  headers = new CaseInsensitiveMap.from(headers);
+  headers = new CaseInsensitiveMap<String>.from(headers);
   if (headers['content-type'] != null)
     return new MediaType.parse(headers['content-type']);
   return new MediaType('application', 'octet-stream');
@@ -74,7 +77,7 @@ Encoding parseEncodingFromContentType(MediaType contentType,
     {Encoding fallback}) {
   if (contentType == null) return fallback;
   if (contentType.parameters['charset'] == null) return fallback;
-  var encoding = Encoding.getByName(contentType.parameters['charset']);
+  final encoding = Encoding.getByName(contentType.parameters['charset']);
   return encoding != null ? encoding : fallback;
 }
 
@@ -87,9 +90,11 @@ Encoding parseEncodingFromContentType(MediaType contentType,
 /// [FormatException] will be thrown.
 Encoding parseEncodingFromContentTypeOrFail(MediaType contentType,
     {Encoding fallback}) {
-  var encoding = parseEncodingFromContentType(contentType, fallback: fallback);
+  final encoding =
+      parseEncodingFromContentType(contentType, fallback: fallback);
   if (encoding != null) return encoding;
-  var charset = contentType != null ? contentType.parameters['charset'] : null;
+  final charset =
+      contentType != null ? contentType.parameters['charset'] : null;
   throw new FormatException('Unsupported charset: $charset');
 }
 
@@ -102,19 +107,19 @@ Encoding parseEncodingFromContentTypeOrFail(MediaType contentType,
 /// will be returned.
 Encoding parseEncodingFromHeaders(Map<String, String> headers,
     {Encoding fallback}) {
-  MediaType contentType = parseContentTypeFromHeaders(headers);
+  final contentType = parseContentTypeFromHeaders(headers);
   return parseEncodingFromContentType(contentType, fallback: fallback);
 }
 
 /// Converts a query string to a [Map] of parameter names to values. Works for
 /// URI query string or an `application/x-www-form-urlencoded` body.
 Map<String, Object> queryToMap(String query, {Encoding encoding}) {
-  var fields = <String, Object>{};
-  for (var pair in query.split('&')) {
-    var pieces = pair.split('=');
+  final fields = <String, Object>{};
+  for (final pair in query.split('&')) {
+    final pieces = pair.split('=');
     if (pieces.isEmpty) continue;
-    var key = pieces.first;
-    var value = pieces.length > 1 ? pieces.sublist(1).join('') : '';
+    String key = pieces.first;
+    String value = pieces.length > 1 ? pieces.sublist(1).join('') : '';
     if (encoding != null) {
       key = Uri.decodeQueryComponent(key, encoding: encoding);
       value = Uri.decodeQueryComponent(value, encoding: encoding);
@@ -126,7 +131,7 @@ Map<String, Object> queryToMap(String query, {Encoding encoding}) {
       if (fields[key] is! List) {
         fields[key] = [fields[key]];
       }
-      List currentFields = fields[key];
+      final List currentFields = fields[key];
       currentFields.add(value);
     } else {
       fields[key] = value;
@@ -138,9 +143,8 @@ Map<String, Object> queryToMap(String query, {Encoding encoding}) {
 /// Reduces a byte stream to a single list of bytes.
 Future<Uint8List> reduceByteStream(Stream<List<int>> byteStream) async {
   try {
-    List<int> bytes = await byteStream.reduce((prev, next) {
-      var combined = new List<int>.from(prev)..addAll(next);
-      return combined;
+    final bytes = await byteStream.reduce((prev, next) {
+      return new List<int>.from(prev)..addAll(next);
     });
     return new Uint8List.fromList(bytes);
   } on StateError {
@@ -151,7 +155,7 @@ Future<Uint8List> reduceByteStream(Stream<List<int>> byteStream) async {
 
 class ByteStreamProgressListener {
   StreamController<RequestProgress> _progressController =
-      new StreamController();
+      new StreamController<RequestProgress>();
 
   Stream<List<int>> _transformed;
 
@@ -166,7 +170,7 @@ class ByteStreamProgressListener {
   Stream<List<int>> _listenTo(Stream<List<int>> byteStream, {int total}) {
     int loaded = 0;
 
-    var progressListener = new StreamTransformer<List<int>, List<int>>(
+    final progressListener = new StreamTransformer<List<int>, List<int>>(
         (Stream<List<int>> input, bool cancelOnError) {
       StreamController<List<int>> controller;
       StreamSubscription<List<int>> subscription;

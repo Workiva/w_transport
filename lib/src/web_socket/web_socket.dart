@@ -143,10 +143,10 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
   @override
-  Future addStream(Stream stream);
+  Future<Null> addStream(Stream stream);
 
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
   @override
-  Future close([int code, String reason]);
+  Future<Null> close([int code, String reason]);
 }

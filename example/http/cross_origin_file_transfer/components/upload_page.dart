@@ -44,7 +44,7 @@ class UploadPage extends react.Component {
 
   /// Listen for new file uploads and forward them to the file transfer list component.
   void _newUploads(List<Upload> newUploads) {
-    List<Upload> uploads = [];
+    final uploads = <Upload>[];
     uploads.addAll(currentUploads);
     uploads.addAll(newUploads);
     this.setState({'uploads': uploads});
@@ -54,7 +54,7 @@ class UploadPage extends react.Component {
   /// and no longer needs to display it, meaning we can remove it
   /// from memory.
   void _removeUpload(Upload upload) {
-    List<Upload> uploads = [];
+    final uploads = <Upload>[];
     uploads.addAll(currentUploads);
     uploads.remove(upload);
     this.setState({'uploads': uploads});

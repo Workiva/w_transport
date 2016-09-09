@@ -25,7 +25,7 @@ class EchoHandler extends Handler {
     enableCors();
   }
 
-  Future echo(HttpRequest request) async {
+  Future<Null> echo(HttpRequest request) async {
     request.response.statusCode = HttpStatus.OK;
     request.response.headers.contentType = request.headers.contentType;
     setCorsHeaders(request);
@@ -33,29 +33,29 @@ class EchoHandler extends Handler {
   }
 
   @override
-  Future copy(HttpRequest request) async => echo(request);
+  Future<Null> copy(HttpRequest request) async => echo(request);
 
   @override
-  Future delete(HttpRequest request) async => echo(request);
+  Future<Null> delete(HttpRequest request) async => echo(request);
 
   @override
-  Future get(HttpRequest request) async => echo(request);
+  Future<Null> get(HttpRequest request) async => echo(request);
 
   @override
-  Future head(HttpRequest request) async => echo(request);
+  Future<Null> head(HttpRequest request) async => echo(request);
 
   @override
-  Future options(HttpRequest request) async => echo(request);
+  Future<Null> options(HttpRequest request) async => echo(request);
 
   @override
-  Future patch(HttpRequest request) async => echo(request);
+  Future<Null> patch(HttpRequest request) async => echo(request);
 
   @override
-  Future post(HttpRequest request) async => echo(request);
+  Future<Null> post(HttpRequest request) async => echo(request);
 
   @override
-  Future put(HttpRequest request) async => echo(request);
+  Future<Null> put(HttpRequest request) async => echo(request);
 
   @override
-  Future trace(HttpRequest request) async => echo(request);
+  Future<Null> trace(HttpRequest request) async => echo(request);
 }

@@ -26,10 +26,10 @@ void runFormRequestSuite() {
   group('FormRequest', () {
     test('content-length should be set automatically', () async {
       // Empty request.
-      FormRequest emptyRequest = new FormRequest();
-      Response response =
+      final emptyRequest = new FormRequest();
+      final response =
           await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
-      int contentLength =
+      final contentLength =
           int.parse(response.body.asJson()['headers']['content-length']);
       expect(contentLength, equals(0),
           reason: 'Empty form request\'s content-length should be 0.');
@@ -39,91 +39,91 @@ void runFormRequestSuite() {
         ..uri = IntegrationPaths.reflectEndpointUri
         ..fields['field1'] = 'value1'
         ..fields['field2'] = 'value2';
-      response = await nonEmptyRequest.post();
-      contentLength =
-          int.parse(response.body.asJson()['headers']['content-length']);
-      expect(contentLength, greaterThan(0),
+      final response2 = await nonEmptyRequest.post();
+      final contentLength2 =
+          int.parse(response2.body.asJson()['headers']['content-length']);
+      expect(contentLength2, greaterThan(0),
           reason:
               'Non-empty form request\'s content-length should be greater than 0.');
     });
 
     test('content-type should be set automatically', () async {
-      FormRequest request = new FormRequest()
+      final request = new FormRequest()
         ..uri = IntegrationPaths.reflectEndpointUri
         ..fields['field'] = 'value';
-      Response response = await request.post();
-      MediaType contentType = new MediaType.parse(
+      final response = await request.post();
+      final contentType = new MediaType.parse(
           response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('application/x-www-form-urlencoded'));
     });
 
     test('content-type should be overridable', () async {
-      var contentType = new MediaType('application', 'x-custom');
-      FormRequest request = new FormRequest()
+      final contentType = new MediaType('application', 'x-custom');
+      final request = new FormRequest()
         ..uri = IntegrationPaths.reflectEndpointUri
         ..fields['field'] = 'value'
         ..contentType = contentType;
-      Response response = await request.post();
-      var reflectedContentType = new MediaType.parse(
+      final response = await request.post();
+      final reflectedContentType = new MediaType.parse(
           response.body.asJson()['headers']['content-type']);
       expect(reflectedContentType.mimeType, equals(contentType.mimeType));
     });
 
     test('UTF8', () async {
-      FormRequest request = new FormRequest()
+      final request = new FormRequest()
         ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = UTF8
         ..fields['field1'] = 'value1'
         ..fields['field2'] = 'ç®å';
-      Response response = await request.post();
+      final response = await request.post();
       expect(response.encoding.name, equals(UTF8.name));
-      Map echo = http_utils.queryToMap(response.body.asString(),
+      final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
       expect(echo, containsPair('field2', 'ç®å'));
     });
 
     test('LATIN1', () async {
-      FormRequest request = new FormRequest()
+      final request = new FormRequest()
         ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = LATIN1
         ..fields['field1'] = 'value1'
         ..fields['field2'] = 'ç®å';
-      Response response = await request.post();
+      final response = await request.post();
       expect(response.encoding.name, equals(LATIN1.name));
-      Map echo = http_utils.queryToMap(response.body.asString(),
+      final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
       expect(echo, containsPair('field2', 'ç®å'));
     });
 
     test('ASCII', () async {
-      FormRequest request = new FormRequest()
+      final request = new FormRequest()
         ..uri = IntegrationPaths.echoEndpointUri
         ..encoding = ASCII
         ..fields['field1'] = 'value1'
         ..fields['field2'] = 'value2';
-      Response response = await request.post();
+      final response = await request.post();
       expect(response.encoding.name, equals(ASCII.name));
-      Map echo = http_utils.queryToMap(response.body.asString(),
+      final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
       expect(echo, containsPair('field2', 'value2'));
     });
 
     test('should support multiple values for a single field', () async {
-      FormRequest request = new FormRequest()
+      final request = new FormRequest()
         ..uri = IntegrationPaths.echoEndpointUri
         ..fields['items'] = ['one', 'two'];
-      Response response = await request.post();
-      Map echo = http_utils.queryToMap(response.body.asString());
+      final response = await request.post();
+      final echo = http_utils.queryToMap(response.body.asString());
       expect(echo['items'], equals(['one', 'two']));
     });
 
     test(
         'should prevent unsupported value types (anything other than String and List<String>)',
         () {
-      FormRequest request = new FormRequest()
+      final request = new FormRequest()
         ..uri = IntegrationPaths.echoEndpointUri
         ..fields['invalid'] = 10;
 

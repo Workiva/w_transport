@@ -23,7 +23,7 @@ import 'package:w_transport/src/http/vm/requests.dart';
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformVM
     ..testType = testTypeIntegration
     ..topic = topicPlatformAdapter;

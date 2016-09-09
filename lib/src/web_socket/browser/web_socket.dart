@@ -41,7 +41,7 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
   static Future<WebSocket> connect(Uri uri,
       {Iterable<String> protocols, Map<String, dynamic> headers}) async {
     // Establish a Web Socket connection.
-    var webSocket = new html.WebSocket(uri.toString(), protocols);
+    final webSocket = new html.WebSocket(uri.toString(), protocols);
     if (webSocket == null) {
       throw new WebSocketException('Could not connect to $uri');
     }
@@ -49,15 +49,15 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
     // Listen for and store the close event. This will determine whether or
     // not the socket connected successfully, and will also be used later
     // to handle the web socket closing.
-    Future<html.CloseEvent> closed = webSocket.onClose.first;
+    final closedFuture = webSocket.onClose.first;
 
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
-    var connected = new Completer<Null>();
+    final connected = new Completer<Null>();
     // ignore: unawaited_futures
     webSocket.onOpen.first.then((_) => connected.complete());
     // ignore: unawaited_futures
-    closed.then((_) {
+    closedFuture.then((_) {
       if (!connected.isCompleted) {
         connected
             .completeError(new WebSocketException('Could not connect to $uri'));
@@ -65,7 +65,7 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
     });
 
     await connected.future;
-    return new BrowserWebSocket._(webSocket, closed);
+    return new BrowserWebSocket._(webSocket, closedFuture);
   }
 
   @override

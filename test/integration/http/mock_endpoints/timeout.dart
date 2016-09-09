@@ -15,9 +15,10 @@
 import 'dart:async';
 
 import 'package:w_transport/mock.dart';
+import 'package:w_transport/w_transport.dart';
 
 void mockTimeoutEndpoint(Uri uri) {
   MockTransports.http.when(uri, (_) async {
-    return new Completer().future;
+    return new Completer<BaseResponse>().future;
   });
 }

@@ -20,7 +20,7 @@ void toggleProxy({bool enabled: false}) {
 }
 
 String getServerUrl() {
-  String base =
+  final base =
       proxyEnabled ? 'http://localhost:8024/proxy' : 'http://localhost:8024';
   return '$base/example/http/cross_origin_file_transfer';
 }

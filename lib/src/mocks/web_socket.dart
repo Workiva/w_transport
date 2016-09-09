@@ -52,7 +52,7 @@ class MockWebSocket {
     MockWebSocketInternal._handlers[uri.toString()] = handler;
 
     return new MockWebSocketHandler._(() {
-      var currentHandler = MockWebSocketInternal._handlers[uri.toString()];
+      final currentHandler = MockWebSocketInternal._handlers[uri.toString()];
       if (currentHandler != null && currentHandler == handler) {
         MockWebSocketInternal._handlers.remove(uri.toString());
       }
@@ -70,7 +70,7 @@ class MockWebSocket {
     MockWebSocketInternal._patternHandlers[uriPattern] = handler;
 
     return new MockWebSocketHandler._(() {
-      var currentHandler = MockWebSocketInternal._patternHandlers[uriPattern];
+      final currentHandler = MockWebSocketInternal._patternHandlers[uriPattern];
       if (currentHandler != null && currentHandler == handler) {
         MockWebSocketInternal._patternHandlers.remove(uriPattern);
       }
@@ -94,11 +94,11 @@ class MockWebSocketInternal {
 
   static Future<WSocket> handleWebSocketConnection(Uri uri,
       {Iterable<String> protocols, Map<String, dynamic> headers}) async {
-    Iterable matchingExpectations = _expectations.where((e) {
+    final matchingExpectations = _expectations.where((e) {
       if (e.uri is Uri) {
         return e.uri == uri;
       } else if (e.uri is Pattern) {
-        Pattern pattern = e.uri;
+        final Pattern pattern = e.uri;
         return pattern.allMatches(uri.toString()).isNotEmpty;
       }
     });
@@ -106,8 +106,9 @@ class MockWebSocketInternal {
       /// If this connection was expected, resolve it as planned.
       _WebSocketConnectExpectation expectation = matchingExpectations.first;
       _expectations.remove(expectation);
-      if (expectation.reject != null && expectation.reject)
+      if (expectation.reject != null && expectation.reject) {
         throw new WebSocketException('Mock connection to $uri rejected.');
+      }
       return expectation.connectTo;
     }
 
@@ -118,8 +119,8 @@ class MockWebSocketInternal {
     }
 
     Match match;
-    var matchingHandlerKey = _patternHandlers.keys.firstWhere((uriPattern) {
-      var matches = uriPattern.allMatches(uri.toString());
+    final matchingHandlerKey = _patternHandlers.keys.firstWhere((uriPattern) {
+      final matches = uriPattern.allMatches(uri.toString());
       if (matches.isNotEmpty) {
         match = matches.first;
         return true;

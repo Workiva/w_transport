@@ -22,7 +22,7 @@ import 'server/server.dart' show Server;
 Future<Null> main(List<String> args) async {
   // https://github.com/Workiva/dart_dev
 
-  List<String> directories = ['example/', 'lib/', 'test/', 'tool/'];
+  final directories = <String>['example/', 'lib/', 'test/', 'tool/'];
 
   config.analyze.entryPoints = [
     'example/',

@@ -28,22 +28,22 @@ import 'common.dart';
 const int sockjsPort = 8026;
 
 void main() {
-  Naming wsNaming = new Naming()
+  final wsNaming = new Naming()
     ..platform = platformBrowserSockjsWS
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
-  Naming xhrNaming = new Naming()
+  final xhrNaming = new Naming()
     ..platform = platformBrowserSockjsXhr
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
-  Naming wsDeprecatedNaming = new Naming()
+  final wsDeprecatedNaming = new Naming()
     ..platform = platformBrowserSockjsWSDeprecated
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
-  Naming xhrDeprecatedNaming = new Naming()
+  final xhrDeprecatedNaming = new Naming()
     ..platform = platformBrowserSockjsXhrDeprecated
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
@@ -96,12 +96,12 @@ void main() {
 void sockJSSuite(Future<WSocket> connect(Uri uri)) {
   runCommonWebSocketIntegrationTests(connect: connect, port: sockjsPort);
 
-  var echoUri = IntegrationPaths.echoUri.replace(port: sockjsPort);
-  var pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
+  final echoUri = IntegrationPaths.echoUri.replace(port: sockjsPort);
+  final pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
 
   test('should not support Blob', () async {
-    Blob blob = new Blob(['one', 'two']);
-    WSocket socket = await connect(pingUri);
+    final blob = new Blob(['one', 'two']);
+    final socket = await connect(pingUri);
     expect(() {
       socket.add(blob);
     }, throwsArgumentError);
@@ -109,15 +109,15 @@ void sockJSSuite(Future<WSocket> connect(Uri uri)) {
   });
 
   test('should support String', () async {
-    String data = 'data';
-    WSocket socket = await connect(echoUri);
+    final data = 'data';
+    final socket = await connect(echoUri);
     socket.add(data);
     await socket.close();
   });
 
   test('should not support TypedData', () async {
-    TypedData data = new Uint16List.fromList([1, 2, 3]);
-    WSocket socket = await connect(echoUri);
+    final data = new Uint16List.fromList([1, 2, 3]);
+    final socket = await connect(echoUri);
     expect(() {
       socket.add(data);
     }, throwsArgumentError);
@@ -125,7 +125,7 @@ void sockJSSuite(Future<WSocket> connect(Uri uri)) {
   });
 
   test('should throw when attempting to send invalid data', () async {
-    WSocket socket = await connect(pingUri);
+    final socket = await connect(pingUri);
     expect(() {
       socket.add(true);
     }, throwsArgumentError);

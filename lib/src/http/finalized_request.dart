@@ -37,6 +37,6 @@ class FinalizedRequest {
 
   FinalizedRequest(this.method, this.uri, Map<String, String> headers,
       this.body, this.withCredentials)
-      : this.headers =
-            new Map.unmodifiable(new CaseInsensitiveMap.from(headers));
+      : this.headers = new Map<String, String>.unmodifiable(
+            new CaseInsensitiveMap<String>.from(headers));
 }

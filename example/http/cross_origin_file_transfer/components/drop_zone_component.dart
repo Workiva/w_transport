@@ -127,8 +127,8 @@ class DropZoneComponent extends react.Component {
       dropTargetClass += ' over';
     }
 
-    var dropZoneProps = {'className': dropZoneClass};
-    var dropTargetProps = {
+    final dropZoneProps = <String, String>{'className': dropZoneClass};
+    final dropTargetProps = <String, Object>{
       'className': dropTargetClass,
       'onDragOver': enlargeDropTarget,
       'onDragLeave': shrinkDropTarget,

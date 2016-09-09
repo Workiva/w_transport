@@ -27,7 +27,7 @@ import '../../naming.dart';
 void main() {
   configureWTransportForTest();
 
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformBrowser
     ..testType = testTypeUnit
     ..topic = topicBackoff;
@@ -35,21 +35,21 @@ void main() {
   group(naming.toString(), () {
     group('ExponentialBackOff : ', () {
       test('deprecated `duration` should be forwarded to `interval`', () {
-        var interval = new Duration(seconds: 10);
-        var backOff = new RetryBackOff.exponential(interval);
+        final interval = new Duration(seconds: 10);
+        final backOff = new RetryBackOff.exponential(interval);
         expect(backOff.duration, equals(interval));
         expect(backOff.duration, equals(backOff.interval));
       });
 
       test('no jitter, maxInterval not exceeded', () async {
-        var request = new Request();
-        Duration interval = new Duration(milliseconds: 5);
-        Duration maxInterval = new Duration(milliseconds: 400);
-        bool withJitter = false;
+        final request = new Request();
+        final interval = new Duration(milliseconds: 5);
+        final maxInterval = new Duration(milliseconds: 400);
+        final withJitter = false;
         request.autoRetry.backOff = new RetryBackOff.exponential(interval,
             withJitter: withJitter, maxInterval: maxInterval);
 
-        for (var i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
           request.autoRetry.numAttempts = i;
 
           if (i == 0) {
@@ -65,14 +65,14 @@ void main() {
       });
 
       test('with jitter, maxInterval not exceeded', () async {
-        var request = new Request();
-        Duration interval = new Duration(milliseconds: 5);
-        Duration maxInterval = new Duration(milliseconds: 400);
-        bool withJitter = true;
+        final request = new Request();
+        final interval = new Duration(milliseconds: 5);
+        final maxInterval = new Duration(milliseconds: 400);
+        final withJitter = true;
         request.autoRetry.backOff = new RetryBackOff.exponential(interval,
             withJitter: withJitter, maxInterval: maxInterval);
 
-        for (var i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
           request.autoRetry.numAttempts = i;
 
           if (i == 0) {
@@ -88,14 +88,14 @@ void main() {
       });
 
       test('no jitter, maxInterval is exceeded', () async {
-        var request = new Request();
-        Duration interval = new Duration(milliseconds: 5);
-        Duration maxInterval = new Duration(milliseconds: 20);
-        bool withJitter = false;
+        final request = new Request();
+        final interval = new Duration(milliseconds: 5);
+        final maxInterval = new Duration(milliseconds: 20);
+        final withJitter = false;
         request.autoRetry.backOff = new RetryBackOff.exponential(interval,
             withJitter: withJitter, maxInterval: maxInterval);
 
-        for (var i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
           request.autoRetry.numAttempts = i;
 
           if (i == 0) {
@@ -112,14 +112,14 @@ void main() {
       });
 
       test('with jitter, maxInterval is exceeded', () async {
-        var request = new Request();
-        Duration interval = new Duration(milliseconds: 5);
-        Duration maxInterval = new Duration(milliseconds: 20);
-        bool withJitter = true;
+        final request = new Request();
+        final interval = new Duration(milliseconds: 5);
+        final maxInterval = new Duration(milliseconds: 20);
+        final withJitter = true;
         request.autoRetry.backOff = new RetryBackOff.exponential(interval,
             withJitter: withJitter, maxInterval: maxInterval);
 
-        for (var i = 0; i < 50; i++) {
+        for (int i = 0; i < 50; i++) {
           request.autoRetry.numAttempts = i;
 
           if (i == 0) {
@@ -142,20 +142,20 @@ void main() {
 
     group('FixedBackOff : ', () {
       test('deprecated `duration` should be forwarded to `interval`', () {
-        var interval = new Duration(seconds: 10);
-        var backOff = new RetryBackOff.fixed(interval);
+        final interval = new Duration(seconds: 10);
+        final backOff = new RetryBackOff.fixed(interval);
         expect(backOff.duration, equals(interval));
         expect(backOff.duration, equals(backOff.interval));
       });
 
       test('no jitter', () async {
-        var request = new Request();
-        Duration interval = new Duration(milliseconds: 5);
-        bool withJitter = false;
+        final request = new Request();
+        final interval = new Duration(milliseconds: 5);
+        final withJitter = false;
         request.autoRetry.backOff =
             new RetryBackOff.fixed(interval, withJitter: withJitter);
 
-        for (var i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
           request.autoRetry.numAttempts = i;
 
           if (i == 0) {
@@ -166,14 +166,14 @@ void main() {
       });
 
       test('with jitter', () async {
-        var request = new Request();
-        Duration interval = new Duration(milliseconds: 5);
-        bool withJitter = true;
+        final request = new Request();
+        final interval = new Duration(milliseconds: 5);
+        final withJitter = true;
         request.autoRetry.backOff =
             new RetryBackOff.fixed(interval, withJitter: withJitter);
 
-        for (var i = 0; i < 5; i++) {
-          int backoff =
+        for (int i = 0; i < 5; i++) {
+          final backoff =
               Backoff.calculateBackOff(request.autoRetry).inMilliseconds;
           expect(backoff, lessThanOrEqualTo(interval.inMilliseconds * 1.5));
           expect(backoff, greaterThanOrEqualTo(interval.inMilliseconds ~/ 2));
@@ -183,7 +183,7 @@ void main() {
 
     group('No Backoff', () {
       test('deprecated `duration` should be forwarded to `interval`', () {
-        var backOff = new RetryBackOff.none();
+        final backOff = new RetryBackOff.none();
         expect(backOff.duration, isNull);
         expect(backOff.duration, equals(backOff.interval));
       });

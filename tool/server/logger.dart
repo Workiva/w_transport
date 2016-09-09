@@ -16,7 +16,7 @@ import 'dart:async';
 import 'dart:io';
 
 class Logger implements Function {
-  StreamController<String> _controller = new StreamController();
+  StreamController<String> _controller = new StreamController<String>();
 
   Logger();
 
@@ -30,17 +30,17 @@ class Logger implements Function {
     }
   }
 
-  Future close() {
-    return _controller.close();
+  Future<Null> close() async {
+    await _controller.close();
   }
 
   void logError(Object error, [StackTrace stackTrace]) {
-    var e = stackTrace != null ? '$error\n$stackTrace' : '$error';
+    final e = stackTrace != null ? '$error\n$stackTrace' : '$error';
     this(e, true);
   }
 
   void logRequest(HttpRequest request) {
-    DateTime time = new DateTime.now();
+    final time = new DateTime.now();
     this(
         '$time\t${request.method}\t${request.response.statusCode}\t${request.uri.path}');
   }

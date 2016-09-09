@@ -42,7 +42,7 @@ class Router implements Function {
       ..addAll(getTestWebSocketIntegrationRoutes(logger));
   }
 
-  Future call(HttpRequest request) async {
+  Future<Null> call(HttpRequest request) async {
     if (routes.containsKey(request.uri.path)) {
       await routes[request.uri.path].processRequest(request);
     } else {

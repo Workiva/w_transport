@@ -21,9 +21,9 @@ import '../services/file_transfer.dart';
 import '../services/remote_files.dart';
 import 'file_transfer_list_component.dart';
 
-final num _gb = math.pow(2, 30);
-final num _mb = math.pow(2, 20);
-final num _kb = math.pow(2, 10);
+final _gb = math.pow(2, 30);
+final _mb = math.pow(2, 20);
+final _kb = math.pow(2, 10);
 
 dynamic downloadPage = react.registerComponent(() => new DownloadPage());
 
@@ -89,7 +89,7 @@ class DownloadPage extends react.Component {
   }
 
   void _downloadFile(RemoteFileDescription rfd) {
-    List downloads = new List.from(this.state['downloads']);
+    final downloads = new List<Download>.from(this.state['downloads']);
     downloads.add(Download.start(rfd));
     this.setState({'downloads': downloads});
   }
@@ -123,7 +123,7 @@ class DownloadPage extends react.Component {
   /// and no longer needs to display it, meaning we can remove it
   /// from memory.
   void _removeDownload(Download download) {
-    List<Download> downloads = [];
+    final downloads = <Download>[];
     downloads.addAll(currentDownloads);
     downloads.remove(download);
     this.setState({'downloads': downloads});
@@ -131,13 +131,13 @@ class DownloadPage extends react.Component {
 
   @override
   dynamic render() {
-    var error = '';
+    dynamic error = '';
     if (this.state['error'] != null) {
       error = react.p({'className': 'error'},
           'Could not retrieve the remote file list from the server.');
     }
 
-    var fileDescriptions = [];
+    final fileDescriptions = <dynamic>[];
     this.state['fileDescriptions'].forEach((RemoteFileDescription rfd) {
       fileDescriptions.add(react.a({
         'className': 'file',

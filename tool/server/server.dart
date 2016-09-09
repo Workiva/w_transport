@@ -37,7 +37,7 @@ class Server {
       {bool dumpOutput: false,
       String host: defaultHost,
       int port: defaultPort}) {
-    Server server = new Server(host: host, port: port);
+    final server = new Server(host: host, port: port);
     server.output.listen(print);
     return server.start();
   }
@@ -45,7 +45,7 @@ class Server {
   Stream get output => _logger.stream;
 
   Future<Null> start() async {
-    var router = new Router(_logger);
+    final router = new Router(_logger);
 
     try {
       _server = await HttpServer.bind(host, port);
@@ -67,7 +67,7 @@ class Server {
     }
   }
 
-  Future stop() async {
+  Future<Null> stop() async {
     await Future.wait(
         [_server.close(force: true), _subscription.cancel(), _logger.close()]);
   }

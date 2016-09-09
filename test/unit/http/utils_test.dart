@@ -24,7 +24,7 @@ import 'package:w_transport/src/http/utils.dart' as http_utils;
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -36,13 +36,13 @@ void main() {
       });
 
       test('mapToQuery() with default encoding (UTF8)', () {
-        var map = {
+        final map = <String, String>{
           'foo': 'bar',
           'count': '10',
           'sentence': 'words with spaces',
           'chars': 'ç%/\\{].+"\''
         };
-        var expected = [
+        final expected = <String>[
           'foo=bar',
           'count=10',
           'sentence=words+with+spaces',
@@ -52,13 +52,13 @@ void main() {
       });
 
       test('mapToQuery() with non-default encoding (LATIN1)', () {
-        var map = {
+        final map = <String, String>{
           'foo': 'bar',
           'count': '10',
           'sentence': 'words with spaces',
           'chars': 'ç%/\\{].+"\''
         };
-        var expected = [
+        final expected = <String>[
           'foo=bar',
           'count=10',
           'sentence=words+with+spaces',
@@ -68,13 +68,13 @@ void main() {
       });
 
       test('queryToMap() with default encoding (UTF8)', () {
-        var query = [
+        final query = <String>[
           'foo=bar',
           'count=10',
           'sentence=words+with+spaces',
           'chars=%C3%A7%25%2F%5C%7B%5D.%2B%22%27'
         ].join('&');
-        var expected = {
+        final expected = <String, String>{
           'foo': 'bar',
           'count': '10',
           'sentence': 'words with spaces',
@@ -84,13 +84,13 @@ void main() {
       });
 
       test('queryToMap() with default encoding (UTF8)', () {
-        var query = [
+        final query = <String>[
           'foo=bar',
           'count=10',
           'sentence=words+with+spaces',
           'chars=%E7%25%2F%5C%7B%5D.%2B%22%27'
         ].join('&');
-        var expected = {
+        final expected = <String, String>{
           'foo': 'bar',
           'count': '10',
           'sentence': 'words with spaces',
@@ -101,15 +101,15 @@ void main() {
       });
 
       test('parseContentTypeFromHeaders()', () {
-        var headers = {'content-type': 'text/plain'};
-        MediaType ct = http_utils.parseContentTypeFromHeaders(headers);
+        final headers = <String, String>{'content-type': 'text/plain'};
+        final ct = http_utils.parseContentTypeFromHeaders(headers);
         expect(ct.mimeType, equals('text/plain'));
         expect(ct.parameters, isEmpty);
       });
 
       test('parseContentTypeFromHeaders() no content-type header', () {
-        var headers = <String, String>{};
-        MediaType ct = http_utils.parseContentTypeFromHeaders(headers);
+        final headers = <String, String>{};
+        final ct = http_utils.parseContentTypeFromHeaders(headers);
         expect(ct.mimeType, equals('application/octet-stream'),
             reason:
                 'application/octet-stream content-type should be assumed if header is missing.');
@@ -117,15 +117,17 @@ void main() {
       });
 
       test('parseContentTypeFromHeaders() case mismatch', () {
-        var headers = {'cOntEnt-tYPe': 'text/plain'};
-        MediaType ct = http_utils.parseContentTypeFromHeaders(headers);
+        final headers = <String, String>{'cOntEnt-tYPe': 'text/plain'};
+        final ct = http_utils.parseContentTypeFromHeaders(headers);
         expect(ct.mimeType, equals('text/plain'));
         expect(ct.parameters, isEmpty);
       });
 
       test('parseContentTypeFromHeaders() with parameters', () {
-        var headers = {'content-type': 'text/plain; charset=utf-8'};
-        MediaType ct = http_utils.parseContentTypeFromHeaders(headers);
+        final headers = <String, String>{
+          'content-type': 'text/plain; charset=utf-8'
+        };
+        final ct = http_utils.parseContentTypeFromHeaders(headers);
         expect(ct.mimeType, equals('text/plain'));
         expect(ct.parameters, containsPair('charset', 'utf-8'));
       });
@@ -139,7 +141,7 @@ void main() {
       });
 
       test('parseEncodingFromContentType() no charset', () {
-        MediaType ct = new MediaType('text', 'plain');
+        final ct = new MediaType('text', 'plain');
         expect(http_utils.parseEncodingFromContentType(ct, fallback: ASCII),
             equals(ASCII));
       });
@@ -150,7 +152,7 @@ void main() {
       });
 
       test('parseEncodingFromContentType() unrecognized charset', () {
-        MediaType ct = new MediaType('text', 'plain', {'charset': 'unknown'});
+        final ct = new MediaType('text', 'plain', {'charset': 'unknown'});
         expect(http_utils.parseEncodingFromContentType(ct, fallback: ASCII),
             equals(ASCII));
       });
@@ -165,7 +167,7 @@ void main() {
       });
 
       test('parseEncodingFromContentTypeOrFail() no charset', () {
-        MediaType ct = new MediaType('text', 'plain');
+        final ct = new MediaType('text', 'plain');
         expect(() {
           http_utils.parseEncodingFromContentTypeOrFail(ct);
         }, throwsFormatException);
@@ -178,7 +180,7 @@ void main() {
       });
 
       test('parseEncodingFromContentTypeOrFail() unrecognized charset', () {
-        MediaType ct = new MediaType('text', 'plain', {'charset': 'unknown'});
+        final ct = new MediaType('text', 'plain', {'charset': 'unknown'});
         expect(() {
           http_utils.parseEncodingFromContentTypeOrFail(ct);
         }, throwsFormatException);
@@ -193,62 +195,66 @@ void main() {
       });
 
       test('parseEncodingFromHeaders() case mismatch', () {
-        var headers = {'cOnteNt-tYPe': 'text/plain; charset=utf-8'};
+        final headers = <String, String>{
+          'cOnteNt-tYPe': 'text/plain; charset=utf-8'
+        };
         expect(http_utils.parseEncodingFromHeaders(headers), equals(UTF8));
       });
 
       test('parseEncodingFromHeaders() no charset', () {
-        var headers = {'content-type': 'text/plain'};
+        final headers = <String, String>{'content-type': 'text/plain'};
         expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII),
             equals(ASCII));
       });
 
       test('parseEncodingFromHeaders() no content-type', () {
-        var headers = <String, String>{};
+        final headers = <String, String>{};
         expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII),
             equals(ASCII));
       });
 
       test('parseEncodingFromHeaders() unrecognized charset', () {
-        var headers = {'content-type': 'text/plain; charset=unknown'};
+        final headers = <String, String>{
+          'content-type': 'text/plain; charset=unknown'
+        };
         expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII),
             equals(ASCII));
       });
 
       test('reduceByteStream()', () async {
-        var byteStream = new Stream<List<int>>.fromIterable([
+        final byteStream = new Stream.fromIterable([
           [1, 2, 3],
           [4, 5],
           [6, 7, 8]
         ]);
-        var expected = new Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8]);
+        final expected = new Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8]);
         expect(await http_utils.reduceByteStream(byteStream), equals(expected));
       });
 
       test('reduceByteStream() empty', () async {
-        var byteStream = new Stream<List<int>>.fromIterable([]);
+        final byteStream = new Stream<List<int>>.fromIterable([]);
         expect(await http_utils.reduceByteStream(byteStream), isEmpty);
       });
 
       test('reduceByteStream() single element', () async {
-        var byteStream = new Stream<List<int>>.fromIterable([
+        final byteStream = new Stream.fromIterable([
           [1, 2]
         ]);
-        var expected = new Uint8List.fromList([1, 2]);
+        final expected = new Uint8List.fromList([1, 2]);
         expect(await http_utils.reduceByteStream(byteStream), equals(expected));
       });
 
       test('ByteStreamProgressListener', () async {
-        var byteStream = new Stream<List<int>>.fromIterable([
+        final byteStream = new Stream.fromIterable([
           [1, 2, 3],
           [4, 5, 6],
           [7, 8, 9, 10]
         ]);
-        var listener =
+        final listener =
             new http_utils.ByteStreamProgressListener(byteStream, total: 10);
 
-        var chunks = [];
-        await for (var chunk in listener.byteStream) {
+        final chunks = <List<int>>[];
+        await for (final chunk in listener.byteStream) {
           chunks.add(chunk);
         }
         expect(
@@ -259,7 +265,7 @@ void main() {
               [7, 8, 9, 10]
             ]));
 
-        var progressEvents = await listener.progressStream.toList();
+        final progressEvents = await listener.progressStream.toList();
         expect(progressEvents.length, equals(3));
         expect(progressEvents[0].percent, equals(30.0));
         expect(progressEvents[1].percent, equals(60.0));
@@ -267,15 +273,14 @@ void main() {
       });
 
       test('ByteStreamProgressListener pause/resume', () async {
-        var byteStream = new Stream<List<int>>.fromIterable([
+        final byteStream = new Stream.fromIterable([
           [1, 2, 3],
           [4, 5, 6],
         ]);
-        var listener = new http_utils.ByteStreamProgressListener(byteStream);
+        final listener = new http_utils.ByteStreamProgressListener(byteStream);
 
-        Completer done = new Completer();
-        StreamSubscription sub =
-            listener.byteStream.listen((_) {}, onDone: done.complete);
+        final done = new Completer<Null>();
+        final sub = listener.byteStream.listen((_) {}, onDone: done.complete);
         sub.pause();
         sub.resume();
         await done.future;

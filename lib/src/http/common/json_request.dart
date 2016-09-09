@@ -61,7 +61,7 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
 
   @override
   JsonRequest clone() {
-    JsonRequest requestClone = super.clone();
+    final JsonRequest requestClone = super.clone();
     return requestClone..body = _source;
   }
 

@@ -17,19 +17,20 @@ import 'dart:async';
 import 'package:w_transport/w_transport.dart';
 
 /// URLs for this cross origin credentials example.
-Uri authenticationServerUrl = Uri.parse('http://localhost:8024');
-String pathPrefix = '/example/http/cross_origin_credentials';
-Uri sessionUrl = authenticationServerUrl.replace(path: '$pathPrefix/session');
-Uri credentialedEndpointUrl =
-    authenticationServerUrl.replace(path: '$pathPrefix/credentialed');
+final _authenticationServerUrl = Uri.parse('http://localhost:8024');
+final _pathPrefix = '/example/http/cross_origin_credentials';
+final _sessionUrl =
+    _authenticationServerUrl.replace(path: '$_pathPrefix/session');
+final _credentialedEndpointUrl =
+    _authenticationServerUrl.replace(path: '$_pathPrefix/credentialed');
 
 /// Send a request to the /session endpoint to check authentication status.
 /// Returns true if authenticated, false otherwise.
 Future<bool> checkStatus() async {
-  Request req = new Request()..withCredentials = true;
+  final req = new Request()..withCredentials = true;
 
   try {
-    Response response = await req.get(uri: sessionUrl);
+    final response = await req.get(uri: _sessionUrl);
     return response.body.asJson()['authenticated'];
   } catch (error) {
     // Server probably isn't running
@@ -39,10 +40,10 @@ Future<bool> checkStatus() async {
 
 /// Login by sending a POST request to the /session endpoint.
 Future<bool> login() async {
-  Request req = new Request()..withCredentials = true;
+  final req = new Request()..withCredentials = true;
   Response response;
   try {
-    response = await req.post(uri: sessionUrl);
+    response = await req.post(uri: _sessionUrl);
   } catch (e) {
     return false;
   }
@@ -51,10 +52,10 @@ Future<bool> login() async {
 
 /// Logout by sending a request to the /logout endpoint.
 Future<bool> logout() async {
-  Request req = new Request()..withCredentials = true;
+  final req = new Request()..withCredentials = true;
   Response response;
   try {
-    response = await req.delete(uri: sessionUrl);
+    response = await req.delete(uri: _sessionUrl);
   } catch (e) {
     return false;
   }
@@ -66,10 +67,8 @@ Future<bool> logout() async {
 /// means the session HTTP cookie (if set) will be included.
 /// Thus, if authenticated, this request should succeed.
 Future<String> makeCredentialedRequest() async {
-  Request req = new Request()..withCredentials = true;
-
-  Response response;
-  response = await req.get(uri: credentialedEndpointUrl);
+  final req = new Request()..withCredentials = true;
+  final response = await req.get(uri: _credentialedEndpointUrl);
   return response.body.asString();
 }
 
@@ -78,6 +77,6 @@ Future<String> makeCredentialedRequest() async {
 /// This request should fail regardless of authentication.
 Future<String> makeUncredentialedRequest() async {
   // withCredentials is unset by default, so no need to do anything special here
-  Response response = await Http.get(credentialedEndpointUrl);
+  final response = await Http.get(_credentialedEndpointUrl);
   return response.body.asString();
 }

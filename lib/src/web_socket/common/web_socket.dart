@@ -41,18 +41,18 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// A completer that completes when both the outgoing stream sink and the
   /// incoming stream have been closed. This is used to determine when this
   /// [WebSocket] instance can be considered completely closed.
-  Completer<Null> _allClosed = new Completer();
+  Completer<Null> _allClosed = new Completer<Null>();
 
   /// A completer that completes when this [WebSocket] instance is completely
   /// "done" - both outgoing and incoming.
-  Completer<Null> _done = new Completer();
+  Completer<Null> _done = new Completer<Null>();
 
   /// Any error that may be caught during the life of the underlying WebSocket.
-  var _error;
+  Object _error;
 
   /// A `StreamController` used to expose the incoming stream of events from the
   /// underlying WebSocket.
-  StreamController _incoming;
+  StreamController<dynamic> _incoming;
 
   /// Whether or not the incoming stream of WebSocket events is closed.
   bool _isIncomingClosed = false;
@@ -62,7 +62,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
 
   /// A `StreamController` used to pipe outgoing events to the underlying
   /// WebSocket.
-  StreamController _outgoing;
+  StreamController<dynamic> _outgoing;
 
   /// The stack trace for any error that may be caught during the life of the
   /// underlying WebSocket.
@@ -87,14 +87,14 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
     });
 
     // Outgoing communication will be handled by this stream controller.
-    _outgoing = new StreamController();
+    _outgoing = new StreamController<dynamic>();
     _outgoing.stream.listen(onOutgoingData,
         onError: onOutgoingError, onDone: onOutgoingDone);
 
     // Map events from the underlying socket to the incoming controller.
     // It is important to have handlers for start/stop/pause/resume so that the
     // controller properly respects the StreamSubscription API.
-    _incoming = new StreamController(
+    _incoming = new StreamController<dynamic>(
         onListen: onIncomingListen,
         onPause: onIncomingPause,
         onResume: onIncomingResume,
@@ -137,14 +137,14 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
   @override
-  Future addStream(Stream stream) async {
+  Future<Null> addStream(Stream stream) async {
     return _outgoing.addStream(stream);
   }
 
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
   @override
-  Future close([int code, String reason]) {
+  Future<Null> close([int code, String reason]) {
     shutDown(code: code, reason: reason);
     return done;
   }
@@ -152,7 +152,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   @override
   StreamSubscription listen(void onData(dynamic event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    var sub = _incoming.stream
+    final sub = _incoming.stream
         .listen(onData, onError: onError, cancelOnError: cancelOnError);
     _incomingSubscription = new WSocketSubscription(sub, onDone, onCancel: () {
       _incomingSubscription = null;
@@ -163,9 +163,9 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
 
   /// Called when the subscription to the incoming `StreamController` is
   /// canceled.
-  Future onIncomingCancel() async {
+  Future<Null> onIncomingCancel() async {
     await webSocketSubscription.cancel();
-    return _incoming.close();
+    await _incoming.close();
   }
 
   /// Called when a message event with [data] is received from the underlying

@@ -28,9 +28,9 @@ class CloseHandler extends WebSocketHandler {
   void onConnection(WebSocket webSocket) {
     webSocket.listen((message) {
       if (message.startsWith('close')) {
-        var parts = message.split(':');
-        var closeCode;
-        var closeReason;
+        final parts = message.split(':');
+        int closeCode;
+        String closeReason;
         if (parts.length >= 2) {
           closeCode = int.parse(parts[1]);
         }

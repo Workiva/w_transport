@@ -24,7 +24,7 @@ import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformBrowser
     ..testType = testTypeIntegration
     ..topic = topicHttp;
@@ -37,19 +37,19 @@ void main() {
     runJsonRequestSuite();
 
     test('underlying HttpRequest configuration', () async {
-      JsonRequest request = new JsonRequest()
+      final request = new JsonRequest()
         ..uri = IntegrationPaths.reflectEndpointUri;
       request.configure((request) async {
         HttpRequest xhr = request;
         xhr.setRequestHeader('x-configured', 'true');
       });
-      Response response = await request.get();
+      final response = await request.get();
       expect(response.body.asJson()['headers']['x-configured'], equals('true'));
     });
 
     group('withCredentials', () {
       test('set to true (JsonRequest)', () async {
-        JsonRequest request = new JsonRequest()
+        final request = new JsonRequest()
           ..uri = IntegrationPaths.pingEndpointUri
           ..withCredentials = true;
         request.configure((request) async {
@@ -60,7 +60,7 @@ void main() {
       });
 
       test('set to false (JsonRequest)', () async {
-        JsonRequest request = new JsonRequest()
+        final request = new JsonRequest()
           ..uri = IntegrationPaths.pingEndpointUri
           ..withCredentials = false;
         request.configure((request) async {

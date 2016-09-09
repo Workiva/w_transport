@@ -77,7 +77,7 @@ class FileTransferListItemComponent extends react.Component {
     _fadeTransferOut().then((_) => _removeTransfer());
   }
 
-  Future _fadeTransferOut() async {
+  Future<Null> _fadeTransferOut() async {
     // wait a few seconds before beginning to fade the item out
     await new Future.delayed(
         new Duration(seconds: _transferCompleteLingerDuration));
@@ -104,7 +104,7 @@ class FileTransferListItemComponent extends react.Component {
       transferClass += ' hide';
     }
 
-    var label = [transfer.name];
+    final label = <dynamic>[transfer.name];
     if (!this.state['done']) {
       label.addAll([
         ' (',

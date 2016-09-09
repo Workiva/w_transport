@@ -37,38 +37,38 @@ void _runHttpClientSuite(Client getClient()) {
   });
 
   test('newFormRequest()', () async {
-    FormRequest request = client.newFormRequest();
+    final request = client.newFormRequest();
     await _testRequest(request);
     client.close();
   });
 
   test('newJsonRequest()', () async {
-    JsonRequest request = client.newJsonRequest();
+    final request = client.newJsonRequest();
     await _testRequest(request);
     client.close();
   });
 
   test('newMultipartRequest()', () async {
-    MultipartRequest request = client.newMultipartRequest();
+    final request = client.newMultipartRequest();
     request.fields['key'] = 'value';
     await _testRequest(request);
     client.close();
   });
 
   test('newRequest()', () async {
-    Request request = client.newRequest();
+    final request = client.newRequest();
     await _testRequest(request);
     client.close();
   });
 
   test('newStreamedRequest()', () async {
-    StreamedRequest request = client.newStreamedRequest();
+    final request = client.newStreamedRequest();
     await _testRequest(request);
     client.close();
   });
 
   test('should support multiple concurrent requests', () async {
-    List<Future> requests = [
+    final requests = <Future>[
       client.newFormRequest().post(uri: IntegrationPaths.reflectEndpointUri),
       client.newJsonRequest().put(uri: IntegrationPaths.reflectEndpointUri),
       (client.newMultipartRequest()..fields['f'] = 'v')
@@ -93,12 +93,12 @@ void _runHttpClientSuite(Client getClient()) {
 
   test('close() should abort all in-flight requests', () async {
     // We will let this request finish before closing the client.
-    Request willComplete = client.newRequest();
+    final willComplete = client.newRequest();
     await willComplete.get(uri: IntegrationPaths.pingEndpointUri);
 
     // This request should be canceled before it times out.
-    Request willNotComplete = client.newRequest();
-    Future willThrow =
+    final willNotComplete = client.newRequest();
+    final willThrow =
         willNotComplete.get(uri: IntegrationPaths.timeoutEndpointUri);
 
     // Closing the client should not affect the completed request, but should
@@ -112,7 +112,7 @@ void _runHttpClientSuite(Client getClient()) {
 Future<Null> _testRequest(BaseRequest request) async {
   request.uri = IntegrationPaths.reflectEndpointUri;
   request.headers = {'x-custom': 'value', 'x-tokens': 'token1, token2'};
-  Response response = await request.get();
+  final response = await request.get();
   expect(response.body.asJson()['method'], equals('GET'));
   expect(response.body.asJson()['headers'], containsPair('x-custom', 'value'));
   expect(response.body.asJson()['headers'],

@@ -22,7 +22,7 @@ import '../mock_endpoints/reflect.dart';
 import 'suite.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformMock
     ..testType = testTypeIntegration
     ..topic = topicHttp;

@@ -32,7 +32,7 @@ class RemoteFiles {
   /// via HTTP polling.
   RemoteFiles._() {
     _connected = true;
-    _errorStreamController = new StreamController();
+    _errorStreamController = new StreamController<RequestException>();
     _errorStream = _errorStreamController.stream.asBroadcastStream();
     _fileStreamController = new StreamController<List<RemoteFileDescription>>();
     _fileStream = _fileStreamController.stream.asBroadcastStream();
@@ -72,10 +72,10 @@ class RemoteFiles {
   }
 
   /// Send the HTTP polling request.
-  Future _poll() async {
+  Future<Null> _poll() async {
     if (!_connected) return;
     try {
-      Response response = await Http.get(getFilesEndpointUrl());
+      final response = await Http.get(getFilesEndpointUrl());
 
       // Parse the file list from the response
       List results = response.body.asJson()['results'];

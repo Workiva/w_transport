@@ -24,7 +24,7 @@ class PingHandler extends Handler {
   }
 
   @override
-  Future get(HttpRequest request) async {
+  Future<Null> get(HttpRequest request) async {
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
   }

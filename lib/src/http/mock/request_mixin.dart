@@ -25,15 +25,15 @@ import 'package:w_transport/src/http/utils.dart' as http_utils;
 import 'package:w_transport/src/mocks/http.dart' show MockHttpInternal;
 
 abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
-  Completer _canceled = new Completer();
+  Completer<Null> _canceled = new Completer<Null>();
   bool _mockHandlersRegistered = false;
-  Completer<BaseResponse> _response = new Completer();
-  Completer<FinalizedRequest> _sent = new Completer();
+  Completer<BaseResponse> _response = new Completer<BaseResponse>();
+  Completer<FinalizedRequest> _sent = new Completer<FinalizedRequest>();
   bool _shouldFailToOpen = false;
   bool _streamResponse;
 
   @override
-  Future get onCanceled {
+  Future<Null> get onCanceled {
     _registerHandlers();
     return _canceled.future;
   }
@@ -51,7 +51,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   }
 
   @override
-  Future openRequest([_]) async {
+  Future<Null> openRequest([_]) async {
     _registerHandlers();
 
     // Allow the controller of this mock request to trigger an unexpected
@@ -91,7 +91,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     onSent.then((_) async {
       // Coerce the response to the correct format (streamed or not).
       if (_streamResponse && response is Response) {
-        Response standardResponse = response;
+        final Response standardResponse = response;
         response = new StreamedResponse.fromByteStream(
             response.status,
             response.statusText,
@@ -99,22 +99,22 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
             new Stream.fromIterable([standardResponse.body.asBytes()]));
       }
       if (!_streamResponse && response is StreamedResponse) {
-        StreamedResponse streamedResponse = response;
+        final StreamedResponse streamedResponse = response;
         response = new Response.fromBytes(response.status, response.statusText,
             response.headers, await streamedResponse.body.toBytes());
       }
 
       if (response is StreamedResponse) {
-        StreamedResponse streamedResponse = response;
-        var progressListener = new http_utils.ByteStreamProgressListener(
+        final StreamedResponse streamedResponse = response;
+        final progressListener = new http_utils.ByteStreamProgressListener(
             streamedResponse.body.byteStream,
             total: response.contentLength);
         progressListener.progressStream.listen(downloadProgressController.add);
         response = new StreamedResponse.fromByteStream(response.status,
             response.statusText, response.headers, progressListener.byteStream);
       } else {
-        Response standardResponse = response;
-        int total = standardResponse.body.asBytes().length;
+        final Response standardResponse = response;
+        final total = standardResponse.body.asBytes().length;
         downloadProgressController.add(new RequestProgress(total, total));
       }
 

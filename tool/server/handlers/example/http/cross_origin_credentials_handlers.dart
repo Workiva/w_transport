@@ -61,7 +61,7 @@ class SessionHandler extends Handler {
   }
 
   @override
-  Future get(HttpRequest request) async {
+  Future<Null> get(HttpRequest request) async {
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
     request.response
@@ -69,10 +69,10 @@ class SessionHandler extends Handler {
   }
 
   @override
-  Future post(HttpRequest request) async {
+  Future<Null> post(HttpRequest request) async {
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
-    Map<String, String> headers = createSessionHeaders(generateSessionCookie());
+    final headers = createSessionHeaders(generateSessionCookie());
     headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
@@ -80,11 +80,11 @@ class SessionHandler extends Handler {
   }
 
   @override
-  Future delete(HttpRequest request) async {
+  Future<Null> delete(HttpRequest request) async {
     session = null;
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
-    Map<String, String> headers = createSessionHeaders('deleted');
+    final headers = createSessionHeaders('deleted');
     headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
@@ -98,7 +98,7 @@ class CredentialedRequestHandler extends Handler {
   }
 
   @override
-  Future get(HttpRequest request) async {
+  Future<Null> get(HttpRequest request) async {
     // Verify the request has a valid session cookie
     if (isValidSession(request)) {
       request.response.statusCode = HttpStatus.OK;

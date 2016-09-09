@@ -22,7 +22,7 @@ import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformVM
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
@@ -35,21 +35,21 @@ void main() {
     runCommonWebSocketIntegrationTests();
 
     test('should support List<int>', () async {
-      List<int> data = [1, 2, 3];
-      WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+      final data = <int>[1, 2, 3];
+      final socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(data);
       await socket.close();
     });
 
     test('should support String', () async {
-      String data = 'data';
-      WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+      final data = 'data';
+      final socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(data);
       await socket.close();
     });
 
     test('should throw when attempting to send invalid data', () async {
-      WSocket socket = await WSocket.connect(IntegrationPaths.pingUri);
+      final socket = await WSocket.connect(IntegrationPaths.pingUri);
       expect(() {
         socket.add(true);
       }, throwsArgumentError);

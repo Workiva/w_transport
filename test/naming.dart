@@ -41,7 +41,7 @@ class Naming {
 
   @override
   String toString() {
-    var s = '$topic [$testType]';
+    String s = '$topic [$testType]';
     if (platform != null) {
       s += ' [$platform]';
     }

@@ -62,7 +62,7 @@ class _MockWebSocket extends CommonWebSocket
 
   /// The mock underlying WebSocket. Events are added manually via the
   /// [MockWebSocket] api.
-  StreamController _mocket = new StreamController();
+  StreamController<dynamic> _mocket = new StreamController<dynamic>();
 
   _MockWebSocket() : super() {
     webSocketSubscription = _mocket.stream.listen(onIncomingData);

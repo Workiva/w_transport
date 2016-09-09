@@ -30,8 +30,8 @@ Future<Null> handleFileClick(MouseEvent event) async {
   event.preventDefault();
 
   // Grab file path from anchor element
-  AnchorElement anchor = event.target;
-  String filePath = anchor.href;
+  final AnchorElement anchor = event.target;
+  final filePath = anchor.href;
 
   // Send GET request instead
   try {
@@ -43,7 +43,7 @@ Future<Null> handleFileClick(MouseEvent event) async {
 
 /// Requests the contents of a file using WRequest.
 Future<String> requestFile(String filePath) async {
-  Response response = await Http.get(Uri.parse(filePath));
+  final response = await Http.get(Uri.parse(filePath));
   return response.body.asString();
 }
 

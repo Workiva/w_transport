@@ -24,7 +24,7 @@ import 'package:w_transport/src/web_socket/mock/web_socket.dart';
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..testType = testTypeUnit
     ..topic = topicMocks;
 
@@ -34,7 +34,7 @@ void main() {
     });
 
     group('TransportMocks.webSocket', () {
-      Uri webSocketUri = Uri.parse('/mock/ws');
+      final webSocketUri = Uri.parse('/mock/ws');
 
       setUp(() {
         configureWTransportForTest();
@@ -44,7 +44,7 @@ void main() {
       group('expect()', () {
         test('expected web socket connection completes automatically',
             () async {
-          WSocket webSocket = new MockWSocket();
+          final webSocket = new MockWSocket();
           MockTransports.webSocket.expect(webSocketUri, connectTo: webSocket);
           expect(await WSocket.connect(webSocketUri), equals(webSocket));
         });
@@ -79,7 +79,7 @@ void main() {
       group('expectPattern()', () {
         test('expected web socket connection completes automatically',
             () async {
-          WSocket webSocket = new MockWSocket();
+          final webSocket = new MockWSocket();
           MockTransports.webSocket
               .expectPattern(webSocketUri.toString(), connectTo: webSocket);
           expect(await WSocket.connect(webSocketUri), equals(webSocket));
@@ -134,7 +134,7 @@ void main() {
         test(
             'registers a handler for all web socket connections with matching URI',
             () async {
-          WSocket webSocket = new MockWSocket();
+          final webSocket = new MockWSocket();
           Future<WSocket> handler(Uri uri,
                   {Iterable<String> protocols,
                   Map<String, dynamic> headers}) async =>
@@ -183,8 +183,8 @@ void main() {
         });
 
         test('registers a handler that can be canceled', () async {
-          var webSocket = new MockWSocket();
-          var handler = MockTransports.webSocket.when(webSocketUri,
+          final webSocket = new MockWSocket();
+          final handler = MockTransports.webSocket.when(webSocketUri,
               handler: (uri, {protocols, headers}) async => webSocket);
 
           expect(await WSocket.connect(webSocketUri), equals(webSocket));
@@ -194,8 +194,8 @@ void main() {
 
         test('canceling a handler does nothing if handler no longer exists',
             () async {
-          var webSocket = new MockWSocket();
-          var oldHandler =
+          final webSocket = new MockWSocket();
+          final oldHandler =
               MockTransports.webSocket.when(webSocketUri, reject: true);
           MockTransports.webSocket.when(webSocketUri,
               handler: (uri, {protocols, headers}) async => webSocket);
@@ -207,8 +207,8 @@ void main() {
         });
 
         test('canceling a handler does nothing if handler was reset', () async {
-          var webSocket = new MockWSocket();
-          var oldHandler = MockTransports.webSocket.when(webSocketUri,
+          final webSocket = new MockWSocket();
+          final oldHandler = MockTransports.webSocket.when(webSocketUri,
               handler: (uri, {protocols, headers}) async => webSocket);
           MockTransports.reset();
 
@@ -224,7 +224,7 @@ void main() {
         test(
             'registers a handler for all web socket connections with matching URI',
             () async {
-          WSocket webSocket = new MockWSocket();
+          final webSocket = new MockWSocket();
           Future<WSocket> handler(Uri uri,
                   {Iterable<String> protocols,
                   Map<String, dynamic> headers,
@@ -279,8 +279,8 @@ void main() {
         test(
             'registers a handler with a pattern that catches any connection with a matching URI',
             () async {
-          var uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
-          WSocket webSocket = new MockWSocket();
+          final uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
+          final webSocket = new MockWSocket();
           Future<WSocket> handler(Uri uri,
                   {Iterable<String> protocols,
                   Map<String, dynamic> headers,
@@ -301,7 +301,7 @@ void main() {
         test(
             'registers a handler that will receive the uri Match on connection',
             () async {
-          var uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
+          final uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
           Match uriMatch;
           Future<WSocket> handler(Uri uri,
               {Iterable<String> protocols,
@@ -319,8 +319,8 @@ void main() {
         });
 
         test('registers a handler that can be canceled', () async {
-          var webSocket = new MockWSocket();
-          var handler = MockTransports.webSocket.whenPattern(
+          final webSocket = new MockWSocket();
+          final handler = MockTransports.webSocket.whenPattern(
               webSocketUri.toString(),
               handler: (uri, {protocols, headers, match}) async => webSocket);
 
@@ -331,8 +331,8 @@ void main() {
 
         test('canceling a handler does nothing if handler no longer exists',
             () async {
-          var webSocket = new MockWSocket();
-          var oldHandler = MockTransports.webSocket
+          final webSocket = new MockWSocket();
+          final oldHandler = MockTransports.webSocket
               .whenPattern(webSocketUri.toString(), reject: true);
           MockTransports.webSocket.whenPattern(webSocketUri.toString(),
               handler: (uri, {protocols, headers, match}) async => webSocket);
@@ -344,8 +344,8 @@ void main() {
         });
 
         test('canceling a handler does nothing if handler was reset', () async {
-          var webSocket = new MockWSocket();
-          var oldHandler = MockTransports.webSocket.whenPattern(
+          final webSocket = new MockWSocket();
+          final oldHandler = MockTransports.webSocket.whenPattern(
               webSocketUri.toString(),
               handler: (uri, {protocols, headers, match}) async => webSocket);
           MockTransports.reset();

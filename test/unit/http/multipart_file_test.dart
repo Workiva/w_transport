@@ -21,41 +21,38 @@ import 'package:w_transport/w_transport.dart';
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
   group(naming.toString(), () {
     group('MultipartFile', () {
       test('content-type set explicitly', () {
-        MediaType contentType = new MediaType('application', 'json');
-        MultipartFile file = new MultipartFile(new Stream.fromIterable([]), 0,
+        final contentType = new MediaType('application', 'json');
+        final file = new MultipartFile(new Stream.fromIterable([]), 0,
             contentType: contentType, filename: 'page.html');
         expect(file.contentType.mimeType, 'application/json');
       });
 
       test('content-type should be based on a mimetype lookup', () {
-        var stream = new Stream<List<int>>.fromIterable([]);
+        final stream = new Stream<List<int>>.fromIterable([]);
 
-        MultipartFile jsonFile =
-            new MultipartFile(stream, 0, filename: 'data.json');
+        final jsonFile = new MultipartFile(stream, 0, filename: 'data.json');
         expect(jsonFile.contentType.mimeType, equals('application/json'));
 
-        MultipartFile zipFile =
+        final zipFile =
             new MultipartFile(stream, 0, filename: 'compressed.zip');
         expect(zipFile.contentType.mimeType, equals('application/zip'));
 
-        MultipartFile imgFile =
-            new MultipartFile(stream, 0, filename: 'img.png');
+        final imgFile = new MultipartFile(stream, 0, filename: 'img.png');
         expect(imgFile.contentType.mimeType, equals('image/png'));
 
-        MultipartFile htmlFile =
-            new MultipartFile(stream, 0, filename: 'page.html');
+        final htmlFile = new MultipartFile(stream, 0, filename: 'page.html');
         expect(htmlFile.contentType.mimeType, equals('text/html'));
       });
 
       test('content-type default to application/octet-stream', () {
-        MultipartFile file = new MultipartFile(new Stream.fromIterable([]), 0);
+        final file = new MultipartFile(new Stream.fromIterable([]), 0);
         expect(file.contentType.mimeType, equals('application/octet-stream'));
       });
     });

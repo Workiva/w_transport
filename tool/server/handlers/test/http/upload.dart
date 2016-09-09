@@ -26,11 +26,11 @@ class UploadHandler extends Handler {
     enableCors();
   }
 
-  Future upload(HttpRequest request) async {
-    ContentType contentType =
+  Future<Null> upload(HttpRequest request) async {
+    final contentType =
         ContentType.parse(request.headers.value('content-type'));
-    String boundary = contentType.parameters['boundary'];
-    Stream stream = request
+    final boundary = contentType.parameters['boundary'];
+    final stream = request
         .transform(new MimeMultipartTransformer(boundary))
         .map(HttpMultipartFormData.parse);
 
@@ -47,26 +47,26 @@ class UploadHandler extends Handler {
   }
 
   @override
-  Future delete(HttpRequest request) async => upload(request);
+  Future<Null> delete(HttpRequest request) async => upload(request);
 
   @override
-  Future get(HttpRequest request) async => upload(request);
+  Future<Null> get(HttpRequest request) async => upload(request);
 
   @override
-  Future head(HttpRequest request) async => upload(request);
+  Future<Null> head(HttpRequest request) async => upload(request);
 
   @override
-  Future options(HttpRequest request) async => upload(request);
+  Future<Null> options(HttpRequest request) async => upload(request);
 
   @override
-  Future patch(HttpRequest request) async => upload(request);
+  Future<Null> patch(HttpRequest request) async => upload(request);
 
   @override
-  Future post(HttpRequest request) async => upload(request);
+  Future<Null> post(HttpRequest request) async => upload(request);
 
   @override
-  Future put(HttpRequest request) async => upload(request);
+  Future<Null> put(HttpRequest request) async => upload(request);
 
   @override
-  Future trace(HttpRequest request) async => upload(request);
+  Future<Null> trace(HttpRequest request) async => upload(request);
 }

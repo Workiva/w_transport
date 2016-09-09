@@ -62,7 +62,7 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
       uri = uri.replace(scheme: 'https');
     }
 
-    sockjs.Client client = new sockjs.Client(uri.toString(),
+    final client = new sockjs.Client(uri.toString(),
         debug: debug == true,
         noCredentials: noCredentials == true,
         protocolsWhitelist: protocolsWhitelist,
@@ -71,15 +71,17 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
     // Listen for and store the close event. This will determine whether or
     // not the socket connected successfully, and will also be used later
     // to handle the web socket closing.
-    var closed = client.onClose.first;
+    final closed = new Completer<Object /* CloseEvent */ >();
+    // ignore: unawaited_futures
+    client.onClose.first.then(closed.complete);
 
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
-    Completer connected = new Completer();
+    final connected = new Completer<Null>();
     // ignore: unawaited_futures
-    client.onOpen.first.then(connected.complete);
+    client.onOpen.first.then((_) => connected.complete());
     // ignore: unawaited_futures
-    closed.then((_) {
+    closed.future.then((_) {
       if (!connected.isCompleted) {
         connected
             .completeError(new WebSocketException('Could not connect to $uri'));
@@ -87,7 +89,7 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
     });
 
     await connected.future;
-    return new SockJSWebSocket._(client, closed);
+    return new SockJSWebSocket._(client, closed.future);
   }
 
   @override

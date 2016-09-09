@@ -24,12 +24,12 @@ import 'remote_files.dart';
 // Counter used to create unique upload IDs.
 int _transferNum = 0;
 
+// Current number of bytes in memory from concurrent file transfers.
+int _concurrentFileTransferSize = 0;
+
 // Maximum number of bytes from concurrent file transfers that can be
 // loaded into memory before potentially crashing the browser tab.
 final int _concurrentFileTransferSizeLimit = math.pow(2, 20) * 75; // 75 MB
-
-// Current number of bytes in memory from concurrent file transfers.
-int _concurrentFileTransferSize = 0;
 
 /// Encapsulates the file upload to or file download from the server.
 class FileTransfer {
@@ -39,7 +39,7 @@ class FileTransfer {
   FileTransfer(this.name)
       : id = 'fileTransfer${_transferNum++}',
         _canceled = false,
-        _doneCompleter = new Completer(),
+        _doneCompleter = new Completer<Null>(),
         _percentComplete = 0.0;
 
   /// Unique file transfer identifier.
@@ -57,8 +57,8 @@ class FileTransfer {
   double _percentComplete;
 
   /// Whether or not the request has finished.
-  Future get done => _doneCompleter.future;
-  Completer _doneCompleter;
+  Future<Null> get done => _doneCompleter.future;
+  Completer<Null> _doneCompleter;
 
   /// Cancel the request (will do nothing if the request has already finished).
   void cancel(String reason) {

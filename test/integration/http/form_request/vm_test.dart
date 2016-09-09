@@ -24,7 +24,7 @@ import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformVM
     ..testType = testTypeIntegration
     ..topic = topicHttp;
@@ -37,13 +37,13 @@ void main() {
     runFormRequestSuite();
 
     test('underlying HttpRequest configuration', () async {
-      FormRequest request = new FormRequest()
+      final request = new FormRequest()
         ..uri = IntegrationPaths.reflectEndpointUri;
       request.configure((request) async {
         HttpClientRequest ioRequest = request;
         ioRequest.headers.set('x-configured', 'true');
       });
-      Response response = await request.get();
+      final response = await request.get();
       expect(response.body.asJson()['headers']['x-configured'], equals('true'));
     });
   });

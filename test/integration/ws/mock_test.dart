@@ -23,7 +23,7 @@ import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformMock
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
@@ -39,13 +39,13 @@ void main() {
 
       MockTransports.webSocket.when(IntegrationPaths.closeUri,
           handler: (Uri uri, {protocols, headers}) async {
-        MockWSocket webSocket = new MockWSocket();
+        final webSocket = new MockWSocket();
 
         webSocket.onOutgoing((data) {
           if (data.startsWith('close')) {
-            var parts = data.split(':');
-            var closeCode;
-            var closeReason;
+            final parts = data.split(':');
+            int closeCode;
+            String closeReason;
             if (parts.length >= 2) {
               closeCode = int.parse(parts[1]);
             }
@@ -61,18 +61,18 @@ void main() {
 
       MockTransports.webSocket.when(IntegrationPaths.echoUri,
           handler: (Uri uri, {protocols, headers}) async {
-        MockWSocket webSocket = new MockWSocket();
+        final webSocket = new MockWSocket();
         webSocket.onOutgoing(webSocket.addIncoming);
         return webSocket;
       });
 
       MockTransports.webSocket.when(IntegrationPaths.pingUri,
           handler: (Uri uri, {protocols, headers}) async {
-        MockWSocket webSocket = new MockWSocket();
+        final webSocket = new MockWSocket();
 
         webSocket.onOutgoing((data) async {
           data = data.replaceAll('ping', '');
-          var numPongs = 1;
+          int numPongs = 1;
           try {
             numPongs = int.parse(data);
           } catch (_) {}

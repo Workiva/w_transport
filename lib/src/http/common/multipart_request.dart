@@ -65,8 +65,8 @@ abstract class CommonMultipartRequest extends CommonRequest
       : super.fromClient(wTransportClient, client);
 
   static String _generateBoundaryString() {
-    String senderPrefix = 'dart-w-transport-boundary-';
-    var boundaryChars =
+    final senderPrefix = 'dart-w-transport-boundary-';
+    final boundaryChars =
         new List<int>.generate(_boundaryLength - senderPrefix.length, (_) {
       return _boundaryChars[_random.nextInt(_boundaryChars.length)];
     }, growable: false);
@@ -129,27 +129,27 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   @override
   Map<String, String> get fields =>
-      isSent ? new Map.unmodifiable(_fields) : _fields;
+      isSent ? new Map<String, String>.unmodifiable(_fields) : _fields;
 
   @override
   set fields(Map<String, String> fields) {
     verifyUnsent();
-    _fields = new Map.from(fields);
+    _fields = new Map<String, String>.from(fields);
   }
 
   @override
   Map<String, dynamic> get files =>
-      isSent ? new Map.unmodifiable(_files) : _files;
+      isSent ? new Map<String, dynamic>.unmodifiable(_files) : _files;
 
   @override
   set files(Map<String, dynamic> files) {
     verifyUnsent();
-    _files = new Map.from(files);
+    _files = new Map<String, dynamic>.from(files);
   }
 
   @override
   MultipartRequest clone() {
-    MultipartRequest requestClone = super.clone();
+    final MultipartRequest requestClone = super.clone();
     return requestClone
       ..fields = fields
       ..files = files;
@@ -157,10 +157,10 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   @override
   Map<String, String> finalizeHeaders() {
-    var headers = super.finalizeHeaders();
-    var finalizedHeaders = new Map.from(headers);
+    final headers = super.finalizeHeaders();
+    final finalizedHeaders = new Map<String, String>.from(headers);
     finalizedHeaders['content-transfer-encoding'] = 'binary';
-    return new Map.unmodifiable(finalizedHeaders);
+    return new Map<String, String>.unmodifiable(finalizedHeaders);
   }
 
   @override
@@ -175,13 +175,13 @@ abstract class CommonMultipartRequest extends CommonRequest
           'The body of a Multipart request cannot be empty.');
     }
 
-    StreamController<List<int>> controller = new StreamController();
+    final controller = new StreamController<List<int>>();
     void write(String content) {
       controller.add(UTF8.encode(content));
     }
 
-    Future writeByteStream(Stream<List<int>> byteStream) {
-      var c = new Completer();
+    Future<Null> writeByteStream(Stream<List<int>> byteStream) {
+      final c = new Completer<Null>();
       byteStream.listen(controller.add,
           onError: controller.addError, onDone: c.complete);
       return c.future;
@@ -194,7 +194,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       write(_crlf); // Ending newline.
     });
 
-    var fileList = [];
+    final fileList = <Map<String, dynamic>>[];
     files.forEach((name, file) {
       fileList.add({
         'headers': _multipartFileHeaders(name, file),
@@ -206,7 +206,7 @@ abstract class CommonMultipartRequest extends CommonRequest
     Future.forEach(fileList, (Map file) {
       // TODO: make this better
       Stream<List<int>> byteStream;
-      var bs = file['byteStream'];
+      final bs = file['byteStream'];
       if (bs is Stream<List<int>>) {
         byteStream = bs;
       } else {
@@ -245,7 +245,7 @@ abstract class CommonMultipartRequest extends CommonRequest
   }
 
   String _multipartFieldHeaders(String name, String value) {
-    var headers = [
+    final headers = <String>[
       'content-disposition: form-data; name="${_encodeName(name)}"'
     ];
     if (!http_utils.isAsciiOnly(value)) {
@@ -257,9 +257,9 @@ abstract class CommonMultipartRequest extends CommonRequest
   }
 
   String _multipartFileHeaders(String field, MultipartFile file) {
-    var headers = ['content-type: ${file.contentType}'];
+    final headers = <String>['content-type: ${file.contentType}'];
 
-    var disposition =
+    String disposition =
         'content-disposition: form-data; name="${_encodeName(field)}"';
     if (file.filename != null) {
       disposition = '$disposition; filename="${_encodeName(file.filename)}"';

@@ -75,14 +75,14 @@ class Pathway<T> {
   }
 
   Future<T> process(T payload) async {
-    for (var interceptor in _interceptors) {
-      var result = interceptor(payload);
+    for (final interceptor in _interceptors) {
+      final result = interceptor(payload);
       if (result is Future<T>) {
         payload = await result;
       } else if (result is T) {
         payload = result;
       } else {
-        var msg = 'Interceptor returned a value of the incorrect type.\n'
+        final msg = 'Interceptor returned a value of the incorrect type.\n'
             '  Expected: ${T.runtimeType}\n'
             '  Actual:   ${result.runtimeType}';
         throw new Exception(msg);

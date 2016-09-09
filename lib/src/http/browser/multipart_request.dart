@@ -58,29 +58,29 @@ class BrowserMultipartRequest extends CommonRequest
 
   @override
   Map<String, String> get fields =>
-      isSent ? new Map.unmodifiable(_fields) : _fields;
+      isSent ? new Map<String, String>.unmodifiable(_fields) : _fields;
 
   @override
   set fields(Map<String, String> fields) {
     verifyUnsent();
-    _fields = new Map.from(fields);
+    _fields = new Map<String, String>.from(fields);
   }
 
   @override
   Map<String, dynamic> get files {
-    if (isSent) return new Map.unmodifiable(_files);
+    if (isSent) return new Map<String, Blob>.unmodifiable(_files);
     return _files;
   }
 
   @override
   set files(Map<String, dynamic> files) {
     verifyUnsent();
-    _files = new Map.from(files);
+    _files = new Map<String, Blob>.from(files);
   }
 
   @override
   MultipartRequest clone() {
-    MultipartRequest requestClone = super.clone();
+    final MultipartRequest requestClone = super.clone();
     return requestClone
       ..fields = fields
       ..files = files;
@@ -88,12 +88,13 @@ class BrowserMultipartRequest extends CommonRequest
 
   @override
   Map<String, String> finalizeHeaders() {
-    var headers = new CaseInsensitiveMap.from(super.finalizeHeaders());
+    final headers =
+        new CaseInsensitiveMap<String>.from(super.finalizeHeaders());
 
     // Remove the content-type header to allow the browser to set it.
     headers.remove('content-type');
 
-    return new Map.unmodifiable(headers);
+    return new Map<String, String>.unmodifiable(headers);
   }
 
   @override
@@ -103,23 +104,23 @@ class BrowserMultipartRequest extends CommonRequest
           'The body of a Multipart request must be set via `fields` and/or `files`.');
     }
 
-    FormData formData = new FormData();
+    final formData = new FormData();
 
     // Add each text field.
     fields.forEach((name, value) {
       if (http_utils.isAsciiOnly(value)) {
         formData.append(name, value);
       } else {
-        MediaType contentType =
+        final contentType =
             new MediaType('text', 'plain', {'charset': UTF8.name});
-        Blob blob = new Blob([UTF8.encode(value)], contentType.toString());
+        final blob = new Blob([UTF8.encode(value)], contentType.toString());
         formData.appendBlob(name, blob);
       }
     });
     fields.forEach(formData.append);
 
     // Add each blob/file.
-    List<Future> additions = [];
+    final additions = <Future>[];
     files.forEach((name, value) {
       additions.add(() async {
         if (value is File) {
@@ -127,9 +128,9 @@ class BrowserMultipartRequest extends CommonRequest
         } else if (value is Blob) {
           formData.appendBlob(name, value);
         } else if (value is MultipartFile) {
-          String contentType =
+          final contentType =
               value.contentType != null ? value.contentType.toString() : null;
-          Blob blob = new Blob(await value.byteStream.toList(), contentType);
+          final blob = new Blob(await value.byteStream.toList(), contentType);
           formData.appendBlob(name, blob, value.filename);
         }
       }());

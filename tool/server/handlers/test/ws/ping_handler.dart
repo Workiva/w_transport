@@ -29,7 +29,7 @@ class PingHandler extends WebSocketHandler {
   void onConnection(WebSocket webSocket) {
     webSocket.listen((message) async {
       message = message.replaceAll('ping', '');
-      var numPongs = 1;
+      int numPongs = 1;
       try {
         numPongs = int.parse(message);
       } catch (_) {}

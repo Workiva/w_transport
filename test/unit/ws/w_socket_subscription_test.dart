@@ -31,11 +31,11 @@ void main() {
     group('WSocketSubscription', () {
       test('cancel() should cancel underlying subscription and call callback',
           () async {
-        var onCancelCalled = new Completer();
+        final onCancelCalled = new Completer<Null>();
 
-        var sc = new StreamController();
-        var sub = sc.stream.listen((_) {});
-        var wsub = new WSocketSubscription(sub, () {},
+        final sc = new StreamController<dynamic>();
+        final sub = sc.stream.listen((_) {});
+        final wsub = new WSocketSubscription(sub, () {},
             onCancel: onCancelCalled.complete);
 
         await Future.wait([
@@ -46,9 +46,9 @@ void main() {
 
       test('isPaused should return the status of the underlying subscription',
           () {
-        var sc = new StreamController();
-        var sub = sc.stream.listen((_) {});
-        var wsub = new WSocketSubscription(sub, () {});
+        final sc = new StreamController<dynamic>();
+        final sub = sc.stream.listen((_) {});
+        final wsub = new WSocketSubscription(sub, () {});
 
         expect(sub.isPaused, isFalse);
         expect(wsub.isPaused, isFalse);
@@ -59,9 +59,9 @@ void main() {
       });
 
       test('onDone() should update the done handler', () {
-        var sub = new MockStreamSubscription();
-        var wsub = new WSocketSubscription(sub, () {});
-        var doneHandler = () {};
+        final sub = new MockStreamSubscription();
+        final wsub = new WSocketSubscription(sub, () {});
+        final doneHandler = () {};
 
         wsub.onDone(doneHandler);
         expect(wsub.doneHandler, equals(doneHandler));
@@ -69,18 +69,18 @@ void main() {
 
       test('onError() should call onError() on the underlying subscription',
           () {
-        var sub = new MockStreamSubscription();
-        var wsub = new WSocketSubscription(sub, () {});
-        var errorHandler = (_) {};
+        final sub = new MockStreamSubscription();
+        final wsub = new WSocketSubscription(sub, () {});
+        final errorHandler = (_) {};
 
         wsub.onError(errorHandler);
         verify(sub.onError(errorHandler));
       });
 
       test('onData() should call onData() on the underlying subscription', () {
-        var sub = new MockStreamSubscription();
-        var wsub = new WSocketSubscription(sub, () {});
-        var dataHandler = (_) {};
+        final sub = new MockStreamSubscription();
+        final wsub = new WSocketSubscription(sub, () {});
+        final dataHandler = (_) {};
 
         wsub.onData(dataHandler);
         verify(sub.onData(dataHandler));

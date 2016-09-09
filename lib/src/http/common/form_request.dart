@@ -39,7 +39,7 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
 
   @override
   Map<String, dynamic> get fields =>
-      isSent ? new Map.unmodifiable(_fields) : _fields;
+      isSent ? new Map<String, dynamic>.unmodifiable(_fields) : _fields;
 
   @override
   set fields(Map<String, dynamic> fields) {
@@ -62,7 +62,7 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
 
   @override
   FormRequest clone() {
-    FormRequest requestClone = super.clone();
+    final FormRequest requestClone = super.clone();
     return requestClone..fields = fields;
   }
 

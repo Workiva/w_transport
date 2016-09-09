@@ -39,7 +39,7 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
   @override
   FormRequest newFormRequest() {
     verifyNotClosed();
-    FormRequest request = new VMFormRequest.fromClient(this, _ioHttpClient);
+    final request = new VMFormRequest.fromClient(this, _ioHttpClient);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -49,7 +49,7 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
   @override
   JsonRequest newJsonRequest() {
     verifyNotClosed();
-    JsonRequest request = new VMJsonRequest.fromClient(this, _ioHttpClient);
+    final request = new VMJsonRequest.fromClient(this, _ioHttpClient);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -59,8 +59,7 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
   @override
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
-    MultipartRequest request =
-        new VMMultipartRequest.fromClient(this, _ioHttpClient);
+    final request = new VMMultipartRequest.fromClient(this, _ioHttpClient);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -70,7 +69,7 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
   @override
   Request newRequest() {
     verifyNotClosed();
-    Request request = new VMPlainTextRequest.fromClient(this, _ioHttpClient);
+    final request = new VMPlainTextRequest.fromClient(this, _ioHttpClient);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -80,8 +79,7 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
   @override
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
-    StreamedRequest request =
-        new VMStreamedRequest.fromClient(this, _ioHttpClient);
+    final request = new VMStreamedRequest.fromClient(this, _ioHttpClient);
     registerAndDecorateRequest(request);
     return request;
   }

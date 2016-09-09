@@ -49,15 +49,14 @@ class FilesProxy extends Handler {
   }
 
   @override
-  Future get(HttpRequest request) async {
-    Map<String, String> headers = {};
+  Future<Null> get(HttpRequest request) async {
+    final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    Request proxyRequest = getHttpClient().newRequest()..headers = headers;
+    final proxyRequest = getHttpClient().newRequest()..headers = headers;
 
-    StreamedResponse proxyResponse =
-        await proxyRequest.streamGet(uri: filesEndpoint);
+    final proxyResponse = await proxyRequest.streamGet(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
@@ -67,15 +66,14 @@ class FilesProxy extends Handler {
   }
 
   @override
-  Future delete(HttpRequest request) async {
-    Map<String, String> headers = {};
+  Future<Null> delete(HttpRequest request) async {
+    final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    Request proxyRequest = getHttpClient().newRequest()..headers = headers;
+    final proxyRequest = getHttpClient().newRequest()..headers = headers;
 
-    StreamedResponse proxyResponse =
-        await proxyRequest.streamDelete(uri: filesEndpoint);
+    final proxyResponse = await proxyRequest.streamDelete(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
@@ -91,14 +89,14 @@ class UploadProxy extends Handler {
   }
 
   @override
-  Future post(HttpRequest request) async {
-    Map<String, String> headers = {};
+  Future<Null> post(HttpRequest request) async {
+    final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    MediaType contentType =
+    final contentType =
         new MediaType.parse(request.headers.value('content-type'));
-    StreamedRequest proxyRequest = getHttpClient().newStreamedRequest()
+    final proxyRequest = getHttpClient().newStreamedRequest()
       ..headers = headers
       ..body = request
       ..contentLength = request.contentLength
@@ -131,12 +129,12 @@ class DownloadProxy extends Handler {
   }
 
   @override
-  Future get(HttpRequest request) async {
-    Map<String, String> headers = {};
+  Future<Null> get(HttpRequest request) async {
+    final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    Request proxyRequest = getHttpClient().newRequest()
+    final proxyRequest = getHttpClient().newRequest()
       ..uri = downloadEndpoint
       ..query = request.uri.query
       ..headers = headers;

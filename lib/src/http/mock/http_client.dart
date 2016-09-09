@@ -27,7 +27,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   FormRequest newFormRequest() {
     verifyNotClosed();
-    FormRequest request = new MockFormRequest.fromClient(this);
+    final request = new MockFormRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -37,7 +37,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   JsonRequest newJsonRequest() {
     verifyNotClosed();
-    JsonRequest request = new MockJsonRequest.fromClient(this);
+    final request = new MockJsonRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -47,7 +47,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
-    MultipartRequest request = new MockMultipartRequest.fromClient(this);
+    final request = new MockMultipartRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -57,7 +57,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   Request newRequest() {
     verifyNotClosed();
-    Request request = new MockPlainTextRequest.fromClient(this);
+    final request = new MockPlainTextRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -67,7 +67,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
-    StreamedRequest request = new MockStreamedRequest.fromClient(this);
+    final request = new MockStreamedRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }

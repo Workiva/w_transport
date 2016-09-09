@@ -74,7 +74,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
 
   @override
   Request clone() {
-    Request requestClone = super.clone();
+    final Request requestClone = super.clone();
     if (_body != null) {
       requestClone.body = body;
     } else if (_bodyBytes != null) {

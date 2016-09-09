@@ -31,8 +31,8 @@ class ReflectHandler extends Handler {
     enableCors();
   }
 
-  Future reflect(HttpRequest request) async {
-    Map<String, String> headers = {};
+  Future<Null> reflect(HttpRequest request) async {
+    final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
@@ -41,7 +41,7 @@ class ReflectHandler extends Handler {
     if (request.headers.contentType == null) {
       encoding = LATIN1;
     } else {
-      MediaType contentType = new MediaType(
+      final contentType = new MediaType(
           request.headers.contentType.primaryType,
           request.headers.contentType.subType,
           request.headers.contentType.parameters);
@@ -49,7 +49,7 @@ class ReflectHandler extends Handler {
           fallback: LATIN1);
     }
 
-    Map reflection = {
+    final reflection = <String, Object>{
       'method': request.method,
       'path': request.uri.path,
       'headers': headers,
@@ -64,29 +64,29 @@ class ReflectHandler extends Handler {
   }
 
   @override
-  Future copy(HttpRequest request) async => reflect(request);
+  Future<Null> copy(HttpRequest request) async => reflect(request);
 
   @override
-  Future delete(HttpRequest request) async => reflect(request);
+  Future<Null> delete(HttpRequest request) async => reflect(request);
 
   @override
-  Future get(HttpRequest request) async => reflect(request);
+  Future<Null> get(HttpRequest request) async => reflect(request);
 
   @override
-  Future head(HttpRequest request) async => reflect(request);
+  Future<Null> head(HttpRequest request) async => reflect(request);
 
   @override
-  Future options(HttpRequest request) async => reflect(request);
+  Future<Null> options(HttpRequest request) async => reflect(request);
 
   @override
-  Future patch(HttpRequest request) async => reflect(request);
+  Future<Null> patch(HttpRequest request) async => reflect(request);
 
   @override
-  Future post(HttpRequest request) async => reflect(request);
+  Future<Null> post(HttpRequest request) async => reflect(request);
 
   @override
-  Future put(HttpRequest request) async => reflect(request);
+  Future<Null> put(HttpRequest request) async => reflect(request);
 
   @override
-  Future trace(HttpRequest request) async => reflect(request);
+  Future<Null> trace(HttpRequest request) async => reflect(request);
 }

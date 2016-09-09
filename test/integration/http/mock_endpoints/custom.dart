@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
 
 void mockCustomEndpoint(Uri uri) {
-  MockTransports.http.when(uri, (FinalizedRequest request) async {
-    var status = int.parse(request.uri.queryParameters['status'] ?? '200');
+  MockTransports.http.when(uri, (request) async {
+    final status = int.parse(request.uri.queryParameters['status'] ?? '200');
     return new MockResponse(status);
   });
 }

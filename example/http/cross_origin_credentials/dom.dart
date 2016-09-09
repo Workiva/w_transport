@@ -20,8 +20,9 @@ import 'status.dart' as status;
 
 /// Update the authentication status in the DOM.
 void updateAuthenticationStatus() {
-  Element containerElement = querySelector('.status-container');
-  Element statusElement = querySelector('.status');
+  final Element containerElement = querySelector('.status-container');
+  final Element statusElement = querySelector('.status');
+
   if (status.authenticated) {
     containerElement.className = containerElement.className
         .replaceFirst('unauthenticated', 'authenticated');
@@ -35,7 +36,7 @@ void updateAuthenticationStatus() {
 
 /// Toggle between "Login"/"Logout" button.
 void updateToggleAuthButton() {
-  ButtonElement toggleAuthButton = querySelector('#toggle-auth');
+  final ButtonElement toggleAuthButton = querySelector('#toggle-auth');
   if (status.authenticated) {
     toggleAuthButton.text = 'Logout';
   } else {
@@ -45,14 +46,13 @@ void updateToggleAuthButton() {
 
 /// Display a message in the DOM.
 void display(String message, bool isSuccessful) {
-  String className = isSuccessful ? 'success' : 'warning';
-
-  var elem = querySelector('#response');
+  final className = isSuccessful ? 'success' : 'warning';
+  final Element elem = querySelector('#response');
   elem.innerHtml = '<p class="$className">$message</p>\n' + elem.innerHtml;
 }
 
 /// Setup bindings for the controls.
-Future setupControlBindings() async {
+Future<Null> setupControlBindings() async {
   // Handle login/logout
   querySelector('#toggle-auth').onClick.listen((_) async {
     if (!status.authenticated) {
@@ -87,7 +87,7 @@ Future setupControlBindings() async {
   // Send a request with credentials (will succeed if authenticated)
   querySelector('#make-credentialed-request').onClick.listen((_) async {
     try {
-      String response = await service.makeCredentialedRequest();
+      final response = await service.makeCredentialedRequest();
       display(response, true);
     } catch (e) {
       display(e.toString(), false);
@@ -97,7 +97,7 @@ Future setupControlBindings() async {
   // Send a request without credentials (will always fail)
   querySelector('#make-uncredentialed-request').onClick.listen((_) async {
     try {
-      String response = await service.makeUncredentialedRequest();
+      final response = await service.makeUncredentialedRequest();
       display(response, true);
     } catch (e) {
       display(e.toString(), false);

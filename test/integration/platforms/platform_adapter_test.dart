@@ -20,7 +20,7 @@ import 'package:w_transport/src/platform_adapter.dart';
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..testType = testTypeIntegration
     ..topic = topicPlatformAdapter;
 

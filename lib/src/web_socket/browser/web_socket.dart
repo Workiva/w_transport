@@ -38,8 +38,8 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
 
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
-    Completer connected = new Completer();
-    webSocket.onOpen.first.then(connected.complete);
+    var connected = new Completer<Null>();
+    webSocket.onOpen.first.then((_) => connected.complete());
     closed.then((_) {
       if (!connected.isCompleted) {
         connected

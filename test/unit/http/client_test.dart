@@ -32,7 +32,7 @@ abstract class ReqIntMixin implements HttpInterceptor {
 abstract class RespIntMixin implements HttpInterceptor {
   @override
   Future<ResponsePayload> interceptResponse(ResponsePayload payload) async {
-    var newHeaders = new Map.from(payload.response.headers);
+    var newHeaders = new Map<String, String>.from(payload.response.headers);
     newHeaders['x-intercepted'] = 'true';
     payload.response = new Response.fromString(
         payload.response.status,
@@ -60,7 +60,7 @@ class AsyncInt extends HttpInterceptor {
   @override
   Future<ResponsePayload> interceptResponse(ResponsePayload payload) async {
     await new Future.delayed(new Duration(milliseconds: 500));
-    var headers = new Map.from(payload.response.headers);
+    var headers = new Map<String, String>.from(payload.response.headers);
     headers['x-interceptor'] =
         payload.request.uri.queryParameters['interceptor'];
     payload.response = new Response.fromString(

@@ -35,7 +35,7 @@ void main() {
       test(
           'should convert computable ProgressEvents to WProgress instances with correct values',
           () async {
-        Stream eventStream = new Stream.fromIterable([
+        var eventStream = new Stream<ProgressEvent>.fromIterable([
           new MockProgressEvent.computable(0, 100),
           new MockProgressEvent.computable(10, 100),
           new MockProgressEvent.computable(50, 100),
@@ -55,11 +55,12 @@ void main() {
       test(
           'should convert non-computable ProgressEvents to WProgress instances with 0% values',
           () async {
-        Stream events = new Stream.fromIterable([
+        var events = new Stream<ProgressEvent>.fromIterable([
           new MockProgressEvent.nonComputable(),
           new MockProgressEvent.nonComputable(),
         ]);
-        Stream wEventStream = events.transform(transformProgressEvents);
+        Stream<RequestProgress> wEventStream =
+            events.transform(transformProgressEvents);
         List<RequestProgress> wEvents = await wEventStream.toList();
         expect(wEvents[0].percent, equals(0.0));
         expect(wEvents[1].percent, equals(0.0));

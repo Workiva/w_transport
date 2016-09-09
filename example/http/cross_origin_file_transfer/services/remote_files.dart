@@ -43,8 +43,8 @@ class RemoteFiles {
   Stream<RequestException> get errorStream => _errorStream;
 
   bool _connected;
-  StreamController _errorStreamController;
-  Stream _errorStream;
+  StreamController<RequestException> _errorStreamController;
+  Stream<RequestException> _errorStream;
   StreamController<List<RemoteFileDescription>> _fileStreamController;
   Stream<List<RemoteFileDescription>> _fileStream;
   Timer _pollingTimer;

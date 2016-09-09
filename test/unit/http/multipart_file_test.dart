@@ -35,7 +35,7 @@ void main() {
       });
 
       test('content-type should be based on a mimetype lookup', () {
-        var stream = new Stream.fromIterable([]);
+        var stream = new Stream<List<int>>.fromIterable([]);
 
         MultipartFile jsonFile =
             new MultipartFile(stream, 0, filename: 'data.json');

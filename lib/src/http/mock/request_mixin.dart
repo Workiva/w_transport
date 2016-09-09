@@ -32,11 +32,13 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   bool _shouldFailToOpen = false;
   bool _streamResponse;
 
+  @override
   Future get onCanceled {
     _registerHandlers();
     return _canceled.future;
   }
 
+  @override
   Future<FinalizedRequest> get onSent {
     _registerHandlers();
     return _sent.future;
@@ -80,6 +82,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     return _response.future;
   }
 
+  @override
   void complete({BaseResponse response}) {
     if (response == null) {
       response = new MockResponse.ok();
@@ -88,29 +91,30 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     onSent.then((_) async {
       // Coerce the response to the correct format (streamed or not).
       if (_streamResponse && response is Response) {
+        Response standardResponse = response;
         response = new StreamedResponse.fromByteStream(
             response.status,
             response.statusText,
             response.headers,
-            new Stream.fromIterable([(response as Response).body.asBytes()]));
+            new Stream.fromIterable([standardResponse.body.asBytes()]));
       }
       if (!_streamResponse && response is StreamedResponse) {
-        response = new Response.fromBytes(
-            response.status,
-            response.statusText,
-            response.headers,
-            await (response as StreamedResponse).body.toBytes());
+        StreamedResponse streamedResponse = response;
+        response = new Response.fromBytes(response.status, response.statusText,
+            response.headers, await streamedResponse.body.toBytes());
       }
 
       if (response is StreamedResponse) {
+        StreamedResponse streamedResponse = response;
         var progressListener = new http_utils.ByteStreamProgressListener(
-            (response as StreamedResponse).body.byteStream,
+            streamedResponse.body.byteStream,
             total: response.contentLength);
         progressListener.progressStream.listen(downloadProgressController.add);
         response = new StreamedResponse.fromByteStream(response.status,
             response.statusText, response.headers, progressListener.byteStream);
       } else {
-        int total = (response as Response).body.asBytes().length;
+        Response standardResponse = response;
+        int total = standardResponse.body.asBytes().length;
         downloadProgressController.add(new RequestProgress(total, total));
       }
 
@@ -118,6 +122,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     });
   }
 
+  @override
   void completeError({Object error, BaseResponse response}) {
     // Defer the "fetching" of the response until the request has been sent.
     onSent.then((_) {
@@ -126,6 +131,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     });
   }
 
+  @override
   void causeFailureOnOpen() {
     _shouldFailToOpen = true;
   }

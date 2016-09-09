@@ -46,30 +46,37 @@ class BrowserAdapter implements PlatformAdapter {
         _sockJSTimeout = sockJSTimeout;
 
   /// Construct a new [BrowserHttpClient] instance that implements [HttpClient].
+  @override
   HttpClient newHttpClient() => new BrowserHttpClient();
 
   /// Construct a new [BrowserFormRequest] instance that implements
   /// [FormRequest].
+  @override
   FormRequest newFormRequest() => new BrowserFormRequest();
 
   /// Construct a new [BrowserJsonRequest] instance that implements
   /// [JsonRequest].
+  @override
   JsonRequest newJsonRequest() => new BrowserJsonRequest();
 
   /// Construct a new [BrowserMultipartRequest] instance that implements
   /// [MultipartRequest].
+  @override
   MultipartRequest newMultipartRequest() => new BrowserMultipartRequest();
 
   /// Construct a new [BrowserPlainTextRequest] instance that implements
   /// [Request].
+  @override
   Request newRequest() => new BrowserPlainTextRequest();
 
   /// Construct a new [BrowserStreamedRequest] instance that implements
   /// [StreamedRequest].
+  @override
   StreamedRequest newStreamedRequest() => new BrowserStreamedRequest();
 
   /// Construct a new [BrowserWebSocket] or [SockJSWebSocket] instance that
   /// implements [WebSocket].
+  @override
   Future<WebSocket> newWebSocket(Uri uri,
       {Map<String, dynamic> headers,
       Iterable<String> protocols,

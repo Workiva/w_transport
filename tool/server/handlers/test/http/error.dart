@@ -21,6 +21,7 @@ import '../../../handler.dart';
 class ErrorHandler extends Handler {
   ErrorHandler() : super();
 
+  @override
   Future get(HttpRequest request) async {
     request.response.statusCode =
         request.uri.queryParameters['status'] ?? HttpStatus.OK;

@@ -21,23 +21,23 @@ import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 
 abstract class MockWebSocket implements WebSocket {
+  factory MockWebSocket() => new _MockWebSocket();
+
   static Future<WebSocket> connect(Uri uri,
           {Iterable<String> protocols, Map<String, dynamic> headers}) =>
       MockWebSocketInternal.handleWebSocketConnection(uri,
           protocols: protocols, headers: headers);
 
-  factory MockWebSocket() => new _MockWebSocket();
-
   /// Simulate an incoming message that the owner of this [WSocket] instance
   /// will receive if listening.
-  void addIncoming(data);
+  void addIncoming(dynamic data);
 
   /// Register a callback that will be called for every outgoing data event that
   /// the owner of this [WSocket] instance adds.
   ///
   /// [data] will either be the single data item or the stream, depending on
   /// whether `add()` or `addStream()` was called.
-  void onOutgoing(callback(data));
+  void onOutgoing(callback(dynamic data));
 
   /// Cause the "server" to close, effectively severing the connection between
   /// the server and client.
@@ -50,7 +50,7 @@ abstract class MockWebSocket implements WebSocket {
   /// the error and thus an error will not be received by the client. For this
   /// reason, this method has been deprecated. Use [triggerServerClose] instead.
   @Deprecated('in 3.0.0. Use triggerServerClose() instead.')
-  void triggerServerError(error, [StackTrace stackTrace]);
+  void triggerServerError(Object error, [StackTrace stackTrace]);
 }
 
 class _MockWebSocket extends CommonWebSocket
@@ -65,17 +65,16 @@ class _MockWebSocket extends CommonWebSocket
   StreamController _mocket = new StreamController();
 
   _MockWebSocket() : super() {
-    webSocketSubscription =
-        _mocket.stream.listen(onIncomingData, onDone: onIncomingDone);
+    webSocketSubscription = _mocket.stream.listen(onIncomingData);
   }
 
   @override
-  void addIncoming(data) {
+  void addIncoming(dynamic data) {
     _mocket.add(data);
   }
 
   @override
-  void onOutgoing(callback(data)) {
+  void onOutgoing(callback(dynamic data)) {
     _callbacks.add(callback);
   }
 
@@ -84,7 +83,8 @@ class _MockWebSocket extends CommonWebSocket
     close(code, reason);
   }
 
-  void triggerServerError(error, [StackTrace stackTrace]) {
+  @override
+  void triggerServerError(Object error, [StackTrace stackTrace]) {
     close();
   }
 
@@ -92,7 +92,9 @@ class _MockWebSocket extends CommonWebSocket
   void closeWebSocket(int code, String reason) {
     closeCode = code;
     closeReason = reason;
-    _mocket.close();
+    _mocket.close().then((_) {
+      onIncomingDone();
+    });
   }
 
   @override
@@ -118,7 +120,7 @@ class _MockWebSocket extends CommonWebSocket
   }
 
   @override
-  void onOutgoingData(data) {
+  void onOutgoingData(dynamic data) {
     _callbacks.forEach((f) => f(data));
   }
 

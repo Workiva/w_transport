@@ -54,15 +54,16 @@ void main() {
       test('setting body in request dispatcher is supported', () async {
         Uri uri = Uri.parse('/test');
 
-        Completer body = new Completer();
+        Completer c = new Completer();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          body.complete((request.body as HttpBody).asString());
+          HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         });
 
         FormRequest request = new FormRequest();
         await request.post(uri: uri, body: {'field': 'value'});
-        expect(await body.future, equals('field=value'));
+        expect(await c.future, equals('field=value'));
       });
 
       test('setting body in request dispatcher should throw if invalid',

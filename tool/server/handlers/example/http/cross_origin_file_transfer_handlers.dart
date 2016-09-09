@@ -33,14 +33,16 @@ Directory filesDirectory =
     new Directory('example/http/cross_origin_file_transfer/files');
 
 Future<String> _readFileUploadAsString(HttpMultipartFormData formData) async {
-  var parts = (await formData.toList() as List<String>);
+  var parts = await formData.toList();
   return parts.join('');
 }
 
 Future<List<int>> _readFileUploadAsBytes(HttpMultipartFormData formData) async {
   List<int> bytes = [];
   await for (var data in formData) {
-    bytes.addAll(data as List<int>);
+    if (data is List<int>) {
+      bytes.addAll(data);
+    }
   }
   return bytes;
 }
@@ -68,10 +70,6 @@ void _createUploadDirectory() {
 }
 
 class FileWatcher {
-  static FileWatcher start(Directory directory) {
-    return new FileWatcher(directory);
-  }
-
   List<FileSystemEntity> files;
 
   Directory _dir;
@@ -84,6 +82,10 @@ class FileWatcher {
 
     _watching = true;
     _startWatching();
+  }
+
+  static FileWatcher start(Directory directory) {
+    return new FileWatcher(directory);
   }
 
   void close() {
@@ -111,6 +113,7 @@ class UploadHandler extends Handler {
     enableCors();
   }
 
+  @override
   Future post(HttpRequest request) async {
     if (request.headers['content-type'] == null) {
       request.response.statusCode = HttpStatus.BAD_REQUEST;
@@ -156,9 +159,11 @@ class FilesHandler extends Handler {
     enableCors();
   }
 
+  @override
   Future get(HttpRequest request) async {
-    List<Map> filesPayload = (fw.files.where((FileSystemEntity entity) =>
-            entity is File && entity.existsSync()) as Iterable<File>)
+    Iterable<File> files = fw.files.where(
+        (FileSystemEntity entity) => entity is File && entity.existsSync());
+    List<Map> filesPayload = files
         .map((File entity) => {
               'name': Uri.parse(entity.path).pathSegments.last,
               'size': entity.lengthSync()
@@ -169,9 +174,11 @@ class FilesHandler extends Handler {
     request.response.write(JSON.encode({'results': filesPayload}));
   }
 
+  @override
   Future delete(HttpRequest request) async {
-    (fw.files.where((FileSystemEntity entity) => entity is File)
-        as Iterable<File>).forEach((File entity) {
+    Iterable<File> files =
+        fw.files.where((FileSystemEntity entity) => entity is File);
+    files.forEach((File entity) {
       entity.deleteSync();
     });
     request.response.statusCode = HttpStatus.OK;
@@ -184,6 +191,7 @@ class DownloadHandler extends Handler {
     enableCors();
   }
 
+  @override
   Future get(HttpRequest request) async {
     if (request.uri.queryParameters['file'] == null) {
       request.response.statusCode = HttpStatus.NOT_FOUND;

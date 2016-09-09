@@ -61,7 +61,7 @@ abstract class Handler {
         request.response.statusCode = HttpStatus.METHOD_NOT_ALLOWED;
     }
     await handler(request);
-    request.response.close();
+    await request.response.close();
   }
 
   /// Enable Cross Origin Resource Sharing support.

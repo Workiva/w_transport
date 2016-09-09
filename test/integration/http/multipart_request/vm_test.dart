@@ -40,7 +40,8 @@ void main() {
       MultipartRequest request = new MultipartRequest()
         ..uri = IntegrationPaths.reflectEndpointUri
         ..fields['field'] = 'value';
-      request.configure((HttpClientRequest ioRequest) async {
+      request.configure((request) async {
+        HttpClientRequest ioRequest = request;
         ioRequest.headers.set('x-configured', 'true');
       });
       Response response = await request.get();

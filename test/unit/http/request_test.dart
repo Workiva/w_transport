@@ -28,12 +28,12 @@ void main() {
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    formReqFactory({bool withBody: false}) {
+    FormRequest formReqFactory({bool withBody: false}) {
       if (!withBody) return new FormRequest();
       return new FormRequest()..fields['field'] = 'value';
     }
 
-    jsonReqFactory({bool withBody: false}) {
+    JsonRequest jsonReqFactory({bool withBody: false}) {
       if (!withBody) return new JsonRequest();
       return new JsonRequest()
         ..body = [
@@ -41,17 +41,17 @@ void main() {
         ];
     }
 
-    multipartReqFactory({bool withBody}) {
+    MultipartRequest multipartReqFactory({bool withBody}) {
       // Multipart requests can't be empty.
       return new MultipartRequest()..fields['field'] = 'value';
     }
 
-    reqFactory({bool withBody: false}) {
+    Request reqFactory({bool withBody: false}) {
       if (!withBody) return new Request();
       return new Request()..body = 'body';
     }
 
-    streamedReqFactory({bool withBody: false}) {
+    StreamedRequest streamedReqFactory({bool withBody: false}) {
       if (!withBody) return new StreamedRequest();
       return new StreamedRequest()
         ..body = new Stream.fromIterable([UTF8.encode('bytes')])
@@ -243,10 +243,11 @@ void _runCommonRequestSuiteFor(
       Completer dataCompleter = new Completer();
       MockTransports.http.when(requestUri, (FinalizedRequest request) async {
         if (request.body is HttpBody) {
-          dataCompleter.complete((request.body as HttpBody).asString());
+          HttpBody body = request.body;
+          dataCompleter.complete(body.asString());
         } else {
-          dataCompleter.complete(
-              UTF8.decode(await (request.body as StreamedHttpBody).toBytes()));
+          StreamedHttpBody body = request.body;
+          dataCompleter.complete(UTF8.decode(await body.toBytes()));
         }
 
         return new MockResponse.ok();
@@ -299,7 +300,7 @@ void _runCommonRequestSuiteFor(
       expect(future, throwsA(new isInstanceOf<RequestException>()));
       try {
         await future;
-      } catch (e) {}
+      } catch (_) {}
       request.abort();
     });
 
@@ -451,7 +452,8 @@ void _runCommonRequestSuiteFor(
       request.responseInterceptor =
           (request, BaseResponse response, [exception]) async {
         expect(response, new isInstanceOf<Response>());
-        expect((response as Response).body.asString(), equals('original'));
+        Response standardResponse = response;
+        expect(standardResponse.body.asString(), equals('original'));
       };
       await request.get(uri: requestUri);
     });
@@ -590,7 +592,7 @@ void _runCommonRequestSuiteFor(
   });
 }
 
-_runAutoRetryTestSuiteFor(
+void _runAutoRetryTestSuiteFor(
     String name, BaseRequest requestFactory({bool withBody})) {
   group(name, () {
     Uri requestUri = Uri.parse('/mock/request');
@@ -790,7 +792,7 @@ _runAutoRetryTestSuiteFor(
       });
 
       test('retries only 500, 502, 503, 504 by default', () async {
-        Future expectNumRetries(int num, {shouldSucceed: true}) async {
+        Future expectNumRetries(int num, {bool shouldSucceed: true}) async {
           BaseRequest request = requestFactory();
           request.autoRetry
             ..enabled = true
@@ -832,7 +834,7 @@ _runAutoRetryTestSuiteFor(
 
       test('retries only GET, HEAD, OPTIONS by default', () async {
         Future expectNumRetries(String method, int num,
-            {shouldSucceed: true}) async {
+            {bool shouldSucceed: true}) async {
           BaseRequest request = requestFactory();
           request.autoRetry
             ..enabled = true
@@ -1030,6 +1032,8 @@ _runAutoRetryTestSuiteFor(
         request.autoRetry
           ..enabled = true
           ..maxRetries = 3;
+
+        // ignore: unawaited_futures
         request.get(uri: requestUri);
 
         // Wait an arbitrarily short amount of time to allow all retries to
@@ -1053,6 +1057,8 @@ _runAutoRetryTestSuiteFor(
           ..maxRetries = 3
           ..backOff = new RetryBackOff.fixed(new Duration(milliseconds: 50),
               withJitter: false);
+
+        // ignore: unawaited_futures
         request.get(uri: requestUri);
 
         // < 50ms = 1 attempt
@@ -1084,13 +1090,14 @@ _runAutoRetryTestSuiteFor(
           ..maxRetries = 3
           ..backOff = new RetryBackOff.fixed(new Duration(milliseconds: 15),
               withJitter: true);
+        // ignore: unawaited_futures
         request.get(uri: requestUri);
 
         // 1st attempt = immediate
         // 2nd attempt = +0 to 15s
         // 3rd attempt = +0 to 15s
         // 4th attempt = +0 to 15s
-        await new Future.delayed(new Duration(milliseconds: 100));
+        await new Future.delayed(new Duration(milliseconds: 110));
         expect(request.autoRetry.numAttempts, equals(4));
       });
 
@@ -1110,6 +1117,8 @@ _runAutoRetryTestSuiteFor(
           ..backOff = new RetryBackOff.exponential(
               new Duration(milliseconds: 25),
               withJitter: false);
+
+        // ignore: unawaited_futures
         request.get(uri: requestUri);
 
         // 1st attempt = immediate
@@ -1142,6 +1151,8 @@ _runAutoRetryTestSuiteFor(
           ..backOff = new RetryBackOff.exponential(
               new Duration(milliseconds: 25),
               withJitter: true);
+
+        // ignore: unawaited_futures
         request.get(uri: requestUri);
 
         // 1st attempt = immediate
@@ -1178,8 +1189,8 @@ _runAutoRetryTestSuiteFor(
           ..maxRetries = 4
           ..test = (request, response, willRetry) async => true;
 
-        expect(request.get(uri: requestUri), throwsA(predicate((error) {
-          var reqEx = error as RequestException;
+        expect(request.get(uri: requestUri),
+            throwsA(predicate((RequestException reqEx) {
           expect(reqEx.toString(), contains('Attempt #1: 400 BAD REQUEST'));
           expect(reqEx.toString(), contains('Attempt #2: 403 FORBIDDEN'));
           expect(reqEx.toString(),
@@ -1212,6 +1223,7 @@ _runAutoRetryTestSuiteFor(
         MockTransports.http.when(
             requestUri, (request) => new Completer<BaseResponse>().future);
         BaseRequest request = requestFactory();
+        // ignore: unawaited_futures
         request.get(uri: requestUri);
         await new Future.delayed(new Duration(milliseconds: 10));
         expect(request.retry, throwsStateError);
@@ -1242,6 +1254,7 @@ _runAutoRetryTestSuiteFor(
         MockTransports.http.when(
             requestUri, (request) => new Completer<BaseResponse>().future);
         BaseRequest request = requestFactory();
+        // ignore: unawaited_futures
         request.get(uri: requestUri);
         await new Future.delayed(new Duration(milliseconds: 10));
         expect(request.streamRetry, throwsStateError);

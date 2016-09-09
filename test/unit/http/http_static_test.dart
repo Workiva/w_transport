@@ -124,9 +124,11 @@ void main() {
       test('PATCH with body', () async {
         Completer c = new Completer();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-          c.complete((request.body as HttpBody).asString());
+          HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         }, method: 'PATCH');
+        // ignore: unawaited_futures
         Http.patch(requestUri, body: 'body');
         expect(await c.future, equals('body'));
       });
@@ -153,9 +155,11 @@ void main() {
       test('POST with body', () async {
         Completer c = new Completer();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-          c.complete((request.body as HttpBody).asString());
+          HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         }, method: 'POST');
+        // ignore: unawaited_futures
         Http.post(requestUri, body: 'body');
         expect(await c.future, equals('body'));
       });
@@ -182,9 +186,11 @@ void main() {
       test('PUT with body', () async {
         Completer c = new Completer();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-          c.complete((request.body as HttpBody).asString());
+          HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         }, method: 'PATCH');
+        // ignore: unawaited_futures
         Http.patch(requestUri, body: 'body');
         expect(await c.future, equals('body'));
       });
@@ -211,9 +217,11 @@ void main() {
       test('custom method with body', () async {
         Completer c = new Completer();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-          c.complete((request.body as HttpBody).asString());
+          HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         }, method: 'COPY');
+        // ignore: unawaited_futures
         Http.send('COPY', requestUri, body: 'body');
         expect(await c.future, equals('body'));
       });

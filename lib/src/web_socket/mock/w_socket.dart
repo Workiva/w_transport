@@ -20,10 +20,10 @@ import 'package:w_transport/src/web_socket/mock/web_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 
 abstract class MockWSocket extends MockWebSocket implements WebSocket {
+  factory MockWSocket() => new MockWebSocket();
+
   static Future<WebSocket> connect(Uri uri,
           {Iterable<String> protocols, Map<String, dynamic> headers}) =>
       MockWebSocketInternal.handleWebSocketConnection(uri,
           protocols: protocols, headers: headers);
-
-  factory MockWSocket() => new MockWebSocket();
 }

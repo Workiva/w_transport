@@ -31,6 +31,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
 
   Uint8List _bodyBytes;
 
+  @override
   String get body {
     if (_body != null) return _body;
     if (_bodyBytes != null) {
@@ -40,12 +41,14 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
     return '';
   }
 
+  @override
   set body(String value) {
     verifyUnsent();
     _body = value;
     _bodyBytes = null;
   }
 
+  @override
   Uint8List get bodyBytes {
     if (_bodyBytes != null) return _bodyBytes;
     if (_body != null) {
@@ -55,6 +58,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
     return new Uint8List.fromList([]);
   }
 
+  @override
   set bodyBytes(List<int> bytes) {
     verifyUnsent();
     _bodyBytes = bytes;
@@ -70,7 +74,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
 
   @override
   Request clone() {
-    Request requestClone = super.clone() as Request;
+    Request requestClone = super.clone();
     if (_body != null) {
       requestClone.body = body;
     } else if (_bodyBytes != null) {
@@ -80,7 +84,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   }
 
   @override
-  Future<HttpBody> finalizeBody([body]) async {
+  Future<HttpBody> finalizeBody([dynamic body]) async {
     if (body != null) {
       if (body is String) {
         this.body = body;

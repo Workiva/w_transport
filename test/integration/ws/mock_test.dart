@@ -75,7 +75,7 @@ void main() {
           var numPongs = 1;
           try {
             numPongs = int.parse(data);
-          } catch (e) {}
+          } catch (_) {}
           for (int i = 0; i < numPongs; i++) {
             await new Future.delayed(new Duration(milliseconds: 5));
             webSocket.addIncoming('pong');

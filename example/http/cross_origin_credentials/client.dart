@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
+
 import 'package:react/react_client.dart' as react_client;
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
@@ -22,11 +24,11 @@ import './service.dart' as service;
 import './status.dart' as status;
 
 /// Setup the example application.
-main() async {
+Future<Null> main() async {
   react_client.setClientConfiguration();
   configureWTransportForBrowser();
   renderGlobalExampleMenu(serverStatus: true);
-  dom.setupControlBindings();
+  await dom.setupControlBindings();
   removeLoadingOverlay();
 
   // Check auth status right away to see if valid session already exists

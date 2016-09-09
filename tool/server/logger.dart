@@ -34,7 +34,7 @@ class Logger implements Function {
     return _controller.close();
   }
 
-  void logError(error, [StackTrace stackTrace]) {
+  void logError(Object error, [StackTrace stackTrace]) {
     var e = stackTrace != null ? '$error\n$stackTrace' : '$error';
     this(e, true);
   }

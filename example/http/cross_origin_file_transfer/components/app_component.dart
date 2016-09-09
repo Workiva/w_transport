@@ -20,9 +20,10 @@ import '../services/proxy.dart' as proxy;
 
 /// Main application component.
 /// Sets up the file drop zone, file upload, and file download components.
-var appComponent = react.registerComponent(() => new AppComponent());
+dynamic appComponent = react.registerComponent(() => new AppComponent());
 
 class AppComponent extends react.Component {
+  @override
   Map getInitialState() {
     return {
       'page': 'upload',
@@ -43,7 +44,8 @@ class AppComponent extends react.Component {
     proxy.toggleProxy(enabled: e.target.checked);
   }
 
-  render() {
+  @override
+  dynamic render() {
     String page = this.state['page'];
 
     return react.div({}, [

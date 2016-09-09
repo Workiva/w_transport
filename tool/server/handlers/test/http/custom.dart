@@ -23,6 +23,7 @@ class CustomHandler extends Handler {
     enableCors();
   }
 
+  @override
   Future get(HttpRequest request) async {
     request.response.statusCode =
         request.uri.queryParameters['status'] ?? HttpStatus.OK;

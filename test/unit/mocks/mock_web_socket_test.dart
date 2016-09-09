@@ -108,10 +108,14 @@ void main() {
       });
 
       test('reset() should clear all expectations and handlers', () async {
-        Future<WSocket> handler(uri, {protocols, headers}) async =>
+        Future<WSocket> handler(Uri uri,
+                {Iterable<String> protocols,
+                Map<String, dynamic> headers}) async =>
             new MockWSocket();
-        Future<WSocket> patternHandler(uri,
-                {protocols, headers, match}) async =>
+        Future<WSocket> patternHandler(Uri uri,
+                {Iterable<String> protocols,
+                Map<String, dynamic> headers,
+                Match match}) async =>
             new MockWSocket();
         MockTransports.webSocket.when(webSocketUri, handler: handler);
         MockTransports.webSocket
@@ -131,7 +135,10 @@ void main() {
             'registers a handler for all web socket connections with matching URI',
             () async {
           WSocket webSocket = new MockWSocket();
-          Future<WSocket> handler(uri, {protocols, headers}) async => webSocket;
+          Future<WSocket> handler(Uri uri,
+                  {Iterable<String> protocols,
+                  Map<String, dynamic> headers}) async =>
+              webSocket;
           MockTransports.webSocket.when(webSocketUri, handler: handler);
 
           // Multiple matching connections succeed.
@@ -218,7 +225,10 @@ void main() {
             'registers a handler for all web socket connections with matching URI',
             () async {
           WSocket webSocket = new MockWSocket();
-          Future<WSocket> handler(uri, {protocols, headers, match}) async =>
+          Future<WSocket> handler(Uri uri,
+                  {Iterable<String> protocols,
+                  Map<String, dynamic> headers,
+                  Match match}) async =>
               webSocket;
           MockTransports.webSocket
               .whenPattern(webSocketUri.toString(), handler: handler);
@@ -271,7 +281,10 @@ void main() {
             () async {
           var uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
           WSocket webSocket = new MockWSocket();
-          Future<WSocket> handler(uri, {protocols, headers, match}) async =>
+          Future<WSocket> handler(Uri uri,
+                  {Iterable<String> protocols,
+                  Map<String, dynamic> headers,
+                  Match match}) async =>
               webSocket;
           MockTransports.webSocket.whenPattern(uriPattern, handler: handler);
 
@@ -290,7 +303,10 @@ void main() {
             () async {
           var uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
           Match uriMatch;
-          Future<WSocket> handler(uri, {protocols, headers, match}) async {
+          Future<WSocket> handler(Uri uri,
+              {Iterable<String> protocols,
+              Map<String, dynamic> headers,
+              Match match}) async {
             uriMatch = match;
             return new MockWSocket();
           }

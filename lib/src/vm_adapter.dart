@@ -26,26 +26,33 @@ import 'package:w_transport/src/web_socket/vm/w_socket.dart';
 /// that return VM-specific implementations that leverage dart:io.
 class VMAdapter implements PlatformAdapter {
   /// Construct a new [VMHttpClient] instance that implements [HttpClient].
+  @override
   HttpClient newHttpClient() => new VMHttpClient();
 
   /// Construct a new [VMFormRequest] instance that implements [FormRequest].
+  @override
   FormRequest newFormRequest() => new VMFormRequest();
 
   /// Construct a new [VMJsonRequest] instance that implements [JsonRequest].
+  @override
   JsonRequest newJsonRequest() => new VMJsonRequest();
 
   /// Construct a new [VMMultipartRequest] instance that implements
   /// [MultipartRequest].
+  @override
   MultipartRequest newMultipartRequest() => new VMMultipartRequest();
 
   /// Construct a new [VMPlainTextRequest] instance that implements [Request].
+  @override
   Request newRequest() => new VMPlainTextRequest();
 
   /// Construct a new [VMStreamedRequest] instance that implements
   /// [StreamedRequest].
+  @override
   StreamedRequest newStreamedRequest() => new VMStreamedRequest();
 
   /// Construct a new [VMWebSocket] instance that implements [WebSocket].
+  @override
   Future<WebSocket> newWebSocket(Uri uri,
           {Map<String, dynamic> headers,
           Iterable<String> protocols,

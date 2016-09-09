@@ -22,10 +22,12 @@ import 'package:w_transport/src/web_socket/w_socket_subscription.dart';
 abstract class CommonWebSocket extends Stream implements WebSocket {
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
+  @override
   int closeCode;
 
   /// The close reason set when the WebSocket connection is closed. If there is
   /// no close reason available this property will be `null`.
+  @override
   String closeReason;
 
   /// Whether or not this [WebSocket] instance is closed or in the process of
@@ -114,13 +116,15 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// On the server:
   ///   - String
   ///   - List<int>
-  void add(data) {
+  @override
+  void add(dynamic data) {
     validateOutgoingData(data);
     _outgoing.add(data);
   }
 
   /// Add an error to the sink. This will cause the WebSocket connection to close.
-  void addError(errorEvent, [StackTrace stackTrace]) {
+  @override
+  void addError(Object errorEvent, [StackTrace stackTrace]) {
     _outgoing.addError(errorEvent, stackTrace);
   }
 
@@ -132,19 +136,21 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   ///
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
+  @override
   Future addStream(Stream stream) async {
     return _outgoing.addStream(stream);
   }
 
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
+  @override
   Future close([int code, String reason]) {
     shutDown(code: code, reason: reason);
     return done;
   }
 
   @override
-  StreamSubscription listen(void onData(event),
+  StreamSubscription listen(void onData(dynamic event),
       {Function onError, void onDone(), bool cancelOnError}) {
     var sub = _incoming.stream
         .listen(onData, onError: onError, cancelOnError: cancelOnError);
@@ -157,13 +163,13 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// Called when the subscription to the incoming `StreamController` is
   /// canceled.
   Future onIncomingCancel() async {
-    webSocketSubscription.cancel();
+    await webSocketSubscription.cancel();
     return _incoming.close();
   }
 
   /// Called when a message event with [data] is received from the underlying
   /// WebSocket.
-  void onIncomingData(data) {
+  void onIncomingData(dynamic data) {
     // Pipe messages from the socket through to the stream, but only if a
     // listener has been registered and is not paused. Otherwise we risk leaking
     // resources by adding events to the controller that may be buffered
@@ -202,7 +208,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   }
 
   /// Called when an error is added to the outgoing `StreamController`.
-  void onOutgoingError(error, [StackTrace stackTrace]) {
+  void onOutgoingError(Object error, [StackTrace stackTrace]) {
     // Don't pass the error on to the socket. It will cause the socket to close
     // anyway, so we will preempt this and handle the shut down by ourselves.
     // This allows us to prevent the error from propagating to the root zone
@@ -212,7 +218,8 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
 
   /// Shuts down the connection to the underling WebSocket. The outgoing
   /// `StreamController` is closed and the WebSocket is closed.
-  void shutDown({int code, error, String reason, StackTrace stackTrace}) {
+  void shutDown(
+      {int code, Object error, String reason, StackTrace stackTrace}) {
     if (isClosed) return;
     isClosed = true;
 

@@ -38,7 +38,7 @@ void main() {
   });
 }
 
-_runWebSocketSuite(Future<WSocket> getWebSocket(Uri uri)) {
+void _runWebSocketSuite(Future<WSocket> getWebSocket(Uri uri)) {
   Uri webSocketUri = Uri.parse('ws://mock.com/ws');
 
   setUp(() {
@@ -181,7 +181,9 @@ _runWebSocketSuite(Future<WSocket> getWebSocket(Uri uri)) {
     mockWebSocket.onOutgoing(controller.add);
 
     await webSocket.addStream(new Stream.fromIterable(['one', 'two']));
+    // ignore: unawaited_futures
     controller.close();
+    // ignore: unawaited_futures
     webSocket.close();
 
     expect(await controller.stream.toList(), equals(['one', 'two']));
@@ -196,6 +198,7 @@ _runWebSocketSuite(Future<WSocket> getWebSocket(Uri uri)) {
     var controller = new StreamController();
     controller.add('message');
     controller.addError(new Exception('addStream error, should close socket'));
+    // ignore: unawaited_futures
     controller.close();
 
     await webSocket.addStream(controller.stream);

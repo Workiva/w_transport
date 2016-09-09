@@ -49,10 +49,10 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
   }
 
   @override
-  Future openRequest([client]) async {
-    client = client as HttpClient;
-    if (client != null) {
-      _client = client;
+  Future openRequest([Object client]) async {
+    HttpClient httpClient = client;
+    if (httpClient != null) {
+      _client = httpClient;
       _isSingle = false;
     } else {
       _client = new HttpClient();
@@ -74,7 +74,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
     }
 
     // Allow the caller to configure the request.
-    dynamic configurationResult;
+    Object configurationResult;
     if (configureFn != null) {
       configurationResult = configureFn(_request);
     }
@@ -89,10 +89,11 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
     }
 
     if (finalizedRequest.body is StreamedHttpBody) {
+      StreamedHttpBody body = finalizedRequest.body;
       // Use a byte stream progress listener to transform the request body such
       // that it produces a stream of progress events.
       var progressListener = new http_utils.ByteStreamProgressListener(
-          (finalizedRequest.body as StreamedHttpBody).byteStream,
+          body.byteStream,
           total: finalizedRequest.body.contentLength);
 
       // Add the now-transformed request body stream.
@@ -101,8 +102,9 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
       // Map the progress stream back to this request's upload progress.
       progressListener.progressStream.listen(uploadProgressController.add);
     } else {
+      HttpBody body = finalizedRequest.body;
       // The entire request body is available immediately as bytes.
-      _request.add((finalizedRequest.body as HttpBody).asBytes());
+      _request.add(body.asBytes());
 
       // Since the entire request body has already been sent, the upload
       // progress stream can be "completed" by adding a single progress event.

@@ -22,6 +22,17 @@ import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 /// Implementation of the platform-dependent pieces of the [WebSocket] class for
 /// the Dart VM. This class uses native Dart WebSockets.
 class VMWebSocket extends CommonWebSocket implements WebSocket {
+  /// The underlying native WebSocket.
+  io.WebSocket _webSocket;
+
+  VMWebSocket._(this._webSocket) : super() {
+    webSocketSubscription = _webSocket.listen(onIncomingData, onDone: () {
+      closeCode = _webSocket.closeCode;
+      closeReason = _webSocket.closeReason;
+      onIncomingDone();
+    });
+  }
+
   static Future<WebSocket> connect(Uri uri,
       {Iterable<String> protocols, Map<String, dynamic> headers}) async {
     io.WebSocket webSocket;
@@ -33,17 +44,6 @@ class VMWebSocket extends CommonWebSocket implements WebSocket {
     }
 
     return new VMWebSocket._(webSocket);
-  }
-
-  /// The underlying native WebSocket.
-  io.WebSocket _webSocket;
-
-  VMWebSocket._(this._webSocket) : super() {
-    webSocketSubscription = _webSocket.listen(onIncomingData, onDone: () {
-      closeCode = _webSocket.closeCode;
-      closeReason = _webSocket.closeReason;
-      onIncomingDone();
-    });
   }
 
   @override
@@ -74,7 +74,7 @@ class VMWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   @override
-  void onOutgoingData(data) {
+  void onOutgoingData(dynamic data) {
     // Pipe messages through to the underlying socket.
     _webSocket.add(data);
   }

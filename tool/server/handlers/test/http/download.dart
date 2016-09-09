@@ -35,13 +35,30 @@ class DownloadHandler extends Handler {
     await request.response.addStream(downloadStream);
   }
 
+  @override
   Future copy(HttpRequest request) async => download(request);
+
+  @override
   Future delete(HttpRequest request) async => download(request);
+
+  @override
   Future get(HttpRequest request) async => download(request);
+
+  @override
   Future head(HttpRequest request) async => download(request);
+
+  @override
   Future options(HttpRequest request) async => download(request);
+
+  @override
   Future patch(HttpRequest request) async => download(request);
+
+  @override
   Future post(HttpRequest request) async => download(request);
+
+  @override
   Future put(HttpRequest request) async => download(request);
+
+  @override
   Future trace(HttpRequest request) async => download(request);
 }

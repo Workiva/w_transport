@@ -30,7 +30,7 @@ bool isAsciiOnly(String value) => _asciiOnly.hasMatch(value);
 /// Converts a [Map] of field names to values to a query string. The resulting
 /// query string can be used as a URI query string or the body of a
 /// `application/x-www-form-urlencoded` request or response.
-String mapToQuery(Map<String, dynamic> map, {Encoding encoding}) {
+String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
   List<String> params = [];
   map.forEach((key, value) {
     // Support fields with multiple values.
@@ -108,8 +108,8 @@ Encoding parseEncodingFromHeaders(Map<String, String> headers,
 
 /// Converts a query string to a [Map] of parameter names to values. Works for
 /// URI query string or an `application/x-www-form-urlencoded` body.
-Map<String, dynamic> queryToMap(String query, {Encoding encoding}) {
-  var fields = <String, dynamic>{};
+Map<String, Object> queryToMap(String query, {Encoding encoding}) {
+  var fields = <String, Object>{};
   for (var pair in query.split('&')) {
     var pieces = pair.split('=');
     if (pieces.isEmpty) continue;
@@ -126,7 +126,8 @@ Map<String, dynamic> queryToMap(String query, {Encoding encoding}) {
       if (fields[key] is! List) {
         fields[key] = [fields[key]];
       }
-      fields[key].add(value);
+      List currentFields = fields[key];
+      currentFields.add(value);
     } else {
       fields[key] = value;
     }
@@ -177,7 +178,11 @@ class ByteStreamProgressListener {
               try {
                 loaded += bytes.length;
                 _progressController.add(new RequestProgress(loaded, total));
-              } catch (e) {}
+              } catch (e) {
+                // If one item from the stream is not of type List<int>,
+                // attempting to add the length to the `loaded` counter would
+                // throw. Fail quietly if that happens.
+              }
             },
             onError: controller.addError,
             onDone: () {

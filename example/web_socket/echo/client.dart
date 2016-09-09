@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
 
@@ -38,7 +39,7 @@ CheckboxInputElement sockJSWebSocket = querySelector('#sockjs-ws');
 CheckboxInputElement sockJSXhr = querySelector('#sockjs-xhr');
 CheckboxInputElement useSockJS = querySelector('#sockjs');
 
-main() async {
+Future<Null> main() async {
   react_client.setClientConfiguration();
   configureWTransportForBrowser();
 

@@ -27,29 +27,36 @@ import 'package:w_transport/src/web_socket/web_socket.dart';
 /// by the mock transport API.
 class MockAdapter implements PlatformAdapter {
   /// Construct a new [MockHttpClient] instance that implements [HttpClient].
+  @override
   HttpClient newHttpClient() => new MockHttpClient();
 
   /// Construct a new [MockFormRequest] instance that implements
   /// [FormRequest].
+  @override
   FormRequest newFormRequest() => new MockFormRequest();
 
   /// Construct a new [MockJsonRequest] instance that implements
   /// [JsonRequest].
+  @override
   JsonRequest newJsonRequest() => new MockJsonRequest();
 
   /// Construct a new [MockMultipartRequest] instance that implements
   /// [MultipartRequest].
+  @override
   MultipartRequest newMultipartRequest() => new MockMultipartRequest();
 
   /// Construct a new [MockPlainTextRequest] instance that implements
   /// [Request].
+  @override
   Request newRequest() => new MockPlainTextRequest();
 
   /// Construct a new [MockStreamedRequest] instance that implements
   /// [StreamedRequest].
+  @override
   StreamedRequest newStreamedRequest() => new MockStreamedRequest();
 
   /// Construct a new [MockWebSocket] instance that implements [WebSocket].
+  @override
   Future<WebSocket> newWebSocket(Uri uri,
           {Map<String, dynamic> headers,
           Iterable<String> protocols,

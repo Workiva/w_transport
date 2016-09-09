@@ -32,13 +32,30 @@ class EchoHandler extends Handler {
     await request.response.addStream(request);
   }
 
+  @override
   Future copy(HttpRequest request) async => echo(request);
+
+  @override
   Future delete(HttpRequest request) async => echo(request);
+
+  @override
   Future get(HttpRequest request) async => echo(request);
+
+  @override
   Future head(HttpRequest request) async => echo(request);
+
+  @override
   Future options(HttpRequest request) async => echo(request);
+
+  @override
   Future patch(HttpRequest request) async => echo(request);
+
+  @override
   Future post(HttpRequest request) async => echo(request);
+
+  @override
   Future put(HttpRequest request) async => echo(request);
+
+  @override
   Future trace(HttpRequest request) async => echo(request);
 }

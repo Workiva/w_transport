@@ -14,7 +14,7 @@
 
 @TestOn('vm || browser')
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart' show RequestException, Response;
+import 'package:w_transport/w_transport.dart' show RequestException;
 import 'package:w_transport/mock.dart';
 
 import '../../naming.dart';

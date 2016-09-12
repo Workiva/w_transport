@@ -36,15 +36,13 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
 
   @override
   void abortRequest() {
-    if (_request != null) {
-      _request.close();
-    }
+    _request?.close();
   }
 
   @override
   void cleanUp() {
-    if (_isSingle && _client != null) {
-      _client.close();
+    if (_isSingle) {
+      _client?.close();
     }
   }
 
@@ -65,9 +63,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
   Future<BaseResponse> sendRequestAndFetchResponse(
       FinalizedRequest finalizedRequest,
       {bool streamResponse: false}) async {
-    if (streamResponse == null) {
-      streamResponse = false;
-    }
+    streamResponse ??= false;
 
     if (finalizedRequest.headers != null) {
       finalizedRequest.headers.forEach(_request.headers.set);

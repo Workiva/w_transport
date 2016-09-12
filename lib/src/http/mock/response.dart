@@ -30,8 +30,7 @@ class MockResponse implements Response {
       Map<String, String> headers,
       String statusText}) {
     // Ensure the headers are case insensitive.
-    headers =
-        new CaseInsensitiveMap<String>.from(headers != null ? headers : {});
+    headers = new CaseInsensitiveMap<String>.from(headers ?? {});
 
     // If an encoding was given, update the content-type charset parameter.
     if (encoding != null) {
@@ -41,13 +40,8 @@ class MockResponse implements Response {
     }
 
     // Use a default status text based on the status code if one is not given.
-    if (statusText == null) {
-      statusText = _mapStatusToText(status);
-    }
-
-    if (body == null) {
-      body = '';
-    }
+    statusText ??= _mapStatusToText(status);
+    body ??= '';
 
     // Construct the body according to the data type.
     if (body is String) {
@@ -151,8 +145,7 @@ class MockStreamedResponse implements StreamedResponse {
       Map<String, String> headers,
       String statusText}) {
     // Ensure the headers are case insensitive.
-    headers =
-        new CaseInsensitiveMap<String>.from(headers != null ? headers : {});
+    headers = new CaseInsensitiveMap<String>.from(headers ?? {});
 
     // If an encoding was given, update the content-type charset parameter.
     if (encoding != null) {
@@ -162,13 +155,8 @@ class MockStreamedResponse implements StreamedResponse {
     }
 
     // Use a default status text based on the status code if one is not given.
-    if (statusText == null) {
-      statusText = _mapStatusToText(status);
-    }
-
-    if (byteStream == null) {
-      byteStream = new Stream.fromIterable([]);
-    }
+    statusText ??= _mapStatusToText(status);
+    byteStream ??= new Stream.fromIterable([]);
 
     // Construct the body according to the data type.
     _response = new StreamedResponse.fromByteStream(

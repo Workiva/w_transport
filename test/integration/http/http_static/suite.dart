@@ -14,7 +14,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';

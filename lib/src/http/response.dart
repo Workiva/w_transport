@@ -109,15 +109,9 @@ class Response extends BaseResponse {
       int status,
       String statusText,
       Map<String, String> headers}) {
-    if (status == null) {
-      status = this.status;
-    }
-    if (statusText == null) {
-      statusText = this.statusText;
-    }
-    if (headers == null) {
-      headers = this.headers;
-    }
+    status ??= this.status;
+    statusText ??= this.statusText;
+    headers ??= this.headers;
     if (bodyBytes == null) {
       if (bodyString == null) {
         return new Response._(status, statusText, headers, _body);
@@ -167,15 +161,9 @@ class StreamedResponse extends BaseResponse {
       int status,
       String statusText,
       Map<String, String> headers}) {
-    if (status == null) {
-      status = this.status;
-    }
-    if (statusText == null) {
-      statusText = this.statusText;
-    }
-    if (headers == null) {
-      headers = this.headers;
-    }
+    status ??= this.status;
+    statusText ??= this.statusText;
+    headers ??= this.headers;
     if (byteStream == null) {
       return new StreamedResponse._(status, statusText, headers, _body);
     } else {

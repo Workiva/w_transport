@@ -36,18 +36,10 @@ String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
     // Support fields with multiple values.
     final valueList = value is List ? value : [value];
     for (final v in valueList) {
-      Iterable<String> encoded;
-      if (encoding != null) {
-        encoded = <String>[
-          Uri.encodeQueryComponent(key, encoding: encoding),
-          Uri.encodeQueryComponent(v, encoding: encoding)
-        ];
-      } else {
-        encoded = <String>[
-          Uri.encodeQueryComponent(key),
-          Uri.encodeQueryComponent(v)
-        ];
-      }
+      final encoded = <String>[
+        Uri.encodeQueryComponent(key, encoding: encoding ?? UTF8),
+        Uri.encodeQueryComponent(v, encoding: encoding ?? UTF8),
+      ];
       params.add(encoded.join('='));
     }
   });
@@ -62,8 +54,9 @@ String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
 MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
   // Ensure the headers are case-insensitive.
   headers = new CaseInsensitiveMap<String>.from(headers);
-  if (headers['content-type'] != null)
+  if (headers['content-type'] != null) {
     return new MediaType.parse(headers['content-type']);
+  }
   return new MediaType('application', 'octet-stream');
 }
 
@@ -78,7 +71,7 @@ Encoding parseEncodingFromContentType(MediaType contentType,
   if (contentType == null) return fallback;
   if (contentType.parameters['charset'] == null) return fallback;
   final encoding = Encoding.getByName(contentType.parameters['charset']);
-  return encoding != null ? encoding : fallback;
+  return encoding ?? fallback;
 }
 
 /// Returns the [Encoding] specified by the `charset` parameter of
@@ -118,15 +111,13 @@ Map<String, Object> queryToMap(String query, {Encoding encoding}) {
   for (final pair in query.split('&')) {
     final pieces = pair.split('=');
     if (pieces.isEmpty) continue;
+
     String key = pieces.first;
     String value = pieces.length > 1 ? pieces.sublist(1).join('') : '';
-    if (encoding != null) {
-      key = Uri.decodeQueryComponent(key, encoding: encoding);
-      value = Uri.decodeQueryComponent(value, encoding: encoding);
-    } else {
-      key = Uri.decodeQueryComponent(key);
-      value = Uri.decodeQueryComponent(value);
-    }
+
+    key = Uri.decodeQueryComponent(key, encoding: encoding ?? UTF8);
+    value = Uri.decodeQueryComponent(value, encoding: encoding ?? UTF8);
+
     if (fields.containsKey(key)) {
       if (fields[key] is! List) {
         fields[key] = [fields[key]];

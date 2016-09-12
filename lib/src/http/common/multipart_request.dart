@@ -74,9 +74,7 @@ abstract class CommonMultipartRequest extends CommonRequest
   }
 
   String get boundary {
-    if (_boundary == null) {
-      _boundary = _generateBoundaryString();
-    }
+    _boundary ??= _generateBoundaryString();
     return _boundary;
   }
 

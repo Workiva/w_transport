@@ -70,29 +70,26 @@ abstract class Handler {
       {bool credentials: true, List<String> methods, String origin}) {
     _corsEnabled = true;
     _credentialsAllowed = credentials == true;
-    _allowedMethods = (methods != null)
-        ? methods
-        : [
-            'COPY',
-            'DELETE',
-            'GET',
-            'HEAD',
-            'OPTIONS',
-            'PATCH',
-            'POST',
-            'PUT',
-            'TRACE'
-          ];
-    _allowedOrigin = (origin != null) ? origin : null;
+    _allowedMethods = methods ??
+        [
+          'COPY',
+          'DELETE',
+          'GET',
+          'HEAD',
+          'OPTIONS',
+          'PATCH',
+          'POST',
+          'PUT',
+          'TRACE'
+        ];
+    _allowedOrigin = origin;
   }
 
   /// Creates and sets the Access-Control headers based on the CORS settings
   /// configured in the call to [enableCors].
   void setCorsHeaders(HttpRequest request) {
     // Use given allow origin, but default to allowing every origin (by using origin of request)
-    final origin = _allowedOrigin != null
-        ? _allowedOrigin
-        : request.headers.value('Origin');
+    final origin = _allowedOrigin ?? request.headers.value('Origin');
     request.response.headers.set('Access-Control-Allow-Origin', origin);
 
     // Allow all headers (by using the requested headers)

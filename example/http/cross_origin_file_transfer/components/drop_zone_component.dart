@@ -64,10 +64,8 @@ class DropZoneComponent extends react.Component {
   }
 
   void showDropTarget(Event e) {
-    if (_hideDropTargetTimer != null) {
-      _hideDropTargetTimer.cancel();
-    }
     e.preventDefault();
+    _hideDropTargetTimer?.cancel();
     this.props['onDragStart']();
     this.setState({'overDropZone': true});
   }

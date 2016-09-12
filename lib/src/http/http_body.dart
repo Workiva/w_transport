@@ -67,20 +67,10 @@ class HttpBody extends BaseHttpBody {
   /// `charset` param), then [fallbackEncoding] will be used (UTF8 by default).
   HttpBody.fromBytes(this.contentType, List<int> bytes,
       {Encoding encoding, Encoding fallbackEncoding}) {
-    if (fallbackEncoding == null) {
-      fallbackEncoding = UTF8;
-    }
-    if (encoding != null) {
-      _encoding = encoding;
-    } else {
-      _encoding = http_utils.parseEncodingFromContentType(contentType,
-          fallback: fallbackEncoding);
-    }
-
-    if (bytes == null) {
-      bytes = [];
-    }
-    _bytes = new Uint8List.fromList(bytes);
+    _encoding = encoding ??
+        http_utils.parseEncodingFromContentType(contentType,
+            fallback: fallbackEncoding ?? UTF8);
+    _bytes = new Uint8List.fromList(bytes ?? []);
   }
 
   /// Construct the body to an HTTP request or an HTTP response from text.
@@ -99,20 +89,10 @@ class HttpBody extends BaseHttpBody {
   /// `charset` param), then [fallbackEncoding] will be used (UTF8 by default).
   HttpBody.fromString(this.contentType, String body,
       {Encoding encoding, Encoding fallbackEncoding}) {
-    if (fallbackEncoding == null) {
-      fallbackEncoding = UTF8;
-    }
-    if (encoding != null) {
-      _encoding = encoding;
-    } else {
-      _encoding = http_utils.parseEncodingFromContentType(contentType,
-          fallback: fallbackEncoding);
-    }
-
-    if (body == null) {
-      body = '';
-    }
-    _body = body;
+    _encoding = encoding ??
+        http_utils.parseEncodingFromContentType(contentType,
+            fallback: fallbackEncoding ?? UTF8);
+    _body = body ?? '';
   }
 
   /// The size of this request/response body in bytes.

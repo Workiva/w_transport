@@ -49,7 +49,7 @@ class ResponseFormatException implements Exception {
     }
 
     String msg = description;
-    final encodingName = encoding != null ? encoding.name : 'null';
+    final encodingName = encoding?.name ?? 'null';
     msg += '\n\tContent-Type: $contentType';
     msg += '\n\tEncoding: $encodingName';
     msg += '\n\t$bodyLine';

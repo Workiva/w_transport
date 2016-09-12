@@ -44,10 +44,7 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
   @override
   set fields(Map<String, dynamic> fields) {
     verifyUnsent();
-    if (fields == null) {
-      fields = {};
-    }
-    _fields = fields;
+    _fields = fields ?? {};
   }
 
   Uint8List get _encodedQuery {

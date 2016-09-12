@@ -74,9 +74,7 @@ class GlobalExampleMenuComponent extends react.Component {
 
   @override
   void componentWillUnmount() {
-    if (serverPolling != null) {
-      serverPolling.cancel();
-    }
+    serverPolling?.cancel();
   }
 
   Object _buildServerStatusComponent(String name, bool online) {

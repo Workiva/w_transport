@@ -21,9 +21,7 @@ import '../integration_paths.dart';
 
 void runCommonWebSocketIntegrationTests(
     {Future<WSocket> connect(Uri uri), int port}) {
-  if (connect == null) {
-    connect = (uri) => WSocket.connect(uri);
-  }
+  connect ??= (uri) => WSocket.connect(uri);
   Uri closeUri = IntegrationPaths.closeUri;
   Uri echoUri = IntegrationPaths.echoUri;
   final fourOhFourUri = IntegrationPaths.fourOhFourUri;

@@ -62,7 +62,7 @@ class MockWebSocket {
   MockWebSocketHandler whenPattern(Pattern uriPattern,
       {WSocketPatternConnectHandler handler, bool reject}) {
     MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
-    if (reject != null && reject) {
+    if (reject == true) {
       handler = (uri, {protocols, headers, match}) {
         throw new WebSocketException('Mock connection to $uri rejected.');
       };

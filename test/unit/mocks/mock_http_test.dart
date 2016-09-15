@@ -86,7 +86,9 @@ void main() {
 
         test('expected request has to match URI and method', () async {
           MockTransports.http.expect('GET', requestUri);
+          // ignore: unawaited_futures
           Http.delete(requestUri); // Wrong method
+          // ignore: unawaited_futures
           Http.get(Uri.parse('/wrong')); // Wrong URI
           await Http.get(requestUri); // Correct
           expect(MockTransports.http.numPendingRequests, equals(2));
@@ -125,7 +127,9 @@ void main() {
 
         test('expected request has to match URI and method', () async {
           MockTransports.http.expectPattern('GET', requestUri.toString());
+          // ignore: unawaited_futures
           Http.delete(requestUri); // Wrong method
+          // ignore: unawaited_futures
           Http.get(Uri.parse('/wrong')); // Wrong URI
           await Http.get(requestUri); // Correct
           expect(MockTransports.http.numPendingRequests, equals(2));
@@ -141,6 +145,7 @@ void main() {
         test('handles requests that match a pattern', () async {
           var pattern = new RegExp('https:\/\/(google|github)\.com');
 
+          // ignore: unawaited_futures
           Http.get(Uri.parse('https://example.com')); // Wrong URI.
 
           MockTransports.http.expectPattern('GET', pattern);
@@ -189,8 +194,10 @@ void main() {
         MockTransports.http.expect('GET', Uri.parse('/expected'));
         MockTransports.http.expectPattern('GET', '/expected');
         Request request = new Request();
+        // ignore: unawaited_futures
         request.get(uri: Uri.parse('/other'));
-        await (request as MockBaseRequest).onSent;
+        MockPlainTextRequest mockRequest = request;
+        await mockRequest.onSent;
         expect(MockTransports.http.numPendingRequests, equals(1));
 
         MockTransports.http.reset();
@@ -198,13 +205,17 @@ void main() {
         // Would have been handled by either of the handlers, but should no
         // longer be:
         Request request2 = new Request();
+        // ignore: unawaited_futures
         request2.delete(uri: requestUri);
-        await (request2 as MockBaseRequest).onSent;
+        MockPlainTextRequest mockRequest2 = request2;
+        await mockRequest2.onSent;
 
         // Would have been expected, but should no longer be:
         Request request3 = new Request();
+        // ignore: unawaited_futures
         request3.get(uri: Uri.parse('/expected'));
-        await (request3 as MockBaseRequest).onSent;
+        MockPlainTextRequest mockRequest3 = request3;
+        await mockRequest3.onSent;
 
         expect(MockTransports.http.numPendingRequests, equals(2));
       });
@@ -218,8 +229,10 @@ void main() {
 
         test('throws if requests are pending', () async {
           Request request = new Request();
+          // ignore: unawaited_futures
           request.get(uri: requestUri);
-          await (request as MockBaseRequest).onSent;
+          MockPlainTextRequest mockRequest = request;
+          await mockRequest.onSent;
           expect(() {
             MockTransports.http.verifyNoOutstandingExceptions();
           }, throwsStateError);
@@ -239,7 +252,9 @@ void main() {
             () async {
           Response ok = new MockResponse.ok();
           MockTransports.http.when(requestUri, (_) async => ok, method: 'GET');
+          // ignore: unawaited_futures
           Http.get(Uri.parse('/wrong')); // Wrong URI.
+          // ignore: unawaited_futures
           Http.delete(requestUri); // Wrong method.
           await Http.get(requestUri); // Matches.
           await Http.get(requestUri); // Matches again.
@@ -251,6 +266,7 @@ void main() {
             () async {
           Response ok = new MockResponse.ok();
           MockTransports.http.when(requestUri, (_) async => ok);
+          // ignore: unawaited_futures
           Http.get(Uri.parse('/wrong')); // Wrong URI.
           await Http.delete(requestUri); // Matches.
           await Http.get(requestUri); // Matches.
@@ -298,6 +314,7 @@ void main() {
           var handler = MockTransports.http.when(requestUri, (_) async => ok);
           await Http.get(requestUri);
           handler.cancel();
+          // ignore: unawaited_futures
           Http.get(requestUri);
           await nextTick();
           expect(MockTransports.http.numPendingRequests, equals(1));
@@ -335,6 +352,7 @@ void main() {
             oldHandler.cancel();
           }, returnsNormally);
 
+          // ignore: unawaited_futures
           Http.get(requestUri);
           await nextTick();
           expect(MockTransports.http.numPendingRequests, equals(1));
@@ -347,9 +365,11 @@ void main() {
             () async {
           var ok = new MockResponse.ok();
           MockTransports.http.whenPattern(
-              requestUri.toString(), (_1, _2) async => ok,
+              requestUri.toString(), (_a, _b) async => ok,
               method: 'GET');
+          // ignore: unawaited_futures
           Http.get(Uri.parse('/wrong')); // Wrong URI.
+          // ignore: unawaited_futures
           Http.delete(requestUri); // Wrong method.
           await Http.get(requestUri); // Matches.
           await Http.get(requestUri); // Matches again.
@@ -361,7 +381,8 @@ void main() {
             () async {
           var ok = new MockResponse.ok();
           MockTransports.http
-              .whenPattern(requestUri.toString(), (_1, _2) async => ok);
+              .whenPattern(requestUri.toString(), (_a, _b) async => ok);
+          // ignore: unawaited_futures
           Http.get(Uri.parse('/wrong')); // Wrong URI.
           await Http.delete(requestUri); // Matches.
           await Http.get(requestUri); // Matches.
@@ -372,7 +393,7 @@ void main() {
         test('registers a handler that throws to cause request failure',
             () async {
           MockTransports.http.whenPattern(
-              requestUri.toString(), (_1, _2) async => throw new Exception());
+              requestUri.toString(), (_a, _b) async => throw new Exception());
           expect(Http.get(requestUri), throws);
         });
 
@@ -381,7 +402,8 @@ void main() {
             () async {
           var pattern = new RegExp('https:\/\/(google|github)\.com.*');
           var ok = new MockResponse.ok();
-          MockTransports.http.whenPattern(pattern, (_1, _2) async => ok);
+          MockTransports.http.whenPattern(pattern, (_a, _b) async => ok);
+          // ignore: unawaited_futures
           Http.get(Uri.parse('/wrong')); // Wrong URI.
           await Http.get(Uri.parse('https://google.com'));
           await Http.get(Uri.parse('https://github.com/Workiva/w_transport'));
@@ -409,9 +431,10 @@ void main() {
         test('registers a handler that can be canceled', () async {
           var ok = new MockResponse.ok();
           var handler = MockTransports.http
-              .whenPattern(requestUri.toString(), (_1, _2) async => ok);
+              .whenPattern(requestUri.toString(), (_a, _b) async => ok);
           await Http.get(requestUri);
           handler.cancel();
+          // ignore: unawaited_futures
           Http.get(requestUri);
           await nextTick();
           expect(MockTransports.http.numPendingRequests, equals(1));
@@ -421,9 +444,9 @@ void main() {
             () async {
           var oldHandler = MockTransports.http.whenPattern(
               requestUri.toString(),
-              (_1, _2) async => new MockResponse.notFound());
+              (_a, _b) async => new MockResponse.notFound());
           MockTransports.http.whenPattern(
-              requestUri.toString(), (_1, _2) async => new MockResponse.ok());
+              requestUri.toString(), (_a, _b) async => new MockResponse.ok());
           expect(() {
             oldHandler.cancel();
           }, returnsNormally);
@@ -431,10 +454,10 @@ void main() {
 
           // Test the same, but with a specific method.
           oldHandler = MockTransports.http.whenPattern(requestUri.toString(),
-              (_1, _2) async => new MockResponse.notFound(),
+              (_a, _b) async => new MockResponse.notFound(),
               method: 'DELETE');
           MockTransports.http.whenPattern(
-              requestUri.toString(), (_1, _2) async => new MockResponse.ok(),
+              requestUri.toString(), (_a, _b) async => new MockResponse.ok(),
               method: 'DELETE');
           expect(() {
             oldHandler.cancel();
@@ -444,12 +467,13 @@ void main() {
 
         test('canceling a handler does nothing if handler was reset', () async {
           var oldHandler = MockTransports.http.whenPattern(
-              requestUri.toString(), (_1, _2) async => new MockResponse.ok());
+              requestUri.toString(), (_a, _b) async => new MockResponse.ok());
           MockTransports.reset();
           expect(() {
             oldHandler.cancel();
           }, returnsNormally);
 
+          // ignore: unawaited_futures
           Http.get(requestUri);
           await nextTick();
           expect(MockTransports.http.numPendingRequests, equals(1));

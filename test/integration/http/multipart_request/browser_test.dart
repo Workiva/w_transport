@@ -42,7 +42,8 @@ void main() {
         MultipartRequest request = new MultipartRequest()
           ..uri = IntegrationPaths.reflectEndpointUri
           ..fields['field'] = 'value';
-        request.configure((HttpRequest xhr) async {
+        request.configure((request) async {
+          HttpRequest xhr = request;
           xhr.setRequestHeader('x-configured', 'true');
         });
         Response response = await request.get();
@@ -56,7 +57,8 @@ void main() {
             ..uri = IntegrationPaths.pingEndpointUri
             ..fields['field'] = 'value'
             ..withCredentials = true;
-          request.configure((HttpRequest xhr) async {
+          request.configure((request) async {
+            HttpRequest xhr = request;
             expect(xhr.withCredentials, isTrue);
           });
           await request.get();
@@ -67,7 +69,8 @@ void main() {
             ..uri = IntegrationPaths.pingEndpointUri
             ..fields['field'] = 'value'
             ..withCredentials = false;
-          request.configure((HttpRequest xhr) async {
+          request.configure((request) async {
+            HttpRequest xhr = request;
             expect(xhr.withCredentials, isFalse);
           });
           await request.get();

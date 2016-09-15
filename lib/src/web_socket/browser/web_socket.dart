@@ -23,6 +23,21 @@ import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 /// Implementation of the platform-dependent pieces of the [WebSocket] class for
 /// the browser. This class uses native WebSockets.
 class BrowserWebSocket extends CommonWebSocket implements WebSocket {
+  /// The underlying native WebSocket.
+  html.WebSocket _webSocket;
+
+  BrowserWebSocket._(this._webSocket, Future<html.CloseEvent> webSocketClosed)
+      : super() {
+    webSocketSubscription = _webSocket.onMessage.listen((messageEvent) {
+      onIncomingData(messageEvent.data);
+    });
+    webSocketClosed.then((closeEvent) {
+      closeCode = closeEvent.code;
+      closeReason = closeEvent.reason;
+      onIncomingDone();
+    });
+  }
+
   static Future<WebSocket> connect(Uri uri,
       {Iterable<String> protocols, Map<String, dynamic> headers}) async {
     // Establish a Web Socket connection.
@@ -39,7 +54,9 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
     var connected = new Completer<Null>();
+    // ignore: unawaited_futures
     webSocket.onOpen.first.then((_) => connected.complete());
+    // ignore: unawaited_futures
     closed.then((_) {
       if (!connected.isCompleted) {
         connected
@@ -49,21 +66,6 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
 
     await connected.future;
     return new BrowserWebSocket._(webSocket, closed);
-  }
-
-  /// The underlying native WebSocket.
-  html.WebSocket _webSocket;
-
-  BrowserWebSocket._(this._webSocket, Future<html.CloseEvent> webSocketClosed)
-      : super() {
-    webSocketSubscription = _webSocket.onMessage.listen((messageEvent) {
-      onIncomingData(messageEvent.data);
-    });
-    webSocketClosed.then((closeEvent) {
-      closeCode = closeEvent.code;
-      closeReason = closeEvent.reason;
-      onIncomingDone();
-    });
   }
 
   @override
@@ -95,7 +97,7 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   @override
-  void onOutgoingData(data) {
+  void onOutgoingData(dynamic data) {
     // Pipe messages through to the underlying socket.
     _webSocket.send(data);
   }

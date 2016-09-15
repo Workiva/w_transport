@@ -59,20 +59,6 @@ class MockResponse implements Response {
     }
   }
 
-  HttpBody get body => _response.body;
-
-  int get contentLength => _response.contentLength;
-
-  MediaType get contentType => _response.contentType;
-
-  Encoding get encoding => _response.encoding;
-
-  Map<String, String> get headers => _response.headers;
-
-  int get status => _response.status;
-
-  String get statusText => _response.statusText;
-
   factory MockResponse.ok(
           {body, Map<String, String> headers, String statusText}) =>
       new MockResponse(200,
@@ -118,6 +104,28 @@ class MockResponse implements Response {
       new MockResponse(502,
           body: body, headers: headers, statusText: statusText);
 
+  @override
+  HttpBody get body => _response.body;
+
+  @override
+  int get contentLength => _response.contentLength;
+
+  @override
+  MediaType get contentType => _response.contentType;
+
+  @override
+  Encoding get encoding => _response.encoding;
+
+  @override
+  Map<String, String> get headers => _response.headers;
+
+  @override
+  int get status => _response.status;
+
+  @override
+  String get statusText => _response.statusText;
+
+  @override
   Response replace(
       {List<int> bodyBytes,
       String bodyString,
@@ -164,20 +172,6 @@ class MockStreamedResponse implements StreamedResponse {
     _response = new StreamedResponse.fromByteStream(
         status, statusText, headers, byteStream);
   }
-
-  StreamedHttpBody get body => _response.body;
-
-  int get contentLength => _response.contentLength;
-
-  MediaType get contentType => _response.contentType;
-
-  Encoding get encoding => _response.encoding;
-
-  Map<String, String> get headers => _response.headers;
-
-  int get status => _response.status;
-
-  String get statusText => _response.statusText;
 
   factory MockStreamedResponse.ok(
           {Stream<List<int>> byteStream,
@@ -242,6 +236,28 @@ class MockStreamedResponse implements StreamedResponse {
       new MockStreamedResponse(502,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
+  @override
+  StreamedHttpBody get body => _response.body;
+
+  @override
+  int get contentLength => _response.contentLength;
+
+  @override
+  MediaType get contentType => _response.contentType;
+
+  @override
+  Encoding get encoding => _response.encoding;
+
+  @override
+  Map<String, String> get headers => _response.headers;
+
+  @override
+  int get status => _response.status;
+
+  @override
+  String get statusText => _response.statusText;
+
+  @override
   StreamedResponse replace(
       {Stream<List<int>> byteStream,
       int status,

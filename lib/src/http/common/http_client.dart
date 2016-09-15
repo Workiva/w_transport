@@ -28,6 +28,7 @@ abstract class CommonHttpClient implements HttpClient {
   ///
   /// Every request created by this client will inherit this automatic retry
   /// configuration.
+  @override
   AutoRetryConfig autoRetry = new AutoRetryConfig();
 
   /// A base URI that all requests created by this client should inherit.
@@ -58,7 +59,10 @@ abstract class CommonHttpClient implements HttpClient {
   Pathway<RequestPayload> _requestPathway = new Pathway();
   Pathway<ResponsePayload> _responsePathway = new Pathway();
 
+  @override
   Map<String, String> get headers => _headers;
+
+  @override
   set headers(Map<String, String> headers) {
     _headers = new CaseInsensitiveMap.from(headers);
   }

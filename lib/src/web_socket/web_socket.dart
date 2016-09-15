@@ -104,13 +104,16 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
 
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
+  @override
   int get closeCode;
 
   /// The close reason set when the WebSocket connection is closed. If there is
   /// no close reason available this property will be `null`.
+  @override
   String get closeReason;
 
   /// Future that resolves when this WebSocket connection has completely closed.
+  @override
   Future<Null> get done;
 
   /// Sends a message over the WebSocket connection.
@@ -124,10 +127,12 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
   /// On the server:
   ///   - String
   ///   - List<int>
-  void add(message);
+  @override
+  void add(dynamic message);
 
   /// Add an error to the sink. This will cause the WebSocket connection to close.
-  void addError(errorEvent, [StackTrace stackTrace]);
+  @override
+  void addError(Object errorEvent, [StackTrace stackTrace]);
 
   /// Adds a stream of data to send over the WebSocket connection.
   /// This will wait for the stream to complete, sending each element
@@ -137,9 +142,11 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
   ///
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
+  @override
   Future addStream(Stream stream);
 
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
+  @override
   Future close([int code, String reason]);
 }

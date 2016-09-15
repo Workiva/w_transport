@@ -90,7 +90,7 @@ void runCommonWebSocketIntegrationTests(
     var helper = new WSHelper(webSocket);
 
     var stream = new Stream.fromIterable(['message1', 'message2']);
-    webSocket.addStream(stream);
+    await webSocket.addStream(stream);
     await helper.messagesReceived(2);
     expect(helper.messages, unorderedEquals(['message1', 'message2']));
     await webSocket.close();
@@ -122,10 +122,10 @@ void runCommonWebSocketIntegrationTests(
     await firstFuture;
     try {
       await lateFuture;
-    } catch (e) {}
+    } catch (_) {}
     try {
       await webSocket.close();
-    } catch (e) {}
+    } catch (_) {}
   });
 
   test('addStream() should throw after sink has been closed', () async {
@@ -140,7 +140,6 @@ void runCommonWebSocketIntegrationTests(
     var controller = new StreamController();
     controller.add('message1');
     controller.addError(new Exception('addStream error, should close socket'));
-    controller.close();
     await webSocket.addStream(controller.stream);
     expect(webSocket.done, throwsException);
   });
@@ -190,7 +189,9 @@ void runCommonWebSocketIntegrationTests(
       c.complete();
     });
 
+    // ignore: unawaited_futures
     webSocket.close();
+
     await c.future;
   });
 
@@ -450,6 +451,7 @@ void runCommonWebSocketIntegrationTests(
     var webSocket = await connect(pingUri);
     var sub = webSocket.listen((_) {});
     var future = sub.asFuture('futureValue');
+    // ignore: unawaited_futures
     webSocket.close();
     expect(await future, equals('futureValue'));
   });
@@ -512,7 +514,7 @@ class WSHelper {
   Map<int, Completer> _completers = {};
   List<String> _messages = [];
 
-  WSHelper(WSocket this.socket) {
+  WSHelper(this.socket) {
     socket.listen((message) {
       _messages.add(message);
       _completers.forEach((k, v) {

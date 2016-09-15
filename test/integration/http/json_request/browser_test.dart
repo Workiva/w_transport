@@ -39,7 +39,8 @@ void main() {
     test('underlying HttpRequest configuration', () async {
       JsonRequest request = new JsonRequest()
         ..uri = IntegrationPaths.reflectEndpointUri;
-      request.configure((HttpRequest xhr) async {
+      request.configure((request) async {
+        HttpRequest xhr = request;
         xhr.setRequestHeader('x-configured', 'true');
       });
       Response response = await request.get();
@@ -51,7 +52,8 @@ void main() {
         JsonRequest request = new JsonRequest()
           ..uri = IntegrationPaths.pingEndpointUri
           ..withCredentials = true;
-        request.configure((HttpRequest xhr) async {
+        request.configure((request) async {
+          HttpRequest xhr = request;
           expect(xhr.withCredentials, isTrue);
         });
         await request.get();
@@ -61,7 +63,8 @@ void main() {
         JsonRequest request = new JsonRequest()
           ..uri = IntegrationPaths.pingEndpointUri
           ..withCredentials = false;
-        request.configure((HttpRequest xhr) async {
+        request.configure((request) async {
+          HttpRequest xhr = request;
           expect(xhr.withCredentials, isFalse);
         });
         await request.get();

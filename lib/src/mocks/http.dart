@@ -33,12 +33,14 @@ class MockHttp {
 
   void causeFailureOnOpen(BaseRequest request) {
     MockHttpInternal._verifyRequestIsMock(request);
-    (request as MockBaseRequest).causeFailureOnOpen();
+    MockBaseRequest mockRequest = request;
+    mockRequest.causeFailureOnOpen();
   }
 
   void completeRequest(BaseRequest request, {BaseResponse response}) {
     MockHttpInternal._verifyRequestIsMock(request);
-    (request as MockBaseRequest).complete(response: response);
+    MockBaseRequest mockRequest = request;
+    mockRequest.complete(response: response);
     MockHttpInternal._pending.remove(request);
   }
 
@@ -60,8 +62,8 @@ class MockHttp {
 
   void failRequest(BaseRequest request, {Object error, BaseResponse response}) {
     MockHttpInternal._verifyRequestIsMock(request);
-    (request as MockBaseRequest)
-        .completeError(error: error, response: response);
+    MockBaseRequest mockRequest = request;
+    mockRequest.completeError(error: error, response: response);
     MockHttpInternal._pending.remove(request);
   }
 
@@ -158,10 +160,11 @@ class MockHttpInternal {
       bool methodMatches = e.method == request.method;
       bool uriMatches = false;
       if (e.uri is Uri) {
-        uriMatches = e.uri == request.uri;
+        Uri uri = e.uri;
+        uriMatches = uri == request.uri;
       } else if (e.uri is Pattern) {
-        uriMatches =
-            (e.uri as Pattern).allMatches(request.uri.toString()).isNotEmpty;
+        Pattern pattern = e.uri;
+        uriMatches = pattern.allMatches(request.uri.toString()).isNotEmpty;
       }
       bool headersMatch;
       if (e.headers == null) {
@@ -206,7 +209,7 @@ class MockHttpInternal {
       return false;
     }, orElse: () => null);
 
-    var handlersByMethod = <String, dynamic>{};
+    var handlersByMethod = <String, Object>{};
     if (matchingRequestHandlerKey != null) {
       handlersByMethod = _requestHandlers[matchingRequestHandlerKey];
     } else if (matchingPatternRequestHandlerKey != null) {
@@ -251,7 +254,7 @@ class MockHttpInternal {
     _pending.add(request);
   }
 
-  static void _expect(String method, dynamic uri,
+  static void _expect(String method, Object uri,
       {Object failWith,
       Map<String, String> headers,
       BaseResponse respondWith}) {
@@ -283,7 +286,7 @@ class _RequestExpectation {
   final Map<String, String> headers;
   final String method;
   BaseResponse respondWith;
-  final dynamic uri;
+  final Object uri;
 
   _RequestExpectation(this.method, this.uri, this.headers,
       {this.failWith, this.respondWith});

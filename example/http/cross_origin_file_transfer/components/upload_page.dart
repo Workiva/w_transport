@@ -18,15 +18,20 @@ import '../services/file_transfer.dart';
 import 'drop_zone_component.dart';
 import 'file_transfer_list_component.dart';
 
-var uploadPage = react.registerComponent(() => new UploadPage());
+dynamic uploadPage = react.registerComponent(() => new UploadPage());
 
 class UploadPage extends react.Component {
+  Iterable<Upload> get currentUploads =>
+      new List<Upload>.from(this.state['uploads']);
+
+  @override
   Map getDefaultProps() {
     return {
       'active': true,
     };
   }
 
+  @override
   Map getInitialState() {
     return {
       // Whether or not the user is currently dragging something.
@@ -40,7 +45,7 @@ class UploadPage extends react.Component {
   /// Listen for new file uploads and forward them to the file transfer list component.
   void _newUploads(List<Upload> newUploads) {
     List<Upload> uploads = [];
-    uploads.addAll(this.state['uploads'] as Iterable<Upload>);
+    uploads.addAll(currentUploads);
     uploads.addAll(newUploads);
     this.setState({'uploads': uploads});
   }
@@ -50,7 +55,7 @@ class UploadPage extends react.Component {
   /// from memory.
   void _removeUpload(Upload upload) {
     List<Upload> uploads = [];
-    uploads.addAll(this.state['uploads'] as Iterable<Upload>);
+    uploads.addAll(currentUploads);
     uploads.remove(upload);
     this.setState({'uploads': uploads});
   }
@@ -63,7 +68,8 @@ class UploadPage extends react.Component {
     this.setState({'dragging': false});
   }
 
-  render() {
+  @override
+  dynamic render() {
     return react.div({
       'className': this.props['active'] ? '' : 'hidden'
     }, [

@@ -37,9 +37,11 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
   MediaType get defaultContentType => new MediaType(
       'application', 'x-www-form-urlencoded', {'charset': encoding.name});
 
+  @override
   Map<String, dynamic> get fields =>
       isSent ? new Map.unmodifiable(_fields) : _fields;
 
+  @override
   set fields(Map<String, dynamic> fields) {
     verifyUnsent();
     if (fields == null) {
@@ -60,13 +62,19 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
 
   @override
   FormRequest clone() {
-    return (super.clone() as FormRequest)..fields = fields;
+    FormRequest requestClone = super.clone();
+    return requestClone..fields = fields;
   }
 
   @override
-  Future<HttpBody> finalizeBody([body]) async {
+  Future<HttpBody> finalizeBody([dynamic body]) async {
     if (body != null) {
-      this.fields = body as Map<String, dynamic>;
+      if (body is Map<String, dynamic>) {
+        this.fields = body;
+      } else {
+        throw new ArgumentError.value(
+            body, 'body', 'Body must be of type Map<String, dynamic>');
+      }
     }
     return new HttpBody.fromBytes(contentType, _encodedQuery,
         fallbackEncoding: encoding);

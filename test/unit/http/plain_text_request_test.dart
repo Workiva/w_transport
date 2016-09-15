@@ -61,29 +61,31 @@ void main() {
           () async {
         Uri uri = Uri.parse('/test');
 
-        Completer body = new Completer();
+        Completer c = new Completer();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          body.complete((request.body as HttpBody).asString());
+          HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         });
 
         Request request = new Request();
         await request.post(uri: uri, body: 'body');
-        expect(await body.future, equals('body'));
+        expect(await c.future, equals('body'));
       });
 
       test('setting body in request dispatcher is supported (bytes)', () async {
         Uri uri = Uri.parse('/test');
 
-        Completer body = new Completer();
+        Completer c = new Completer();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          body.complete((request.body as HttpBody).asString());
+          HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         });
 
         Request request = new Request();
         await request.post(uri: uri, body: UTF8.encode('body'));
-        expect(await body.future, equals('body'));
+        expect(await c.future, equals('body'));
       });
 
       test('setting body in request dispatcher should throw if invalid',

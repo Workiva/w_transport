@@ -22,12 +22,12 @@ import '../../integration_paths.dart';
 
 void runCommonRequestSuite() {
   group('Common Request API', () {
-    formReqFactory({bool withBody: false}) {
+    FormRequest formReqFactory({bool withBody: false}) {
       if (!withBody) return new FormRequest();
       return new FormRequest()..fields['field'] = 'value';
     }
 
-    jsonReqFactory({bool withBody: false}) {
+    JsonRequest jsonReqFactory({bool withBody: false}) {
       if (!withBody) return new JsonRequest();
       return new JsonRequest()
         ..body = [
@@ -35,17 +35,17 @@ void runCommonRequestSuite() {
         ];
     }
 
-    multipartReqFactory({bool withBody}) {
+    MultipartRequest multipartReqFactory({bool withBody}) {
       // Multipart requests can't be empty.
       return new MultipartRequest()..fields['field'] = 'value';
     }
 
-    reqFactory({bool withBody: false}) {
+    Request reqFactory({bool withBody: false}) {
       if (!withBody) return new Request();
       return new Request()..body = 'body';
     }
 
-    streamedReqFactory({bool withBody: false}) {
+    StreamedRequest streamedReqFactory({bool withBody: false}) {
       if (!withBody) return new StreamedRequest();
       return new StreamedRequest()
         ..body = new Stream.fromIterable([UTF8.encode('bytes')])
@@ -76,6 +76,7 @@ void _runCommonRequestSuiteFor(
 
     test('"done" should complete when the request succeeds', () async {
       BaseRequest request = requestFactory();
+      // ignore: unawaited_futures
       request.post(uri: IntegrationPaths.reflectEndpointUri);
       await request.done;
     });
@@ -88,7 +89,7 @@ void _runCommonRequestSuiteFor(
         await new Future.delayed(new Duration(milliseconds: 5));
         request.abort();
         await future;
-      } on RequestException {}
+      } on RequestException catch (_) {}
 
       await request.done;
     });
@@ -97,7 +98,7 @@ void _runCommonRequestSuiteFor(
       BaseRequest request = requestFactory();
       try {
         await request.post(uri: IntegrationPaths.fourOhFourEndpointUri);
-      } on RequestException {}
+      } on RequestException catch (_) {}
       await request.done;
     });
 
@@ -412,7 +413,7 @@ void _runCommonRequestSuiteFor(
   });
 }
 
-_runAutoRetryTestSuiteFor(
+void _runAutoRetryTestSuiteFor(
     String name, BaseRequest requestFactory({bool withBody})) {
   group(name, () {
     group('auto retry', () {

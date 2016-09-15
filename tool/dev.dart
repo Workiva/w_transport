@@ -19,7 +19,7 @@ import 'package:dart_dev/util.dart' show TaskProcess, reporter;
 
 import 'server/server.dart' show Server;
 
-main(List<String> args) async {
+Future<Null> main(List<String> args) async {
   // https://github.com/Workiva/dart_dev
 
   List<String> directories = ['example/', 'lib/', 'test/', 'tool/'];
@@ -83,7 +83,7 @@ List<String> _sockJSServerOutput;
 /// Start the server needed for integration tests and examples and stream the
 /// server output as it arrives. The output will be mixed in with output from
 /// whichever task is running.
-Future _streamServer() async {
+Future<Null> _streamServer() async {
   _server = new Server();
   _server.output.listen((line) {
     reporter.log(reporter.colorBlue('    $line'));
@@ -91,7 +91,7 @@ Future _streamServer() async {
   await _server.start();
 }
 
-Future _streamSockJSServer() async {
+Future<Null> _streamSockJSServer() async {
   _sockJSServer = new TaskProcess('node', ['tool/server/sockjs.js']);
   _sockJSServer.stdout.listen((line) {
     reporter.log(reporter.colorBlue('    $line'));
@@ -103,7 +103,7 @@ Future _streamSockJSServer() async {
 }
 
 /// Stop the server needed for integration tests and examples.
-Future _stopServer() async {
+Future<Null> _stopServer() async {
   if (_serverOutput != null) {
     reporter.logGroup('HTTP Server Logs',
         output: '    ${_serverOutput.join('\n')}');
@@ -111,7 +111,7 @@ Future _stopServer() async {
   await _server.stop();
 }
 
-Future _stopSockJSServer() async {
+Future<Null> _stopSockJSServer() async {
   if (_sockJSServerOutput != null) {
     reporter.logGroup('SockJS Server Logs',
         output: '    ${_sockJSServerOutput.join('\n')}');
@@ -119,6 +119,6 @@ Future _stopSockJSServer() async {
   if (_sockJSServer != null) {
     try {
       _sockJSServer.kill();
-    } catch (e) {}
+    } catch (_) {}
   }
 }

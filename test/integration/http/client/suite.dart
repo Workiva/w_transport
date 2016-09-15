@@ -29,7 +29,7 @@ void runHttpTransportClientSuite() {
   });
 }
 
-_runHttpClientSuite(Client getClient()) {
+void _runHttpClientSuite(Client getClient()) {
   Client client;
 
   setUp(() {
@@ -109,7 +109,7 @@ _runHttpClientSuite(Client getClient()) {
   });
 }
 
-_testRequest(BaseRequest request) async {
+Future<Null> _testRequest(BaseRequest request) async {
   request.uri = IntegrationPaths.reflectEndpointUri;
   request.headers = {'x-custom': 'value', 'x-tokens': 'token1, token2'};
   Response response = await request.get();

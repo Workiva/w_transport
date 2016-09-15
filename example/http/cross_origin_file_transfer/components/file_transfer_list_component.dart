@@ -18,10 +18,11 @@ import '../services/file_transfer.dart';
 import 'file_transfer_list_item_component.dart';
 
 /// List of all file uploads.
-var fileTransferListComponent =
+dynamic fileTransferListComponent =
     react.registerComponent(() => new FileUploadListComponent());
 
 class FileUploadListComponent extends react.Component {
+  @override
   Map getDefaultProps() {
     return {
       'noTransfersMessage': 'There are no pending transfers.',
@@ -31,7 +32,8 @@ class FileUploadListComponent extends react.Component {
     };
   }
 
-  render() {
+  @override
+  dynamic render() {
     if (this.props['transfers'].length <= 0) {
       return react.p({'className': 'muted'}, this.props['noTransfersMessage']);
     }

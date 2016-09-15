@@ -129,7 +129,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// of [HttpRequest] or [HttpClientRequest], depending on the platform. If
   /// [configure] returns a `Future`, the request will not be sent until the
   /// returned `Future` completes.
-  void configure(configure(request));
+  void configure(configure(Object request));
 
   /// Retry this request. Throws a `StateError` if this request did not or has
   /// yet to fail.

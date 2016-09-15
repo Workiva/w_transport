@@ -93,7 +93,7 @@ void main() {
   });
 }
 
-sockJSSuite(Future<WSocket> connect(Uri uri)) {
+void sockJSSuite(Future<WSocket> connect(Uri uri)) {
   runCommonWebSocketIntegrationTests(connect: connect, port: sockjsPort);
 
   var echoUri = IntegrationPaths.echoUri.replace(port: sockjsPort);
@@ -105,14 +105,14 @@ sockJSSuite(Future<WSocket> connect(Uri uri)) {
     expect(() {
       socket.add(blob);
     }, throwsArgumentError);
-    socket.close();
+    await socket.close();
   });
 
   test('should support String', () async {
     String data = 'data';
     WSocket socket = await connect(echoUri);
     socket.add(data);
-    socket.close();
+    await socket.close();
   });
 
   test('should not support TypedData', () async {
@@ -121,7 +121,7 @@ sockJSSuite(Future<WSocket> connect(Uri uri)) {
     expect(() {
       socket.add(data);
     }, throwsArgumentError);
-    socket.close();
+    await socket.close();
   });
 
   test('should throw when attempting to send invalid data', () async {
@@ -129,6 +129,6 @@ sockJSSuite(Future<WSocket> connect(Uri uri)) {
     expect(() {
       socket.add(true);
     }, throwsArgumentError);
-    socket.close();
+    await socket.close();
   });
 }

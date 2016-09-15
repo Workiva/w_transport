@@ -56,17 +56,23 @@ class BrowserMultipartRequest extends CommonRequest
     return null;
   }
 
+  @override
   Map<String, String> get fields =>
       isSent ? new Map.unmodifiable(_fields) : _fields;
 
+  @override
   set fields(Map<String, String> fields) {
     verifyUnsent();
     _fields = new Map.from(fields);
   }
 
-  Map<String, dynamic> get files =>
-      (isSent ? new Map.unmodifiable(_files) : _files) as Map<String, dynamic>;
+  @override
+  Map<String, dynamic> get files {
+    if (isSent) return new Map.unmodifiable(_files);
+    return _files;
+  }
 
+  @override
   set files(Map<String, dynamic> files) {
     verifyUnsent();
     _files = new Map.from(files);
@@ -74,7 +80,8 @@ class BrowserMultipartRequest extends CommonRequest
 
   @override
   MultipartRequest clone() {
-    return (super.clone() as MultipartRequest)
+    MultipartRequest requestClone = super.clone();
+    return requestClone
       ..fields = fields
       ..files = files;
   }
@@ -90,7 +97,7 @@ class BrowserMultipartRequest extends CommonRequest
   }
 
   @override
-  Future<FormDataBody> finalizeBody([body]) async {
+  Future<FormDataBody> finalizeBody([dynamic body]) async {
     if (body != null) {
       throw new UnsupportedError(
           'The body of a Multipart request must be set via `fields` and/or `files`.');

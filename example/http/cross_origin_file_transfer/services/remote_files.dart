@@ -21,27 +21,6 @@ import './proxy.dart';
 int _remoteFilePollingInterval = 10; // 10 seconds
 
 class RemoteFiles {
-  /// Establish a connection with the remote files server.
-  static RemoteFiles connect() {
-    return new RemoteFiles._();
-  }
-
-  static void deleteAll() {
-    Http.delete(getFilesEndpointUrl());
-  }
-
-  /// Close the connection with the remote files server.
-  void close() {
-    _connected = false;
-    _endPolling();
-  }
-
-  /// Stream that updates with the latest list of remote files.
-  Stream<List<RemoteFileDescription>> get stream => _fileStream;
-
-  /// Stream of errors that may occur when trying to communicate with the proxy file server.
-  Stream<RequestException> get errorStream => _errorStream;
-
   bool _connected;
   StreamController<RequestException> _errorStreamController;
   Stream<RequestException> _errorStream;
@@ -58,6 +37,29 @@ class RemoteFiles {
     _fileStreamController = new StreamController<List<RemoteFileDescription>>();
     _fileStream = _fileStreamController.stream.asBroadcastStream();
     _startPolling();
+  }
+
+  /// Stream that updates with the latest list of remote files.
+  Stream<List<RemoteFileDescription>> get stream => _fileStream;
+
+  /// Stream of errors that may occur when trying to communicate with the proxy file server.
+  Stream<RequestException> get errorStream => _errorStream;
+
+  /// Establish a connection with the remote files server.
+  static RemoteFiles connect() {
+    return new RemoteFiles._();
+  }
+
+  static void deleteAll() {
+    Http.delete(getFilesEndpointUrl());
+  }
+
+  /// Close the connection with the remote files server.
+  void close() {
+    _connected = false;
+    _errorStreamController.close();
+    _fileStreamController.close();
+    _endPolling();
   }
 
   /// Send polling requests 2 seconds apart.

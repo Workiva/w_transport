@@ -23,10 +23,11 @@ const int _transferCompleteFadeoutDuration = 2; // 2 seconds
 
 /// A single file upload or download. Contains the file name, a progressbar,
 /// and a control that allows cancellation of the upload or download.
-var fileTransferListItemComponent =
+dynamic fileTransferListItemComponent =
     react.registerComponent(() => new FileTransferListItemComponent());
 
 class FileTransferListItemComponent extends react.Component {
+  @override
   Map getInitialState() {
     return {
       'done': false,
@@ -35,6 +36,7 @@ class FileTransferListItemComponent extends react.Component {
     };
   }
 
+  @override
   Map getDefaultProps() {
     return {
       'transfer': null,
@@ -42,6 +44,7 @@ class FileTransferListItemComponent extends react.Component {
     };
   }
 
+  @override
   void componentWillMount() {
     FileTransfer transfer = this.props['transfer'];
     if (transfer != null) {
@@ -88,7 +91,8 @@ class FileTransferListItemComponent extends react.Component {
     this.props['onTransferDone'](this.props['transfer']);
   }
 
-  render() {
+  @override
+  dynamic render() {
     FileTransfer transfer = this.props['transfer'];
     if (transfer == null) return react.div({});
     String transferClass = '';

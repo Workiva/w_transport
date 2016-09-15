@@ -53,17 +53,17 @@ void main() {
       test('setting body in request dispatcher is supported', () async {
         Uri uri = Uri.parse('/test');
 
-        Completer body = new Completer();
+        Completer c = new Completer();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          body.complete(
-              UTF8.decode(await (request.body as StreamedHttpBody).toBytes()));
+          StreamedHttpBody body = request.body;
+          c.complete(UTF8.decode(await body.toBytes()));
           return new MockResponse.ok();
         });
 
         StreamedRequest request = new StreamedRequest();
         await request.post(
             uri: uri, body: new Stream.fromIterable([UTF8.encode('body')]));
-        expect(await body.future, equals('body'));
+        expect(await c.future, equals('body'));
       });
 
       test('setting body in request dispatcher should throw on invalid data',

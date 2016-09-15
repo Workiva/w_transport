@@ -41,21 +41,21 @@ void main() {
       Blob blob = new Blob(['one', 'two']);
       WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(blob);
-      socket.close();
+      await socket.close();
     });
 
     test('should support String', () async {
       String data = 'data';
       WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(data);
-      socket.close();
+      await socket.close();
     });
 
     test('should support TypedData', () async {
       TypedData data = new Uint16List.fromList([1, 2, 3]);
       WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
       socket.add(data);
-      socket.close();
+      await socket.close();
     });
 
     test('should throw when attempting to send invalid data', () async {
@@ -63,7 +63,7 @@ void main() {
       expect(() {
         socket.add(true);
       }, throwsArgumentError);
-      socket.close();
+      await socket.close();
     });
   });
 }

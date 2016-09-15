@@ -37,7 +37,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
   @override
   Future openRequest([_]) async {
     _request = new HttpRequest();
-    await _request.open(method, uri.toString());
+    _request.open(method, uri.toString());
   }
 
   @override
@@ -63,9 +63,13 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     }
 
     // Pipe onProgress events to the progress controllers.
+
+    // ignore: unawaited_futures
     _request.onProgress
         .transform(browser_utils.transformProgressEvents)
         .pipe(downloadProgressController);
+
+    // ignore: unawaited_futures
     _request.upload.onProgress
         .transform(browser_utils.transformProgressEvents)
         .pipe(uploadProgressController);
@@ -76,7 +80,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         c.complete(_createResponse(streamResponse: streamResponse));
       }
     });
-    Future onError(error) async {
+    Future onError(Object error) async {
       if (!c.isCompleted) {
         BaseResponse response =
             await _createResponse(streamResponse: streamResponse);
@@ -93,7 +97,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     }
 
     // Allow the caller to configure the request.
-    dynamic configurationResult;
+    Object configurationResult;
     if (configureFn != null) {
       configurationResult = configureFn(_request);
     }
@@ -104,12 +108,14 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     }
 
     if (finalizedRequest.body is HttpBody) {
-      _request.send((finalizedRequest.body as HttpBody).asBytes().buffer);
+      HttpBody body = finalizedRequest.body;
+      _request.send(body.asBytes().buffer);
     } else if (finalizedRequest.body is StreamedHttpBody) {
-      _request
-          .send(await (finalizedRequest.body as StreamedHttpBody).toBytes());
+      StreamedHttpBody body = finalizedRequest.body;
+      _request.send(await body.toBytes());
     } else if (finalizedRequest.body is FormDataBody) {
-      _request.send((finalizedRequest.body as FormDataBody).formData);
+      FormDataBody body = finalizedRequest.body;
+      _request.send(body.formData);
     }
     return await c.future;
   }
@@ -123,9 +129,11 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     if (streamResponse) {
       var result = new Completer<List<int>>();
       FileReader reader = new FileReader();
+      // ignore: unawaited_futures
       reader.onLoad.first.then((_) {
         result.complete(reader.result);
       });
+      // ignore: unawaited_futures
       reader.onError.first.then(result.completeError);
       reader.readAsArrayBuffer(
           _request.response != null ? _request.response : new Blob([]));

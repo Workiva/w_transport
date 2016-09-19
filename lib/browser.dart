@@ -35,15 +35,22 @@
 ///     }
 library w_transport.browser;
 
-import 'package:w_transport/src/browser_adapter.dart';
-import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/browser_transport_platform.dart';
+import 'package:w_transport/src/browser_transport_platform_with_sockjs.dart';
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
+import 'package:w_transport/src/global_transport_platform.dart';
+
+export 'package:w_transport/src/browser_transport_platform.dart'
+    show BrowserTransportPlatform, browserTransportPlatform;
+export 'package:w_transport/src/browser_transport_platform_with_sockjs.dart'
+    show BrowserTransportPlatformWithSockJS, browserTransportPlatformWithSockJS;
 
 /// Configures w_transport for use in the browser via dart:html.
 void configureWTransportForBrowser(
-    {bool useSockJS: false,
-    bool sockJSDebug: false,
-    bool sockJSNoCredentials: false,
-    List<String> sockJSProtocolsWhitelist}) {
+    {@Deprecated(v3Deprecation) bool useSockJS: false,
+    @Deprecated(v3Deprecation) bool sockJSDebug: false,
+    @Deprecated(v3Deprecation) bool sockJSNoCredentials: false,
+    @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist}) {
   // Configuring SockJS at this level is deprecated. SockJS configuration should
   // occur on a per-socket basis.
   if (useSockJS == true) {
@@ -52,9 +59,12 @@ void configureWTransportForBrowser(
         'per-socket basis via the optional parameters in WSocket.connect().');
   }
 
-  adapter = new BrowserAdapter(
-      useSockJS: useSockJS,
-      sockJSDebug: sockJSDebug,
-      sockJSNoCredentials: sockJSNoCredentials,
-      sockJSProtocolsWhitelist: sockJSProtocolsWhitelist);
+  if (useSockJS == true) {
+    globalTransportPlatform = new BrowserTransportPlatformWithSockJS(
+        sockJSNoCredentials: sockJSNoCredentials,
+        sockJSDebug: sockJSDebug,
+        sockJSProtocolsWhitelist: sockJSProtocolsWhitelist);
+  } else {
+    globalTransportPlatform = browserTransportPlatform;
+  }
 }

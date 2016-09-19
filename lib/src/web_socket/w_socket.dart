@@ -21,7 +21,8 @@
 import 'dart:async';
 
 import 'package:w_transport/src/constants.dart' show v3Deprecation;
-import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/web_socket/web_socket.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 /// A two-way communication object for WebSocket clients. Establishes
 /// a WebSocket connection, sends data or streams of data to the server,
@@ -87,22 +88,23 @@ abstract class WSocket implements Stream, StreamSink {
   /// specified in [headers]. This only applies to server-side usage. See
   /// `dart:io`'s [WebSocket] for more information.
   static Future<WSocket> connect(Uri uri,
-      {Map<String, dynamic> headers,
-      Iterable<String> protocols,
-      bool sockJSDebug,
-      bool sockJSNoCredentials,
-      List<String> sockJSProtocolsWhitelist,
-      Duration sockJSTimeout,
-      bool useSockJS}) async {
-    return PlatformAdapter.retrieve().newWebSocket(uri,
-        headers: headers,
-        protocols: protocols,
-        sockJSDebug: sockJSDebug,
-        sockJSNoCredentials: sockJSNoCredentials,
-        sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
-        sockJSTimeout: sockJSTimeout,
-        useSockJS: useSockJS);
-  }
+          {Map<String, dynamic> headers,
+          Iterable<String> protocols,
+          TransportPlatform transportPlatform,
+          @Deprecated(v3Deprecation) bool sockJSDebug,
+          @Deprecated(v3Deprecation) bool sockJSNoCredentials,
+          @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist,
+          @Deprecated(v3Deprecation) Duration sockJSTimeout,
+          @Deprecated(v3Deprecation) bool useSockJS}) =>
+      WebSocket.connect(uri,
+          headers: headers,
+          protocols: protocols,
+          transportPlatform: transportPlatform,
+          sockJSDebug: sockJSDebug,
+          sockJSNoCredentials: sockJSNoCredentials,
+          sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
+          sockJSTimeout: sockJSTimeout,
+          useSockJS: useSockJS);
 
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.

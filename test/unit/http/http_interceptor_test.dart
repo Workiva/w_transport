@@ -26,9 +26,9 @@ void main() {
 
   group(naming.toString(), () {
     group('HttpInterceptor', () {
-      setUp(() {
+      setUp(() async {
         configureWTransportForTest();
-        MockTransports.reset();
+        await MockTransports.reset();
       });
 
       test('default implementations should not modify the payloads', () async {

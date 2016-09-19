@@ -29,6 +29,9 @@ import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
 import 'package:w_transport/src/http/common/backoff.dart';
+import 'package:w_transport/src/mocks/http.dart' show MockHttpInternal;
+import 'package:w_transport/src/mocks/transport.dart'
+    show MockTransportsInternal;
 
 abstract class CommonRequest extends Object
     with FluriMixin
@@ -238,6 +241,9 @@ abstract class CommonRequest extends Object
   @override
   bool get isDone => isCanceled || _done.isCompleted;
 
+  /// Whether or not this request is wrapped in a mock-aware class.
+  bool get isMockAware => false;
+
   /// Request interceptor. Called right before request is sent.
   @override
   RequestInterceptor get requestInterceptor => _requestInterceptor;
@@ -430,6 +436,15 @@ abstract class CommonRequest extends Object
     return finalizedRequest;
   }
 
+  /// When a mock request is sent, we check to see if there is a mock
+  /// expectation or handler setup to handle the request. If not, we switch to
+  /// a real request instance (created from a TransportPlatform instance).
+  ///
+  /// This is handled by the mock request mixin.
+  Future<BaseResponse> switchToRealRequest({bool streamResponse}) {
+    throw new UnimplementedError();
+  }
+
   @override
   String toString() => '$runtimeType: $method $uri ($contentType)';
 
@@ -613,7 +628,7 @@ abstract class CommonRequest extends Object
     }
 
     // Ensure non-null.
-    streamResponse = streamResponse == true;
+    streamResponse ??= false;
 
     // Apply the request interceptor if set.
     if (requestInterceptor != null) {
@@ -626,6 +641,17 @@ abstract class CommonRequest extends Object
     final finalizedRequest = await finalizeRequest(body);
     checkForCancellation();
     checkForTimeout();
+
+    // If this is a mock-aware request without an expectation or handler setup
+    // to process it, switch to a real request.
+    if (isMockAware &&
+        MockTransportsInternal.fallThrough &&
+        !MockHttpInternal.hasHandlerForRequest(finalizedRequest.method,
+            finalizedRequest.uri, finalizedRequest.headers)) {
+      return switchToRealRequest(streamResponse: streamResponse);
+    }
+
+    // Otherwise, carry on with the send logic and the mocks will do the rest.
 
     BaseResponse response;
     bool responseInterceptorThrew = false;

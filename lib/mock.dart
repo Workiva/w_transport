@@ -24,8 +24,7 @@
 ///     }
 library w_transport.mock;
 
-import 'package:w_transport/src/mock_adapter.dart';
-import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/mocks/transport.dart' show MockTransports;
 
 export 'package:w_transport/src/http/finalized_request.dart'
     show FinalizedRequest;
@@ -52,5 +51,15 @@ export 'package:w_transport/src/web_socket/mock/w_socket.dart' show MockWSocket;
 /// Configure w_transport for use in tests, allowing you to easily mock out the
 /// behavior of the w_transport classes.
 void configureWTransportForTest() {
-  adapter = new MockAdapter();
+  // The previous behavior of mocked requests/WebSockets is that they would
+  // enter a "pending" queue if there were no expectations/handlers set up to
+  // handle them. Then the `verifyNoOutstandingExceptions()` method would throw
+  // if that "pending" queue was not empty.
+  //
+  // Enabling fall-through breaks this behavior because requests/WebSockets
+  // without an expectation/handler will result in a switch to a real instance
+  // which would throw if no other TransportPlatform instance is configured.
+  //
+  // So, for backwards compatibility, we disable fall-through.
+  MockTransports.install(fallThrough: false);
 }

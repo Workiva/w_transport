@@ -14,12 +14,14 @@
 
 import 'dart:async';
 
+import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/mock/base_request.dart';
 import 'package:w_transport/src/http/mock/response.dart';
 import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
+import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
 import 'package:w_transport/src/mocks/http.dart' show MockHttpInternal;
@@ -31,6 +33,9 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   Completer<FinalizedRequest> _sent = new Completer<FinalizedRequest>();
   bool _shouldFailToOpen = false;
   bool _streamResponse;
+
+  @override
+  bool get isMockAware => true;
 
   @override
   Future<Null> get onCanceled {
@@ -50,6 +55,8 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     _canceled.complete();
   }
 
+  BaseRequest createRealRequest();
+
   @override
   Future<Null> openRequest([_]) async {
     _registerHandlers();
@@ -57,6 +64,29 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     // Allow the controller of this mock request to trigger an unexpected
     // exception to test the handling of said exception.
     if (_shouldFailToOpen) throw new Exception('Mock request failed to open.');
+  }
+
+  @override
+  Future<BaseResponse> switchToRealRequest({bool streamResponse}) {
+    // There is not a mock expectation or handler set up to handle this request,
+    // so we fallback to the real TransportPlatform implementation.
+    final realRequest = createRealRequest()
+      ..autoRetry = autoRetry
+      ..headers = headers
+      ..requestInterceptor = requestInterceptor
+      ..responseInterceptor = responseInterceptor
+      ..timeoutThreshold = timeoutThreshold
+      ..uri = uri
+      ..withCredentials = withCredentials;
+
+    // Encoding cannot be set on MultipartRequests
+    if (this is! MultipartRequest) {
+      realRequest.encoding = encoding;
+    }
+
+    return streamResponse
+        ? realRequest.streamSend(method)
+        : realRequest.send(method);
   }
 
   @override

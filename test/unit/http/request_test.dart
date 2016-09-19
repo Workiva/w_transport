@@ -102,8 +102,8 @@ void _runCommonRequestSuiteFor(
     final requestUri = Uri.parse('/mock/request');
     final requestHeaders = <String, String>{'x-custom': 'header'};
 
-    setUp(() {
-      MockTransports.reset();
+    setUp(() async {
+      await MockTransports.reset();
       configureWTransportForTest();
     });
 
@@ -597,8 +597,8 @@ void _runAutoRetryTestSuiteFor(
   group(name, () {
     final requestUri = Uri.parse('/mock/request');
 
-    setUp(() {
-      MockTransports.reset();
+    setUp(() async {
+      await MockTransports.reset();
       configureWTransportForTest();
     });
 

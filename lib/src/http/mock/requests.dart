@@ -19,35 +19,92 @@ import 'package:w_transport/src/http/common/multipart_request.dart';
 import 'package:w_transport/src/http/common/plain_text_request.dart';
 import 'package:w_transport/src/http/common/streamed_request.dart';
 import 'package:w_transport/src/http/mock/request_mixin.dart';
+import 'package:w_transport/src/http/requests.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 class MockFormRequest extends CommonFormRequest with MockRequestMixin {
-  MockFormRequest() : super();
-  MockFormRequest.fromClient(Client wTransportClient)
+  TransportPlatform _realTransport;
+
+  MockFormRequest(this._realTransport) : super();
+  MockFormRequest.fromClient(Client wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
+
+  @override
+  FormRequest createRealRequest() {
+    if (_realTransport == null) {
+      throw new TransportPlatformMissing.httpRequestFailed('FormRequest');
+    }
+    return _realTransport.newFormRequest()..fields = fields;
+  }
 }
 
 class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {
-  MockJsonRequest() : super();
-  MockJsonRequest.fromClient(Client wTransportClient)
+  TransportPlatform _realTransport;
+
+  MockJsonRequest(this._realTransport) : super();
+  MockJsonRequest.fromClient(Client wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
+
+  @override
+  JsonRequest createRealRequest() {
+    if (_realTransport == null) {
+      throw new TransportPlatformMissing.httpRequestFailed('JsonRequest');
+    }
+    return _realTransport.newJsonRequest()..body = body;
+  }
 }
 
 class MockMultipartRequest extends CommonMultipartRequest
     with MockRequestMixin {
-  MockMultipartRequest() : super();
-  MockMultipartRequest.fromClient(Client wTransportClient)
+  TransportPlatform _realTransport;
+
+  MockMultipartRequest(this._realTransport) : super();
+  MockMultipartRequest.fromClient(Client wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
+
+  @override
+  MultipartRequest createRealRequest() {
+    if (_realTransport == null) {
+      throw new TransportPlatformMissing.httpRequestFailed('MultipartRequest');
+    }
+    return _realTransport.newMultipartRequest()
+      ..fields = fields
+      ..files = files;
+  }
 }
 
 class MockPlainTextRequest extends CommonPlainTextRequest
     with MockRequestMixin {
-  MockPlainTextRequest() : super();
-  MockPlainTextRequest.fromClient(Client wTransportClient)
+  TransportPlatform _realTransport;
+
+  MockPlainTextRequest(this._realTransport) : super();
+  MockPlainTextRequest.fromClient(Client wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
+
+  @override
+  Request createRealRequest() {
+    if (_realTransport == null) {
+      throw new TransportPlatformMissing.httpRequestFailed('Request');
+    }
+    return _realTransport.newRequest()..body = body;
+  }
 }
 
 class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {
-  MockStreamedRequest() : super();
-  MockStreamedRequest.fromClient(Client wTransportClient)
+  TransportPlatform _realTransport;
+
+  MockStreamedRequest(this._realTransport) : super();
+  MockStreamedRequest.fromClient(Client wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
+
+  @override
+  StreamedRequest createRealRequest() {
+    if (_realTransport == null) {
+      throw new TransportPlatformMissing.httpRequestFailed('StreamedRequest');
+    }
+    return _realTransport.newStreamedRequest()
+      ..contentLength = contentLength
+      ..contentType = contentType
+      ..body = body;
+  }
 }

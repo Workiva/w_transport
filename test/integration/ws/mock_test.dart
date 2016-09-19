@@ -29,10 +29,10 @@ void main() {
     ..topic = topicWebSocket;
 
   group(naming.toString(), () {
-    setUp(() {
+    setUp(() async {
       configureWTransportForTest();
 
-      MockTransports.reset();
+      await MockTransports.reset();
 
       MockTransports.webSocket
           .when(IntegrationPaths.fourOhFourUri, reject: true);

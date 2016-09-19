@@ -84,9 +84,9 @@ void main() {
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    setUp(() {
+    setUp(() async {
       configureWTransportForTest();
-      MockTransports.reset();
+      await MockTransports.reset();
     });
 
     group('Client', () {

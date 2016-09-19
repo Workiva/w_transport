@@ -20,7 +20,11 @@
 /// as it provides much greater reuse value.
 import 'dart:async';
 
-import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
+import 'package:w_transport/src/global_transport_platform.dart';
+import 'package:w_transport/src/mocks/transport.dart'
+    show MockTransportsInternal;
+import 'package:w_transport/src/transport_platform.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
 
 /// A two-way communication object for WebSocket clients. Establishes
@@ -87,19 +91,44 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
   static Future<WebSocket> connect(Uri uri,
       {Map<String, dynamic> headers,
       Iterable<String> protocols,
-      bool sockJSDebug,
-      bool sockJSNoCredentials,
-      List<String> sockJSProtocolsWhitelist,
-      Duration sockJSTimeout,
-      bool useSockJS}) async {
-    return PlatformAdapter.retrieve().newWebSocket(uri,
-        headers: headers,
-        protocols: protocols,
-        sockJSDebug: sockJSDebug,
-        sockJSNoCredentials: sockJSNoCredentials,
-        sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
-        sockJSTimeout: sockJSTimeout,
-        useSockJS: useSockJS);
+      TransportPlatform transportPlatform,
+      @Deprecated(v3Deprecation) bool sockJSDebug,
+      @Deprecated(v3Deprecation) bool sockJSNoCredentials,
+      @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist,
+      @Deprecated(v3Deprecation) Duration sockJSTimeout,
+      @Deprecated(v3Deprecation) bool useSockJS}) async {
+    // If a transport platform is not explicitly given, fallback to the globally
+    // configured platform.
+    transportPlatform ??= globalTransportPlatform;
+
+    if (MockTransportsInternal.isInstalled) {
+      // If transports are mocked, return a mock-aware StreamedRequest instance.
+      // This mock-aware instance will be able to decide at the time of dispatch
+      // whether or not the mock logic should handle the request.
+      return MockAwareTransportPlatform.newWebSocket(transportPlatform, uri,
+          headers: headers,
+          protocols: protocols,
+          sockJSDebug: sockJSDebug,
+          sockJSNoCredentials: sockJSNoCredentials,
+          sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
+          sockJSTimeout: sockJSTimeout,
+          useSockJS: useSockJS);
+    } else if (transportPlatform != null) {
+      // Otherwise, return a real instance using the given transport platform.
+      return transportPlatform.newWebSocket(uri,
+          headers: headers,
+          protocols: protocols,
+          sockJSDebug: sockJSDebug,
+          sockJSNoCredentials: sockJSNoCredentials,
+          sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
+          sockJSTimeout: sockJSTimeout,
+          useSockJS: useSockJS);
+    } else {
+      // If transports are not mocked and a transport platform is not available
+      // (neither explicitly given nor configured globally), then we cannot
+      // successfully construct a WebSocket.
+      throw new TransportPlatformMissing.webSocketFailed(uri);
+    }
   }
 
   /// The close code set when the WebSocket connection is closed. If there is

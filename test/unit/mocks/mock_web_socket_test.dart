@@ -36,9 +36,9 @@ void main() {
     group('TransportMocks.webSocket', () {
       final webSocketUri = Uri.parse('/mock/ws');
 
-      setUp(() {
+      setUp(() async {
         configureWTransportForTest();
-        MockTransports.reset();
+        await MockTransports.reset();
       });
 
       group('expect()', () {
@@ -210,7 +210,7 @@ void main() {
           final webSocket = new MockWSocket();
           final oldHandler = MockTransports.webSocket.when(webSocketUri,
               handler: (uri, {protocols, headers}) async => webSocket);
-          MockTransports.reset();
+          await MockTransports.reset();
 
           expect(() {
             oldHandler.cancel();
@@ -348,7 +348,7 @@ void main() {
           final oldHandler = MockTransports.webSocket.whenPattern(
               webSocketUri.toString(),
               handler: (uri, {protocols, headers, match}) async => webSocket);
-          MockTransports.reset();
+          await MockTransports.reset();
 
           expect(() {
             oldHandler.cancel();

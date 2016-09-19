@@ -29,9 +29,9 @@ void main() {
     group('TransportMocks.http', () {
       final requestUri = Uri.parse('/mock/test');
 
-      setUp(() {
+      setUp(() async {
         configureWTransportForTest();
-        MockTransports.reset();
+        await MockTransports.reset();
       });
 
       test('causeFailureOnOpen() should cause request to throw', () async {
@@ -347,7 +347,7 @@ void main() {
         test('canceling a handler does nothing if handler was reset', () async {
           MockHttpHandler oldHandler = MockTransports.http
               .when(requestUri, (_) async => new MockResponse.ok());
-          MockTransports.reset();
+          await MockTransports.reset();
           expect(() {
             oldHandler.cancel();
           }, returnsNormally);
@@ -468,7 +468,7 @@ void main() {
         test('canceling a handler does nothing if handler was reset', () async {
           MockHttpHandler oldHandler = MockTransports.http.whenPattern(
               requestUri.toString(), (_a, _b) async => new MockResponse.ok());
-          MockTransports.reset();
+          await MockTransports.reset();
           expect(() {
             oldHandler.cancel();
           }, returnsNormally);

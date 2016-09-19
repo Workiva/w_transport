@@ -16,18 +16,23 @@ import 'package:w_transport/src/http/mock/requests.dart';
 import 'package:w_transport/src/http/common/http_client.dart';
 import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/requests.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 /// A mock implementation of an HTTP client. Factory methods simply return the
 /// mock implementations of each request. Since the mock request implementations
 /// don't ever actually send an HTTP request, this client doesn't need to do
 /// anything else.
 class MockHttpClient extends CommonHttpClient implements HttpClient {
+  TransportPlatform _transport;
+
+  MockHttpClient(this._transport);
+
   /// Constructs a new [FormRequest] that will use this client to send the
   /// request. Throws a [StateError] if this client has been closed.
   @override
   FormRequest newFormRequest() {
     verifyNotClosed();
-    final request = new MockFormRequest.fromClient(this);
+    final request = new MockFormRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -37,7 +42,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   JsonRequest newJsonRequest() {
     verifyNotClosed();
-    final request = new MockJsonRequest.fromClient(this);
+    final request = new MockJsonRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -47,7 +52,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
-    final request = new MockMultipartRequest.fromClient(this);
+    final request = new MockMultipartRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -57,7 +62,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   Request newRequest() {
     verifyNotClosed();
-    final request = new MockPlainTextRequest.fromClient(this);
+    final request = new MockPlainTextRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -67,7 +72,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
-    final request = new MockStreamedRequest.fromClient(this);
+    final request = new MockStreamedRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }

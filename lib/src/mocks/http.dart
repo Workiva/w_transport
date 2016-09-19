@@ -156,34 +156,10 @@ class MockHttpInternal {
   }
 
   static void handleMockRequest(MockBaseRequest request) {
-    final matchingExpectations = _expectations.where((e) {
-      final methodMatches = e.method == request.method;
-      bool uriMatches = false;
-      if (e.uri is Uri) {
-        final Uri uri = e.uri;
-        uriMatches = uri == request.uri;
-      } else if (e.uri is Pattern) {
-        final Pattern pattern = e.uri;
-        uriMatches = pattern.allMatches(request.uri.toString()).isNotEmpty;
-      }
-      bool headersMatch;
-      if (e.headers == null) {
-        // Ignore headers check if expectation didn't specify.
-        headersMatch = true;
-      } else {
-        headersMatch = true;
-        e.headers.forEach((header, value) {
-          if (!request.headers.containsKey(header) ||
-              request.headers[header] != value) {
-            headersMatch = false;
-          }
-        });
-      }
-      return methodMatches && uriMatches && headersMatch;
-    });
-
+    final matchingExpectations =
+        _getMatchingExpectations(request.method, request.uri, request.headers);
     if (matchingExpectations.isNotEmpty) {
-      /// If this request was expected, resolve it as planned.
+      // If this request was expected, resolve it as planned.
       _RequestExpectation expectation = matchingExpectations.first;
       if (expectation.failWith != null) {
         request.completeError(error: expectation.failWith);
@@ -194,66 +170,40 @@ class MockHttpInternal {
       return;
     }
 
-    final matchingRequestHandlerKey = _requestHandlers.keys.firstWhere((key) {
-      return key == _getUriKey(request.uri);
-    }, orElse: () => null);
-
-    Match match;
-    final matchingPatternRequestHandlerKey =
-        _patternRequestHandlers.keys.firstWhere((pattern) {
-      final matches = pattern.allMatches(request.uri.toString());
-      if (matches.isNotEmpty) {
-        match = matches.first;
-        return true;
-      }
-      return false;
-    }, orElse: () => null);
-
-    Map<String, Object> handlersByMethod;
-    if (matchingRequestHandlerKey != null) {
-      handlersByMethod = _requestHandlers[matchingRequestHandlerKey];
-    } else if (matchingPatternRequestHandlerKey != null) {
-      handlersByMethod =
-          _patternRequestHandlers[matchingPatternRequestHandlerKey];
-    } else {
-      handlersByMethod = {};
-    }
-
-    if (handlersByMethod.isNotEmpty) {
-      /// Try to find an applicable handler.
-      Object handler;
-      if (handlersByMethod.containsKey(request.method)) {
-        handler = handlersByMethod[request.method];
-      } else if (handlersByMethod.containsKey('*')) {
-        handler = handlersByMethod['*'];
-      }
-
-      /// If a handler was set up for this type of request, call the handler.
-      if (handler != null) {
-        if (handler is RequestHandler) {
-          request.onSent.then((FinalizedRequest finalizedRequest) {
-            handler(finalizedRequest).then((response) {
-              request.complete(response: response);
-            }, onError: (error) {
-              request.completeError(error: error);
-            });
+    final handlerMatch = _getMatchingHandler(request.method, request.uri);
+    if (handlerMatch != null) {
+      // If a handler was set up for this type of request, call the handler.
+      if (handlerMatch.handler is RequestHandler) {
+        request.onSent.then((FinalizedRequest finalizedRequest) {
+          handlerMatch.handler(finalizedRequest).then((response) {
+            request.complete(response: response);
+          }, onError: (error) {
+            request.completeError(error: error);
           });
-          return;
-        } else if (handler is PatternRequestHandler) {
-          request.onSent.then((FinalizedRequest finalizedRequest) {
-            handler(finalizedRequest, match).then((response) {
-              request.complete(response: response);
-            }, onError: (error) {
-              request.completeError(error: error);
-            });
+        });
+        return;
+      } else if (handlerMatch.handler is PatternRequestHandler) {
+        request.onSent.then((FinalizedRequest finalizedRequest) {
+          handlerMatch.handler(finalizedRequest, handlerMatch.match).then(
+              (response) {
+            request.complete(response: response);
+          }, onError: (error) {
+            request.completeError(error: error);
           });
-          return;
-        }
+        });
+        return;
       }
     }
 
-    /// Otherwise, store this request as pending.
+    // Otherwise, store this request as pending.
     _pending.add(request);
+  }
+
+  static bool hasHandlerForRequest(
+      String method, Uri uri, Map<String, String> headers) {
+    if (_getMatchingExpectations(method, uri, headers).isNotEmpty) return true;
+    if (_getMatchingHandler(method, uri) != null) return true;
+    return false;
   }
 
   static void _expect(String method, Object uri,
@@ -271,6 +221,76 @@ class MockHttpInternal {
         failWith: failWith, respondWith: respondWith));
   }
 
+  static Iterable<_RequestExpectation> _getMatchingExpectations(
+      String method, Uri uri, Map<String, String> headers) {
+    headers = new CaseInsensitiveMap<String>.from(headers);
+
+    return _expectations.where((e) {
+      final methodMatches = e.method == method;
+      bool uriMatches = false;
+      if (e.uri is Uri) {
+        final Uri expectedUri = e.uri;
+        uriMatches = uri == expectedUri;
+      } else if (e.uri is Pattern) {
+        final Pattern pattern = e.uri;
+        uriMatches = pattern.allMatches(uri.toString()).isNotEmpty;
+      }
+      bool headersMatch;
+      if (e.headers == null) {
+        // Ignore headers check if expectation didn't specify.
+        headersMatch = true;
+      } else {
+        headersMatch = true;
+        e.headers.forEach((header, value) {
+          if (!headers.containsKey(header) || headers[header] != value) {
+            headersMatch = false;
+          }
+        });
+      }
+      return methodMatches && uriMatches && headersMatch;
+    });
+  }
+
+  static _RequestHandlerMatch _getMatchingHandler(String method, Uri uri) {
+    final matchingRequestHandlerKey = _requestHandlers.keys.firstWhere((key) {
+      return key == _getUriKey(uri);
+    }, orElse: () => null);
+
+    Match match;
+    final matchingPatternRequestHandlerKey =
+        _patternRequestHandlers.keys.firstWhere((pattern) {
+      final matches = pattern.allMatches(uri.toString());
+      if (matches.isNotEmpty) {
+        match = matches.first;
+        return true;
+      }
+      return false;
+    }, orElse: () => null);
+
+    Map<String, Object> handlersByMethod;
+    if (matchingRequestHandlerKey != null) {
+      handlersByMethod = _requestHandlers[matchingRequestHandlerKey];
+    } else if (matchingPatternRequestHandlerKey != null) {
+      handlersByMethod =
+          _patternRequestHandlers[matchingPatternRequestHandlerKey];
+    } else {
+      handlersByMethod = {};
+    }
+
+    Object handler;
+    if (handlersByMethod.isNotEmpty) {
+      // Try to find an applicable handler.
+      if (handlersByMethod.containsKey(method)) {
+        handler = handlersByMethod[method];
+      } else if (handlersByMethod.containsKey('*')) {
+        handler = handlersByMethod['*'];
+      }
+    }
+    if (handler == null) return null;
+    return new _RequestHandlerMatch(handler,
+        match: handler is PatternRequestHandler ? match : null);
+  }
+
   // TODO: remove in 3.0.0
   static String _getUriKey(Uri uri) =>
       uri.replace(query: '', fragment: '').toString();
@@ -281,6 +301,13 @@ class MockHttpInternal {
           'Request must be of type MockBaseRequest. Make sure you configured w_transport for testing.');
     }
   }
+}
+
+class _RequestHandlerMatch {
+  final Function handler;
+  final Match match;
+
+  _RequestHandlerMatch(this.handler, {this.match});
 }
 
 class _RequestExpectation {

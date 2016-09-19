@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:w_transport/src/global_transport_platform.dart';
 import 'package:w_transport/src/http/client.dart';
-import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/mocks/transport.dart'
+    show MockTransportsInternal;
+import 'package:w_transport/src/transport_platform.dart';
 
 /// An HTTP client acts as a single point from which many requests can be
 /// constructed. All requests constructed from a client will inherit [headers],
@@ -22,5 +25,25 @@ import 'package:w_transport/src/platform_adapter.dart';
 /// On the server, the Dart VM will also be able to take advantage of cached
 /// network connections between requests that share a client.
 abstract class HttpClient extends Client {
-  factory HttpClient() => PlatformAdapter.retrieve().newHttpClient();
+  factory HttpClient({TransportPlatform transportPlatform}) {
+    // If a transport platform is not explicitly given, fallback to the globally
+    // configured platform.
+    transportPlatform ??= globalTransportPlatform;
+
+    if (MockTransportsInternal.isInstalled) {
+      // If transports are mocked, return a mock HttpClient instance. This
+      // mock instance will construct mock-aware BaseRequest and WebSocket
+      // instances that will be able to decide at the time of dispatch
+      // whether or not the mock logic should be used.
+      return MockAwareTransportPlatform.newHttpClient(transportPlatform);
+    } else if (transportPlatform != null) {
+      // Otherwise, return a real instance using the given transport platform.
+      return transportPlatform.newHttpClient();
+    } else {
+      // If transports are not mocked and a transport platform is not available
+      // (neither explicitly given nor configured globally), then we cannot
+      // successfully construct an HttpClient.
+      throw new TransportPlatformMissing.httpClientFailed();
+    }
+  }
 }

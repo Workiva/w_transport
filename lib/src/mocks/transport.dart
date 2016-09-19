@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:async';
+
 import 'package:w_transport/src/mocks/http.dart';
 import 'package:w_transport/src/mocks/web_socket.dart';
 
@@ -19,12 +21,38 @@ class MockTransports {
   static const MockHttp http = const MockHttp();
   static const MockWebSocket webSocket = const MockWebSocket();
 
-  static void reset() {
+  /// Install mocking logic & controls for all transports. This will effectively
+  /// wrap all [BaseRequest], [HttpClient], and [WebSocket] instances in a
+  /// mocking layer. Expectations and handlers can be registered via the
+  /// [MockTransports] API.
+  ///
+  /// If [fallThrough] is true, any HTTP request that is sent and any WebSocket
+  /// that is opened will fall through to the configured [TransportPlatform] if
+  /// a mock expectation or handler is not set up to handle it. This enables
+  /// selective mocking - certain requests or WebSockets can be mocked while
+  /// the rest will be handled by a real transport platform.
+  static void install({bool fallThrough: true}) {
+    MockTransportsInternal.isInstalled = true;
+    MockTransportsInternal.fallThrough = fallThrough ?? true;
+  }
+
+  static Future<Null> reset() {
     http.reset();
     webSocket.reset();
+    return new Future.value();
+  }
+
+  static Future<Null> uninstall() async {
+    await reset();
+    MockTransportsInternal.isInstalled = true;
   }
 
   static void verifyNoOutstandingExceptions() {
     http.verifyNoOutstandingExceptions();
   }
+}
+
+class MockTransportsInternal {
+  static bool fallThrough = true;
+  static bool isInstalled = false;
 }

@@ -33,13 +33,13 @@ class MockHttp {
 
   void causeFailureOnOpen(BaseRequest request) {
     MockHttpInternal._verifyRequestIsMock(request);
-    MockBaseRequest mockRequest = request;
+    final MockBaseRequest mockRequest = request;
     mockRequest.causeFailureOnOpen();
   }
 
   void completeRequest(BaseRequest request, {BaseResponse response}) {
     MockHttpInternal._verifyRequestIsMock(request);
-    MockBaseRequest mockRequest = request;
+    final MockBaseRequest mockRequest = request;
     mockRequest.complete(response: response);
     MockHttpInternal._pending.remove(request);
   }
@@ -62,7 +62,7 @@ class MockHttp {
 
   void failRequest(BaseRequest request, {Object error, BaseResponse response}) {
     MockHttpInternal._verifyRequestIsMock(request);
-    MockBaseRequest mockRequest = request;
+    final MockBaseRequest mockRequest = request;
     mockRequest.completeError(error: error, response: response);
     MockHttpInternal._pending.remove(request);
   }
@@ -78,14 +78,14 @@ class MockHttp {
     String errorMsg = '';
     if (MockHttpInternal._pending.isNotEmpty) {
       errorMsg += 'Unresolved mock requests:\n';
-      var requestLines =
+      final requestLines =
           MockHttpInternal._pending.map((e) => '\t${e.method} ${e.uri}');
       errorMsg += requestLines.join('\n');
       errorMsg += '\n';
     }
     if (MockHttpInternal._expectations.isNotEmpty) {
       errorMsg += 'Unsatisfied requests:\n';
-      var requestLines =
+      final requestLines =
           MockHttpInternal._expectations.map((e) => '\t${e.method} ${e.uri}');
       errorMsg += requestLines.join('\n');
       errorMsg += '\n';
@@ -99,14 +99,14 @@ class MockHttp {
     // used anywhere else. The consumer should just be expected to pass in an
     // exact match here. At the next breaking release, this method and related
     // ones should be cleaned up & clarified.
-    String uriKey = MockHttpInternal._getUriKey(uri);
+    final uriKey = MockHttpInternal._getUriKey(uri);
     if (!MockHttpInternal._requestHandlers.containsKey(uriKey)) {
       MockHttpInternal._requestHandlers[uriKey] = {};
     }
-    var methodKey = method == null ? '*' : method.toUpperCase();
+    final methodKey = method == null ? '*' : method.toUpperCase();
     MockHttpInternal._requestHandlers[uriKey][methodKey] = handler;
     return new MockHttpHandler._(() {
-      var handlers = MockHttpInternal._requestHandlers[uriKey];
+      final handlers = MockHttpInternal._requestHandlers[uriKey];
       if (handlers != null &&
           handlers[methodKey] != null &&
           handlers[methodKey] == handler) {
@@ -120,10 +120,10 @@ class MockHttp {
     if (!MockHttpInternal._patternRequestHandlers.containsKey(uriPattern)) {
       MockHttpInternal._patternRequestHandlers[uriPattern] = {};
     }
-    var methodKey = method == null ? '*' : method.toUpperCase();
+    final methodKey = method == null ? '*' : method.toUpperCase();
     MockHttpInternal._patternRequestHandlers[uriPattern][methodKey] = handler;
     return new MockHttpHandler._(() {
-      var handlers = MockHttpInternal._patternRequestHandlers[uriPattern];
+      final handlers = MockHttpInternal._patternRequestHandlers[uriPattern];
       if (handlers != null &&
           handlers[methodKey] != null &&
           handlers[methodKey] == handler) {
@@ -156,14 +156,14 @@ class MockHttpInternal {
   }
 
   static void handleMockRequest(MockBaseRequest request) {
-    var matchingExpectations = _expectations.where((e) {
-      bool methodMatches = e.method == request.method;
+    final matchingExpectations = _expectations.where((e) {
+      final methodMatches = e.method == request.method;
       bool uriMatches = false;
       if (e.uri is Uri) {
-        Uri uri = e.uri;
+        final Uri uri = e.uri;
         uriMatches = uri == request.uri;
       } else if (e.uri is Pattern) {
-        Pattern pattern = e.uri;
+        final Pattern pattern = e.uri;
         uriMatches = pattern.allMatches(request.uri.toString()).isNotEmpty;
       }
       bool headersMatch;
@@ -194,14 +194,14 @@ class MockHttpInternal {
       return;
     }
 
-    var matchingRequestHandlerKey = _requestHandlers.keys.firstWhere((key) {
+    final matchingRequestHandlerKey = _requestHandlers.keys.firstWhere((key) {
       return key == _getUriKey(request.uri);
     }, orElse: () => null);
 
     Match match;
-    var matchingPatternRequestHandlerKey =
+    final matchingPatternRequestHandlerKey =
         _patternRequestHandlers.keys.firstWhere((pattern) {
-      var matches = pattern.allMatches(request.uri.toString());
+      final matches = pattern.allMatches(request.uri.toString());
       if (matches.isNotEmpty) {
         match = matches.first;
         return true;
@@ -209,17 +209,19 @@ class MockHttpInternal {
       return false;
     }, orElse: () => null);
 
-    var handlersByMethod = <String, Object>{};
+    Map<String, Object> handlersByMethod;
     if (matchingRequestHandlerKey != null) {
       handlersByMethod = _requestHandlers[matchingRequestHandlerKey];
     } else if (matchingPatternRequestHandlerKey != null) {
       handlersByMethod =
           _patternRequestHandlers[matchingPatternRequestHandlerKey];
+    } else {
+      handlersByMethod = {};
     }
 
     if (handlersByMethod.isNotEmpty) {
       /// Try to find an applicable handler.
-      var handler;
+      Object handler;
       if (handlersByMethod.containsKey(request.method)) {
         handler = handlersByMethod[request.method];
       } else if (handlersByMethod.containsKey('*')) {
@@ -265,7 +267,7 @@ class MockHttpInternal {
       respondWith = new MockResponse.ok();
     }
     _expectations.add(new _RequestExpectation(method, uri,
-        headers == null ? null : new CaseInsensitiveMap.from(headers),
+        headers == null ? null : new CaseInsensitiveMap<String>.from(headers),
         failWith: failWith, respondWith: respondWith));
   }
 

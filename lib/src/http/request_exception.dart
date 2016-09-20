@@ -44,9 +44,9 @@ class RequestException implements Exception {
     String msg;
     if (request != null && request.autoRetry.numAttempts > 1) {
       msg = '$method $uri';
-      for (var i = 0; i < request.autoRetry.failures.length; i++) {
-        var failure = request.autoRetry.failures[i];
-        var attempt = '\n\tAttempt #${i+1}:';
+      for (int i = 0; i < request.autoRetry.failures.length; i++) {
+        final failure = request.autoRetry.failures[i];
+        String attempt = '\n\tAttempt #${i+1}:';
         if (failure.response != null) {
           attempt +=
               ' ${failure.response.status} ${failure.response.statusText}';

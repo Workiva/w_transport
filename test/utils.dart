@@ -14,6 +14,6 @@
 
 import 'dart:async';
 
-Future nextTick() {
-  return new Future.delayed(new Duration(milliseconds: 1));
+Future<Null> nextTick() {
+  return new Future<Null>.delayed(new Duration(milliseconds: 1));
 }

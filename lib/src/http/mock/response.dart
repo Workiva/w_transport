@@ -30,11 +30,12 @@ class MockResponse implements Response {
       Map<String, String> headers,
       String statusText}) {
     // Ensure the headers are case insensitive.
-    headers = new CaseInsensitiveMap.from(headers != null ? headers : {});
+    headers =
+        new CaseInsensitiveMap<String>.from(headers != null ? headers : {});
 
     // If an encoding was given, update the content-type charset parameter.
     if (encoding != null) {
-      var contentType = http_utils.parseContentTypeFromHeaders(headers);
+      MediaType contentType = http_utils.parseContentTypeFromHeaders(headers);
       contentType = contentType.change(parameters: {'charset': encoding.name});
       headers['content-type'] = contentType.toString();
     }
@@ -150,11 +151,12 @@ class MockStreamedResponse implements StreamedResponse {
       Map<String, String> headers,
       String statusText}) {
     // Ensure the headers are case insensitive.
-    headers = new CaseInsensitiveMap.from(headers != null ? headers : {});
+    headers =
+        new CaseInsensitiveMap<String>.from(headers != null ? headers : {});
 
     // If an encoding was given, update the content-type charset parameter.
     if (encoding != null) {
-      var contentType = http_utils.parseContentTypeFromHeaders(headers);
+      MediaType contentType = http_utils.parseContentTypeFromHeaders(headers);
       contentType = contentType.change(parameters: {'charset': encoding.name});
       headers['content-type'] = contentType.toString();
     }

@@ -23,7 +23,7 @@ import '../../naming.dart';
 
 // TODO: tests with headers
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -46,7 +46,7 @@ void main() {
       });
 
       test('DELETE withCredentials', () async {
-        Completer c = new Completer();
+        final c = new Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
@@ -65,7 +65,7 @@ void main() {
       });
 
       test('GET withCredentials', () async {
-        Completer c = new Completer();
+        final c = new Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
@@ -84,7 +84,7 @@ void main() {
       });
 
       test('HEAD withCredentials', () async {
-        Completer c = new Completer();
+        final c = new Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
@@ -103,7 +103,7 @@ void main() {
       });
 
       test('OPTIONS withCredentials', () async {
-        Completer c = new Completer();
+        final c = new Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
@@ -122,7 +122,7 @@ void main() {
       });
 
       test('PATCH with body', () async {
-        Completer c = new Completer();
+        final c = new Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           HttpBody body = request.body;
           c.complete(body.asString());
@@ -134,7 +134,7 @@ void main() {
       });
 
       test('PATCH withCredentials', () async {
-        Completer c = new Completer();
+        final c = new Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
@@ -153,7 +153,7 @@ void main() {
       });
 
       test('POST with body', () async {
-        Completer c = new Completer();
+        final c = new Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           HttpBody body = request.body;
           c.complete(body.asString());
@@ -165,7 +165,7 @@ void main() {
       });
 
       test('POST withCredentials', () async {
-        Completer c = new Completer();
+        final c = new Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
@@ -184,7 +184,7 @@ void main() {
       });
 
       test('PUT with body', () async {
-        Completer c = new Completer();
+        final c = new Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           HttpBody body = request.body;
           c.complete(body.asString());
@@ -196,7 +196,7 @@ void main() {
       });
 
       test('PUT withCredentials', () async {
-        Completer c = new Completer();
+        final c = new Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
@@ -215,7 +215,7 @@ void main() {
       });
 
       test('custom method with body', () async {
-        Completer c = new Completer();
+        final c = new Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           HttpBody body = request.body;
           c.complete(body.asString());
@@ -227,7 +227,7 @@ void main() {
       });
 
       test('custom method withCredentials', () async {
-        Completer c = new Completer();
+        final c = new Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();

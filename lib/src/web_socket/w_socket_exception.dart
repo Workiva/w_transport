@@ -17,7 +17,7 @@ import 'package:w_transport/src/constants.dart' show v3Deprecation;
 /// Represents an exception in the connection process of a Web Socket.
 @Deprecated(v3Deprecation + 'Use WebSocketException instead.')
 class WSocketException implements Exception {
-  String message;
+  final String message;
   WSocketException([this.message]);
   @override
   String toString() => 'WSocketException: $message';

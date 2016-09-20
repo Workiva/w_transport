@@ -64,7 +64,7 @@ abstract class CommonHttpClient implements HttpClient {
 
   @override
   set headers(Map<String, String> headers) {
-    _headers = new CaseInsensitiveMap.from(headers);
+    _headers = new CaseInsensitiveMap<String>.from(headers);
   }
 
   /// Whether or not this HTTP client has been closed.
@@ -83,7 +83,7 @@ abstract class CommonHttpClient implements HttpClient {
     if (isClosed) return;
     _isClosed = true;
     closeClient();
-    for (var request in _requests) {
+    for (final request in _requests) {
       request.abort(new Exception(
           'HTTP client was closed before this request could complete.'));
     }
@@ -121,7 +121,7 @@ abstract class CommonHttpClient implements HttpClient {
     }
     if (_responsePathway.hasInterceptors) {
       request.responseInterceptor = (request, response, [exception]) async {
-        var payload = new ResponsePayload(request, response, exception);
+        final payload = new ResponsePayload(request, response, exception);
         return (await _responsePathway.process(payload)).response;
       };
     }

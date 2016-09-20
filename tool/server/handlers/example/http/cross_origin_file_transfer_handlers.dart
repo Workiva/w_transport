@@ -33,13 +33,13 @@ Directory filesDirectory =
     new Directory('example/http/cross_origin_file_transfer/files');
 
 Future<String> _readFileUploadAsString(HttpMultipartFormData formData) async {
-  var parts = await formData.toList();
+  final parts = await formData.toList();
   return parts.join('');
 }
 
 Future<List<int>> _readFileUploadAsBytes(HttpMultipartFormData formData) async {
   List<int> bytes = [];
-  await for (var data in formData) {
+  await for (final data in formData) {
     if (data is List<int>) {
       bytes.addAll(data);
     }
@@ -49,17 +49,17 @@ Future<List<int>> _readFileUploadAsBytes(HttpMultipartFormData formData) async {
 
 void _writeFileUploadAsString(String filename, String contents) {
   _createUploadDirectory();
-  Uri uploadDestination =
+  final uploadDestination =
       Uri.parse('example/http/cross_origin_file_transfer/files/$filename');
-  File upload = new File.fromUri(uploadDestination);
+  final upload = new File.fromUri(uploadDestination);
   upload.writeAsStringSync(contents);
 }
 
 void _writeFileUploadAsBytes(String filename, List<int> bytes) {
   _createUploadDirectory();
-  Uri uploadDestination =
+  final uploadDestination =
       Uri.parse('example/http/cross_origin_file_transfer/files/$filename');
-  File upload = new File.fromUri(uploadDestination);
+  final upload = new File.fromUri(uploadDestination);
   upload.writeAsBytesSync(bytes);
 }
 
@@ -114,17 +114,17 @@ class UploadHandler extends Handler {
   }
 
   @override
-  Future post(HttpRequest request) async {
+  Future<Null> post(HttpRequest request) async {
     if (request.headers['content-type'] == null) {
       request.response.statusCode = HttpStatus.BAD_REQUEST;
       setCorsHeaders(request);
       return;
     }
 
-    ContentType contentType =
+    final contentType =
         ContentType.parse(request.headers.value('content-type'));
-    String boundary = contentType.parameters['boundary'];
-    Stream stream = request
+    final boundary = contentType.parameters['boundary'];
+    final stream = request
         .transform(new MimeMultipartTransformer(boundary))
         .map(HttpMultipartFormData.parse);
 
@@ -137,10 +137,10 @@ class UploadHandler extends Handler {
           }
 
           if (formData.isText) {
-            String contents = await _readFileUploadAsString(formData);
+            final contents = await _readFileUploadAsString(formData);
             _writeFileUploadAsString(filename, contents);
           } else {
-            List<int> bytes = await _readFileUploadAsBytes(formData);
+            final bytes = await _readFileUploadAsBytes(formData);
             _writeFileUploadAsBytes(filename, bytes);
           }
       }
@@ -160,7 +160,7 @@ class FilesHandler extends Handler {
   }
 
   @override
-  Future get(HttpRequest request) async {
+  Future<Null> get(HttpRequest request) async {
     Iterable<File> files = fw.files.where(
         (FileSystemEntity entity) => entity is File && entity.existsSync());
     List<Map> filesPayload = files
@@ -175,7 +175,7 @@ class FilesHandler extends Handler {
   }
 
   @override
-  Future delete(HttpRequest request) async {
+  Future<Null> delete(HttpRequest request) async {
     Iterable<File> files =
         fw.files.where((FileSystemEntity entity) => entity is File);
     files.forEach((File entity) {
@@ -192,13 +192,13 @@ class DownloadHandler extends Handler {
   }
 
   @override
-  Future get(HttpRequest request) async {
+  Future<Null> get(HttpRequest request) async {
     if (request.uri.queryParameters['file'] == null) {
       request.response.statusCode = HttpStatus.NOT_FOUND;
       setCorsHeaders(request);
       return;
     }
-    String requestedFile =
+    final requestedFile =
         Uri.parse(request.uri.queryParameters['file']).pathSegments.last;
     if (requestedFile == '' || requestedFile == null) {
       request.response.statusCode = HttpStatus.NOT_FOUND;
@@ -206,18 +206,18 @@ class DownloadHandler extends Handler {
       return;
     }
 
-    bool shouldForceDownload = request.uri.queryParameters['dl'] == '1';
+    final shouldForceDownload = request.uri.queryParameters['dl'] == '1';
 
-    Uri fileUri = Uri
+    final fileUri = Uri
         .parse('example/http/cross_origin_file_transfer/files/$requestedFile');
-    File file = new File.fromUri(fileUri);
+    final file = new File.fromUri(fileUri);
     if (!file.existsSync()) {
       request.response.statusCode = HttpStatus.NOT_FOUND;
       setCorsHeaders(request);
       return;
     }
 
-    Map headers = {
+    final headers = <String, String>{
       'content-length': file.lengthSync().toString(),
       'content-type': lookupMimeType(fileUri.path),
     };

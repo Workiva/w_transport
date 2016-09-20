@@ -41,7 +41,7 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
 
   @override
   Future/*<E>*/ asFuture/*<E>*/([var/*=E*/ futureValue]) {
-    var c = new Completer/*<E>*/();
+    final c = new Completer/*<E>*/();
     _doneHandler = () {
       c.complete(futureValue);
     };
@@ -49,7 +49,7 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   }
 
   @override
-  Future cancel() async {
+  Future<Null> cancel() async {
     await _sub.cancel();
     if (_onCancel != null) {
       await _onCancel();

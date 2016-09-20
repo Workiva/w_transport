@@ -32,7 +32,7 @@ abstract class ReqIntMixin implements HttpInterceptor {
 abstract class RespIntMixin implements HttpInterceptor {
   @override
   Future<ResponsePayload> interceptResponse(ResponsePayload payload) async {
-    var newHeaders = new Map<String, String>.from(payload.response.headers);
+    final newHeaders = new Map<String, String>.from(payload.response.headers);
     newHeaders['x-intercepted'] = 'true';
     Response response = payload.response;
     payload.response = new Response.fromString(payload.response.status,
@@ -58,7 +58,7 @@ class AsyncInt extends HttpInterceptor {
   @override
   Future<ResponsePayload> interceptResponse(ResponsePayload payload) async {
     await new Future.delayed(new Duration(milliseconds: 500));
-    var headers = new Map<String, String>.from(payload.response.headers);
+    final headers = new Map<String, String>.from(payload.response.headers);
     Response response = payload.response;
     headers['x-interceptor'] =
         payload.request.uri.queryParameters['interceptor'];
@@ -69,7 +69,7 @@ class AsyncInt extends HttpInterceptor {
 }
 
 Iterable<BaseRequest> createAllRequestTypes(Client client) {
-  return [
+  return <BaseRequest>[
     client.newFormRequest(),
     client.newJsonRequest(),
     client.newMultipartRequest(),
@@ -79,7 +79,7 @@ Iterable<BaseRequest> createAllRequestTypes(Client client) {
 }
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -152,25 +152,28 @@ void _runHttpClientSuite(Client getClient()) {
   });
 
   test('complete request', () async {
-    Uri uri = Uri.parse('/test');
+    final uri = Uri.parse('/test');
     MockTransports.http.expect('GET', uri);
     await client.newRequest().get(uri: uri);
   });
 
   test('baseUri should be inherited by all requests', () async {
-    var baseUri = Uri.parse('https://example.com/base/path');
+    final baseUri = Uri.parse('https://example.com/base/path');
     client.baseUri = baseUri;
-    for (var request in createAllRequestTypes(client)) {
+    for (final request in createAllRequestTypes(client)) {
       expect(request.uri, equals(baseUri));
     }
   });
 
   test('headers should be inherited by all requests', () async {
-    var headers = {'x-custom1': 'value', 'x-custom2': 'value2'};
+    final headers = <String, String>{
+      'x-custom1': 'value',
+      'x-custom2': 'value2'
+    };
     client.headers = headers;
     expect(client.headers, equals(headers));
-    for (var request in createAllRequestTypes(client)) {
-      Uri uri = Uri.parse('/test');
+    for (final request in createAllRequestTypes(client)) {
+      final uri = Uri.parse('/test');
       MockTransports.http.expect('GET', uri, headers: headers);
       if (request is MultipartRequest) {
         request.fields['f'] = 'v';
@@ -180,10 +183,10 @@ void _runHttpClientSuite(Client getClient()) {
   });
 
   test('timeoutThreshold should be inherited by all requests', () async {
-    Duration tt = new Duration(seconds: 1);
+    final tt = new Duration(seconds: 1);
     client.timeoutThreshold = tt;
     expect(client.timeoutThreshold, equals(tt));
-    for (var request in createAllRequestTypes(client)) {
+    for (final request in createAllRequestTypes(client)) {
       expect(request.timeoutThreshold, equals(tt));
     }
   });
@@ -191,9 +194,9 @@ void _runHttpClientSuite(Client getClient()) {
   test('withCredentials should be inherited by all requests', () async {
     client.withCredentials = true;
     expect(client.withCredentials, isTrue);
-    for (var request in createAllRequestTypes(client)) {
-      Uri uri = Uri.parse('/test');
-      Completer c = new Completer();
+    for (final request in createAllRequestTypes(client)) {
+      final uri = Uri.parse('/test');
+      final c = new Completer<Null>();
       MockTransports.http.when(uri, (FinalizedRequest request) async {
         request.withCredentials
             ? c.complete()
@@ -218,7 +221,7 @@ void _runHttpClientSuite(Client getClient()) {
       ..maxRetries = 4
       ..test = (request, response, willRetry) async => true;
 
-    for (var request in createAllRequestTypes(client)) {
+    for (final request in createAllRequestTypes(client)) {
       expect(request.autoRetry.backOff.interval,
           equals(client.autoRetry.backOff.interval));
       expect(request.autoRetry.backOff.method,
@@ -237,8 +240,8 @@ void _runHttpClientSuite(Client getClient()) {
 
   test('addInterceptor() single interceptor (request only)', () async {
     client.addInterceptor(new ReqInt());
-    for (BaseRequest request in createAllRequestTypes(client)) {
-      Uri uri = Uri.parse('/test');
+    for (final request in createAllRequestTypes(client)) {
+      final uri = Uri.parse('/test');
       MockTransports.http
           .expect('GET', uri, headers: {'x-intercepted': 'true'});
       if (request is MultipartRequest) {
@@ -250,50 +253,50 @@ void _runHttpClientSuite(Client getClient()) {
 
   test('addInterceptor() single interceptor (response only)', () async {
     client.addInterceptor(new RespInt());
-    for (BaseRequest request in createAllRequestTypes(client)) {
-      Uri uri = Uri.parse('/test');
+    for (final request in createAllRequestTypes(client)) {
+      final uri = Uri.parse('/test');
       MockTransports.http.expect('GET', uri);
       if (request is MultipartRequest) {
         request.fields['f'] = 'v';
       }
-      Response response = await request.get(uri: uri);
+      final response = await request.get(uri: uri);
       expect(response.headers, containsPair('x-intercepted', 'true'));
     }
   });
 
   test('addInterceptor() single interceptor', () async {
     client.addInterceptor(new ReqRespInt());
-    for (BaseRequest request in createAllRequestTypes(client)) {
-      Uri uri = Uri.parse('/test');
+    for (final request in createAllRequestTypes(client)) {
+      final uri = Uri.parse('/test');
       MockTransports.http
           .expect('GET', uri, headers: {'x-intercepted': 'true'});
       if (request is MultipartRequest) {
         request.fields['f'] = 'v';
       }
-      Response response = await request.get(uri: uri);
+      final response = await request.get(uri: uri);
       expect(response.headers, containsPair('x-intercepted', 'true'));
     }
   });
 
   test('addInterceptor() multiple interceptors', () async {
     client..addInterceptor(new ReqRespInt())..addInterceptor(new AsyncInt());
-    for (BaseRequest request in createAllRequestTypes(client)) {
-      Uri uri = Uri.parse('/test');
-      Uri augmentedUri =
+    for (final request in createAllRequestTypes(client)) {
+      final uri = Uri.parse('/test');
+      final augmentedUri =
           uri.replace(queryParameters: {'interceptor': 'asyncint'});
       MockTransports.http
           .expect('GET', augmentedUri, headers: {'x-intercepted': 'true'});
       if (request is MultipartRequest) {
         request.fields['f'] = 'v';
       }
-      Response response = await request.get(uri: uri);
+      final response = await request.get(uri: uri);
       expect(response.headers, containsPair('x-intercepted', 'true'));
       expect(response.headers, containsPair('x-interceptor', 'asyncint'));
     }
   });
 
   test('close()', () async {
-    Future future = client.newRequest().get(uri: Uri.parse('/test'));
+    final future = client.newRequest().get(uri: Uri.parse('/test'));
     client.close();
     expect(future, throws);
   });

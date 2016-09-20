@@ -35,7 +35,8 @@ abstract class BaseResponse {
   Map<String, String> _headers;
 
   BaseResponse(this.status, this.statusText, Map<String, String> headers) {
-    _headers = new Map.unmodifiable(new CaseInsensitiveMap.from(headers));
+    _headers = new Map<String, String>.unmodifiable(
+        new CaseInsensitiveMap<String>.from(headers));
     _encoding = http_utils.parseEncodingFromHeaders(_headers, fallback: LATIN1);
     _contentType = http_utils.parseContentTypeFromHeaders(_headers);
   }

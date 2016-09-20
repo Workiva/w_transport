@@ -20,7 +20,7 @@ import 'package:w_transport/mock.dart';
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -32,16 +32,16 @@ void main() {
       });
 
       test('default implementations should not modify the payloads', () async {
-        var req = new Request()..uri = Uri.parse('/test');
-        var body =
+        final req = new Request()..uri = Uri.parse('/test');
+        final body =
             new HttpBody.fromString(new MediaType('text', 'plain'), 'body');
-        var finalizedReq =
+        final finalizedReq =
             new FinalizedRequest('GET', req.uri, {}, body, false);
-        var resp = new MockResponse.ok();
-        var reqPayload = new RequestPayload(new Request());
-        var respPayload = new ResponsePayload(finalizedReq, resp);
+        final resp = new MockResponse.ok();
+        final reqPayload = new RequestPayload(new Request());
+        final respPayload = new ResponsePayload(finalizedReq, resp);
 
-        var interceptor = new HttpInterceptor();
+        final interceptor = new HttpInterceptor();
         expect(
             identical(
                 reqPayload, await interceptor.interceptRequest(reqPayload)),

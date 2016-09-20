@@ -24,7 +24,7 @@ import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformMock
     ..testType = testTypeIntegration
     ..topic = topicPlatformAdapter;
@@ -63,7 +63,7 @@ void main() {
     });
 
     test('newWSocket()', () async {
-      Uri wsUri = Uri.parse('ws://test/ws');
+      final wsUri = Uri.parse('ws://test/ws');
       MockTransports.webSocket.expect(wsUri, connectTo: new MockWSocket());
       expect(await WSocket.connect(wsUri), new isInstanceOf<MockWSocket>());
     });

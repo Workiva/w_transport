@@ -18,24 +18,22 @@ import 'dart:html';
 import 'package:react/react.dart' as react;
 import 'package:w_transport/w_transport.dart';
 
-const int _pollingInterval = 10; // 10 seconds
-
 void renderGlobalExampleMenu({bool nav: true, bool serverStatus: false}) {
   // Insert a container div within which we will mount the global example menu.
-  var container = document.createElement('div');
+  final container = document.createElement('div');
   container.id = 'global-example-menu';
   document.body.insertBefore(container, document.body.firstChild);
 
   // Use react to render the menu.
-  var menu =
+  final menu =
       globalExampleMenuComponent({'nav': nav, 'serverStatus': serverStatus});
   react.render(menu, container);
 }
 
 Future<bool> _ping(Uri uri) async {
   try {
-    Response response = await Http.get(uri);
-    return response.status == 200;
+    await Http.get(uri);
+    return true;
   } on RequestException {
     return false;
   }
@@ -63,12 +61,12 @@ class GlobalExampleMenuComponent extends react.Component {
   @override
   void componentWillMount() {
     if (this.props['serverStatus']) {
-      _pingServer().then((bool status) {
+      _pingServer().then((status) {
         this.setState({'serverOnline': status});
       });
       serverPolling =
           new Timer.periodic(new Duration(seconds: 4), (Timer timer) async {
-        bool status = await _pingServer();
+        final status = await _pingServer();
         this.setState({'serverOnline': status});
       });
     }
@@ -99,19 +97,19 @@ class GlobalExampleMenuComponent extends react.Component {
 
   @override
   dynamic render() {
-    var nav;
+    dynamic nav;
     if (this.props['nav']) {
       nav = react.a({'href': '/'}, '\u2190 All Examples');
     }
 
-    var serverStatus;
+    dynamic serverStatus;
     if (this.props['serverStatus']) {
       serverStatus =
           _buildServerStatusComponent('Server', this.state['serverOnline']);
     }
 
-    var serverTip;
-    bool serverTipNeeded =
+    dynamic serverTip;
+    final serverTipNeeded =
         this.props['serverStatus'] && !this.state['serverOnline'];
     if (serverTipNeeded) {
       serverTip = react.div({

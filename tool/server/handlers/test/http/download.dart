@@ -24,9 +24,9 @@ class DownloadHandler extends Handler {
     enableCors();
   }
 
-  Future download(HttpRequest request) async {
-    File file = new File('tool/server/handlers/test/http/file.txt');
-    var downloadStream = file.openRead();
+  Future<Null> download(HttpRequest request) async {
+    final file = new File('tool/server/handlers/test/http/file.txt');
+    final downloadStream = file.openRead();
     request.response.statusCode = HttpStatus.OK;
     request.response.headers
         .set('content-length', file.lengthSync().toString());
@@ -36,29 +36,29 @@ class DownloadHandler extends Handler {
   }
 
   @override
-  Future copy(HttpRequest request) async => download(request);
+  Future<Null> copy(HttpRequest request) async => download(request);
 
   @override
-  Future delete(HttpRequest request) async => download(request);
+  Future<Null> delete(HttpRequest request) async => download(request);
 
   @override
-  Future get(HttpRequest request) async => download(request);
+  Future<Null> get(HttpRequest request) async => download(request);
 
   @override
-  Future head(HttpRequest request) async => download(request);
+  Future<Null> head(HttpRequest request) async => download(request);
 
   @override
-  Future options(HttpRequest request) async => download(request);
+  Future<Null> options(HttpRequest request) async => download(request);
 
   @override
-  Future patch(HttpRequest request) async => download(request);
+  Future<Null> patch(HttpRequest request) async => download(request);
 
   @override
-  Future post(HttpRequest request) async => download(request);
+  Future<Null> post(HttpRequest request) async => download(request);
 
   @override
-  Future put(HttpRequest request) async => download(request);
+  Future<Null> put(HttpRequest request) async => download(request);
 
   @override
-  Future trace(HttpRequest request) async => download(request);
+  Future<Null> trace(HttpRequest request) async => download(request);
 }

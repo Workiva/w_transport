@@ -25,7 +25,7 @@ class Backoff {
         min(autoRetry.backOff.maxInterval.inMilliseconds, backOffInMs);
 
     if (autoRetry.backOff.withJitter == true) {
-      Random random = new Random();
+      final random = new Random();
       backOffInMs = random.nextInt(backOffInMs);
     }
     return new Duration(milliseconds: backOffInMs);
@@ -35,7 +35,7 @@ class Backoff {
     Duration backOff;
 
     if (autoRetry.backOff.withJitter == true) {
-      Random random = new Random();
+      final random = new Random();
       backOff = new Duration(
           milliseconds: autoRetry.backOff.interval.inMilliseconds ~/ 2 +
               random

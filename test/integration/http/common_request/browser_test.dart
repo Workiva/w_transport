@@ -22,7 +22,7 @@ import '../../../naming.dart';
 import 'suite.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformBrowser
     ..testType = testTypeIntegration
     ..topic = topicHttp;
@@ -36,7 +36,7 @@ void main() {
 
     group('autoRetry browser', () {
       test('null response default behavior', () async {
-        BaseRequest request = new Request()
+        final request = new Request()
           ..headers.addAll({'x-custom': 'causes-CORS-request'})
           ..uri = IntegrationPaths.errorEndpointUri;
         request.autoRetry
@@ -50,7 +50,7 @@ void main() {
       });
 
       test('null response should be retried', () async {
-        BaseRequest request = new Request()
+        final request = new Request()
           ..headers.addAll({'x-custom': 'causes-CORS-request'})
           ..uri = IntegrationPaths.errorEndpointUri;
         request.autoRetry

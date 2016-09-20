@@ -186,7 +186,7 @@ class Http {
 
   static Request _createRequest(Uri uri,
       {String body, Map<String, String> headers, bool withCredentials}) {
-    var request = new Request()..uri = uri;
+    final request = new Request()..uri = uri;
     if (body != null) {
       request.body = body;
     }

@@ -16,8 +16,10 @@ import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
 
 void mockEchoEndpoint(Uri uri) {
-  MockTransports.http.when(uri, (FinalizedRequest request) async {
-    var headers = {'content-type': request.headers['content-type']};
+  MockTransports.http.when(uri, (request) async {
+    final headers = <String, String>{
+      'content-type': request.headers['content-type']
+    };
     if (request.body is HttpBody) {
       HttpBody body = request.body;
       return new MockResponse.ok(body: body.asString(), headers: headers);

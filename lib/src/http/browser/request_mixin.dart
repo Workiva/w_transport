@@ -29,9 +29,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
 
   @override
   void abortRequest() {
-    if (_request != null) {
-      _request.abort();
-    }
+    _request?.abort();
   }
 
   @override
@@ -120,9 +118,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
   }
 
   Future<BaseResponse> _createResponse({bool streamResponse: false}) async {
-    if (streamResponse == null) {
-      streamResponse = false;
-    }
+    streamResponse ??= false;
 
     BaseResponse response;
     if (streamResponse) {
@@ -134,8 +130,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
       });
       // ignore: unawaited_futures
       reader.onError.first.then(result.completeError);
-      reader.readAsArrayBuffer(
-          _request.response != null ? _request.response : new Blob([]));
+      reader.readAsArrayBuffer(_request.response ?? new Blob([]));
       final bytes = await result.future;
       final byteStream = new Stream.fromIterable([bytes]);
       response = new StreamedResponse.fromByteStream(_request.status,

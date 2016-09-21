@@ -66,7 +66,7 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
         debug: debug == true,
         noCredentials: noCredentials == true,
         protocolsWhitelist: protocolsWhitelist,
-        timeout: timeout != null ? timeout.inMilliseconds : null);
+        timeout: timeout?.inMilliseconds);
 
     // Listen for and store the close event. This will determine whether or
     // not the socket connected successfully, and will also be used later

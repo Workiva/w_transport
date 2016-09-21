@@ -71,9 +71,7 @@ abstract class CommonStreamedRequest extends CommonRequest
       }
     }
 
-    if (this.body == null) {
-      this.body = new Stream.fromIterable([]);
-    }
+    this.body ??= new Stream.fromIterable([]);
     return new StreamedHttpBody.fromByteStream(contentType, this.body,
         contentLength: contentLength);
   }

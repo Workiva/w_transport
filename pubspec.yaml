@@ -19,7 +19,7 @@ authors:
   - Trent Grover <trent.grover@workiva.com>
 
 environment:
-  sdk: ">=1.9.0 <2.0.0"
+  sdk: ">=1.14.0 <2.0.0"
 
 dependencies:
   fluri: ^1.1.0

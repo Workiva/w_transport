@@ -17,7 +17,6 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart' show RequestProgress;
 
 import 'package:w_transport/src/http/browser/utils.dart'
     show transformProgressEvents;

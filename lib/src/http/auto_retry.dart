@@ -185,7 +185,7 @@ class RetryBackOff {
       {bool withJitter: true, Duration maxInterval})
       : method = RetryBackOffMethod.exponential,
         withJitter = withJitter,
-        maxInterval = maxInterval != null ? maxInterval : defaultMaxInterval;
+        maxInterval = maxInterval ?? defaultMaxInterval;
 
   /// Construct a new fixed back-off representation where [interval] is the
   /// delay between each retry.

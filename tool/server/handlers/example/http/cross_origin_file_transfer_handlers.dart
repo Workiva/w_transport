@@ -131,10 +131,9 @@ class UploadHandler extends Handler {
     await for (HttpMultipartFormData formData in stream) {
       switch (formData.contentDisposition.parameters['name']) {
         case 'file':
-          String filename = formData.contentDisposition.parameters['filename'];
-          if (filename == null) {
-            filename = new DateTime.now().toString();
-          }
+          String filename =
+              formData.contentDisposition.parameters['filename'] ??
+                  new DateTime.now().toString();
 
           if (formData.isText) {
             final contents = await _readFileUploadAsString(formData);

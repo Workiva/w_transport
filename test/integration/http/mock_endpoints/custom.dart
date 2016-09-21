@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
 
 void mockCustomEndpoint(Uri uri) {

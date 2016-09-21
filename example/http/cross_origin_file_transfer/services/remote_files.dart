@@ -96,9 +96,7 @@ class RemoteFiles {
 
   /// Cancel polling.
   void _endPolling() {
-    if (_pollingTimer != null) {
-      _pollingTimer.cancel();
-    }
+    _pollingTimer?.cancel();
   }
 }
 

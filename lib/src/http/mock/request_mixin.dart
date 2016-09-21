@@ -84,9 +84,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
 
   @override
   void complete({BaseResponse response}) {
-    if (response == null) {
-      response = new MockResponse.ok();
-    }
+    response ??= new MockResponse.ok();
     // Defer the "fetching" of the response until the request has been sent.
     onSent.then((_) async {
       // Coerce the response to the correct format (streamed or not).

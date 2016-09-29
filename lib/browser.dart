@@ -41,9 +41,9 @@ import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/global_transport_platform.dart';
 
 export 'package:w_transport/src/browser_transport_platform.dart'
-    show browserTransportPlatform;
+    show BrowserTransportPlatform, browserTransportPlatform;
 export 'package:w_transport/src/browser_transport_platform_with_sockjs.dart'
-    show browserTransportPlatformWithSockJS;
+    show BrowserTransportPlatformWithSockJS, browserTransportPlatformWithSockJS;
 
 /// Configures w_transport for use in the browser via dart:html.
 void configureWTransportForBrowser(

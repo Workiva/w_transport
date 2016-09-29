@@ -26,6 +26,9 @@ library w_transport.vm;
 import 'package:w_transport/src/global_transport_platform.dart';
 import 'package:w_transport/src/vm_transport_platform.dart';
 
+export 'package:w_transport/src/vm_transport_platform.dart'
+    show VMTransportPlatform, vmTransportPlatform;
+
 /// Configure w_transport for use on the server via dart:io.
 void configureWTransportForVM() {
   globalTransportPlatform = vmTransportPlatform;

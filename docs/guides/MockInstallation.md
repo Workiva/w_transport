@@ -1,28 +1,55 @@
+## Testing/Mocks: Installing/Uninstalling the Transport Mocks
 
-## Testing & Mocks
-
-Just like the browser or the Dart VM, tests are considered a platform for which
-this library can be configured. By configuring `w_transport` for tests, mock
-implementations of all classes will be used.
+All of the transport classes in this library are designed to be mockable. There
+is a `MockTransports` API that enables mocking of HTTP requests and WebSockets
+without any changes to the source code.
 
 ```dart
-import 'package:w_transport/mock.dart';
-
-main() {
-  configureWTransportForTest();
-}
+import 'package:w_transport/mock.dart' show MockTransports;
 ```
 
-That's it. No changes to your source code are necessary! Once configured for
-test, you are in control of every HTTP request and every WebSocket connection.
-The APIs for controlling these transports are exported with the `mock.dart`
-entry point as static APIs on a `MockTransports` class.
+### Installation
 
-> **Resetting Mocks:**
->
-> At any point, you can reset all mock expectations and handlers, giving you a
-> clean state to begin a new mock setup:
->
-> ```dart
-> MockTransports.reset();
-> ```
+These transport mocks can then be installed at any time.
+
+```dart
+MockTransports.install();
+```
+
+Once installed, any transport class that is constructed will be wrapped in a
+mock-aware class. This is completely transparent and has no immediate effect.
+
+When the transport mocks are installed, it is up to you to define how requests
+and WebSockets are handled. In other words, you play the role of the server so
+that a real one isn't necessary.
+
+To do this, you can set up **expectations** and/or **handlers**. Expectations
+are one-time only, while handlers continue to serve requests/WebSockets until
+canceled.
+
+Check out the HTTP and WebSocket guides for expectations and handlers.
+
+### Uninstallation
+
+The transport mocks should always be uninstalled in order to ensure that you
+return to a clean state. Additionally, we recommend utilizing
+`MockTransports.verifyNoOutstandingExceptions` to ensure that there are no
+unresolved requests or unsatisfied expectations.
+
+A good pattern to follow in tests looks like this:
+
+```dart
+import 'package:test/test.dart';
+import 'package:w_transport/mock.dart';
+
+void main() {
+  setUp(() {
+    MockTransports.install();
+  });
+  
+  tearDown(() {
+    MockTransports.verifyNoOutstandingExceptions();
+    MockTransports.uninstall();
+  });
+}
+```

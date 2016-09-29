@@ -4,12 +4,18 @@
 [![codecov.io](http://codecov.io/github/Workiva/w_transport/coverage.svg?branch=master)](http://codecov.io/github/Workiva/w_transport?branch=master)
 [![documentation](https://img.shields.io/badge/Documentation-w__transport-blue.svg)](https://www.dartdocs.org/documentation/w_transport/latest/)
 
-// TODO: rewrite
-> Platform-agnostic transport library for sending and receiving data over HTTP
-> and WebSocket. HTTP support includes plain-text, JSON, form-data, and
-> multipart data, as well as custom encoding. WebSocket support includes native
-> WebSockets in the browser and the VM with the option to use SockJS in the
-> browser.
+> Transport library for sending HTTP requests and opening WebSockets.
+>
+> HTTP support includes plain-text, JSON, form-data, and multipart data, as well
+> as custom encoding. Also supports automatic retrying and request & response
+> interception.
+>
+> WebSocket support includes native WebSockets in the browser and the VM with
+> the option to use SockJS in the browser.
+>
+> All transport classes are platform-independent and can be configured to work
+> in the browser or on the Dart VM. Additionally, all transport classes can be
+> mocked out and controlled through an API included with this library.
 
 ### Docs & Help
 
@@ -25,21 +31,21 @@
 
 
 ### Installing
-As of version 3.0.0, w_transport will be following a [versioning and
-stability](#versioning-and-stability) commitment that guarantees a
-compatibility lifespan of two major versions.
+As of version 3.0.0, w_transport will be following a
+[versioning and stability](#versioning-and-stability) commitment that guarantees
+a compatibility lifespan of two major versions.
 
-If you're installing w_transport for the first time, simply depend on
-the latest major version and you'll get all patches and minor versions
-as they are released:
+If you're installing w_transport for the first time, simply depend on the latest
+major version and you'll get all patches and minor versions as they are
+released:
 
 ```yaml
 dependencies:
   w_transport: ^3.0.0
 ```
 
-If you're upgrading from version 2.x, use this range (and check out
-the 3.0.0 [upgrade guide](/docs/upgrade-guides/v3.0.0.md)):
+If you're upgrading from version 2.x, use this range (and check out the 3.0.0
+[upgrade guide](/docs/upgrade-guides/v3.0.0.md)):
 
 ```yaml
 dependencies:
@@ -49,37 +55,49 @@ dependencies:
 
 ### Importing
 
-The main entry point contains all of the transport classes necessary for
-sending HTTP requests and establishing WebSocket connections. It is also
-platform-independent (depends on neither `dart:html` nor `dart:io`),
-which means you can use it to build components, libraries, or APIs that
-will be reusable in the browser **and** on the Dart VM.
+The main entry point contains all of the transport classes necessary for sending
+HTTP requests and establishing WebSocket connections. It is also
+platform-independent (depends on neither `dart:html` nor `dart:io`), which means
+you can use it to build components, libraries, or APIs that will be reusable in
+the browser **and** on the Dart VM.
 
 ```dart
-import 'package:w_transport/w_transport.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 ```
 
-The end consumer will make the decision between browser and VM, most
-likely in a `main()` block.
+> We strongly recommend importing with the prefix `transport` because there are
+> some classes whose names conflict with classes from the Dart SDK.
+
+The end consumer will make the decision between browser and VM, most likely in a
+`main()` block.
 
 
 ### Dart SDK
 
-As of version 3.0.0 of the `w_transport` package, the minimum required
-Dart SDK version is 1.14.0 (released Jan 28, 2016).
+As of version 3.0.0 of the `w_transport` package, the minimum required Dart SDK
+version is 1.14.0 (released Jan 28, 2016).
 
 
 ### Versioning and Stability
 
-// TODO: short summary, link to React Versioning Scheme
+This library follows semver to the best of our interpretation of it. We want
+this library to be a stable dependency that’s easy to keep current. A good
+explanation of the versioning scheme that we intend to follow can be seen here
+from React.js:
+
+https://facebook.github.io/react/blog/2016/02/19/new-versioning-scheme.html
+
+In short: our goal is for every major release to be backwards compatible with
+the previous major version, giving consumers a lifespan of two major versions to
+deal with deprecations.
 
 
 ### Credits
 
 This library was influenced in many ways by
-[the `http` package](https://github.com/dart-lang/http), especially with
-regard to multipart requests, and served as a useful source for
-references to pertinent IETF RFCs.
+[the `http` package](https://github.com/dart-lang/http), especially with regard
+to multipart requests, and served as a useful source for references to pertinent
+IETF RFCs.
 
 
 ### Development
@@ -89,5 +107,5 @@ for most of its tooling needs, including static analysis, code
 formatting, running tests, collecting coverage, and serving examples.
 Check out the dart_dev readme for more information.
 
-> **Note:** to run integration tests, you'll need two JS dependencies
-> for a SockJS server. Run `npm install` to download them.
+> **To run integration tests, you'll need two JS dependencies for a SockJS
+> server. Run `npm install` to download them.**

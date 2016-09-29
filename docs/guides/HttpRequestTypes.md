@@ -1,25 +1,31 @@
-### Request Types
-Now that we've established the API common across all of our `Request` classes,
-let's dive into the different types of requests that are supported.
+## HTTP: Request Types
 
-* `Request`
-* `JsonRequest`
-* `FormRequest`
-* `MultipartRequest`
+The [basic guide to sending requests](/docs/guides/HttpSendRequestReceiveResponseHandleFailure.md)
+introduced the API common to all request classes. Each class, however, is
+designed to transport a specific type of data.
+
+- [`transport.Request`](#transport-request-plain-text)
+- [`transport.JsonRequest`](#transport-jsonrequest)
+- [`transport.FormRequest`](#transport-formrequest)
+- [`transport.MultipartRequest`](#transport-multipartrequest)
 
 
-#### `Request` (plain-text)
-A `Request` sets the content-type to `text/plain` and accepts either a `String`
-or a list of bytes (`List<int>`) as the body.
+---
+
+
+#### `transport.Request` (plain-text)
+
+A `transport.Request` sets the content-type to `text/plain` and accepts either a
+`String` or a list of bytes (`List<int>`) as the body.
 
 ```dart
 // Request body as string
-Request request = new Request()
+var request = new transport.Request()
   ..uri = Uri.parse('/notes/')
   ..body = 'My notes.';
 
 // Request body as bytes
-Request request = new Request()
+var request = new transport.Request()
   ..uri = Uri.parse('/notes/')
   ..bodyBytes = UTF8.encode('My notes.');
 ```
@@ -30,9 +36,10 @@ need to translate back and forth between bytes and text just to fit the API.
 > Be sure to set `encoding` if using something other than the default UTF8.
 
 
-#### `JsonRequest`
-A `JsonRequest` sets the content-type to `application/json` and accepts
-JSON-encodable `Map`s or `List`s for the request body.
+#### `transport.JsonRequest`
+
+A `transport.JsonRequest` sets the content-type to `application/json` and
+accepts JSON-encodable `Map`s or `List`s for the request body.
 
 ```dart
 var note = {
@@ -40,26 +47,27 @@ var note = {
   'contents': '...',
   'date': new DateTime.now().toString()
 };
-JsonRequest request = new JsonRequest()
+var request = new transport.JsonRequest()
   ..uri = Uri.parse('/notes/')
   ..body = note;
 await request.post();
 ```
 
-Prior to sending a `JsonRequest`, the request body will be encoded to an
-appropriate format (text or bytes, depending on the platform).
+Prior to sending a `transport.JsonRequest`, the request body will be encoded to
+an appropriate format (text or bytes, depending on the platform).
 
 
-#### `FormRequest`
-A `FormRequest` sets the content-type to `application/x-www-form-urlencoded` and
-accepts a `Map<String, String>` for the request body where each key-value pair
-represents a form field's name and value.
+#### `transport.FormRequest`
 
-By default, a `FormRequest`'s body is an empty `Map`, allowing you to
+A `transport.FormRequest` sets the content-type to
+`application/x-www-form-urlencoded` and accepts a `Map<String, String>` for the
+request body where each key-value pair represents a form field's name and value.
+
+By default, a `transport.FormRequest`'s body is an empty `Map`, allowing you to
 incrementally set each field.
 
 ```dart
-FormRequest request = new FormRequest()
+var request = new transport.FormRequest()
   ..uri = Uri.parse('/notes/')
   ..fields['title'] = 'My Note'
   ..fields['contents'] = '...'
@@ -68,17 +76,17 @@ await request.post();
 ```
 
 
-#### `MultipartRequest`
-A `MultipartRequest` sets the content-type to `multipart/form-data` and accepts
-both fields and files for the request body. The `MultipartRequest` class takes
-care of generating a unique boundary string used to separate each part of the
-request body.
+#### `transport.MultipartRequest`
+A `transport.MultipartRequest` sets the content-type to `multipart/form-data`
+and accepts both fields and files for the request body. The
+`transport.MultipartRequest` class takes care of generating a unique boundary
+string used to separate each part of the request body.
 
 The fields are key-value pairs representing a form field's name and value, just
-like the `FormRequest`:
+like the `transport.FormRequest`:
 
 ```dart
-MultipartRequest request = new MultipartRequest()
+var request = new transport.MultipartRequest()
   ..uri = Uri.parse('/notes/')
   ..fields['title'] = 'My Note'
   ..fields['date'] = new DateTime.now().toString();
@@ -91,22 +99,22 @@ object. The actual file object can be several different types.
 > the APIs for file I/O in the browser are so restricted that they cannot easily
 > be abstracted.
 
-This library includes a `MultipartFile` class as an option for a
+This library includes a `transport.MultipartFile` class as an option for a
 platform-independent file abstraction, but it requires that you have access to
 a byte stream to construct an instance.
 
 The `files` map accepts the following types:
 
-- `MultipartFile` (any platform)
+- `transport.MultipartFile` (any platform)
 - `dart:html.File` (browser)
 - `dart:html.Blob` (browser)
 
 ```dart
-Stream<List<int>> byteStream;
-int length;
-MultipartFile file = new MultipartFile(byteStream, length);
+Stream<List<int>> byteStream = ...;
+int length = ...;
+var file = new transport.MultipartFile(byteStream, length);
 
-MultipartRequest request = new MultipartRequest()
+var request = new transport.MultipartRequest()
   ..uri = Uri.parse('/notes/')
   ..fields['title'] = 'My Note'
   ..files['attachment'] = file;

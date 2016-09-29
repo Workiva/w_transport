@@ -3,8 +3,50 @@
 ## [3.0.0](https://github.com/Workvia/w_transport/compare/2.9.2...3.0.0)
 _TBD_
 
-### Breaking Changes
-- Minimum Dart SDK version bumped to 1.14.0
+This major release includes deprecations and an increased minimum Dart SDK
+version. **This release should be backwards compatible with version 2.x.**
+
+To upgrade, check out the [v3.0.0 upgrade guide](/docs/upgrade-guides/v3.0.0.md).
+
+### Features
+
+- There is a new pattern for configuring `w_transport` for a particular
+  platform. Check out the [Transport Platform Configuration guide](/docs/TransportPlatformConfiguration.md).
+  
+- There is a new way to install the transport mocks (instead of
+  `configureWTransportForTest()`). Check out the
+  [Mock Transports Installation guide](/docs/guides/MockInstallation.md).
+
+### Changes/Deprecations
+
+- Renamed entry points:
+  - `w_transport_browser.dart` --> `browser.dart`
+  - `w_transport_mock.dart` --> `mock.dart`
+  - `w_transport_vm.dart` --> `vm.dart`
+
+- Other renames:
+  - `Client` --> `HttpClient`
+  - `WSocket` --> `WebSocket`
+  - `WSocketException` --> `WebSocketException`
+  - `RetryBackOff.duration` --> `RetryBackOff.interval`
+
+- Other deprecations:
+  - `WSocketCloseEvent`
+  - `MockBaseRequest`
+  - `MockClient`
+  - `MockFormRequest`
+  - `MockJsonRequest`
+  - `MockPlainTextRequest`
+  - `MockResponse`
+  - `MockStreamedRequest`
+  - `MockStreamedResponse`
+  - `MockWSocket`
+
+### Documentation
+
+- The `w_transport` documentation has been revamped with an emphasis on examples
+  and guides. [Check them out now!](/docs/README.md)
+
 
 ## [2.8.0](https://github.com/Workvia/w_transport/compare/2.7.1...2.8.0)
 _TBD_

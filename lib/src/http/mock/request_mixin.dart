@@ -24,7 +24,8 @@ import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
-import 'package:w_transport/src/mocks/http.dart' show MockHttpInternal;
+import 'package:w_transport/src/mocks/mock_transports.dart'
+    show MockHttpInternal;
 
 abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   Completer<Null> _canceled = new Completer<Null>();

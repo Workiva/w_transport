@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/http/mock/http_client.dart';
 import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/transport_platform.dart';
@@ -20,6 +21,7 @@ import 'package:w_transport/src/transport_platform.dart';
 /// mock implementations of each request. Since the mock request implementations
 /// don't ever actually send an HTTP request, this client doesn't need to do
 /// anything else.
+@Deprecated(v3Deprecation)
 class MockClient extends MockHttpClient implements HttpClient {
   MockClient(TransportPlatform transport) : super(transport);
 }

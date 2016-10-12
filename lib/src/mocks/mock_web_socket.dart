@@ -12,25 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
+part of w_transport.src.mocks.mock_transports;
 
-import 'package:w_transport/src/web_socket/mock/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/web_socket_exception.dart';
+typedef Future<dynamic /*WSocket|MockWebSocketServer*/ > WebSocketConnectHandler(
+    Uri uri,
+    {Map<String, dynamic> headers,
+    Iterable<String> protocols});
+typedef Future<dynamic /*WSocket|MockWebSocketServer*/ > WebSocketPatternConnectHandler(
+    Uri uri,
+    {Map<String, dynamic> headers,
+    Match match,
+    Iterable<String> protocols});
 
-typedef Future<WSocket> WSocketConnectHandler(Uri uri,
-    {Iterable<String> protocols, Map<String, dynamic> headers});
-typedef Future<WSocket> WSocketPatternConnectHandler(Uri uri,
-    {Iterable<String> protocols, Map<String, dynamic> headers, Match match});
+class MockWebSockets {
+  const MockWebSockets();
 
-class MockWebSocket {
-  const MockWebSocket();
-
-  void expect(Uri uri, {MockWSocket connectTo, bool reject}) {
+  void expect(Uri uri,
+      {dynamic /*MockWSocket|MockWebSocketServer*/ connectTo, bool reject}) {
     MockWebSocketInternal._expect(uri, connectTo: connectTo, reject: reject);
   }
 
-  void expectPattern(Pattern uriPattern, {MockWSocket connectTo, bool reject}) {
+  void expectPattern(Pattern uriPattern,
+      {dynamic /*MockWSocket|MockWebSocketServer*/ connectTo, bool reject}) {
     MockWebSocketInternal._expect(uriPattern,
         connectTo: connectTo, reject: reject);
   }
@@ -42,7 +45,7 @@ class MockWebSocket {
   }
 
   MockWebSocketHandler when(Uri uri,
-      {WSocketConnectHandler handler, bool reject}) {
+      {WebSocketConnectHandler handler, bool reject}) {
     MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
     if (reject != null && reject) {
       handler = (uri, {protocols, headers}) {
@@ -60,7 +63,7 @@ class MockWebSocket {
   }
 
   MockWebSocketHandler whenPattern(Pattern uriPattern,
-      {WSocketPatternConnectHandler handler, bool reject}) {
+      {WebSocketPatternConnectHandler handler, bool reject}) {
     MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
     if (reject == true) {
       handler = (uri, {protocols, headers, match}) {
@@ -89,11 +92,11 @@ class MockWebSocketHandler {
 
 class MockWebSocketInternal {
   static List<_WebSocketConnectExpectation> _expectations = [];
-  static Map<String, WSocketConnectHandler> _handlers = {};
-  static Map<Pattern, WSocketPatternConnectHandler> _patternHandlers = {};
+  static Map<String, WebSocketConnectHandler> _handlers = {};
+  static Map<Pattern, WebSocketPatternConnectHandler> _patternHandlers = {};
 
   static Future<WSocket> handleWebSocketConnection(Uri uri,
-      {Iterable<String> protocols, Map<String, dynamic> headers}) async {
+      {Map<String, dynamic> headers, Iterable<String> protocols}) async {
     final matchingExpectations = _getMatchingExpectations(uri);
     if (matchingExpectations.isNotEmpty) {
       // If this connection was expected, resolve it as planned.
@@ -102,19 +105,57 @@ class MockWebSocketInternal {
       if (expectation.reject != null && expectation.reject) {
         throw new WebSocketException('Mock connection to $uri rejected.');
       }
-      return expectation.connectTo;
+
+      // For backwards compatibility, it is still allowed to pass in a `WSocket`
+      // instance for the `connectTo` param. If that happens, return it here and
+      // it should function as expected.
+      if (expectation.connectTo is WSocket) return expectation.connectTo;
+
+      // The new behavior is to pass in a `MockWebSocketServer` for the
+      // `connectTo` param. When this is done, we have to create a mock
+      // `WebSocket` instance, return it, and notify the mock server that this
+      // new client has connected.
+      final mockWebSocket = new MockWSocket();
+      MockWebSocketServer mockWebSocketServer = expectation.connectTo;
+      mockWebSocketServer._connectClient(mockWebSocket, uri,
+          headers: headers, protocols: protocols);
+      return mockWebSocket;
     }
 
     final handlerMatch = _getMatchingHandler(uri);
     if (handlerMatch != null) {
       // If a handler was set up for this type of connection, call the handler.
-      if (handlerMatch.handler is WSocketPatternConnectHandler) {
-        return handlerMatch.handler(uri,
-            protocols: protocols, headers: headers, match: handlerMatch.match);
+      dynamic result;
+      if (handlerMatch.handler is WebSocketPatternConnectHandler) {
+        result = handlerMatch.handler(uri,
+            headers: headers, match: handlerMatch.match, protocols: protocols);
       } else {
-        return handlerMatch.handler(uri,
-            protocols: protocols, headers: headers);
+        result =
+            handlerMatch.handler(uri, headers: headers, protocols: protocols);
       }
+
+      if (result is Future) {
+        result = await result;
+      }
+      if (result is! WSocket && result is! MockWebSocketServer) {
+        throw new ArgumentError('Mock WebSocket handlers must return an '
+            'instance of MockWSocket or MockWebSocketServer.');
+      }
+
+      // For backwards compatibility, it is still allowed to return a `WSocket`
+      // instance from the handler. If that happens, return it here and it
+      // should function as expected.
+      if (result is WSocket) return result;
+
+      // The new behavior is to return a `MockWebSocketServer` from the handler.
+      // When this is done, we have to create a mock `WebSocket` instance,
+      // return it, and notify the mock server that this new client has
+      // connected.
+      final mockWebSocket = new MockWSocket();
+      MockWebSocketServer mockWebSocketServer = result;
+      mockWebSocketServer._connectClient(mockWebSocket, uri,
+          headers: headers, protocols: protocols);
+      return mockWebSocket;
     }
 
     throw new StateError('Unexpected WSocket connection: $uri');
@@ -126,12 +167,19 @@ class MockWebSocketInternal {
     return false;
   }
 
-  static void _expect(Object uri, {MockWSocket connectTo, bool reject}) {
+  static void _expect(Object uri,
+      {dynamic /*MockWSocket|MockWebSocketServer*/ connectTo, bool reject}) {
     if (connectTo != null && reject != null) {
       throw new ArgumentError('Use connectTo OR reject, but not both.');
     }
     if (connectTo == null && reject == null) {
       throw new ArgumentError('Either connectTo OR reject must be set.');
+    }
+    if (connectTo != null &&
+        connectTo is! MockWSocket &&
+        connectTo is! MockWebSocketServer) {
+      throw new ArgumentError(
+          'connectTo must be an MockWSocket instance or a MockWebSocketServer instance.');
     }
     _expectations.add(new _WebSocketConnectExpectation(uri,
         connectTo: connectTo, reject: reject));
@@ -183,7 +231,7 @@ class MockWebSocketInternal {
 }
 
 class _WebSocketConnectExpectation {
-  WSocket connectTo;
+  dynamic /*MockWSocket|MockWebSocketServer*/ connectTo;
   bool reject;
   final Object uri;
 

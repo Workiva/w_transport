@@ -14,7 +14,8 @@
 
 import 'dart:async';
 
-import 'package:w_transport/src/mocks/web_socket.dart'
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
+import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockWebSocketInternal;
 import 'package:w_transport/src/web_socket/common/web_socket.dart';
 import 'package:w_transport/src/web_socket/mock/w_socket.dart';
@@ -24,12 +25,13 @@ abstract class MockWebSocket implements WebSocket {
   factory MockWebSocket() => new _MockWebSocket();
 
   static Future<WebSocket> connect(Uri uri,
-          {Iterable<String> protocols, Map<String, dynamic> headers}) =>
+          {Map<String, dynamic> headers, Iterable<String> protocols}) =>
       MockWebSocketInternal.handleWebSocketConnection(uri,
-          protocols: protocols, headers: headers);
+          headers: headers, protocols: protocols);
 
   /// Simulate an incoming message that the owner of this [WSocket] instance
   /// will receive if listening.
+  @Deprecated(v3Deprecation)
   void addIncoming(dynamic data);
 
   /// Register a callback that will be called for every outgoing data event that
@@ -37,10 +39,12 @@ abstract class MockWebSocket implements WebSocket {
   ///
   /// [data] will either be the single data item or the stream, depending on
   /// whether `add()` or `addStream()` was called.
+  @Deprecated(v3Deprecation)
   void onOutgoing(callback(dynamic data));
 
   /// Cause the "server" to close, effectively severing the connection between
   /// the server and client.
+  @Deprecated(v3Deprecation)
   void triggerServerClose([int code, String reason]);
 
   /// Cause the "server" to add an error to the stream.

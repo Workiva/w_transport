@@ -12,14 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+library w_transport.src.mocks.mock_transports;
+
 import 'dart:async';
 
-import 'package:w_transport/src/mocks/http.dart';
-import 'package:w_transport/src/mocks/web_socket.dart';
+import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
+
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
+import 'package:w_transport/src/http/base_request.dart' show BaseRequest;
+import 'package:w_transport/src/http/finalized_request.dart'
+    show FinalizedRequest;
+import 'package:w_transport/src/http/mock/base_request.dart'
+    show MockBaseRequest;
+import 'package:w_transport/src/http/mock/response.dart' show MockResponse;
+import 'package:w_transport/src/http/response.dart' show BaseResponse;
+import 'package:w_transport/src/web_socket/mock/w_socket.dart' show MockWSocket;
+import 'package:w_transport/src/web_socket/w_socket.dart' show WSocket;
+import 'package:w_transport/src/web_socket/web_socket_exception.dart'
+    show WebSocketException;
+
+part 'package:w_transport/src/mocks/mock_http.dart';
+part 'package:w_transport/src/mocks/mock_web_socket.dart';
+part 'package:w_transport/src/mocks/mock_web_socket_server.dart';
 
 class MockTransports {
   static const MockHttp http = const MockHttp();
-  static const MockWebSocket webSocket = const MockWebSocket();
+  static const MockWebSockets webSocket = const MockWebSockets();
 
   /// Install mocking logic & controls for all transports. This will effectively
   /// wrap all [BaseRequest], [HttpClient], and [WebSocket] instances in a

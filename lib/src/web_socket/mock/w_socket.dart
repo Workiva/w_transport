@@ -14,16 +14,18 @@
 
 import 'dart:async';
 
-import 'package:w_transport/src/mocks/web_socket.dart'
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
+import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockWebSocketInternal;
 import 'package:w_transport/src/web_socket/mock/web_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 
+@Deprecated(v3Deprecation)
 abstract class MockWSocket extends MockWebSocket implements WebSocket {
   factory MockWSocket() => new MockWebSocket();
 
   static Future<WebSocket> connect(Uri uri,
-          {Iterable<String> protocols, Map<String, dynamic> headers}) =>
+          {Map<String, dynamic> headers, Iterable<String> protocols}) =>
       MockWebSocketInternal.handleWebSocketConnection(uri,
-          protocols: protocols, headers: headers);
+          headers: headers, protocols: protocols);
 }

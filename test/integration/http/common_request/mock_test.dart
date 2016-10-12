@@ -35,7 +35,7 @@ void main() {
     setUp(() {
       configureWTransportForTest();
       mock404Endpoint(IntegrationPaths.fourOhFourEndpointUri);
-      mockCustomEndpoint(IntegrationPaths.customEndpointUri);
+      mockCustomEndpoint(IntegrationPaths.customEndpointUriPattern);
       mockDownloadEndpoint(IntegrationPaths.downloadEndpointUri);
       mockReflectEndpoint(IntegrationPaths.reflectEndpointUri);
       mockTimeoutEndpoint(IntegrationPaths.timeoutEndpointUri);

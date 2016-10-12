@@ -34,11 +34,11 @@ class VMWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   static Future<WebSocket> connect(Uri uri,
-      {Iterable<String> protocols, Map<String, dynamic> headers}) async {
+      {Map<String, dynamic> headers, Iterable<String> protocols}) async {
     io.WebSocket webSocket;
     try {
       webSocket = await io.WebSocket
-          .connect(uri.toString(), protocols: protocols, headers: headers);
+          .connect(uri.toString(), headers: headers, protocols: protocols);
     } on io.SocketException catch (e) {
       throw new WebSocketException(e.toString());
     }

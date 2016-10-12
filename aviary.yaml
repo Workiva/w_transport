@@ -1,0 +1,22 @@
+version: 1
+
+exclude:
+  - tests?/
+
+raven_monitored_classes: null
+
+raven_monitored_files: null
+
+raven_monitored_functions: null
+
+raven_monitored_keywords:
+  withCredentials:
+    comments: false
+    languages:
+      - dart
+    not_file:
+      - test(s)?/
+      - example/
+      - tool/
+    reason: Secure requests with credentials
+

@@ -12,6 +12,8 @@ class MockWebSocketConnection {
       : headers = new Map.unmodifiable(headers ?? {}),
         protocols = new List.unmodifiable(protocols ?? []);
 
+  Future<Null> get done => _connectedClient.done;
+
   Future<Null> close([int code, String reason]) {
     return _connectedClient.close(code, reason);
   }

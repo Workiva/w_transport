@@ -424,5 +424,21 @@ void main() {
         });
       });
     });
+
+    group('MockWebSocketServer', () {
+      test('should expose `done` for connected clients', () async {
+        final c = new Completer<Null>();
+        final mockWebSocketServer = new MockWebSocketServer();
+        mockWebSocketServer.onClientConnected.listen((connection) {
+          connection.done.then((_) => c.complete());
+        });
+
+        MockTransports.webSocket
+            .expect(webSocketUri, connectTo: mockWebSocketServer);
+        final webSocket = await WSocket.connect(webSocketUri);
+        await webSocket.close();
+        await c.future;
+      });
+    });
   });
 }

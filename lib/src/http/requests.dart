@@ -15,9 +15,12 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:w_transport/src/global_transport_platform.dart';
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/multipart_file.dart';
-import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/mocks/transport.dart'
+    show MockTransportsInternal;
+import 'package:w_transport/src/transport_platform.dart';
 
 /// Representation of an HTTP request where the request body is a form that will
 /// be encoded as a url query string.
@@ -25,7 +28,26 @@ import 'package:w_transport/src/platform_adapter.dart';
 /// This request will be sent with content-type:
 /// application/x-www-form-urlencoded
 abstract class FormRequest extends BaseRequest {
-  factory FormRequest() => PlatformAdapter.retrieve().newFormRequest();
+  factory FormRequest({TransportPlatform transportPlatform}) {
+    // If a transport platform is not explicitly given, fallback to the globally
+    // configured platform.
+    transportPlatform ??= globalTransportPlatform;
+
+    if (MockTransportsInternal.isInstalled) {
+      // If transports are mocked, return a mock-aware FormRequest instance.
+      // This mock-aware instance will be able to decide at the time of dispatch
+      // whether or not the mock logic should handle the request.
+      return MockAwareTransportPlatform.newFormRequest(transportPlatform);
+    } else if (transportPlatform != null) {
+      // Otherwise, return a real instance using the given transport platform.
+      return transportPlatform.newFormRequest();
+    } else {
+      // If transports are not mocked and a transport platform is not available
+      // (neither explicitly given nor configured globally), then we cannot
+      // successfully construct a FormRequest.
+      throw new TransportPlatformMissing.httpRequestFailed('FormRequest');
+    }
+  }
 
   /// Gets this request's body as a `Map` where each key-value pair is a form
   /// field's name and value.
@@ -69,7 +91,26 @@ abstract class FormRequest extends BaseRequest {
 ///
 /// This request will be sent with content-type: application/json
 abstract class JsonRequest extends BaseRequest {
-  factory JsonRequest() => PlatformAdapter.retrieve().newJsonRequest();
+  factory JsonRequest({TransportPlatform transportPlatform}) {
+    // If a transport platform is not explicitly given, fallback to the globally
+    // configured platform.
+    transportPlatform ??= globalTransportPlatform;
+
+    if (MockTransportsInternal.isInstalled) {
+      // If transports are mocked, return a mock-aware JsonRequest instance.
+      // This mock-aware instance will be able to decide at the time of dispatch
+      // whether or not the mock logic should handle the request.
+      return MockAwareTransportPlatform.newJsonRequest(transportPlatform);
+    } else if (transportPlatform != null) {
+      // Otherwise, return a real instance using the given transport platform.
+      return transportPlatform.newJsonRequest();
+    } else {
+      // If transports are not mocked and a transport platform is not available
+      // (neither explicitly given nor configured globally), then we cannot
+      // successfully construct a JsonRequest.
+      throw new TransportPlatformMissing.httpRequestFailed('JsonRequest');
+    }
+  }
 
   /// Gets this request's body as a JSON `Map` or `List`.
   ///
@@ -127,8 +168,26 @@ abstract class MultipartRequest extends BaseRequest {
   ///       ..files['file1'] = file;
   Map<String, dynamic> files;
 
-  factory MultipartRequest() =>
-      PlatformAdapter.retrieve().newMultipartRequest();
+  factory MultipartRequest({TransportPlatform transportPlatform}) {
+    // If a transport platform is not explicitly given, fallback to the globally
+    // configured platform.
+    transportPlatform ??= globalTransportPlatform;
+
+    if (MockTransportsInternal.isInstalled) {
+      // If transports are mocked, return a mock-aware MultipartRequest instance.
+      // This mock-aware instance will be able to decide at the time of dispatch
+      // whether or not the mock logic should handle the request.
+      return MockAwareTransportPlatform.newMultipartRequest(transportPlatform);
+    } else if (transportPlatform != null) {
+      // Otherwise, return a real instance using the given transport platform.
+      return transportPlatform.newMultipartRequest();
+    } else {
+      // If transports are not mocked and a transport platform is not available
+      // (neither explicitly given nor configured globally), then we cannot
+      // successfully construct a MultipartRequest.
+      throw new TransportPlatformMissing.httpRequestFailed('MultipartRequest');
+    }
+  }
 
   /// Returns an clone of this request.
   @override
@@ -139,7 +198,26 @@ abstract class MultipartRequest extends BaseRequest {
 ///
 /// This request will be sent with content-type: text/plain
 abstract class Request extends BaseRequest {
-  factory Request() => PlatformAdapter.retrieve().newRequest();
+  factory Request({TransportPlatform transportPlatform}) {
+    // If a transport platform is not explicitly given, fallback to the globally
+    // configured platform.
+    transportPlatform ??= globalTransportPlatform;
+
+    if (MockTransportsInternal.isInstalled) {
+      // If transports are mocked, return a mock-aware Request instance.
+      // This mock-aware instance will be able to decide at the time of dispatch
+      // whether or not the mock logic should handle the request.
+      return MockAwareTransportPlatform.newRequest(transportPlatform);
+    } else if (transportPlatform != null) {
+      // Otherwise, return a real instance using the given transport platform.
+      return transportPlatform.newRequest();
+    } else {
+      // If transports are not mocked and a transport platform is not available
+      // (neither explicitly given nor configured globally), then we cannot
+      // successfully construct a Request.
+      throw new TransportPlatformMissing.httpRequestFailed('Request');
+    }
+  }
 
   /// Gets this request's body.
   String get body;
@@ -169,7 +247,26 @@ abstract class Request extends BaseRequest {
 /// Representation of an HTTP request where the request body is sent
 /// asynchronously as a stream. The [content-type] should be set manually.
 abstract class StreamedRequest extends BaseRequest {
-  factory StreamedRequest() => PlatformAdapter.retrieve().newStreamedRequest();
+  factory StreamedRequest({TransportPlatform transportPlatform}) {
+    // If a transport platform is not explicitly given, fallback to the globally
+    // configured platform.
+    transportPlatform ??= globalTransportPlatform;
+
+    if (MockTransportsInternal.isInstalled) {
+      // If transports are mocked, return a mock-aware StreamedRequest instance.
+      // This mock-aware instance will be able to decide at the time of dispatch
+      // whether or not the mock logic should handle the request.
+      return MockAwareTransportPlatform.newStreamedRequest(transportPlatform);
+    } else if (transportPlatform != null) {
+      // Otherwise, return a real instance using the given transport platform.
+      return transportPlatform.newStreamedRequest();
+    } else {
+      // If transports are not mocked and a transport platform is not available
+      // (neither explicitly given nor configured globally), then we cannot
+      // successfully construct a StreamedRequest.
+      throw new TransportPlatformMissing.httpRequestFailed('StreamedRequest');
+    }
+  }
 
   /// Get the byte stream that will be sent as this request's body.
   Stream<List<int>> get body;

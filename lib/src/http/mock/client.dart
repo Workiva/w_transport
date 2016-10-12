@@ -14,9 +14,12 @@
 
 import 'package:w_transport/src/http/mock/http_client.dart';
 import 'package:w_transport/src/http/http_client.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 /// A mock implementation of an HTTP client. Factory methods simply return the
 /// mock implementations of each request. Since the mock request implementations
 /// don't ever actually send an HTTP request, this client doesn't need to do
 /// anything else.
-class MockClient extends MockHttpClient implements HttpClient {}
+class MockClient extends MockHttpClient implements HttpClient {
+  MockClient(TransportPlatform transport) : super(transport);
+}

@@ -31,8 +31,8 @@ void main() {
     group('Http static methods', () {
       Uri requestUri = Uri.parse('https://mock.com/resource?limit=10');
 
-      setUp(() {
-        MockTransports.reset();
+      setUp(() async {
+        await MockTransports.reset();
         configureWTransportForTest();
       });
 

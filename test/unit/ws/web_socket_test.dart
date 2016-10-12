@@ -41,9 +41,9 @@ void main() {
 void _runWebSocketSuite(Future<WSocket> getWebSocket(Uri uri)) {
   final webSocketUri = Uri.parse('ws://mock.com/ws');
 
-  setUp(() {
+  setUp(() async {
     configureWTransportForTest();
-    MockTransports.reset();
+    await MockTransports.reset();
   });
 
   test('message events should be discarded prior to a subscription', () async {

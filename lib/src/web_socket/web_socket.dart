@@ -22,7 +22,7 @@ import 'dart:async';
 
 import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/global_transport_platform.dart';
-import 'package:w_transport/src/mocks/transport.dart'
+import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 import 'package:w_transport/src/transport_platform.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';

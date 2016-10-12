@@ -20,6 +20,7 @@ import 'package:w_transport/mock.dart';
 import 'package:w_transport/src/http/mock/http_client.dart';
 import 'package:w_transport/src/http/mock/requests.dart';
 import 'package:w_transport/src/web_socket/mock/w_socket.dart';
+import 'package:w_transport/src/web_socket/mock/web_socket.dart';
 
 import '../../naming.dart';
 
@@ -62,7 +63,27 @@ void main() {
       expect(new StreamedRequest(), new isInstanceOf<MockStreamedRequest>());
     });
 
-    test('newWSocket()', () async {
+    test('newWebSocket() (using MockWebSocketServer)', () async {
+      final wsUri = Uri.parse('ws://test/ws');
+      MockTransports.webSocket
+          .expect(wsUri, connectTo: new MockWebSocketServer());
+      expect(await WebSocket.connect(wsUri), new isInstanceOf<MockWebSocket>());
+    });
+
+    test('newWebSocket() (using MockWSocket)', () async {
+      final wsUri = Uri.parse('ws://test/ws');
+      MockTransports.webSocket.expect(wsUri, connectTo: new MockWebSocket());
+      expect(await WebSocket.connect(wsUri), new isInstanceOf<MockWebSocket>());
+    });
+
+    test('newWSocket() (using MockWebSocketServer)', () async {
+      final wsUri = Uri.parse('ws://test/ws');
+      MockTransports.webSocket
+          .expect(wsUri, connectTo: new MockWebSocketServer());
+      expect(await WSocket.connect(wsUri), new isInstanceOf<MockWSocket>());
+    });
+
+    test('newWSocket() (using MockWSocket)', () async {
       final wsUri = Uri.parse('ws://test/ws');
       MockTransports.webSocket.expect(wsUri, connectTo: new MockWSocket());
       expect(await WSocket.connect(wsUri), new isInstanceOf<MockWSocket>());

@@ -19,6 +19,8 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
 
+import 'package:w_transport/src/mocks/mock_transports.dart'
+    show MockWebSocketInternal;
 import 'package:w_transport/src/web_socket/mock/web_socket.dart';
 
 import '../../naming.dart';
@@ -29,18 +31,21 @@ void main() {
     ..topic = topicMocks;
 
   group(naming.toString(), () {
+    final webSocketUri = Uri.parse('/mock/ws');
+
+    setUp(() {
+      configureWTransportForTest();
+    });
+
+    tearDown(() async {
+      await MockTransports.reset();
+    });
+
     test('MockWebSocket extends MockWSocket', () {
       expect(new MockWebSocket(), new isInstanceOf<MockWSocket>());
     });
 
     group('TransportMocks.webSocket', () {
-      final webSocketUri = Uri.parse('/mock/ws');
-
-      setUp(() async {
-        configureWTransportForTest();
-        await MockTransports.reset();
-      });
-
       group('expect()', () {
         test('expected web socket connection completes automatically',
             () async {
@@ -74,6 +79,13 @@ void main() {
             MockTransports.webSocket.expect(webSocketUri);
           }, throwsArgumentError);
         });
+
+        test('requires that connectTo is a MockWSocket or MockWebSocketServer',
+            () {
+          expect(() {
+            MockTransports.webSocket.expect(webSocketUri, connectTo: 'invalid');
+          }, throwsArgumentError);
+        });
       });
 
       group('expectPattern()', () {
@@ -105,17 +117,25 @@ void main() {
             MockTransports.webSocket.expectPattern(webSocketUri.toString());
           }, throwsArgumentError);
         });
+
+        test('requires that connectTo is a MockWSocket or MockWebSocketServer',
+            () {
+          expect(() {
+            MockTransports.webSocket
+                .expectPattern(webSocketUri.toString(), connectTo: 'invalid');
+          }, throwsArgumentError);
+        });
       });
 
       test('reset() should clear all expectations and handlers', () async {
         Future<WSocket> handler(Uri uri,
-                {Iterable<String> protocols,
-                Map<String, dynamic> headers}) async =>
+                {Map<String, dynamic> headers,
+                Iterable<String> protocols}) async =>
             new MockWSocket();
         Future<WSocket> patternHandler(Uri uri,
-                {Iterable<String> protocols,
-                Map<String, dynamic> headers,
-                Match match}) async =>
+                {Map<String, dynamic> headers,
+                Match match,
+                Iterable<String> protocols}) async =>
             new MockWSocket();
         MockTransports.webSocket.when(webSocketUri, handler: handler);
         MockTransports.webSocket
@@ -136,8 +156,8 @@ void main() {
             () async {
           final webSocket = new MockWSocket();
           Future<WSocket> handler(Uri uri,
-                  {Iterable<String> protocols,
-                  Map<String, dynamic> headers}) async =>
+                  {Map<String, dynamic> headers,
+                  Iterable<String> protocols}) async =>
               webSocket;
           MockTransports.webSocket.when(webSocketUri, handler: handler);
 
@@ -180,6 +200,17 @@ void main() {
           expect(() {
             MockTransports.webSocket.when(webSocketUri);
           }, throwsArgumentError);
+        });
+
+        test(
+            'requires that the handler returns MockWSocket or MockWebSocketServer',
+            () {
+          MockTransports.webSocket.when(webSocketUri,
+              handler: (Uri uri,
+                      {Map<String, dynamic> headers,
+                      Iterable<String> protocols}) async =>
+                  'invalid');
+          expect(MockWSocket.connect(webSocketUri), throwsArgumentError);
         });
 
         test('registers a handler that can be canceled', () async {
@@ -226,9 +257,9 @@ void main() {
             () async {
           final webSocket = new MockWSocket();
           Future<WSocket> handler(Uri uri,
-                  {Iterable<String> protocols,
-                  Map<String, dynamic> headers,
-                  Match match}) async =>
+                  {Map<String, dynamic> headers,
+                  Match match,
+                  Iterable<String> protocols}) async =>
               webSocket;
           MockTransports.webSocket
               .whenPattern(webSocketUri.toString(), handler: handler);
@@ -277,14 +308,26 @@ void main() {
         });
 
         test(
+            'requires that the handler returns MockWSocket or MockWebSocketServer',
+            () {
+          MockTransports.webSocket.whenPattern(webSocketUri.toString(),
+              handler: (Uri uri,
+                      {Map<String, dynamic> headers,
+                      Match match,
+                      Iterable<String> protocols}) async =>
+                  'invalid');
+          expect(WSocket.connect(webSocketUri), throwsArgumentError);
+        });
+
+        test(
             'registers a handler with a pattern that catches any connection with a matching URI',
             () async {
           final uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
           final webSocket = new MockWSocket();
           Future<WSocket> handler(Uri uri,
-                  {Iterable<String> protocols,
-                  Map<String, dynamic> headers,
-                  Match match}) async =>
+                  {Map<String, dynamic> headers,
+                  Match match,
+                  Iterable<String> protocols}) async =>
               webSocket;
           MockTransports.webSocket.whenPattern(uriPattern, handler: handler);
 
@@ -304,9 +347,9 @@ void main() {
           final uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
           Match uriMatch;
           Future<WSocket> handler(Uri uri,
-              {Iterable<String> protocols,
-              Map<String, dynamic> headers,
-              Match match}) async {
+              {Map<String, dynamic> headers,
+              Match match,
+              Iterable<String> protocols}) async {
             uriMatch = match;
             return new MockWSocket();
           }
@@ -355,6 +398,29 @@ void main() {
           }, returnsNormally);
 
           expect(WSocket.connect(webSocketUri), throwsStateError);
+        });
+      });
+    });
+
+    group('MockWebSocketInternal', () {
+      group('hasHandlerForWebSocket()', () {
+        test('returns true if there is a matching expectation', () {
+          MockTransports.webSocket
+              .expect(webSocketUri, connectTo: new MockWebSocketServer());
+          expect(MockWebSocketInternal.hasHandlerForWebSocket(webSocketUri),
+              isTrue);
+        });
+
+        test('returns true if there is a matching handler', () {
+          MockTransports.webSocket.when(webSocketUri, reject: true);
+          expect(MockWebSocketInternal.hasHandlerForWebSocket(webSocketUri),
+              isTrue);
+        });
+
+        test('returns false if there are no matching expectations nor handlers',
+            () {
+          expect(MockWebSocketInternal.hasHandlerForWebSocket(webSocketUri),
+              isFalse);
         });
       });
     });

@@ -12,15 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
-
-import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
-import 'package:w_transport/w_transport.dart';
-
-import 'package:w_transport/src/http/finalized_request.dart';
-import 'package:w_transport/src/http/mock/base_request.dart';
-import 'package:w_transport/src/http/mock/response.dart';
-import 'package:w_transport/src/http/response.dart';
+part of w_transport.src.mocks.mock_transports;
 
 typedef Future<BaseResponse> RequestHandler(FinalizedRequest request);
 typedef Future<BaseResponse> PatternRequestHandler(
@@ -37,6 +29,7 @@ class MockHttp {
     mockRequest.causeFailureOnOpen();
   }
 
+  @Deprecated(v3Deprecation)
   void completeRequest(BaseRequest request, {BaseResponse response}) {
     MockHttpInternal._verifyRequestIsMock(request);
     final MockBaseRequest mockRequest = request;
@@ -60,6 +53,7 @@ class MockHttp {
         failWith: failWith, headers: headers, respondWith: respondWith);
   }
 
+  @Deprecated(v3Deprecation)
   void failRequest(BaseRequest request, {Object error, BaseResponse response}) {
     MockHttpInternal._verifyRequestIsMock(request);
     final MockBaseRequest mockRequest = request;
@@ -94,23 +88,17 @@ class MockHttp {
   }
 
   MockHttpHandler when(Uri uri, RequestHandler handler, {String method}) {
-    // Note: there's really no reason to use `_getUriKey()` here - it strips the
-    // fragment and query from the uri, but neither of those pieces of info are
-    // used anywhere else. The consumer should just be expected to pass in an
-    // exact match here. At the next breaking release, this method and related
-    // ones should be cleaned up & clarified.
-    final uriKey = MockHttpInternal._getUriKey(uri);
-    if (!MockHttpInternal._requestHandlers.containsKey(uriKey)) {
-      MockHttpInternal._requestHandlers[uriKey] = {};
+    if (!MockHttpInternal._requestHandlers.containsKey(uri)) {
+      MockHttpInternal._requestHandlers[uri] = {};
     }
     final methodKey = method == null ? '*' : method.toUpperCase();
-    MockHttpInternal._requestHandlers[uriKey][methodKey] = handler;
+    MockHttpInternal._requestHandlers[uri][methodKey] = handler;
     return new MockHttpHandler._(() {
-      final handlers = MockHttpInternal._requestHandlers[uriKey];
+      final handlers = MockHttpInternal._requestHandlers[uri];
       if (handlers != null &&
           handlers[methodKey] != null &&
           handlers[methodKey] == handler) {
-        MockHttpInternal._requestHandlers[uriKey].remove(methodKey);
+        MockHttpInternal._requestHandlers[uri].remove(methodKey);
       }
     });
   }
@@ -144,8 +132,9 @@ class MockHttpHandler {
 
 class MockHttpInternal {
   static List<_RequestExpectation> _expectations = [];
-  static Map<String, Map<String, RequestHandler>> _requestHandlers = {};
-  static Map<Pattern, Map<String, PatternRequestHandler>>
+  static Map<Uri, Map<String /* method */, RequestHandler>> _requestHandlers =
+      {};
+  static Map<Pattern, Map<String /* method */, PatternRequestHandler>>
       _patternRequestHandlers = {};
   static List<MockBaseRequest> _pending = [];
 
@@ -253,7 +242,7 @@ class MockHttpInternal {
 
   static _RequestHandlerMatch _getMatchingHandler(String method, Uri uri) {
     final matchingRequestHandlerKey = _requestHandlers.keys.firstWhere((key) {
-      return key == _getUriKey(uri);
+      return key == uri;
     }, orElse: () => null);
 
     Match match;
@@ -290,10 +279,6 @@ class MockHttpInternal {
     return new _RequestHandlerMatch(handler,
         match: handler is PatternRequestHandler ? match : null);
   }
-
-  // TODO: remove in 3.0.0
-  static String _getUriKey(Uri uri) =>
-      uri.replace(query: '', fragment: '').toString();
 
   static void _verifyRequestIsMock(BaseRequest request) {
     if (request is! MockBaseRequest) {

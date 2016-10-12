@@ -48,5 +48,5 @@ class VMTransportPlatform implements TransportPlatform {
           @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist,
           @Deprecated(v3Deprecation) Duration sockJSTimeout,
           @Deprecated(v3Deprecation) bool useSockJS}) =>
-      VMWebSocket.connect(uri, protocols: protocols, headers: headers);
+      VMWebSocket.connect(uri, headers: headers, protocols: protocols);
 }

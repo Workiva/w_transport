@@ -20,6 +20,8 @@ class IntegrationPaths {
 
   static final Uri customEndpointUri =
       hostUri.replace(path: '/test/http/custom');
+  static final Pattern customEndpointUriPattern = new RegExp(
+      customEndpointUri.toString().replaceAll('/', '\/') + r'(\?.*)');
   static final Uri downloadEndpointUri =
       hostUri.replace(path: '/test/http/download');
   static final Uri echoEndpointUri = hostUri.replace(path: '/test/http/echo');

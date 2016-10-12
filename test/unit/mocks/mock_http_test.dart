@@ -17,6 +17,10 @@ import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
 
+import 'package:w_transport/src/http/mock/http_client.dart';
+import 'package:w_transport/src/mocks/mock_transports.dart'
+    show MockHttpInternal;
+
 import '../../naming.dart';
 import '../../utils.dart' show nextTick;
 
@@ -26,14 +30,21 @@ void main() {
     ..topic = topicMocks;
 
   group(naming.toString(), () {
+    final requestUri = Uri.parse('/mock/test');
+
+    setUp(() {
+      configureWTransportForTest();
+    });
+
+    tearDown(() async {
+      await MockTransports.reset();
+    });
+
+    test('MockClient extends MockHttpClient', () {
+      expect(new MockClient(null), new isInstanceOf<MockHttpClient>());
+    });
+
     group('TransportMocks.http', () {
-      final requestUri = Uri.parse('/mock/test');
-
-      setUp(() async {
-        configureWTransportForTest();
-        await MockTransports.reset();
-      });
-
       test('causeFailureOnOpen() should cause request to throw', () async {
         final request = new Request();
         MockTransports.http.causeFailureOnOpen(request);
@@ -477,6 +488,30 @@ void main() {
           Http.get(requestUri);
           await nextTick();
           expect(MockTransports.http.numPendingRequests, equals(1));
+        });
+      });
+    });
+
+    group('MockHttpInternal', () {
+      group('hasHandlerForRequest()', () {
+        test('returns true if there is a matching expectation', () {
+          MockTransports.http.expect('GET', requestUri);
+          expect(MockHttpInternal.hasHandlerForRequest('GET', requestUri, {}),
+              isTrue);
+        });
+
+        test('returns true if there is a matching handler', () {
+          MockTransports.http.when(requestUri,
+              (FinalizedRequest request) async => new MockResponse.ok(),
+              method: 'GET');
+          expect(MockHttpInternal.hasHandlerForRequest('GET', requestUri, {}),
+              isTrue);
+        });
+
+        test('returns false if there are no matching expectations nor handlers',
+            () {
+          expect(MockHttpInternal.hasHandlerForRequest('GET', requestUri, {}),
+              isFalse);
         });
       });
     });

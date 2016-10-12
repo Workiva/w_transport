@@ -5,9 +5,11 @@ until the transport mocks are reset/uninstalled.
 
 ### Registering a handler to match requests by URI
 
+> The expected URI must match exactly, including scheme, host, path, and query.
+
 ```dart
 MockTransports.http.when(
-    Uri.parse('/resource'),
+    Uri.parse('https://example.org/resource'),
     (FinalizedRequest request) async {
       if (request.method == 'GET') {
         return new MockResponse.ok(body: '...');
@@ -23,7 +25,7 @@ MockTransports.http.when(
 
 ```dart
 MockTransports.http.when(
-    Uri.parse('/resource'),
+    Uri.parse('https://example.org/resource'),
     (FinalizedRequest request) async => new MockResponse.ok(body: '...'),
     method: 'GET');
 ```
@@ -58,7 +60,3 @@ var mockHandler = MockTransports.http.when(...);
 ...
 mockHandler.cancel();
 ```
-
-### Example Tests
-
-TODO

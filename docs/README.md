@@ -1,6 +1,6 @@
 ## Table of Contents
 
-- [Transport Platform Configuration: Browser/Dart VM](TransportPlatformConfiguration.md)
+- [Transport Platform Configuration: Browser/Dart VM](/docs/guides/TransportPlatformConfiguration.md)
 - Basics
   - HTTP
     - [Sending a request, receiving a response, and handling a failure](/docs/guides/HttpSendRequestReceiveResponseHandleFailure.md)

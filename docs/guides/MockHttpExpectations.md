@@ -8,8 +8,10 @@ first match (if one exists) to use to resolve said request.
 
 By default, an expected request is resolved with a successful 200 OK response.
 
+> The expected URI must match exactly, including scheme, host, path, and query.
+
 ```dart
-var uri = Uri.parse('/example');
+var uri = Uri.parse('https://example.org/resource');
 MockTransports.http.expect('GET', uri);
 var response = await transport.Http.get(uri);
 print(response.status); // 200
@@ -20,7 +22,7 @@ print(response.status); // 200
 Alternatively, you can specify a response to use.
 
 ```dart
-var uri = Uri.parse('/example');
+var uri = Uri.parse('https://example.org/resource');
 var response = new MockResponse.unauthorized(
     body: 'Invalid access token',
     headers: {'x-session': 'ab93s...'});
@@ -44,7 +46,7 @@ be thrown during the transport logic prior to sending a request or after
 receiving a response (e.g. a request/response interceptor throwing).
 
 ```dart
-var uri = Uri.parse('/example');
+var uri = Uri.parse('https://example.org/resource');
 MockTransports.http.expect(
     'GET',
     uri,
@@ -72,7 +74,3 @@ MockTransports.http.expectPattern('GET', uriPattern);
 var response = await transport.Http.get(Uri.parse('http://localhost:8080/example'));
 print(response.status); // 200
 ```
-
-### Example Tests
-
-TODO

@@ -24,22 +24,19 @@ incoming data can be read and data can be sent to the client.
 var mockWebSocketServer = new MockWebSocketServer();
 mockWebSocketServer.onClientConnected.listen((MockWebSocketConnection connection) {
   // Echo any message from the client
-  connection.listen((data) {
-    connection.add(data);
+  connection.onData((data) {
+    connection.send(data);
   });
 });
 ```
 
-When listening to a connected client, you can include an `onDone` handler to
-detect when the client closes the connection.
+There is a `Future done` field available on the connection that allows you to
+listen for when it has closed.
 
 ```dart
 var mockWebSocketServer = new MockWebSocketServer();
 mockWebSocketServer.onClientConnected.listen((MockWebSocketConnection connection) {
-  // Echo any message from the client
-  connection.listen((_) { ... }, onDone: () {
-    // Perform any cleanup if necessary
-  });
+  connection.done.then((_) { ... });
 });
 ```
 
@@ -50,7 +47,7 @@ var mockWebSocketServer = new MockWebSocketServer();
 mockWebSocketServer.onClientConnected.listen((MockWebSocketConnection connection) {
   ...
   
-  connection.close(4000, 'Mock server closed connection.');
+  await connection.close(4000, 'Mock server closed connection.');
 });
 ```
 
@@ -64,5 +61,5 @@ mockWebSocketServer.onClientConnected.listen(
 
 ...
 
-mockWebSocketServer.shutDown();
+await mockWebSocketServer.shutDown();
 ```

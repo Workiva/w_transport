@@ -11,7 +11,7 @@ Exact URI match:
 ```dart
 var mockWebSocketServer = new MockWebSocketServer();
 MockTransports.webSocket.expect(
-    Uri.parse('/ws'),
+    Uri.parse('ws://example.org/ws'),
     connectTo: mockWebSocketServer);
 ```
 
@@ -30,7 +30,3 @@ MockTransports.webSocket.expect(Uri.parse('/ws'), reject: true);
 ```
 
 > This will cause the `WSocket.connect(...)` clause to throw.
-
-### Example Tests
-
-TODO

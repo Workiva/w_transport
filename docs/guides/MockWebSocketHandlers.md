@@ -5,11 +5,13 @@ canceled or until the transport mocks are reset/uninstalled.
 
 ### Registering a handler to match WebSockets by URI
 
+> The expected URI must match exactly, including scheme, host, path, and query.
+
 ```dart
 var mockWebSocketServer = new MockWebSocketServer();
 
 MockTransports.webSocket.when(
-    Uri.parse('/ws'),
+    Uri.parse('ws://example.org/ws'),
     (Uri uri, {Iterable<String> protocols, Map<String, dynamic> headers}) async {
       // Perform any setup necessary.
       // Can even dynamically return a mock WebSocket server based on the given
@@ -50,7 +52,3 @@ var mockHandler = MockTransports.webSocket.when(...);
 ...
 mockHandler.cancel();
 ```
-
-### Example Tests
-
-TODO

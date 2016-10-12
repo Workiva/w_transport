@@ -47,9 +47,12 @@ void main() {
     MockTransports.install();
   });
   
-  tearDown(() {
+  tearDown(() async {
     MockTransports.verifyNoOutstandingExceptions();
-    MockTransports.uninstall();
+    await MockTransports.uninstall();
   });
 }
 ```
+
+> Note that the call to `uninstall()` is async because it may have to cancel
+> in-flight requests or tear down open websocket connections.

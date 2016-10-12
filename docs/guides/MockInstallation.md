@@ -27,7 +27,13 @@ To do this, you can set up **expectations** and/or **handlers**. Expectations
 are one-time only, while handlers continue to serve requests/WebSockets until
 canceled.
 
-Check out the HTTP and WebSocket guides for expectations and handlers.
+Check out the HTTP and WebSocket guides for expectations and handlers:
+
+- [Expecting requests (one-time use)](/docs/guides/MockHttpExpectations.md)
+- [Request handlers (many-time use)](/docs/guides/MockHttpHandlers.md)
+- [Expecting WebSocket connections (one-time use)](/docs/guides/MockWebSocketExpectations.md)
+- [WebSocket connections handlers (many-time use)](/docs/guides/MockWebSocketHandlers.md)
+
 
 ### Uninstallation
 

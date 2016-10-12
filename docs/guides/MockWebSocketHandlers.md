@@ -3,7 +3,7 @@
 Once registered, handlers continue to serve matching WebSocket connections until
 canceled or until the transport mocks are reset/uninstalled.
 
-### Registering a handler to match WebSockets by URI
+### Registering a handler for WebSockets that match a URI exactly
 
 > The expected URI must match exactly, including scheme, host, path, and query.
 
@@ -20,7 +20,7 @@ MockTransports.webSocket.when(
     });
 ```
 
-### Registering a handler to match WebSockets a URI pattern
+### Registering a handler for WebSockets that match a URI pattern
 
 Just like HTTP expectations, there is an alternate way to register handlers that
 allows matching via a `Pattern` for greater flexibility. This is especially

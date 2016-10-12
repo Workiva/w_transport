@@ -8,7 +8,7 @@ most cases the default UTF8 should be sufficient.
 
 The selected encoding is significant for three reasons:
 
-- The HTTP logic in this library may use the selected encoded to encode or
+- The HTTP logic in this library may use the selected encoding to encode or
   decode the request body prior to sending. For example, if you set the request
   body as a `String`, it may be encoded to a `Uint8List` byte list or a
   `ByteBuffer` and then sent in that form.

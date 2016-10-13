@@ -4,18 +4,22 @@
 [![codecov.io](http://codecov.io/github/Workiva/w_transport/coverage.svg?branch=master)](http://codecov.io/github/Workiva/w_transport?branch=master)
 [![documentation](https://img.shields.io/badge/Documentation-w__transport-blue.svg)](https://www.dartdocs.org/documentation/w_transport/latest/)
 
-> Transport library for sending HTTP requests and opening WebSockets.
->
-> HTTP support includes plain-text, JSON, form-data, and multipart data, as well
-> as custom encoding. Also supports automatic retrying and request & response
-> interception.
->
-> WebSocket support includes native WebSockets in the browser and the VM with
-> the option to use SockJS in the browser.
->
-> All transport classes are platform-independent and can be configured to work
-> in the browser or on the Dart VM. Additionally, all transport classes can be
-> mocked out and controlled through an API included with this library.
+---
+
+**Transport library for sending HTTP requests and opening WebSockets.**
+
+HTTP support includes plain-text, JSON, form-data, and multipart data, as well
+as custom encoding. Also supports automatic retrying and request & response
+interception.
+
+WebSocket support includes native WebSockets in the browser and the VM with
+the option to use SockJS in the browser.
+
+All transport classes are platform-independent and can be configured to work
+in the browser or on the Dart VM. Additionally, all transport classes can be
+mocked out and controlled through an API included with this library.
+
+---
 
 ### Docs & Help
 
@@ -44,13 +48,9 @@ dependencies:
   w_transport: ^3.0.0
 ```
 
-If you're upgrading from version 2.x, use this range (and check out the 3.0.0
-[upgrade guide](/docs/upgrade-guides/v3.0.0.md)):
-
-```yaml
-dependencies:
-  w_transport: ">=2.0.0 <4.0.0"
-```
+If you're upgrading from version 2.x, you should be able to use the above
+version range without breaking any existing code. **Check out the [3.0.0
+upgrade guide](/docs/upgrade-guides/v3.0.0.md)**.
 
 
 ### Importing

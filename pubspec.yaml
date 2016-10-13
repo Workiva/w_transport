@@ -1,5 +1,5 @@
 name: w_transport
-version: 2.8.0
+version: 3.0.0-rc.1
 
 description: >
   Transport library for sending HTTP requests and opening WebSockets.

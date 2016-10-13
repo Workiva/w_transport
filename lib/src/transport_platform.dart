@@ -5,7 +5,7 @@ import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/mock/http_client.dart';
 import 'package:w_transport/src/http/mock/requests.dart';
 import 'package:w_transport/src/http/requests.dart';
-import 'package:w_transport/src/mocks/transport.dart'
+import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
@@ -83,7 +83,7 @@ class MockAwareTransportPlatform {
       @Deprecated(v3Deprecation) Duration sockJSTimeout,
       @Deprecated(v3Deprecation) bool useSockJS}) {
     if (MockTransportsInternal.isInstalled) {
-      return MockWSocket.connect(uri, protocols: protocols, headers: headers);
+      return MockWSocket.connect(uri, headers: headers, protocols: protocols);
     } else if (realTransportPlatform != null) {
       return realTransportPlatform.newWebSocket(uri,
           headers: headers, protocols: protocols);

@@ -29,8 +29,9 @@ import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
 import 'package:w_transport/src/http/common/backoff.dart';
-import 'package:w_transport/src/mocks/http.dart' show MockHttpInternal;
-import 'package:w_transport/src/mocks/transport.dart'
+import 'package:w_transport/src/mocks/mock_transports.dart'
+    show MockHttpInternal;
+import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 
 abstract class CommonRequest extends Object

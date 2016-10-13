@@ -18,7 +18,7 @@ import 'dart:typed_data';
 import 'package:w_transport/src/global_transport_platform.dart';
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/multipart_file.dart';
-import 'package:w_transport/src/mocks/transport.dart'
+import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 import 'package:w_transport/src/transport_platform.dart';
 

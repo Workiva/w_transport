@@ -151,7 +151,6 @@ abstract class CommonWSocket extends Stream implements WSocket {
         .listen(onData, onError: onError, cancelOnError: cancelOnError);
     _incomingSubscription = new WSocketSubscription(sub, onDone, onCancel: () {
       _incomingSubscription = null;
-      return done;
     });
     return _incomingSubscription;
   }

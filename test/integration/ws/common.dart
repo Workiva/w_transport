@@ -223,7 +223,7 @@ void runCommonWebSocketIntegrationTests(
     var webSocket = await connect(echoUri);
 
     var subscription = webSocket.listen((_) {});
-    subscription.cancel();
+    await subscription.cancel();
 
     await webSocket.close(4001, 'Closed.');
     expect(webSocket.closeCode, equals(4001));
@@ -244,7 +244,7 @@ void runCommonWebSocketIntegrationTests(
     webSocket.add('one');
     await new Future.delayed(new Duration(milliseconds: 50));
 
-    subscription.cancel();
+    await subscription.cancel();
 
     webSocket.add('two');
     await new Future.delayed(new Duration(milliseconds: 50));
@@ -252,6 +252,18 @@ void runCommonWebSocketIntegrationTests(
 
     await webSocket.close();
     expect(doneEventReceived, isFalse);
+  });
+
+  test('should not close if the only listener is canceled', () async {
+    var webSocket = await connect(echoUri);
+
+    var subscription = webSocket.listen((_) {});
+    await subscription.cancel();
+
+    // Should still be able to add events.
+    webSocket.add('one');
+    expect(webSocket.closeCode, isNull);
+    expect(webSocket.closeReason, isNull);
   });
 
   test('should work as a broadcast stream', () async {
@@ -306,7 +318,7 @@ void runCommonWebSocketIntegrationTests(
     expect(webSocket.closeReason, equals('Closed by server.'));
   });
 
-  test('should ignore close() calls after the first', () async {
+  test('should ignore close() calls after the first call', () async {
     var webSocket = await connect(echoUri);
     await webSocket.close(4001, 'Custom close.');
     await webSocket.close(4002, 'Late close.');

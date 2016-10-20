@@ -16,9 +16,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 
@@ -30,12 +31,17 @@ void main() {
   group(naming.toString(), () {
     group('JsonRequest', () {
       setUp(() {
-        configureWTransportForTest();
+        MockTransports.install();
+      });
+
+      tearDown(() async {
+        MockTransports.verifyNoOutstandingExceptions();
+        await MockTransports.uninstall();
       });
 
       test('setting entire body (Map)', () {
         final json = <String, String>{'field': 'value'};
-        final request = new JsonRequest()..body = json;
+        final request = new transport.JsonRequest()..body = json;
         expect(request.body, equals(json));
       });
 
@@ -43,19 +49,19 @@ void main() {
         final json = <Map<String, String>>[
           {'field': 'value'}
         ];
-        final request = new JsonRequest()..body = json;
+        final request = new transport.JsonRequest()..body = json;
         expect(request.body, equals(json));
       });
 
       test('setting entire body (invalid JSON)', () {
-        final request = new JsonRequest();
+        final request = new transport.JsonRequest();
         expect(() {
           request.body = new Stream.fromIterable([]);
         }, throws);
       });
 
       test('setting fields incrementally', () {
-        final request = new FormRequest()
+        final request = new transport.FormRequest()
           ..fields['field1'] = 'value1'
           ..fields['field2'] = 'value2';
         expect(
@@ -67,12 +73,12 @@ void main() {
 
         final c = new Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          HttpBody body = request.body;
+          transport.HttpBody body = request.body;
           c.complete(body.asString());
           return new MockResponse.ok();
         });
 
-        final request = new JsonRequest();
+        final request = new transport.JsonRequest();
         final json = <String, String>{'field': 'value'};
         await request.post(uri: uri, body: json);
         expect(await c.future, equals(JSON.encode(json)));
@@ -83,12 +89,12 @@ void main() {
 
         final c = new Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          HttpBody body = request.body;
+          transport.HttpBody body = request.body;
           c.complete(body.asString());
           return new MockResponse.ok();
         });
 
-        final request = new JsonRequest();
+        final request = new transport.JsonRequest();
         final json = <Map<String, String>>[
           {'field': 'value'}
         ];
@@ -100,14 +106,14 @@ void main() {
           () async {
         final uri = Uri.parse('/test');
 
-        final request = new JsonRequest();
+        final request = new transport.JsonRequest();
         expect(request.post(uri: uri, body: UTF8), throws);
       });
 
       test('body should be unmodifiable once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        final request = new JsonRequest();
+        final request = new transport.JsonRequest();
         await request.post(uri: uri);
         expect(() {
           request.body = {'too': 'late'};
@@ -115,21 +121,21 @@ void main() {
       });
 
       test('content-length cannot be set manually', () {
-        final request = new Request();
+        final request = new transport.Request();
         expect(() {
           request.contentLength = 10;
         }, throwsUnsupportedError);
       });
 
       test('setting encoding to null should throw', () {
-        final request = new JsonRequest();
+        final request = new transport.JsonRequest();
         expect(() {
           request.encoding = null;
         }, throwsArgumentError);
       });
 
       test('setting encoding should update content-type', () {
-        final request = new JsonRequest();
+        final request = new transport.JsonRequest();
         expect(request.contentType.parameters['charset'], equals(UTF8.name));
 
         request.encoding = LATIN1;
@@ -142,7 +148,7 @@ void main() {
       test(
           'setting encoding should not update content-type if content-type has been set manually',
           () {
-        final request = new JsonRequest();
+        final request = new transport.JsonRequest();
         expect(request.contentType.parameters['charset'], equals(UTF8.name));
 
         // Manually override content-type.
@@ -159,7 +165,7 @@ void main() {
       test('setting content-type should not be allowed once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        final request = new JsonRequest();
+        final request = new transport.JsonRequest();
         await request.get(uri: uri);
         expect(() {
           request.contentType = new MediaType('application', 'x-custom');
@@ -169,7 +175,7 @@ void main() {
       test('setting encoding should not be allowed once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        final request = new JsonRequest();
+        final request = new transport.JsonRequest();
         await request.get(uri: uri);
         expect(() {
           request.encoding = LATIN1;
@@ -179,7 +185,7 @@ void main() {
       test('custom content-type without inferrable encoding', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        final request = new JsonRequest()
+        final request = new transport.JsonRequest()
           ..contentType = new MediaType('application', 'x-custom')
           ..body = {'foo': 'bar'};
         await request.post(uri: uri);
@@ -189,7 +195,7 @@ void main() {
         final body = <Map<String, String>>[
           {'f1': 'v1', 'f2': 'v2'}
         ];
-        final orig = new JsonRequest()..body = body;
+        final orig = new transport.JsonRequest()..body = body;
         final clone = orig.clone();
         expect(clone.body, equals(body));
       });

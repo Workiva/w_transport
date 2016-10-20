@@ -24,6 +24,7 @@ import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/multipart_file.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
+import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonMultipartRequest extends CommonRequest
     implements MultipartRequest {
@@ -60,7 +61,8 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   Map<String, dynamic> _files = {};
 
-  CommonMultipartRequest() : super();
+  CommonMultipartRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   CommonMultipartRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 

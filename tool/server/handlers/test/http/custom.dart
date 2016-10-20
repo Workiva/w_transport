@@ -27,7 +27,7 @@ class CustomHandler extends Handler {
   Future<Null> get(HttpRequest request) async {
     request.response.statusCode =
         request.uri.queryParameters['status'] ?? HttpStatus.OK;
-    request.response.headers.contentType = request.headers.contentType;
+    request.response.headers.contentType = ContentType.TEXT;
     setCorsHeaders(request);
   }
 }

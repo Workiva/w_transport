@@ -26,11 +26,13 @@ import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/multipart_file.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
+import 'package:w_transport/src/transport_platform.dart';
 
 class BrowserMultipartRequest extends CommonRequest
     with BrowserRequestMixin
     implements MultipartRequest {
-  BrowserMultipartRequest() : super();
+  BrowserMultipartRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   BrowserMultipartRequest.fromClient(Client wTransportClient)
       : super.fromClient(wTransportClient, null);
 

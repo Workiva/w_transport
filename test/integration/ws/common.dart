@@ -15,13 +15,16 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart' show WSocket, WSocketException;
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../integration_paths.dart';
 
 void runCommonWebSocketIntegrationTests(
-    {Future<WSocket> connect(Uri uri), int port}) {
-  connect ??= (uri) => WSocket.connect(uri);
+    {Future<transport.WebSocket> connect(Uri uri),
+    int port,
+    transport.TransportPlatform transportPlatform}) {
+  connect ??= (uri) =>
+      transport.WebSocket.connect(uri, transportPlatform: transportPlatform);
   Uri closeUri = IntegrationPaths.closeUri;
   Uri echoUri = IntegrationPaths.echoUri;
   final fourOhFourUri = IntegrationPaths.fourOhFourUri;
@@ -33,8 +36,8 @@ void runCommonWebSocketIntegrationTests(
   }
 
   test('should throw if connection cannot be established', () async {
-    expect(
-        connect(fourOhFourUri), throwsA(new isInstanceOf<WSocketException>()));
+    expect(connect(fourOhFourUri),
+        throwsA(new isInstanceOf<transport.WebSocketException>()));
   });
 
   test('add() should send a message', () async {
@@ -557,7 +560,7 @@ String _closeRequest([int closeCode, String closeReason]) {
 }
 
 class WSHelper {
-  WSocket socket;
+  transport.WebSocket socket;
   Map<int, Completer<Null>> _completers = {};
   List<String> _messages = [];
 

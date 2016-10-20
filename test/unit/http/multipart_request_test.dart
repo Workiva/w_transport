@@ -16,8 +16,8 @@
 import 'dart:convert';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 
@@ -29,16 +29,21 @@ void main() {
   group(naming.toString(), () {
     group('MultipartRequest', () {
       setUp(() {
-        configureWTransportForTest();
+        MockTransports.install();
+      });
+
+      tearDown(() async {
+        MockTransports.verifyNoOutstandingExceptions();
+        await MockTransports.uninstall();
       });
 
       test('content-type cannot be set manually', () {
-        final request = new MultipartRequest();
+        final request = new transport.MultipartRequest();
         expect(() => request.contentType = null, throwsUnsupportedError);
       });
 
       test('content-length cannot be set manually', () {
-        final request = new MultipartRequest();
+        final request = new transport.MultipartRequest();
         expect(() {
           request.contentLength = 10;
         }, throwsUnsupportedError);
@@ -46,17 +51,17 @@ void main() {
 
       test('setting body in request dispatcher is unsupported', () async {
         final uri = Uri.parse('/test');
-        final request = new MultipartRequest();
+        final request = new transport.MultipartRequest();
         expect(request.post(uri: uri, body: 'body'), throwsUnsupportedError);
       });
 
       test('body cannot be empty', () {
-        final request = new MultipartRequest();
+        final request = new transport.MultipartRequest();
         expect(request.post(uri: Uri.parse('/test')), throwsUnsupportedError);
       });
 
       test('body can be set incrementally or all at once', () {
-        final request = new MultipartRequest();
+        final request = new transport.MultipartRequest();
         request.fields = {'field1': 'v1'};
         expect(request.fields, containsPair('field1', 'v1'));
         request.files = {'file1': 'f1'};
@@ -70,7 +75,8 @@ void main() {
       test('body should be unmodifiable once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        final request = new MultipartRequest()..fields['field1'] = 'value1';
+        final request = new transport.MultipartRequest()
+          ..fields['field1'] = 'value1';
         await request.post(uri: uri);
         expect(() {
           request.fields['too'] = 'late';
@@ -87,7 +93,7 @@ void main() {
       });
 
       test('setting encoding should be unsupported', () {
-        final request = new MultipartRequest();
+        final request = new transport.MultipartRequest();
         expect(() {
           request.encoding = UTF8;
         }, throwsUnsupportedError);
@@ -95,13 +101,13 @@ void main() {
 
       test('clone()', () {
         final fields = <String, String>{'f1': 'v1', 'f2': 'v2'};
-        final orig = new MultipartRequest()..fields = fields;
+        final orig = new transport.MultipartRequest()..fields = fields;
         final clone = orig.clone();
         expect(clone.fields, equals(fields));
       });
 
       test('autoRetry with files not supported', () {
-        final request = new MultipartRequest()..files['k'] = 'f';
+        final request = new transport.MultipartRequest()..files['k'] = 'f';
         expect(request.autoRetry.supported, isFalse);
       });
     });

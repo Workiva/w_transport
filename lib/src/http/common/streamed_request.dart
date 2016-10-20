@@ -20,10 +20,12 @@ import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/requests.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonStreamedRequest extends CommonRequest
     implements StreamedRequest {
-  CommonStreamedRequest() : super();
+  CommonStreamedRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   CommonStreamedRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 

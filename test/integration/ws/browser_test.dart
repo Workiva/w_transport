@@ -17,8 +17,8 @@ import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/browser.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 import '../integration_paths.dart';
@@ -31,35 +31,36 @@ void main() {
     ..topic = topicWebSocket;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser();
-    });
-
-    runCommonWebSocketIntegrationTests();
+    runCommonWebSocketIntegrationTests(
+        transportPlatform: browserTransportPlatform);
 
     test('should support Blob', () async {
       final blob = new Blob(['one', 'two']);
-      final socket = await WSocket.connect(IntegrationPaths.echoUri);
+      final socket = await transport.WebSocket.connect(IntegrationPaths.echoUri,
+          transportPlatform: browserTransportPlatform);
       socket.add(blob);
       await socket.close();
     });
 
     test('should support String', () async {
       final data = 'data';
-      final socket = await WSocket.connect(IntegrationPaths.echoUri);
+      final socket = await transport.WebSocket.connect(IntegrationPaths.echoUri,
+          transportPlatform: browserTransportPlatform);
       socket.add(data);
       await socket.close();
     });
 
     test('should support TypedData', () async {
       final data = new Uint16List.fromList([1, 2, 3]);
-      final socket = await WSocket.connect(IntegrationPaths.echoUri);
+      final socket = await transport.WebSocket.connect(IntegrationPaths.echoUri,
+          transportPlatform: browserTransportPlatform);
       socket.add(data);
       await socket.close();
     });
 
     test('should throw when attempting to send invalid data', () async {
-      final socket = await WSocket.connect(IntegrationPaths.pingUri);
+      final socket = await transport.WebSocket.connect(IntegrationPaths.pingUri,
+          transportPlatform: browserTransportPlatform);
       expect(() {
         socket.add(true);
       }, throwsArgumentError);

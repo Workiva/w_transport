@@ -16,8 +16,7 @@ import 'dart:convert';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:test/test.dart';
-
-import 'package:w_transport/src/http/response_format_exception.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 
@@ -32,8 +31,9 @@ void main() {
         final bytes = UTF8.encode('bodyçå®');
         final contentType =
             new MediaType('application', 'json', {'charset': ASCII.name});
-        final exception =
-            new ResponseFormatException(contentType, ASCII, bytes: bytes);
+        final exception = new transport.ResponseFormatException(
+            contentType, ASCII,
+            bytes: bytes);
         expect(exception.toString(), contains('Bytes could not be decoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: ${ASCII.name}'));
@@ -45,8 +45,9 @@ void main() {
         final body = 'bodyçå®';
         final contentType =
             new MediaType('application', 'json', {'charset': ASCII.name});
-        final exception =
-            new ResponseFormatException(contentType, ASCII, body: body);
+        final exception = new transport.ResponseFormatException(
+            contentType, ASCII,
+            body: body);
         expect(exception.toString(), contains('Body could not be encoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: ${ASCII.name}'));
@@ -57,8 +58,9 @@ void main() {
         final body = 'bodyçå®';
         final contentType =
             new MediaType('application', 'json', {'charset': ASCII.name});
-        final exception =
-            new ResponseFormatException(contentType, null, body: body);
+        final exception = new transport.ResponseFormatException(
+            contentType, null,
+            body: body);
         expect(exception.toString(), contains('Body could not be encoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: null'));

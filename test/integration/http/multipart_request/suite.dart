@@ -17,11 +17,11 @@ import 'dart:convert';
 
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runMultipartRequestSuite() {
+void runMultipartRequestSuite([transport.TransportPlatform transportPlatform]) {
   group('MultipartRequest', () {
     test('contentLength should be set automatically', () async {
       final chunks = <List<int>>[
@@ -34,12 +34,13 @@ void runMultipartRequestSuite() {
         size += chunk.length;
       });
       final fileStream = new Stream.fromIterable(chunks);
-      final file = new MultipartFile(fileStream, size);
+      final file = new transport.MultipartFile(fileStream, size);
 
-      final request = new MultipartRequest()
-        ..uri = IntegrationPaths.reflectEndpointUri
-        ..files['file'] = file
-        ..fields['field'] = 'value';
+      final request =
+          new transport.MultipartRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.reflectEndpointUri
+            ..files['file'] = file
+            ..fields['field'] = 'value';
 
       final response =
           await request.post(uri: IntegrationPaths.reflectEndpointUri);
@@ -51,9 +52,10 @@ void runMultipartRequestSuite() {
     });
 
     test('content-type should be set automatically', () async {
-      final request = new MultipartRequest()
-        ..uri = IntegrationPaths.reflectEndpointUri
-        ..fields['field'] = 'value';
+      final request =
+          new transport.MultipartRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.reflectEndpointUri
+            ..fields['field'] = 'value';
       final response = await request.post();
       final contentType = new MediaType.parse(
           response.body.asJson()['headers']['content-type']);
@@ -61,9 +63,10 @@ void runMultipartRequestSuite() {
     });
 
     test('text fields with non-ASCII chars', () async {
-      final request = new MultipartRequest()
-        ..uri = IntegrationPaths.uploadEndpointUri
-        ..fields['field'] = 'ç®å';
+      final request =
+          new transport.MultipartRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.uploadEndpointUri
+            ..fields['field'] = 'ç®å';
       await request.post();
     });
 
@@ -74,7 +77,7 @@ void runMultipartRequestSuite() {
       final utf8Size = utf8Chunks[0].length + utf8Chunks[1].length;
       final utf8ContentType =
           new MediaType('text', 'plain', {'charset': UTF8.name});
-      final utf8File = new MultipartFile(utf8Stream, utf8Size,
+      final utf8File = new transport.MultipartFile(utf8Stream, utf8Size,
           contentType: utf8ContentType, filename: 'utf8-file');
 
       // LATIN1-encoded file.
@@ -86,7 +89,7 @@ void runMultipartRequestSuite() {
       final latin1Size = latin1Chunks[0].length + latin1Chunks[1].length;
       final latin1ContentType =
           new MediaType('text', 'plain', {'charset': LATIN1.name});
-      final latin1File = new MultipartFile(latin1Stream, latin1Size,
+      final latin1File = new transport.MultipartFile(latin1Stream, latin1Size,
           contentType: latin1ContentType, filename: 'latin1-file');
 
       // ASCII-encoded file.
@@ -98,14 +101,15 @@ void runMultipartRequestSuite() {
       final asciiSize = asciiChunks[0].length + asciiChunks[1].length;
       final asciiContentType =
           new MediaType('text', 'plain', {'charset': ASCII.name});
-      final asciiFile = new MultipartFile(asciiStream, asciiSize,
+      final asciiFile = new transport.MultipartFile(asciiStream, asciiSize,
           contentType: asciiContentType, filename: 'ascii-file');
 
-      final request = new MultipartRequest()
-        ..uri = IntegrationPaths.uploadEndpointUri
-        ..files['utf8File'] = utf8File
-        ..files['latin1File'] = latin1File
-        ..files['asciiFile'] = asciiFile;
+      final request =
+          new transport.MultipartRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.uploadEndpointUri
+            ..files['utf8File'] = utf8File
+            ..files['latin1File'] = latin1File
+            ..files['asciiFile'] = asciiFile;
       await request.post();
     });
   });

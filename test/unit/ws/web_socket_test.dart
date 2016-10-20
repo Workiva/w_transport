@@ -16,8 +16,8 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 import '../../utils.dart' show nextTick;
@@ -29,18 +29,18 @@ void main() {
 
   group(naming.toString(), () {
     group('WSocket', () {
-      _runWebSocketSuite((Uri uri) => WSocket.connect(uri));
-      _runLegacyWebSocketSuite((Uri uri) => WSocket.connect(uri));
+      _runWebSocketSuite((Uri uri) => transport.WSocket.connect(uri));
+      _runLegacyWebSocketSuite((Uri uri) => transport.WSocket.connect(uri));
     });
 
     group('WebSocket', () {
-      _runWebSocketSuite((Uri uri) => WebSocket.connect(uri));
-      _runLegacyWebSocketSuite((Uri uri) => WebSocket.connect(uri));
+      _runWebSocketSuite((Uri uri) => transport.WebSocket.connect(uri));
+      _runLegacyWebSocketSuite((Uri uri) => transport.WebSocket.connect(uri));
     });
   });
 }
 
-void _runWebSocketSuite(Future<WSocket> getWebSocket(Uri uri)) {
+void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
   MockWebSocketServer mockServer;
   final webSocketUri = Uri.parse('ws://mock.com/ws');
 
@@ -236,7 +236,7 @@ void _runWebSocketSuite(Future<WSocket> getWebSocket(Uri uri)) {
   });
 }
 
-void _runLegacyWebSocketSuite(Future<WSocket> getWebSocket(Uri uri)) {
+void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
   group('legacy', () {
     final webSocketUri = Uri.parse('ws://mock.com/ws');
 

@@ -18,6 +18,7 @@ import 'package:w_transport/mock.dart';
 
 import '../../../naming.dart';
 import '../../integration_paths.dart';
+import '../mock_endpoints/echo.dart';
 import '../mock_endpoints/reflect.dart';
 import 'suite.dart';
 
@@ -29,14 +30,16 @@ void main() {
 
   group(naming.toString(), () {
     setUp(() {
-      configureWTransportForTest();
+      MockTransports.install();
+      mockEchoEndpoint(IntegrationPaths.echoEndpointUri);
       mockReflectEndpoint(IntegrationPaths.reflectEndpointUri);
     });
 
-    runHttpStaticSuite();
-
-    tearDown(() {
+    tearDown(() async {
       MockTransports.verifyNoOutstandingExceptions();
+      await MockTransports.uninstall();
     });
+
+    runHttpStaticSuite();
   });
 }

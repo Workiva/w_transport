@@ -6,7 +6,7 @@ import 'package:w_transport/src/http/mock/http_client.dart';
 import 'package:w_transport/src/http/mock/requests.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/mocks/mock_transports.dart'
-    show MockTransportsInternal;
+    show MockWebSocketInternal, MockTransportsInternal;
 import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 
@@ -82,9 +82,11 @@ class MockAwareTransportPlatform {
       @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist,
       @Deprecated(v3Deprecation) Duration sockJSTimeout,
       @Deprecated(v3Deprecation) bool useSockJS}) {
-    if (MockTransportsInternal.isInstalled) {
+    if (MockTransportsInternal.isInstalled &&
+        MockWebSocketInternal.hasHandlerForWebSocket(uri)) {
       return MockWSocket.connect(uri, headers: headers, protocols: protocols);
-    } else if (realTransportPlatform != null) {
+    } else if (MockTransportsInternal.fallThrough &&
+        realTransportPlatform != null) {
       return realTransportPlatform.newWebSocket(uri,
           headers: headers, protocols: protocols);
     } else {
@@ -107,8 +109,8 @@ class TransportPlatformMissing extends StateError {
   TransportPlatformMissing.httpClientFailed()
       : super(_buildExceptionMessageForHttpClient());
 
-  TransportPlatformMissing.httpRequestFailed(String type, {Uri uri})
-      : super(_buildExceptionMessageForHttpRequest(type, uri: uri));
+  TransportPlatformMissing.httpRequestFailed(String type)
+      : super(_buildExceptionMessageForHttpRequest(type));
 
   TransportPlatformMissing.webSocketFailed(Uri uri)
       : super(_buildExceptionMessageForWebSocket(uri));
@@ -123,9 +125,8 @@ class TransportPlatformMissing extends StateError {
       '    For all HTTP Clients:\n'
       '      transport.globalTransportPlatform = ...;';
 
-  static String _buildExceptionMessageForHttpRequest(String type, {Uri uri}) =>
-      'w_transport: Cannot send $type - Missing Transport Platform\n'
-      '${uri != null ? '  (uri: $uri)\n\n' : '\n'}'
+  static String _buildExceptionMessageForHttpRequest(String type) =>
+      'w_transport: Cannot send $type - Missing Transport Platform\n\n'
       '$_platformHelp\n\n'
       '  There are three ways to configure the transport platform\n'
       '    For a single request:\n'

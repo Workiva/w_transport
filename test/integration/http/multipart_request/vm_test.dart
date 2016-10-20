@@ -16,8 +16,8 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/vm.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../../naming.dart';
 import '../../integration_paths.dart';
@@ -30,16 +30,13 @@ void main() {
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForVM();
-    });
-
-    runMultipartRequestSuite();
+    runMultipartRequestSuite(vmTransportPlatform);
 
     test('underlying HttpRequest configuration', () async {
-      final request = new MultipartRequest()
-        ..uri = IntegrationPaths.reflectEndpointUri
-        ..fields['field'] = 'value';
+      final request =
+          new transport.MultipartRequest(transportPlatform: vmTransportPlatform)
+            ..uri = IntegrationPaths.reflectEndpointUri
+            ..fields['field'] = 'value';
       request.configure((request) async {
         HttpClientRequest ioRequest = request;
         ioRequest.headers.set('x-configured', 'true');

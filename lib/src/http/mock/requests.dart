@@ -27,7 +27,9 @@ import 'package:w_transport/src/transport_platform.dart';
 class MockFormRequest extends CommonFormRequest with MockRequestMixin {
   TransportPlatform _realTransport;
 
-  MockFormRequest(this._realTransport) : super();
+  MockFormRequest(TransportPlatform realTransport)
+      : _realTransport = realTransport,
+        super(realTransport);
   MockFormRequest.fromClient(Client wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
 
@@ -44,7 +46,9 @@ class MockFormRequest extends CommonFormRequest with MockRequestMixin {
 class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {
   TransportPlatform _realTransport;
 
-  MockJsonRequest(this._realTransport) : super();
+  MockJsonRequest(TransportPlatform realTransport)
+      : _realTransport = realTransport,
+        super(realTransport);
   MockJsonRequest.fromClient(Client wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
 
@@ -62,7 +66,9 @@ class MockMultipartRequest extends CommonMultipartRequest
     with MockRequestMixin {
   TransportPlatform _realTransport;
 
-  MockMultipartRequest(this._realTransport) : super();
+  MockMultipartRequest(TransportPlatform realTransport)
+      : _realTransport = realTransport,
+        super(realTransport);
   MockMultipartRequest.fromClient(Client wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
 
@@ -82,7 +88,9 @@ class MockPlainTextRequest extends CommonPlainTextRequest
     with MockRequestMixin {
   TransportPlatform _realTransport;
 
-  MockPlainTextRequest(this._realTransport) : super();
+  MockPlainTextRequest(TransportPlatform realTransport)
+      : _realTransport = realTransport,
+        super(realTransport);
   MockPlainTextRequest.fromClient(Client wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
 
@@ -99,7 +107,9 @@ class MockPlainTextRequest extends CommonPlainTextRequest
 class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {
   TransportPlatform _realTransport;
 
-  MockStreamedRequest(this._realTransport) : super();
+  MockStreamedRequest(TransportPlatform realTransport)
+      : _realTransport = realTransport,
+        super(realTransport);
   MockStreamedRequest.fromClient(Client wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
 

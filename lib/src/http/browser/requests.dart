@@ -18,32 +18,37 @@ import 'package:w_transport/src/http/common/form_request.dart';
 import 'package:w_transport/src/http/common/json_request.dart';
 import 'package:w_transport/src/http/common/plain_text_request.dart';
 import 'package:w_transport/src/http/common/streamed_request.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 export 'package:w_transport/src/http/browser/multipart_request.dart'
     show BrowserMultipartRequest;
 
 class BrowserFormRequest extends CommonFormRequest with BrowserRequestMixin {
-  BrowserFormRequest() : super();
+  BrowserFormRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   BrowserFormRequest.fromClient(Client wTransportClient)
       : super.fromClient(wTransportClient, null);
 }
 
 class BrowserJsonRequest extends CommonJsonRequest with BrowserRequestMixin {
-  BrowserJsonRequest() : super();
+  BrowserJsonRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   BrowserJsonRequest.fromClient(Client wTransportClient)
       : super.fromClient(wTransportClient, null);
 }
 
 class BrowserPlainTextRequest extends CommonPlainTextRequest
     with BrowserRequestMixin {
-  BrowserPlainTextRequest() : super();
+  BrowserPlainTextRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   BrowserPlainTextRequest.fromClient(Client wTransportClient)
       : super.fromClient(wTransportClient, null);
 }
 
 class BrowserStreamedRequest extends CommonStreamedRequest
     with BrowserRequestMixin {
-  BrowserStreamedRequest() : super();
+  BrowserStreamedRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   BrowserStreamedRequest.fromClient(Client wTransportClient)
       : super.fromClient(wTransportClient, null);
 }

@@ -18,8 +18,8 @@ import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/browser.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 import '../integration_paths.dart';
@@ -49,51 +49,37 @@ void main() {
     ..topic = topicWebSocket;
 
   group(wsNaming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser();
-    });
-
-    sockJSSuite((Uri uri) => WSocket.connect(uri,
+    sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
         useSockJS: true,
         sockJSNoCredentials: true,
-        sockJSProtocolsWhitelist: ['websocket']));
+        sockJSProtocolsWhitelist: ['websocket'],
+        transportPlatform: browserTransportPlatform));
   });
 
   group(xhrNaming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser();
-    });
-
-    sockJSSuite((Uri uri) => WSocket.connect(uri,
+    sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
         useSockJS: true,
         sockJSNoCredentials: true,
-        sockJSProtocolsWhitelist: ['xhr-streaming']));
+        sockJSProtocolsWhitelist: ['xhr-streaming'],
+        transportPlatform: browserTransportPlatform));
   });
 
   group(wsDeprecatedNaming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser(
-          useSockJS: true,
-          sockJSNoCredentials: true,
-          sockJSProtocolsWhitelist: ['websocket']);
-    });
-
-    sockJSSuite((Uri uri) => WSocket.connect(uri));
+    sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
+        transportPlatform: new BrowserTransportPlatformWithSockJS(
+            sockJSNoCredentials: true,
+            sockJSProtocolsWhitelist: ['websocket'])));
   });
 
   group(xhrDeprecatedNaming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser(
-          useSockJS: true,
-          sockJSNoCredentials: true,
-          sockJSProtocolsWhitelist: ['xhr-streaming']);
-    });
-
-    sockJSSuite((Uri uri) => WSocket.connect(uri));
+    sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
+        transportPlatform: new BrowserTransportPlatformWithSockJS(
+            sockJSNoCredentials: true,
+            sockJSProtocolsWhitelist: ['xhr-streaming'])));
   });
 }
 
-void sockJSSuite(Future<WSocket> connect(Uri uri)) {
+void sockJSSuite(Future<transport.WebSocket> connect(Uri uri)) {
   runCommonWebSocketIntegrationTests(connect: connect, port: sockjsPort);
 
   final echoUri = IntegrationPaths.echoUri.replace(port: sockjsPort);

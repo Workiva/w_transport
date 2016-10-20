@@ -14,10 +14,13 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:test/test.dart';
+import 'package:w_transport/mock.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import 'package:w_transport/src/http/utils.dart' as http_utils;
 
@@ -30,6 +33,190 @@ void main() {
 
   group(naming.toString(), () {
     group('HTTP utils', () {
+      group('calculateBackoff()', () {
+        setUp(() {
+          MockTransports.install();
+        });
+
+        tearDown(() async {
+          MockTransports.verifyNoOutstandingExceptions();
+          await MockTransports.uninstall();
+        });
+
+        group('exponential', () {
+          test('maxInterval should not be exceeded (no jitter)', () async {
+            final request = new transport.Request();
+            final interval = new Duration(milliseconds: 5);
+            final maxInterval = new Duration(milliseconds: 400);
+            request.autoRetry.backOff = new transport.RetryBackOff.exponential(
+                interval,
+                withJitter: false,
+                maxInterval: maxInterval);
+
+            for (int i = 0; i < 5; i++) {
+              request.autoRetry.numAttempts = i;
+
+              if (i == 0) {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry)
+                        .inMilliseconds,
+                    equals(interval.inMilliseconds));
+              } else {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry)
+                        .inMilliseconds,
+                    equals(interval.inMilliseconds *
+                        pow(2, request.autoRetry.numAttempts)));
+              }
+            }
+          });
+
+          test('maxInterval should not be exceeded (with jitter)', () async {
+            final request = new transport.Request();
+            final interval = new Duration(milliseconds: 5);
+            final maxInterval = new Duration(milliseconds: 400);
+            request.autoRetry.backOff = new transport.RetryBackOff.exponential(
+                interval,
+                withJitter: true,
+                maxInterval: maxInterval);
+
+            for (int i = 0; i < 5; i++) {
+              request.autoRetry.numAttempts = i;
+
+              if (i == 0) {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry)
+                        .inMilliseconds,
+                    lessThanOrEqualTo(interval.inMilliseconds));
+              } else {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry)
+                        .inMilliseconds,
+                    lessThanOrEqualTo(interval.inMilliseconds *
+                        pow(2, request.autoRetry.numAttempts)));
+              }
+            }
+          });
+
+          test('maxInterval should be exceeded (no jitter)', () async {
+            final request = new transport.Request();
+            final interval = new Duration(milliseconds: 5);
+            final maxInterval = new Duration(milliseconds: 20);
+            final withJitter = false;
+            request.autoRetry.backOff = new transport.RetryBackOff.exponential(
+                interval,
+                withJitter: withJitter,
+                maxInterval: maxInterval);
+
+            for (int i = 0; i < 5; i++) {
+              request.autoRetry.numAttempts = i;
+
+              if (i == 0) {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry)
+                        .inMilliseconds,
+                    equals(interval.inMilliseconds));
+              } else if (i == 1) {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry)
+                        .inMilliseconds,
+                    equals(10));
+              } else {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry)
+                        .inMilliseconds,
+                    equals(
+                        request.autoRetry.backOff.maxInterval.inMilliseconds));
+              }
+            }
+          });
+
+          test('maxInterval should be exceeded (with jitter)', () async {
+            final request = new transport.Request();
+            final interval = new Duration(milliseconds: 5);
+            final maxInterval = new Duration(milliseconds: 20);
+            final withJitter = true;
+            request.autoRetry.backOff = new transport.RetryBackOff.exponential(
+                interval,
+                withJitter: withJitter,
+                maxInterval: maxInterval);
+
+            for (int i = 0; i < 50; i++) {
+              request.autoRetry.numAttempts = i;
+
+              if (i == 0) {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry)
+                        .inMilliseconds,
+                    lessThanOrEqualTo(interval.inMilliseconds));
+              } else if (i == 1) {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry)
+                        .inMilliseconds,
+                    lessThanOrEqualTo(
+                        request.autoRetry.backOff.maxInterval.inMilliseconds));
+              } else {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry)
+                        .inMilliseconds,
+                    lessThanOrEqualTo(
+                        request.autoRetry.backOff.maxInterval.inMilliseconds));
+              }
+            }
+          });
+        });
+
+        group('fixed', () {
+          test('no jitter', () async {
+            final request = new transport.Request();
+            final interval = new Duration(milliseconds: 5);
+            final withJitter = false;
+            request.autoRetry.backOff = new transport.RetryBackOff.fixed(
+                interval,
+                withJitter: withJitter);
+
+            for (int i = 0; i < 5; i++) {
+              request.autoRetry.numAttempts = i;
+
+              if (i == 0) {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry)
+                        .inMilliseconds,
+                    equals(interval.inMilliseconds));
+              }
+            }
+          });
+
+          test('with jitter', () async {
+            final request = new transport.Request();
+            final interval = new Duration(milliseconds: 5);
+            final withJitter = true;
+            request.autoRetry.backOff = new transport.RetryBackOff.fixed(
+                interval,
+                withJitter: withJitter);
+
+            for (int i = 0; i < 5; i++) {
+              final backOff =
+                  http_utils.calculateBackOff(request.autoRetry).inMilliseconds;
+              expect(backOff, lessThanOrEqualTo(interval.inMilliseconds * 1.5));
+              expect(
+                  backOff, greaterThanOrEqualTo(interval.inMilliseconds ~/ 2));
+            }
+          });
+        });
+      });
+
       test('isAsciiOnly()', () {
         expect(http_utils.isAsciiOnly('abc'), isTrue);
         expect(http_utils.isAsciiOnly('abç'), isFalse);

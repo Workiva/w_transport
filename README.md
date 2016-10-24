@@ -48,9 +48,9 @@ dependencies:
   w_transport: ^3.0.0
 ```
 
-If you're upgrading from version 2.x, you should be able to use the above
-version range without breaking any existing code. **Check out the [3.0.0
-upgrade guide](/docs/upgrade-guides/v3.0.0.md)**.
+If you're upgrading from version 2.x, you can use the above version range
+without breaking any existing code. **Check out the
+[3.0.0 upgrade guide](/docs/upgrade-guides/v3.0.0.md)**.
 
 
 ### Importing

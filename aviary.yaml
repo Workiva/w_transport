@@ -2,6 +2,9 @@ version: 1
 
 exclude:
   - tests?/
+  - example/
+  - tool/
+  - .+\.md$
 
 raven_monitored_classes: null
 
@@ -14,9 +17,5 @@ raven_monitored_keywords:
     comments: false
     languages:
       - dart
-    not_file:
-      - test(s)?/
-      - example/
-      - tool/
     reason: Secure requests with credentials
 

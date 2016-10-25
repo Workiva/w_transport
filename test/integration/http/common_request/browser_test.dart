@@ -14,8 +14,8 @@
 
 @TestOn('browser')
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/browser.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 import '../../../naming.dart';
@@ -28,31 +28,30 @@ void main() {
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser();
-    });
-
-    runCommonRequestSuite();
+    runCommonRequestSuite(browserTransportPlatform);
 
     group('autoRetry browser', () {
       test('null response default behavior', () async {
-        final request = new Request()
-          ..headers.addAll({'x-custom': 'causes-CORS-request'})
-          ..uri = IntegrationPaths.errorEndpointUri;
+        final request =
+            new transport.Request(transportPlatform: browserTransportPlatform)
+              ..headers.addAll({'x-custom': 'causes-CORS-request'})
+              ..uri = IntegrationPaths.errorEndpointUri;
         request.autoRetry
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(request.get(), throwsA(new isInstanceOf<RequestException>()));
+        expect(request.get(),
+            throwsA(new isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
       });
 
       test('null response should be retried', () async {
-        final request = new Request()
-          ..headers.addAll({'x-custom': 'causes-CORS-request'})
-          ..uri = IntegrationPaths.errorEndpointUri;
+        final request =
+            new transport.Request(transportPlatform: browserTransportPlatform)
+              ..headers.addAll({'x-custom': 'causes-CORS-request'})
+              ..uri = IntegrationPaths.errorEndpointUri;
         request.autoRetry
           ..enabled = true
           ..maxRetries = 2
@@ -63,7 +62,8 @@ void main() {
             return willRetry;
           };
 
-        expect(request.get(), throwsA(new isInstanceOf<RequestException>()));
+        expect(request.get(),
+            throwsA(new isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(3));
         expect(request.autoRetry.failures.length, equals(3));

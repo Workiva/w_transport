@@ -16,60 +16,71 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 
-abstract class ReqIntMixin implements HttpInterceptor {
+abstract class ReqIntMixin implements transport.HttpInterceptor {
   @override
-  Future<RequestPayload> interceptRequest(RequestPayload payload) async {
+  Future<transport.RequestPayload> interceptRequest(
+      transport.RequestPayload payload) async {
     payload.request.headers['x-intercepted'] = 'true';
     return payload;
   }
 }
 
-abstract class RespIntMixin implements HttpInterceptor {
+abstract class RespIntMixin implements transport.HttpInterceptor {
   @override
-  Future<ResponsePayload> interceptResponse(ResponsePayload payload) async {
+  Future<transport.ResponsePayload> interceptResponse(
+      transport.ResponsePayload payload) async {
     final newHeaders = new Map<String, String>.from(payload.response.headers);
     newHeaders['x-intercepted'] = 'true';
-    Response response = payload.response;
-    payload.response = new Response.fromString(payload.response.status,
-        payload.response.statusText, newHeaders, response.body.asString());
+    transport.Response response = payload.response;
+    payload.response = new transport.Response.fromString(
+        payload.response.status,
+        payload.response.statusText,
+        newHeaders,
+        response.body.asString());
     return payload;
   }
 }
 
-class ReqInt extends HttpInterceptor with ReqIntMixin {}
+class ReqInt extends transport.HttpInterceptor with ReqIntMixin {}
 
-class RespInt extends HttpInterceptor with RespIntMixin {}
+class RespInt extends transport.HttpInterceptor with RespIntMixin {}
 
-class ReqRespInt extends HttpInterceptor with ReqIntMixin, RespIntMixin {}
+class ReqRespInt extends transport.HttpInterceptor
+    with ReqIntMixin, RespIntMixin {}
 
-class AsyncInt extends HttpInterceptor {
+class AsyncInt extends transport.HttpInterceptor {
   @override
-  Future<RequestPayload> interceptRequest(RequestPayload payload) async {
+  Future<transport.RequestPayload> interceptRequest(
+      transport.RequestPayload payload) async {
     await new Future.delayed(new Duration(milliseconds: 500));
     payload.request.updateQuery({'interceptor': 'asyncint'});
     return payload;
   }
 
   @override
-  Future<ResponsePayload> interceptResponse(ResponsePayload payload) async {
+  Future<transport.ResponsePayload> interceptResponse(
+      transport.ResponsePayload payload) async {
     await new Future.delayed(new Duration(milliseconds: 500));
     final headers = new Map<String, String>.from(payload.response.headers);
-    Response response = payload.response;
+    transport.Response response = payload.response;
     headers['x-interceptor'] =
         payload.request.uri.queryParameters['interceptor'];
-    payload.response = new Response.fromString(payload.response.status,
-        payload.response.statusText, headers, response.body.asString());
+    payload.response = new transport.Response.fromString(
+        payload.response.status,
+        payload.response.statusText,
+        headers,
+        response.body.asString());
     return payload;
   }
 }
 
-Iterable<BaseRequest> createAllRequestTypes(Client client) {
-  return <BaseRequest>[
+Iterable<transport.BaseRequest> createAllRequestTypes(transport.Client client) {
+  return <transport.BaseRequest>[
     client.newFormRequest(),
     client.newJsonRequest(),
     client.newMultipartRequest(),
@@ -84,30 +95,34 @@ void main() {
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    setUp(() async {
-      configureWTransportForTest();
-      await MockTransports.reset();
+    setUp(() {
+      MockTransports.install();
+    });
+
+    tearDown(() async {
+      MockTransports.verifyNoOutstandingExceptions();
+      await MockTransports.uninstall();
     });
 
     group('Client', () {
-      _runHttpClientSuite(() => new Client());
+      _runHttpClientSuite(() => new transport.Client());
     });
 
     group('HttpClient', () {
-      _runHttpClientSuite(() => new HttpClient());
+      _runHttpClientSuite(() => new transport.HttpClient());
     });
   });
 }
 
-void _runHttpClientSuite(Client getClient()) {
-  Client client;
+void _runHttpClientSuite(transport.Client getClient()) {
+  transport.Client client;
 
   setUp(() {
     client = getClient();
   });
 
   test('newFormRequest() should create a new request', () async {
-    expect(client.newFormRequest(), new isInstanceOf<FormRequest>());
+    expect(client.newFormRequest(), new isInstanceOf<transport.FormRequest>());
   });
 
   test('newFormRequest() should throw if closed', () async {
@@ -116,7 +131,7 @@ void _runHttpClientSuite(Client getClient()) {
   });
 
   test('newJsonRequest() should create a new request', () async {
-    expect(client.newJsonRequest(), new isInstanceOf<JsonRequest>());
+    expect(client.newJsonRequest(), new isInstanceOf<transport.JsonRequest>());
   });
 
   test('newJsonRequest() should throw if closed', () async {
@@ -125,7 +140,8 @@ void _runHttpClientSuite(Client getClient()) {
   });
 
   test('newMultipartRequest() should create a new request', () async {
-    expect(client.newMultipartRequest(), new isInstanceOf<MultipartRequest>());
+    expect(client.newMultipartRequest(),
+        new isInstanceOf<transport.MultipartRequest>());
   });
 
   test('newMultipartRequest() should throw if closed', () async {
@@ -134,7 +150,7 @@ void _runHttpClientSuite(Client getClient()) {
   });
 
   test('newRequest() should create a new request', () async {
-    expect(client.newRequest(), new isInstanceOf<Request>());
+    expect(client.newRequest(), new isInstanceOf<transport.Request>());
   });
 
   test('newRequest() should throw if closed', () async {
@@ -143,7 +159,8 @@ void _runHttpClientSuite(Client getClient()) {
   });
 
   test('newStreamedRequest() should create a new request', () async {
-    expect(client.newStreamedRequest(), new isInstanceOf<StreamedRequest>());
+    expect(client.newStreamedRequest(),
+        new isInstanceOf<transport.StreamedRequest>());
   });
 
   test('newStreamedRequest() should throw if closed', () async {
@@ -175,7 +192,7 @@ void _runHttpClientSuite(Client getClient()) {
     for (final request in createAllRequestTypes(client)) {
       final uri = Uri.parse('/test');
       MockTransports.http.expect('GET', uri, headers: headers);
-      if (request is MultipartRequest) {
+      if (request is transport.MultipartRequest) {
         request.fields['f'] = 'v';
       }
       await request.get(uri: uri);
@@ -203,7 +220,7 @@ void _runHttpClientSuite(Client getClient()) {
             : c.completeError(new Exception('withCredentials should be true'));
         return new MockResponse.ok();
       }, method: 'GET');
-      if (request is MultipartRequest) {
+      if (request is transport.MultipartRequest) {
         request.fields['f'] = 'v';
       }
       await request.get(uri: uri);
@@ -213,7 +230,7 @@ void _runHttpClientSuite(Client getClient()) {
 
   test('autoRetry should be inherited by all requests', () async {
     client.autoRetry
-      ..backOff = const RetryBackOff.fixed(const Duration(seconds: 2))
+      ..backOff = const transport.RetryBackOff.fixed(const Duration(seconds: 2))
       ..enabled = true
       ..forHttpMethods = ['GET']
       ..forStatusCodes = [404]
@@ -244,7 +261,7 @@ void _runHttpClientSuite(Client getClient()) {
       final uri = Uri.parse('/test');
       MockTransports.http
           .expect('GET', uri, headers: {'x-intercepted': 'true'});
-      if (request is MultipartRequest) {
+      if (request is transport.MultipartRequest) {
         request.fields['f'] = 'v';
       }
       await request.get(uri: uri);
@@ -256,7 +273,7 @@ void _runHttpClientSuite(Client getClient()) {
     for (final request in createAllRequestTypes(client)) {
       final uri = Uri.parse('/test');
       MockTransports.http.expect('GET', uri);
-      if (request is MultipartRequest) {
+      if (request is transport.MultipartRequest) {
         request.fields['f'] = 'v';
       }
       final response = await request.get(uri: uri);
@@ -270,7 +287,7 @@ void _runHttpClientSuite(Client getClient()) {
       final uri = Uri.parse('/test');
       MockTransports.http
           .expect('GET', uri, headers: {'x-intercepted': 'true'});
-      if (request is MultipartRequest) {
+      if (request is transport.MultipartRequest) {
         request.fields['f'] = 'v';
       }
       final response = await request.get(uri: uri);
@@ -286,7 +303,7 @@ void _runHttpClientSuite(Client getClient()) {
           uri.replace(queryParameters: {'interceptor': 'asyncint'});
       MockTransports.http
           .expect('GET', augmentedUri, headers: {'x-intercepted': 'true'});
-      if (request is MultipartRequest) {
+      if (request is transport.MultipartRequest) {
         request.fields['f'] = 'v';
       }
       final response = await request.get(uri: uri);

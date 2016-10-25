@@ -16,38 +16,46 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runCommonRequestSuite() {
+void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
   group('Common Request API', () {
-    FormRequest formReqFactory({bool withBody: false}) {
-      if (!withBody) return new FormRequest();
-      return new FormRequest()..fields['field'] = 'value';
+    transport.FormRequest formReqFactory({bool withBody: false}) {
+      if (!withBody)
+        return new transport.FormRequest(transportPlatform: transportPlatform);
+      return new transport.FormRequest(transportPlatform: transportPlatform)
+        ..fields['field'] = 'value';
     }
 
-    JsonRequest jsonReqFactory({bool withBody: false}) {
-      if (!withBody) return new JsonRequest();
-      return new JsonRequest()
+    transport.JsonRequest jsonReqFactory({bool withBody: false}) {
+      if (!withBody)
+        return new transport.JsonRequest(transportPlatform: transportPlatform);
+      return new transport.JsonRequest(transportPlatform: transportPlatform)
         ..body = [
           {'field': 'value'}
         ];
     }
 
-    MultipartRequest multipartReqFactory({bool withBody}) {
+    transport.MultipartRequest multipartReqFactory({bool withBody}) {
       // Multipart requests can't be empty.
-      return new MultipartRequest()..fields['field'] = 'value';
+      return new transport.MultipartRequest(
+          transportPlatform: transportPlatform)..fields['field'] = 'value';
     }
 
-    Request reqFactory({bool withBody: false}) {
-      if (!withBody) return new Request();
-      return new Request()..body = 'body';
+    transport.Request reqFactory({bool withBody: false}) {
+      if (!withBody)
+        return new transport.Request(transportPlatform: transportPlatform);
+      return new transport.Request(transportPlatform: transportPlatform)
+        ..body = 'body';
     }
 
-    StreamedRequest streamedReqFactory({bool withBody: false}) {
-      if (!withBody) return new StreamedRequest();
-      return new StreamedRequest()
+    transport.StreamedRequest streamedReqFactory({bool withBody: false}) {
+      if (!withBody)
+        return new transport.StreamedRequest(
+            transportPlatform: transportPlatform);
+      return new transport.StreamedRequest(transportPlatform: transportPlatform)
         ..body = new Stream.fromIterable([UTF8.encode('bytes')])
         ..contentLength = UTF8.encode('bytes').length;
     }
@@ -59,14 +67,14 @@ void runCommonRequestSuite() {
     _runCommonRequestSuiteFor('StreamedRequest', streamedReqFactory);
 
     _runAutoRetryTestSuiteFor('FormRequest', formReqFactory);
-    _runAutoRetryTestSuiteFor('JsonRequest', formReqFactory);
-    _runAutoRetryTestSuiteFor('MultipartRequest', formReqFactory);
-    _runAutoRetryTestSuiteFor('Request', formReqFactory);
+    _runAutoRetryTestSuiteFor('JsonRequest', jsonReqFactory);
+    _runAutoRetryTestSuiteFor('MultipartRequest', multipartReqFactory);
+    _runAutoRetryTestSuiteFor('Request', reqFactory);
   });
 }
 
 void _runCommonRequestSuiteFor(
-    String name, BaseRequest requestFactory({bool withBody})) {
+    String name, transport.BaseRequest requestFactory({bool withBody})) {
   group(name, () {
     final headers = <String, String>{
       'authorization': 'test',
@@ -89,7 +97,7 @@ void _runCommonRequestSuiteFor(
         await new Future.delayed(new Duration(milliseconds: 5));
         request.abort();
         await future;
-      } on RequestException catch (_) {}
+      } on transport.RequestException catch (_) {}
 
       await request.done;
     });
@@ -98,7 +106,7 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory();
       try {
         await request.post(uri: IntegrationPaths.fourOhFourEndpointUri);
-      } on RequestException catch (_) {}
+      } on transport.RequestException catch (_) {}
       await request.done;
     });
 
@@ -334,7 +342,7 @@ void _runCommonRequestSuiteFor(
       final uploadProgressListenedTo = new Completer<Null>();
       final request = requestFactory(withBody: true)
         ..uri = IntegrationPaths.reflectEndpointUri;
-      request.uploadProgress.listen((RequestProgress progress) {
+      request.uploadProgress.listen((progress) {
         if (progress.percent > 0 && !uploadProgressListenedTo.isCompleted) {
           uploadProgressListenedTo.complete();
         }
@@ -347,7 +355,7 @@ void _runCommonRequestSuiteFor(
       final downloadProgressListenedTo = new Completer<Null>();
       final request = requestFactory()
         ..uri = IntegrationPaths.downloadEndpointUri;
-      request.downloadProgress.listen((RequestProgress progress) {
+      request.downloadProgress.listen((progress) {
         if (progress.percent > 0 && !downloadProgressListenedTo.isCompleted) {
           downloadProgressListenedTo.complete();
         }
@@ -363,7 +371,7 @@ void _runCommonRequestSuiteFor(
           request.get(),
           throwsA(predicate((exception) {
             return exception != null &&
-                exception is RequestException &&
+                exception is transport.RequestException &&
                 exception.method == 'GET' &&
                 exception.uri == IntegrationPaths.fourOhFourEndpointUri;
           }, 'throws a RequestException')));
@@ -374,7 +382,7 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory()..uri = IntegrationPaths.hostUri;
       request.abort();
       expect(request.get(), throwsA(predicate((exception) {
-        return exception is RequestException &&
+        return exception is transport.RequestException &&
             exception.toString().contains('canceled');
       })));
     });
@@ -392,7 +400,7 @@ void _runCommonRequestSuiteFor(
 
       // Abort the request now that it is in flight.
       request.abort();
-      expect(future, throwsA(new isInstanceOf<RequestException>()));
+      expect(future, throwsA(new isInstanceOf<transport.RequestException>()));
     });
 
     test('timeoutThreshold does nothing if request completes in time',
@@ -407,14 +415,15 @@ void _runCommonRequestSuiteFor(
         ..timeoutThreshold = new Duration(milliseconds: 250);
       expect(request.get(uri: IntegrationPaths.timeoutEndpointUri),
           throwsA(predicate((error) {
-        return error is RequestException && error.error is TimeoutException;
+        return error is transport.RequestException &&
+            error.error is TimeoutException;
       })));
     });
   });
 }
 
 void _runAutoRetryTestSuiteFor(
-    String name, BaseRequest requestFactory({bool withBody})) {
+    String name, transport.BaseRequest requestFactory({bool withBody})) {
   group(name, () {
     group('auto retry', () {
       test('disabled', () async {
@@ -422,7 +431,8 @@ void _runAutoRetryTestSuiteFor(
 
         defineResponseChain(request, [500]);
 
-        expect(request.get(), throwsA(new isInstanceOf<RequestException>()));
+        expect(request.get(),
+            throwsA(new isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -475,7 +485,8 @@ void _runAutoRetryTestSuiteFor(
 
         defineResponseChain(request, [500, 500, 500]);
 
-        expect(request.get(), throwsA(new isInstanceOf<RequestException>()));
+        expect(request.get(),
+            throwsA(new isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(3));
         expect(request.autoRetry.failures.length, equals(3));
@@ -484,10 +495,10 @@ void _runAutoRetryTestSuiteFor(
   });
 }
 
-void defineResponseChain(BaseRequest request, List<int> statusCodes) {
+void defineResponseChain(transport.BaseRequest request, List<int> statusCodes) {
   request
     ..uri = IntegrationPaths.customEndpointUri
-    ..requestInterceptor = (BaseRequest request) {
+    ..requestInterceptor = (transport.BaseRequest request) {
       request.updateQuery({'status': statusCodes.removeAt(0).toString()});
     };
 }

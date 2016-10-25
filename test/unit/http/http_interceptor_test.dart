@@ -13,9 +13,12 @@
 // limitations under the License.
 
 @TestOn('vm || browser')
+import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
+import 'package:w_transport/w_transport.dart' as transport;
+
+import 'package:w_transport/src/http/http_interceptor.dart' show Pathway;
 
 import '../../naming.dart';
 
@@ -26,22 +29,27 @@ void main() {
 
   group(naming.toString(), () {
     group('HttpInterceptor', () {
-      setUp(() async {
-        configureWTransportForTest();
-        await MockTransports.reset();
+      setUp(() {
+        MockTransports.install();
+      });
+
+      tearDown(() async {
+        MockTransports.verifyNoOutstandingExceptions();
+        await MockTransports.uninstall();
       });
 
       test('default implementations should not modify the payloads', () async {
-        final req = new Request()..uri = Uri.parse('/test');
-        final body =
-            new HttpBody.fromString(new MediaType('text', 'plain'), 'body');
+        final req = new transport.Request()..uri = Uri.parse('/test');
+        final body = new transport.HttpBody.fromString(
+            new MediaType('text', 'plain'), 'body');
         final finalizedReq =
             new FinalizedRequest('GET', req.uri, {}, body, false);
         final resp = new MockResponse.ok();
-        final reqPayload = new RequestPayload(new Request());
-        final respPayload = new ResponsePayload(finalizedReq, resp);
+        final reqPayload =
+            new transport.RequestPayload(new transport.Request());
+        final respPayload = new transport.ResponsePayload(finalizedReq, resp);
 
-        final interceptor = new HttpInterceptor();
+        final interceptor = new transport.HttpInterceptor();
         expect(
             identical(
                 reqPayload, await interceptor.interceptRequest(reqPayload)),
@@ -50,6 +58,40 @@ void main() {
             identical(
                 respPayload, await interceptor.interceptResponse(respPayload)),
             isTrue);
+      });
+    });
+
+    group('Pathway', () {
+      test('waits for Futures to resolve', () async {
+        final pathway = new Pathway<String>();
+        pathway.addInterceptor((String input) async => input * 2);
+        pathway.addInterceptor((String input) async => input + 'b');
+        final result = await pathway.process('a');
+        expect(result, equals('aab'));
+      });
+
+      test('handles values returned immediately (no Future)', () async {
+        final pathway = new Pathway<String>();
+        pathway.addInterceptor((String input) => input * 2);
+        pathway.addInterceptor((String input) => input + 'b');
+        final result = await pathway.process('a');
+        expect(result, equals('aab'));
+      });
+
+      test('handles a mix of immediate values and Futures', () async {
+        final pathway = new Pathway<String>();
+        pathway.addInterceptor((String input) async => input * 2);
+        pathway.addInterceptor((String input) => input + 'b');
+        final result = await pathway.process('a');
+        expect(result, equals('aab'));
+      });
+
+      test('throws if an invalid value is returned', () async {
+        final pathway = new Pathway<String>();
+        pathway.addInterceptor((String input) async => input * 2);
+        pathway.addInterceptor((String input) => input + 'b');
+        pathway.addInterceptor((String input) => 10);
+        expect(pathway.process('a'), throwsException);
       });
     });
   });

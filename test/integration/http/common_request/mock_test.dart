@@ -21,6 +21,7 @@ import '../../integration_paths.dart';
 import '../mock_endpoints/404.dart';
 import '../mock_endpoints/custom.dart';
 import '../mock_endpoints/download.dart';
+import '../mock_endpoints/ping.dart';
 import '../mock_endpoints/reflect.dart';
 import '../mock_endpoints/timeout.dart';
 import 'suite.dart';
@@ -33,18 +34,20 @@ void main() {
 
   group(naming.toString(), () {
     setUp(() {
-      configureWTransportForTest();
+      MockTransports.install();
       mock404Endpoint(IntegrationPaths.fourOhFourEndpointUri);
       mockCustomEndpoint(IntegrationPaths.customEndpointUriPattern);
       mockDownloadEndpoint(IntegrationPaths.downloadEndpointUri);
+      mockPingEndpoint(IntegrationPaths.pingEndpointUri);
       mockReflectEndpoint(IntegrationPaths.reflectEndpointUri);
       mockTimeoutEndpoint(IntegrationPaths.timeoutEndpointUri);
     });
 
-    runCommonRequestSuite();
-
-    tearDown(() {
+    tearDown(() async {
       MockTransports.verifyNoOutstandingExceptions();
+      await MockTransports.uninstall();
     });
+
+    runCommonRequestSuite();
   });
 }

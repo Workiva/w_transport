@@ -15,7 +15,7 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 
@@ -28,17 +28,19 @@ void main() {
     group('Response', () {
       test('content-length should be set automatically', () {
         final bytes = <int>[10, 390];
-        final response = new Response.fromBytes(200, 'OK', {}, bytes);
+        final response = new transport.Response.fromBytes(200, 'OK', {}, bytes);
         expect(response.contentLength, equals(bytes.length));
       });
 
       test('body', () {
-        final response = new Response.fromString(200, 'OK', {}, 'body');
+        final response =
+            new transport.Response.fromString(200, 'OK', {}, 'body');
         expect(response.body.asString(), equals('body'));
       });
 
       test('replace', () {
-        final response = new Response.fromString(200, 'OK', {}, 'body');
+        final response =
+            new transport.Response.fromString(200, 'OK', {}, 'body');
         final response2 = response.replace(status: 301);
         expect(response2.status, equals(301));
         expect(response2.statusText, equals('OK'));
@@ -75,21 +77,21 @@ void main() {
       test('content-length should be taken from headers', () {
         final bytes = <int>[10, 390];
         final headers = <String, String>{'content-length': '${bytes.length}'};
-        final response = new StreamedResponse.fromByteStream(
+        final response = new transport.StreamedResponse.fromByteStream(
             200, 'OK', headers, new Stream.fromIterable([bytes]));
         expect(response.contentLength, equals(bytes.length));
       });
 
       test('body', () async {
         final bytes = <int>[1, 2, 3, 4];
-        final response = new StreamedResponse.fromByteStream(
+        final response = new transport.StreamedResponse.fromByteStream(
             200, 'OK', {}, new Stream.fromIterable([bytes]));
         expect(await response.body.byteStream.toList(), equals([bytes]));
       });
 
       test('replace', () async {
         final bytes = <int>[1, 2, 3, 4];
-        final response = new StreamedResponse.fromByteStream(
+        final response = new transport.StreamedResponse.fromByteStream(
             200, 'OK', {}, new Stream.fromIterable([bytes]));
         final response2 = response.replace(status: 301);
         expect(response2.status, equals(301));
@@ -110,7 +112,7 @@ void main() {
         expect(response4.body, equals(response.body));
 
         final bytes2 = <int>[5, 6, 7];
-        StreamedResponse response5 =
+        final response5 =
             response.replace(byteStream: new Stream.fromIterable([bytes2]));
         expect(response5.status, equals(200));
         expect(response5.statusText, equals('OK'));

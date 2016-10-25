@@ -14,14 +14,64 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
 
+import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 
 /// RegExp that only matches strings containing only ASCII-compatible chars.
-final RegExp _asciiOnly = new RegExp(r'^[\x00-\x7F]+$');
+final _asciiOnly = new RegExp(r'^[\x00-\x7F]+$');
+
+/// Base used when calculating the exponential backoff.
+const _exponentialBase = 2;
+
+/// Calculate the backoff duration based on [RequestAutoRetry] configuration.
+/// Returns [null] if backoff is not applicable.
+Duration calculateBackOff(RequestAutoRetry autoRetry) {
+  Duration backOff;
+  switch (autoRetry.backOff.method) {
+    case RetryBackOffMethod.exponential:
+      backOff = _calculateExponentialBackOff(autoRetry);
+      break;
+    case RetryBackOffMethod.fixed:
+      backOff = _calculateFixedBackOff(autoRetry);
+      break;
+    case RetryBackOffMethod.none:
+    default:
+      break;
+  }
+  return backOff;
+}
+
+Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry) {
+  int backOffInMs = autoRetry.backOff.interval.inMilliseconds *
+      pow(_exponentialBase, autoRetry.numAttempts);
+  backOffInMs = min(autoRetry.backOff.maxInterval.inMilliseconds, backOffInMs);
+
+  if (autoRetry.backOff.withJitter == true) {
+    final random = new Random();
+    backOffInMs = random.nextInt(backOffInMs);
+  }
+  return new Duration(milliseconds: backOffInMs);
+}
+
+Duration _calculateFixedBackOff(RequestAutoRetry autoRetry) {
+  Duration backOff;
+
+  if (autoRetry.backOff.withJitter == true) {
+    final random = new Random();
+    backOff = new Duration(
+        milliseconds: autoRetry.backOff.interval.inMilliseconds ~/ 2 +
+            random.nextInt(autoRetry.backOff.interval.inMilliseconds).toInt());
+  } else {
+    backOff = autoRetry.backOff.interval;
+  }
+
+  return backOff;
+}
 
 /// Returns true if all characters in [value] are ASCII-compatible chars.
 /// Returns false otherwise.

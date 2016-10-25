@@ -15,22 +15,25 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runHttpTransportClientSuite() {
+void runHttpTransportClientSuite(
+    [transport.TransportPlatform transportPlatform]) {
   group('Client', () {
-    _runHttpClientSuite(() => new Client());
+    _runHttpClientSuite(
+        () => new transport.Client(transportPlatform: transportPlatform));
   });
 
   group('HttpClient', () {
-    _runHttpClientSuite(() => new HttpClient());
+    _runHttpClientSuite(
+        () => new transport.HttpClient(transportPlatform: transportPlatform));
   });
 }
 
-void _runHttpClientSuite(Client getClient()) {
-  Client client;
+void _runHttpClientSuite(transport.Client getClient()) {
+  transport.Client client;
 
   setUp(() {
     client = getClient();
@@ -105,11 +108,11 @@ void _runHttpClientSuite(Client getClient()) {
     // abort the pending request.
     client.close();
 
-    expect(willThrow, throwsA(new isInstanceOf<RequestException>()));
+    expect(willThrow, throwsA(new isInstanceOf<transport.RequestException>()));
   });
 }
 
-Future<Null> _testRequest(BaseRequest request) async {
+Future<Null> _testRequest(transport.BaseRequest request) async {
   request.uri = IntegrationPaths.reflectEndpointUri;
   request.headers = {'x-custom': 'value', 'x-tokens': 'token1, token2'};
   final response = await request.get();

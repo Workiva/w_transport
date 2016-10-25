@@ -33,9 +33,8 @@ void main() {
     MockWebSocketServer mockEchoWebSocketServer;
     MockWebSocketServer mockPingWebSocketServer;
 
-    setUp(() async {
-      configureWTransportForTest();
-      await MockTransports.reset();
+    setUp(() {
+      MockTransports.install();
 
       mockCloseWebSocketServer = new MockWebSocketServer();
       mockEchoWebSocketServer = new MockWebSocketServer();
@@ -98,16 +97,16 @@ void main() {
         mockEchoWebSocketServer.shutDown(),
         mockPingWebSocketServer.shutDown(),
       ]);
+      MockTransports.verifyNoOutstandingExceptions();
+      await MockTransports.uninstall();
     });
 
     runCommonWebSocketIntegrationTests();
   });
 
   group(naming.toString() + ' legacy', () {
-    setUp(() async {
-      configureWTransportForTest();
-
-      await MockTransports.reset();
+    setUp(() {
+      MockTransports.install();
 
       MockTransports.webSocket
           .when(IntegrationPaths.fourOhFourUri, reject: true);
@@ -159,6 +158,11 @@ void main() {
 
         return webSocket;
       });
+    });
+
+    tearDown(() async {
+      MockTransports.verifyNoOutstandingExceptions();
+      await MockTransports.uninstall();
     });
 
     runCommonWebSocketIntegrationTests();

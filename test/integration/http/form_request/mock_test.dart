@@ -31,16 +31,17 @@ void main() {
 
   group(naming.toString(), () {
     setUp(() {
-      configureWTransportForTest();
+      MockTransports.install();
       mock404Endpoint(IntegrationPaths.fourOhFourEndpointUri);
       mockEchoEndpoint(IntegrationPaths.echoEndpointUri);
       mockReflectEndpoint(IntegrationPaths.reflectEndpointUri);
     });
 
-    runFormRequestSuite();
-
-    tearDown(() {
+    tearDown(() async {
       MockTransports.verifyNoOutstandingExceptions();
+      await MockTransports.uninstall();
     });
+
+    runFormRequestSuite();
   });
 }

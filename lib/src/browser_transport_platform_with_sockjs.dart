@@ -27,6 +27,13 @@ class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
         _sockJSNoCredentials = sockJSNoCredentials == true,
         _sockJSTimeout = sockJSTimeout;
 
+  bool get sockJSDebug => _sockJSDebug;
+  bool get sockJSNoCredentials => _sockJSNoCredentials;
+  List<String> get sockJSProtocolsWhitelist => _sockJSProtocolsWhitelist != null
+      ? new List.from(_sockJSProtocolsWhitelist)
+      : null;
+  Duration get sockJSTimeout => _sockJSTimeout;
+
   /// Construct a [WebSocket] instance that leverages SockJS for use in the
   /// browser.
   @override

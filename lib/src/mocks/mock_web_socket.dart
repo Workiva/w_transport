@@ -157,8 +157,6 @@ class MockWebSocketInternal {
           headers: headers, protocols: protocols);
       return mockWebSocket;
     }
-
-    throw new StateError('Unexpected WSocket connection: $uri');
   }
 
   static bool hasHandlerForWebSocket(Uri uri) {

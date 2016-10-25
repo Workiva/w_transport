@@ -22,9 +22,11 @@ import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/requests.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
-  CommonJsonRequest() : super();
+  CommonJsonRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   CommonJsonRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 

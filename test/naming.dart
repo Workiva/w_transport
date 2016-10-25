@@ -31,7 +31,7 @@ const String testTypeUnit = 'unit';
 const String topicBackoff = 'Backoff';
 const String topicHttp = 'HTTP';
 const String topicMocks = 'Mocks';
-const String topicPlatformAdapter = 'Platform Adapter';
+const String topicTransportPlatform = 'Transport Platform';
 const String topicWebSocket = 'WS';
 
 class Naming {

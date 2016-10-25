@@ -16,9 +16,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/mock.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 
@@ -30,17 +31,22 @@ void main() {
   group(naming.toString(), () {
     group('StreamedRequest', () {
       setUp(() {
-        configureWTransportForTest();
+        MockTransports.install();
+      });
+
+      tearDown(() async {
+        MockTransports.verifyNoOutstandingExceptions();
+        await MockTransports.uninstall();
       });
 
       test('content-type can be set manually', () {
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         request.contentType = new MediaType('application', 'json');
         expect(request.contentType.mimeType, equals('application/json'));
       });
 
       test('setting body', () async {
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
 
         final chunks = <List<int>>[
           [1, 2],
@@ -55,12 +61,12 @@ void main() {
 
         final c = new Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          StreamedHttpBody body = request.body;
+          transport.StreamedHttpBody body = request.body;
           c.complete(UTF8.decode(await body.toBytes()));
           return new MockResponse.ok();
         });
 
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         await request.post(
             uri: uri, body: new Stream.fromIterable([UTF8.encode('body')]));
         expect(await c.future, equals('body'));
@@ -70,14 +76,14 @@ void main() {
           () async {
         final uri = Uri.parse('/test');
 
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         expect(request.post(uri: uri, body: 'body'), throwsArgumentError);
       });
 
       test('body should be unmodifiable once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         await request.post(uri: uri);
         expect(() {
           request.body = new Stream.fromIterable([
@@ -87,7 +93,7 @@ void main() {
       });
 
       test('content-length must be set manually', () {
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         request.contentLength = 10;
         expect(request.contentLength, equals(10));
       });
@@ -95,7 +101,7 @@ void main() {
       test('content-length should be unmodifiable once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         await request.get(uri: uri);
         expect(() {
           request.contentLength = 10;
@@ -103,14 +109,14 @@ void main() {
       });
 
       test('setting encoding to null should throw', () {
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         expect(() {
           request.encoding = null;
         }, throwsArgumentError);
       });
 
       test('setting encoding should update content-type', () {
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         expect(request.contentType.parameters['charset'], equals(UTF8.name));
 
         request.encoding = LATIN1;
@@ -123,7 +129,7 @@ void main() {
       test(
           'setting encoding should not update content-type if content-type has been set manually',
           () {
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         expect(request.contentType.parameters['charset'], equals(UTF8.name));
 
         // Manually override content-type.
@@ -140,7 +146,7 @@ void main() {
       test('setting content-type should not be allowed once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         await request.get(uri: uri);
         expect(() {
           request.contentType = new MediaType('application', 'x-custom');
@@ -150,7 +156,7 @@ void main() {
       test('setting encoding should not be allowed once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         await request.get(uri: uri);
         expect(() {
           request.encoding = LATIN1;
@@ -160,7 +166,7 @@ void main() {
       test('custom content-type without inferrable encoding', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        final request = new StreamedRequest()
+        final request = new transport.StreamedRequest()
           ..contentType = new MediaType('application', 'x-custom')
           ..body = new Stream.fromIterable([
             [1, 2]
@@ -169,12 +175,12 @@ void main() {
       });
 
       test('clone()', () {
-        final request = new StreamedRequest();
+        final request = new transport.StreamedRequest();
         expect(request.clone, throwsUnsupportedError);
       });
 
       test('autoRetry not supported', () {
-        expect(new StreamedRequest().autoRetry.supported, isFalse);
+        expect(new transport.StreamedRequest().autoRetry.supported, isFalse);
       });
     });
   });

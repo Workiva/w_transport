@@ -91,7 +91,7 @@ library w_transport;
 
 // Transport Platforms
 export 'package:w_transport/src/global_transport_platform.dart'
-    show globalTransportPlatform;
+    show globalTransportPlatform, resetGlobalTransportPlatform;
 export 'package:w_transport/src/transport_platform.dart'
     show TransportPlatform, TransportPlatformMissing;
 

@@ -22,23 +22,23 @@ class BrowserTransportPlatform implements TransportPlatform {
 
   /// Construct a [FormRequest] instance for use in the browser.
   @override
-  FormRequest newFormRequest() => new BrowserFormRequest();
+  FormRequest newFormRequest() => new BrowserFormRequest(this);
 
   /// Construct a [JsonRequest] instance for use in the browser.
   @override
-  JsonRequest newJsonRequest() => new BrowserJsonRequest();
+  JsonRequest newJsonRequest() => new BrowserJsonRequest(this);
 
   /// Construct a [MultipartRequest] instance for use in the browser.
   @override
-  MultipartRequest newMultipartRequest() => new BrowserMultipartRequest();
+  MultipartRequest newMultipartRequest() => new BrowserMultipartRequest(this);
 
   /// Construct a [Request] instance for use in the browser.
   @override
-  Request newRequest() => new BrowserPlainTextRequest();
+  Request newRequest() => new BrowserPlainTextRequest(this);
 
   /// Construct a [StreamedRequest] instance for use in the browser.
   @override
-  StreamedRequest newStreamedRequest() => new BrowserStreamedRequest();
+  StreamedRequest newStreamedRequest() => new BrowserStreamedRequest(this);
 
   /// Construct a [WebSocket] instance for use in the browser.
   @override

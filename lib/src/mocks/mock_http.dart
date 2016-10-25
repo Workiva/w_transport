@@ -34,7 +34,9 @@ class MockHttp {
     MockHttpInternal._verifyRequestIsMock(request);
     final MockBaseRequest mockRequest = request;
     mockRequest.complete(response: response);
-    MockHttpInternal._pending.remove(request);
+    mockRequest.done.then((_) {
+      MockHttpInternal._pending.remove(request);
+    });
   }
 
   void expect(String method, Uri uri,
@@ -58,7 +60,9 @@ class MockHttp {
     MockHttpInternal._verifyRequestIsMock(request);
     final MockBaseRequest mockRequest = request;
     mockRequest.completeError(error: error, response: response);
-    MockHttpInternal._pending.remove(request);
+    mockRequest.done.catchError((_) {}).then((_) {
+      MockHttpInternal._pending.remove(request);
+    });
   }
 
   void reset() {
@@ -139,9 +143,7 @@ class MockHttpInternal {
   static List<MockBaseRequest> _pending = [];
 
   static void cancelMockRequest(MockBaseRequest request) {
-    if (_pending.contains(request)) {
-      _pending.remove(request);
-    }
+    _pending.remove(request);
   }
 
   static void handleMockRequest(MockBaseRequest request) {

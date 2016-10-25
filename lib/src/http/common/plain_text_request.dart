@@ -21,9 +21,11 @@ import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/requests.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonPlainTextRequest extends CommonRequest implements Request {
-  CommonPlainTextRequest() : super();
+  CommonPlainTextRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   CommonPlainTextRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 

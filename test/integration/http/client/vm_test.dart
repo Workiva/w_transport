@@ -26,10 +26,6 @@ void main() {
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForVM();
-    });
-
-    runHttpTransportClientSuite();
+    runHttpTransportClientSuite(vmTransportPlatform);
   });
 }

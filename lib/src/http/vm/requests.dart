@@ -21,33 +21,37 @@ import 'package:w_transport/src/http/common/multipart_request.dart';
 import 'package:w_transport/src/http/common/plain_text_request.dart';
 import 'package:w_transport/src/http/common/streamed_request.dart';
 import 'package:w_transport/src/http/vm/request_mixin.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 class VMFormRequest extends CommonFormRequest with VMRequestMixin {
-  VMFormRequest() : super();
+  VMFormRequest(TransportPlatform transportPlatform) : super(transportPlatform);
   VMFormRequest.fromClient(Client wTransportClient, HttpClient client)
       : super.fromClient(wTransportClient, client);
 }
 
 class VMJsonRequest extends CommonJsonRequest with VMRequestMixin {
-  VMJsonRequest() : super();
+  VMJsonRequest(TransportPlatform transportPlatform) : super(transportPlatform);
   VMJsonRequest.fromClient(Client wTransportClient, HttpClient client)
       : super.fromClient(wTransportClient, client);
 }
 
 class VMMultipartRequest extends CommonMultipartRequest with VMRequestMixin {
-  VMMultipartRequest() : super();
+  VMMultipartRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   VMMultipartRequest.fromClient(Client wTransportClient, HttpClient client)
       : super.fromClient(wTransportClient, client);
 }
 
 class VMPlainTextRequest extends CommonPlainTextRequest with VMRequestMixin {
-  VMPlainTextRequest() : super();
+  VMPlainTextRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   VMPlainTextRequest.fromClient(Client wTransportClient, HttpClient client)
       : super.fromClient(wTransportClient, client);
 }
 
 class VMStreamedRequest extends CommonStreamedRequest with VMRequestMixin {
-  VMStreamedRequest() : super();
+  VMStreamedRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   VMStreamedRequest.fromClient(Client wTransportClient, HttpClient client)
       : super.fromClient(wTransportClient, client);
 }

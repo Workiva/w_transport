@@ -28,16 +28,18 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
-import 'package:w_transport/src/http/common/backoff.dart';
+import 'package:w_transport/src/http/utils.dart' as utils;
 import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockHttpInternal;
 import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
+import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonRequest extends Object
     with FluriMixin
     implements BaseRequest, RequestDispatchers {
-  CommonRequest() {
+  CommonRequest(TransportPlatform transportPlatform)
+      : this._transportPlatform = transportPlatform {
     autoRetry = new RequestAutoRetry(this);
   }
 
@@ -133,6 +135,10 @@ abstract class CommonRequest extends Object
 
   /// Error associated with a cancellation.
   Object _timeoutError;
+
+  /// TransportPlatform used to create this request. Required in order to
+  /// support cloning and auto retrying.
+  TransportPlatform _transportPlatform;
 
   /// Whether or not to send the request with credentials.
   bool _withCredentials = false;
@@ -363,18 +369,21 @@ abstract class CommonRequest extends Object
     BaseRequest requestClone;
     final fromClient = _wTransportClient != null;
     if (this is FormRequest) {
-      requestClone =
-          fromClient ? _wTransportClient.newFormRequest() : new FormRequest();
+      requestClone = fromClient
+          ? _wTransportClient.newFormRequest()
+          : new FormRequest(transportPlatform: _transportPlatform);
     } else if (this is JsonRequest) {
-      requestClone =
-          fromClient ? _wTransportClient.newJsonRequest() : new JsonRequest();
+      requestClone = fromClient
+          ? _wTransportClient.newJsonRequest()
+          : new JsonRequest(transportPlatform: _transportPlatform);
     } else if (this is MultipartRequest) {
       requestClone = fromClient
           ? _wTransportClient.newMultipartRequest()
-          : new MultipartRequest();
+          : new MultipartRequest(transportPlatform: _transportPlatform);
     } else if (this is Request) {
-      requestClone =
-          fromClient ? _wTransportClient.newRequest() : new Request();
+      requestClone = fromClient
+          ? _wTransportClient.newRequest()
+          : new Request(transportPlatform: _transportPlatform);
     }
 
     requestClone
@@ -752,7 +761,7 @@ abstract class CommonRequest extends Object
         final retryCompleter = new Completer<BaseResponse>();
 
         // If retry back-off is configured, wait as necessary.
-        final backOff = Backoff.calculateBackOff(autoRetry);
+        final backOff = utils.calculateBackOff(autoRetry);
 
         if (backOff != null) {
           await new Future.delayed(backOff);

@@ -17,8 +17,8 @@ import 'dart:html';
 import 'dart:convert';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/browser.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../../naming.dart';
 import '../../integration_paths.dart';
@@ -31,15 +31,12 @@ void main() {
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser();
-    });
-
-    runMultipartRequestSuite();
+    runMultipartRequestSuite(browserTransportPlatform);
 
     group('MultipartRequest', () {
       test('underlying HttpRequest configuration', () async {
-        final request = new MultipartRequest()
+        final request = new transport.MultipartRequest(
+            transportPlatform: browserTransportPlatform)
           ..uri = IntegrationPaths.reflectEndpointUri
           ..fields['field'] = 'value';
         request.configure((request) async {
@@ -53,7 +50,8 @@ void main() {
 
       group('withCredentials', () {
         test('set to true (MultipartRequest)', () async {
-          final request = new MultipartRequest()
+          final request = new transport.MultipartRequest(
+              transportPlatform: browserTransportPlatform)
             ..uri = IntegrationPaths.pingEndpointUri
             ..fields['field'] = 'value'
             ..withCredentials = true;
@@ -65,7 +63,8 @@ void main() {
         });
 
         test('set to false (MultipartRequest)', () async {
-          final request = new MultipartRequest()
+          final request = new transport.MultipartRequest(
+              transportPlatform: browserTransportPlatform)
             ..uri = IntegrationPaths.pingEndpointUri
             ..fields['field'] = 'value'
             ..withCredentials = false;
@@ -78,21 +77,24 @@ void main() {
       });
 
       test('setting content-length is unsupported', () {
-        final request = new MultipartRequest();
+        final request = new transport.MultipartRequest(
+            transportPlatform: browserTransportPlatform);
         expect(() {
           request.contentLength = 10;
         }, throwsUnsupportedError);
       });
 
       test('setting body in request dispatcher is unsupported', () async {
-        final request = new MultipartRequest()
+        final request = new transport.MultipartRequest(
+            transportPlatform: browserTransportPlatform)
           ..uri = IntegrationPaths.reflectEndpointUri;
         expect(request.post(body: 'invalid'), throwsUnsupportedError);
       });
 
       test('should support Blob file', () async {
         final blob = new Blob([UTF8.encode('file')]);
-        final request = new MultipartRequest()
+        final request = new transport.MultipartRequest(
+            transportPlatform: browserTransportPlatform)
           ..uri = IntegrationPaths.reflectEndpointUri
           ..files['blob'] = blob;
         await request.post();
@@ -103,7 +105,9 @@ void main() {
       });
 
       test('clone()', () {
-        final orig = new MultipartRequest()..fields = {'field1': 'value1'};
+        final orig = new transport.MultipartRequest(
+            transportPlatform: browserTransportPlatform)
+          ..fields = {'field1': 'value1'};
         final clone = orig.clone();
         expect(clone.fields, equals(orig.fields));
       });

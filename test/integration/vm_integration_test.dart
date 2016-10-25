@@ -24,7 +24,8 @@ import 'http/multipart_request/vm_test.dart' as http_multipart_request_vm;
 import 'http/plain_text_request/vm_test.dart' as http_plain_text_request_vm;
 import 'http/streamed_request/vm_test.dart' as http_streamed_request_vm;
 
-import 'platforms/vm_platform_test.dart' as vm_platform_adapter_test;
+import 'platforms/vm_transport_platform_test.dart'
+    as vm_transport_platform_test;
 
 import 'ws/vm_test.dart' as ws_vm;
 
@@ -38,7 +39,7 @@ void main() {
   http_plain_text_request_vm.main();
   http_streamed_request_vm.main();
 
-  vm_platform_adapter_test.main();
+  vm_transport_platform_test.main();
 
   ws_vm.main();
 }

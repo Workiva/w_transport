@@ -31,16 +31,17 @@ void main() {
 
   group(naming.toString(), () {
     setUp(() {
-      configureWTransportForTest();
+      MockTransports.install();
       mockPingEndpoint(IntegrationPaths.pingEndpointUri);
       mockReflectEndpoint(IntegrationPaths.reflectEndpointUri);
       mockTimeoutEndpoint(IntegrationPaths.timeoutEndpointUri);
     });
 
-    runHttpTransportClientSuite();
-
-    tearDown(() {
+    tearDown(() async {
       MockTransports.verifyNoOutstandingExceptions();
+      await MockTransports.uninstall();
     });
+
+    runHttpTransportClientSuite();
   });
 }

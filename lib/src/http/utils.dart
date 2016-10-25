@@ -25,7 +25,7 @@ import 'package:w_transport/src/http/request_progress.dart';
 /// RegExp that only matches strings containing only ASCII-compatible chars.
 final _asciiOnly = new RegExp(r'^[\x00-\x7F]+$');
 
-/// Based used when calculating the exponential backoff.
+/// Base used when calculating the exponential backoff.
 const _exponentialBase = 2;
 
 /// Calculate the backoff duration based on [RequestAutoRetry] configuration.
@@ -34,10 +34,10 @@ Duration calculateBackOff(RequestAutoRetry autoRetry) {
   Duration backOff;
   switch (autoRetry.backOff.method) {
     case RetryBackOffMethod.exponential:
-      backOff = calculateExponentialBackOff(autoRetry);
+      backOff = _calculateExponentialBackOff(autoRetry);
       break;
     case RetryBackOffMethod.fixed:
-      backOff = calculateFixedBackOff(autoRetry);
+      backOff = _calculateFixedBackOff(autoRetry);
       break;
     case RetryBackOffMethod.none:
     default:
@@ -46,7 +46,7 @@ Duration calculateBackOff(RequestAutoRetry autoRetry) {
   return backOff;
 }
 
-Duration calculateExponentialBackOff(RequestAutoRetry autoRetry) {
+Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry) {
   int backOffInMs = autoRetry.backOff.interval.inMilliseconds *
       pow(_exponentialBase, autoRetry.numAttempts);
   backOffInMs = min(autoRetry.backOff.maxInterval.inMilliseconds, backOffInMs);
@@ -58,7 +58,7 @@ Duration calculateExponentialBackOff(RequestAutoRetry autoRetry) {
   return new Duration(milliseconds: backOffInMs);
 }
 
-Duration calculateFixedBackOff(RequestAutoRetry autoRetry) {
+Duration _calculateFixedBackOff(RequestAutoRetry autoRetry) {
   Duration backOff;
 
   if (autoRetry.backOff.withJitter == true) {

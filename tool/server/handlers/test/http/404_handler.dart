@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.http.fourzerofour_handler;
-
 import 'dart:async';
 import 'dart:io';
 
@@ -25,17 +23,32 @@ class FourzerofourHandler extends Handler {
     enableCors();
   }
 
-  Future notFound(HttpRequest request) async {
+  Future<Null> notFound(HttpRequest request) async {
     request.response.statusCode = HttpStatus.NOT_FOUND;
     setCorsHeaders(request);
   }
 
-  Future delete(HttpRequest request) => notFound(request);
-  Future get(HttpRequest request) => notFound(request);
-  Future head(HttpRequest request) => notFound(request);
-  Future options(HttpRequest request) => notFound(request);
-  Future patch(HttpRequest request) => notFound(request);
-  Future post(HttpRequest request) => notFound(request);
-  Future put(HttpRequest request) => notFound(request);
-  Future trace(HttpRequest request) => notFound(request);
+  @override
+  Future<Null> delete(HttpRequest request) => notFound(request);
+
+  @override
+  Future<Null> get(HttpRequest request) => notFound(request);
+
+  @override
+  Future<Null> head(HttpRequest request) => notFound(request);
+
+  @override
+  Future<Null> options(HttpRequest request) => notFound(request);
+
+  @override
+  Future<Null> patch(HttpRequest request) => notFound(request);
+
+  @override
+  Future<Null> post(HttpRequest request) => notFound(request);
+
+  @override
+  Future<Null> put(HttpRequest request) => notFound(request);
+
+  @override
+  Future<Null> trace(HttpRequest request) => notFound(request);
 }

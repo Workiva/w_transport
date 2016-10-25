@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.simple_client.client;
-
 import 'dart:async';
 import 'dart:html';
 
 import 'package:react/react_client.dart' as react_client;
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_browser.dart'
-    show configureWTransportForBrowser;
+import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
 import '../../common/global_example_menu_component.dart';
 import '../../common/loading_component.dart';
@@ -28,13 +25,13 @@ import '../../common/loading_component.dart';
 /// Handle clicks on file names.
 /// Sends a GET request to retrieve the file contents,
 /// then displays the contents in the response pane.
-handleFileClick(MouseEvent event) async {
+Future<Null> handleFileClick(MouseEvent event) async {
   // Prevent link navigation
   event.preventDefault();
 
   // Grab file path from anchor element
-  AnchorElement anchor = event.target;
-  String filePath = anchor.href;
+  final AnchorElement anchor = event.target;
+  final filePath = anchor.href;
 
   // Send GET request instead
   try {
@@ -46,7 +43,7 @@ handleFileClick(MouseEvent event) async {
 
 /// Requests the contents of a file using WRequest.
 Future<String> requestFile(String filePath) async {
-  Response response = await Http.get(Uri.parse(filePath));
+  final response = await Http.get(Uri.parse(filePath));
   return response.body.asString();
 }
 

@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.integration.browser_suite_test;
-
 import 'package:test/test.dart';
 
 import 'http/client/browser_test.dart' as http_client_browser;
@@ -29,7 +27,8 @@ import 'http/plain_text_request/browser_test.dart'
 import 'http/streamed_request/browser_test.dart'
     as http_streamed_request_browser;
 
-import 'platforms/browser_platform_test.dart' as browser_platform_adapter_test;
+import 'platforms/browser_transport_platform_test.dart'
+    as browser_transport_platform_test;
 
 import 'ws/browser_test.dart' as ws_browser;
 import 'ws/sockjs_test.dart' as ws_sockjs;
@@ -44,7 +43,7 @@ void main() {
   http_plain_text_request_browser.main();
   http_streamed_request_browser.main();
 
-  browser_platform_adapter_test.main();
+  browser_transport_platform_test.main();
 
   ws_browser.main();
   ws_sockjs.main();

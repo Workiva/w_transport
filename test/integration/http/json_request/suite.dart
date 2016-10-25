@@ -12,88 +12,93 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.json_request.suite;
-
 import 'dart:convert';
 
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runJsonRequestSuite() {
+void runJsonRequestSuite([transport.TransportPlatform transportPlatform]) {
   group('JsonRequest', () {
     test('contentLength should be set automatically', () async {
-      JsonRequest emptyRequest = new JsonRequest();
-      Response response =
+      final emptyRequest =
+          new transport.JsonRequest(transportPlatform: transportPlatform);
+      final response =
           await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
-      int contentLength =
+      final contentLength =
           int.parse(response.body.asJson()['headers']['content-length']);
       expect(contentLength, equals(0),
           reason: 'Empty JSON request\'s content-length should be 0.');
 
-      JsonRequest nonEmptyRequest = new JsonRequest()
-        ..uri = IntegrationPaths.reflectEndpointUri
-        ..body = {'field1': 'value1', 'field2': 'value2'};
-      response = await nonEmptyRequest.post();
-      contentLength =
-          int.parse(response.body.asJson()['headers']['content-length']);
-      expect(contentLength, greaterThan(0),
+      final nonEmptyRequest =
+          new transport.JsonRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.reflectEndpointUri
+            ..body = {'field1': 'value1', 'field2': 'value2'};
+      final response2 = await nonEmptyRequest.post();
+      final contentLength2 =
+          int.parse(response2.body.asJson()['headers']['content-length']);
+      expect(contentLength2, greaterThan(0),
           reason:
               'Non-empty JSON request\'s content-length should be greater than 0.');
     });
 
     test('content-type should be set automatically', () async {
-      JsonRequest request = new JsonRequest()
-        ..uri = IntegrationPaths.reflectEndpointUri
-        ..body = {'field1': 'value1', 'field2': 'value2'};
-      Response response = await request.post();
-      MediaType contentType = new MediaType.parse(
+      final request =
+          new transport.JsonRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.reflectEndpointUri
+            ..body = {'field1': 'value1', 'field2': 'value2'};
+      final response = await request.post();
+      final contentType = new MediaType.parse(
           response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('application/json'));
     });
 
     test('content-type should be overridable', () async {
-      var contentType = new MediaType('application', 'x-custom');
-      JsonRequest request = new JsonRequest()
-        ..uri = IntegrationPaths.reflectEndpointUri
-        ..body = {'field1': 'value1', 'field2': 'value2'}
-        ..contentType = contentType;
-      Response response = await request.post();
-      var reflectedContentType = new MediaType.parse(
+      final contentType = new MediaType('application', 'x-custom');
+      final request =
+          new transport.JsonRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.reflectEndpointUri
+            ..body = {'field1': 'value1', 'field2': 'value2'}
+            ..contentType = contentType;
+      final response = await request.post();
+      final reflectedContentType = new MediaType.parse(
           response.body.asJson()['headers']['content-type']);
       expect(reflectedContentType.mimeType, equals(contentType.mimeType));
     });
 
     test('UTF8', () async {
-      JsonRequest request = new JsonRequest()
-        ..uri = IntegrationPaths.echoEndpointUri
-        ..encoding = UTF8
-        ..body = {'field1': 'value1', 'field2': 'ç®å'};
-      Response response = await request.post();
+      final request =
+          new transport.JsonRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.echoEndpointUri
+            ..encoding = UTF8
+            ..body = {'field1': 'value1', 'field2': 'ç®å'};
+      final response = await request.post();
       expect(response.encoding.name, equals(UTF8.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'ç®å'));
     });
 
     test('LATIN1', () async {
-      JsonRequest request = new JsonRequest()
-        ..uri = IntegrationPaths.echoEndpointUri
-        ..encoding = LATIN1
-        ..body = {'field1': 'value1', 'field2': 'ç®å'};
-      Response response = await request.post();
+      final request =
+          new transport.JsonRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.echoEndpointUri
+            ..encoding = LATIN1
+            ..body = {'field1': 'value1', 'field2': 'ç®å'};
+      final response = await request.post();
       expect(response.encoding.name, equals(LATIN1.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'ç®å'));
     });
 
     test('ASCII', () async {
-      JsonRequest request = new JsonRequest()
-        ..uri = IntegrationPaths.echoEndpointUri
-        ..encoding = ASCII
-        ..body = {'field1': 'value1', 'field2': 'value2'};
-      Response response = await request.post();
+      final request =
+          new transport.JsonRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.echoEndpointUri
+            ..encoding = ASCII
+            ..body = {'field1': 'value1', 'field2': 'value2'};
+      final response = await request.post();
       expect(response.encoding.name, equals(ASCII.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'value2'));

@@ -1,0 +1,36 @@
+## Table of Contents
+
+- [Transport Platform Configuration: Browser/Dart VM](/docs/guides/TransportPlatformConfiguration.md)
+- Basics
+  - HTTP
+    - [Sending a request, receiving a response, and handling a failure](/docs/guides/HttpSendRequestReceiveResponseHandleFailure.md)
+    - [Types of requests (JSON, form, multipart)](/docs/guides/HttpRequestTypes.md)
+    - [Using an `HttpClient`](/docs/guides/HttpClient.md)
+  - WebSocket
+    - [Establishing a connection](/docs/guides/WebSocketConnect.md)
+    - [Sending and receiving data](/docs/guides/WebSocketSendReceive.md)
+    - [Listening for completion/close/done](/docs/guides/WebSocketCompletion.md)
+- Advanced Usage
+  - HTTP
+    - [Sending secure cookies (withCredentials)](/docs/guides/HttpSecureCookies.md)
+    - [Encoding, content-type, and content-length](/docs/guides/HttpContentEncoding.md)
+    - [Canceling and timing-out requests](/docs/guides/HttpCancellationAndTimeout.md)
+    - [Streaming requests and responses](/docs/guides/HttpStreaming.md)
+    - [Intercepting requests and responses](/docs/guides/HttpIntercepting.md)
+    - [Automatic request retrying](/docs/guides/HttpAutoRetry.md)
+  - WebSocket
+    - [Using SockJS](/docs/guides/WebSocketSockJS.md)
+- Testing/Mocks
+  - [Installing/uninstalling the transport mocks](/docs/guides/MockInstallation.md)
+  - HTTP
+    - [Mock responses](/docs/guides/MockResponse.md)
+    - [Expecting requests (one-time use)](/docs/guides/MockHttpExpectations.md)
+    - [Request handlers (many-time use)](/docs/guides/MockHttpHandlers.md)
+  - WebSocket
+    - [Creating and controlling a mock WebSocket server](/docs/guides/MockWebSocketServer.md)
+    - [Expecting WebSocket connections (one-time use)](/docs/guides/MockWebSocketExpectations.md)
+    - [WebSocket connections handlers (many-time use)](/docs/guides/MockWebSocketHandlers.md)
+  - [Advanced: selective mocking with fallback to a real transport platform](/docs/guides/MockSelectiveMockingWithFallback.md)
+- [Changelog](/CHANGELOG.md)
+  - [Upgrading to v3.0.0](/docs/upgrade-guides/v3.0.0)
+- [API docs](https://www.dartdocs.org/documentation/w_transport/latest/index.html)

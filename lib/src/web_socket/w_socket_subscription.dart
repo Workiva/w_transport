@@ -20,11 +20,6 @@ import 'dart:async';
 /// this subscription is exactly the same, except that it isn't considered
 /// "done" until both the incoming and the outgoing subscriptions are closed.
 class WSocketSubscription<T> implements StreamSubscription<T> {
-  /// The callback given by the listener to be called when this subscription
-  /// is completely done.
-  Function get doneHandler => _isCanceled ? null : _doneHandler;
-  Function _doneHandler;
-
   bool _isCanceled = false;
 
   /// The callback given by the [WSocket] implementation to be called when this
@@ -35,9 +30,16 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   /// The `StreamSubscription` being proxied.
   StreamSubscription<T> _sub;
 
-  WSocketSubscription(StreamSubscription this._sub, this._doneHandler,
-      {Function onCancel})
+  WSocketSubscription(this._sub, this._doneHandler, {Function onCancel})
       : _onCancel = onCancel;
+
+  /// The callback given by the listener to be called when this subscription
+  /// is completely done.
+  Function get doneHandler => _isCanceled ? null : _doneHandler;
+  Function _doneHandler;
+
+  @override
+  bool get isPaused => _sub.isPaused;
 
   @override
   Future cancel() async {
@@ -56,16 +58,13 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   }
 
   @override
-  Future asFuture([var futureValue]) {
-    var c = new Completer();
+  Future/*<E>*/ asFuture/*<E>*/([var/*=E*/ futureValue]) {
+    final c = new Completer/*<E>*/();
     _doneHandler = () {
       c.complete(futureValue);
     };
     return c.future;
   }
-
-  @override
-  bool get isPaused => _sub.isPaused;
 
   @override
   void resume() {

@@ -13,63 +13,63 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.integration.http.multipart_request.browser_test;
-
 import 'dart:html';
 import 'dart:convert';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_browser.dart';
+import 'package:w_transport/browser.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../../naming.dart';
 import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformBrowser
     ..testType = testTypeIntegration
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser();
-    });
-
-    runMultipartRequestSuite();
+    runMultipartRequestSuite(browserTransportPlatform);
 
     group('MultipartRequest', () {
       test('underlying HttpRequest configuration', () async {
-        MultipartRequest request = new MultipartRequest()
+        final request = new transport.MultipartRequest(
+            transportPlatform: browserTransportPlatform)
           ..uri = IntegrationPaths.reflectEndpointUri
           ..fields['field'] = 'value';
-        request.configure((HttpRequest xhr) async {
+        request.configure((request) async {
+          HttpRequest xhr = request;
           xhr.setRequestHeader('x-configured', 'true');
         });
-        Response response = await request.get();
+        final response = await request.get();
         expect(
             response.body.asJson()['headers']['x-configured'], equals('true'));
       });
 
       group('withCredentials', () {
         test('set to true (MultipartRequest)', () async {
-          MultipartRequest request = new MultipartRequest()
+          final request = new transport.MultipartRequest(
+              transportPlatform: browserTransportPlatform)
             ..uri = IntegrationPaths.pingEndpointUri
             ..fields['field'] = 'value'
             ..withCredentials = true;
-          request.configure((HttpRequest xhr) async {
+          request.configure((request) async {
+            HttpRequest xhr = request;
             expect(xhr.withCredentials, isTrue);
           });
           await request.get();
         });
 
         test('set to false (MultipartRequest)', () async {
-          MultipartRequest request = new MultipartRequest()
+          final request = new transport.MultipartRequest(
+              transportPlatform: browserTransportPlatform)
             ..uri = IntegrationPaths.pingEndpointUri
             ..fields['field'] = 'value'
             ..withCredentials = false;
-          request.configure((HttpRequest xhr) async {
+          request.configure((request) async {
+            HttpRequest xhr = request;
             expect(xhr.withCredentials, isFalse);
           });
           await request.get();
@@ -77,21 +77,24 @@ void main() {
       });
 
       test('setting content-length is unsupported', () {
-        MultipartRequest request = new MultipartRequest();
+        final request = new transport.MultipartRequest(
+            transportPlatform: browserTransportPlatform);
         expect(() {
           request.contentLength = 10;
         }, throwsUnsupportedError);
       });
 
       test('setting body in request dispatcher is unsupported', () async {
-        MultipartRequest request = new MultipartRequest()
+        final request = new transport.MultipartRequest(
+            transportPlatform: browserTransportPlatform)
           ..uri = IntegrationPaths.reflectEndpointUri;
         expect(request.post(body: 'invalid'), throwsUnsupportedError);
       });
 
       test('should support Blob file', () async {
-        Blob blob = new Blob([UTF8.encode('file')]);
-        MultipartRequest request = new MultipartRequest()
+        final blob = new Blob([UTF8.encode('file')]);
+        final request = new transport.MultipartRequest(
+            transportPlatform: browserTransportPlatform)
           ..uri = IntegrationPaths.reflectEndpointUri
           ..files['blob'] = blob;
         await request.post();
@@ -102,9 +105,10 @@ void main() {
       });
 
       test('clone()', () {
-        MultipartRequest orig = new MultipartRequest()
+        final orig = new transport.MultipartRequest(
+            transportPlatform: browserTransportPlatform)
           ..fields = {'field1': 'value1'};
-        MultipartRequest clone = orig.clone();
+        final clone = orig.clone();
         expect(clone.fields, equals(orig.fields));
       });
     });

@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.mock_endpoints.download;
-
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 void mockDownloadEndpoint(Uri uri) {
   MockTransports.http.when(uri, (_) async {
-    var byteStream = new Stream.fromIterable([UTF8.encode('file')]);
+    final byteStream = new Stream.fromIterable([UTF8.encode('file')]);
     return new MockStreamedResponse.ok(byteStream: byteStream);
   });
 }

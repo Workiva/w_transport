@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.examples.http.proxy_cross_origin_file_transfer_handlers;
-
 import 'dart:async';
 import 'dart:io';
 
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_vm.dart' show configureWTransportForVM;
+import 'package:w_transport/vm.dart' show configureWTransportForVM;
 
 import '../../../handler.dart';
 
@@ -50,15 +48,15 @@ class FilesProxy extends Handler {
     enableCors();
   }
 
-  Future get(HttpRequest request) async {
-    Map<String, String> headers = {};
+  @override
+  Future<Null> get(HttpRequest request) async {
+    final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    Request proxyRequest = getHttpClient().newRequest()..headers = headers;
+    final proxyRequest = getHttpClient().newRequest()..headers = headers;
 
-    StreamedResponse proxyResponse =
-        await proxyRequest.streamGet(uri: filesEndpoint);
+    final proxyResponse = await proxyRequest.streamGet(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
@@ -67,15 +65,15 @@ class FilesProxy extends Handler {
     await request.response.addStream(proxyResponse.body.byteStream);
   }
 
-  Future delete(HttpRequest request) async {
-    Map<String, String> headers = {};
+  @override
+  Future<Null> delete(HttpRequest request) async {
+    final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    Request proxyRequest = getHttpClient().newRequest()..headers = headers;
+    final proxyRequest = getHttpClient().newRequest()..headers = headers;
 
-    StreamedResponse proxyResponse =
-        await proxyRequest.streamDelete(uri: filesEndpoint);
+    final proxyResponse = await proxyRequest.streamDelete(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
@@ -90,14 +88,15 @@ class UploadProxy extends Handler {
     enableCors();
   }
 
-  Future post(HttpRequest request) async {
-    Map<String, String> headers = {};
+  @override
+  Future<Null> post(HttpRequest request) async {
+    final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    MediaType contentType =
+    final contentType =
         new MediaType.parse(request.headers.value('content-type'));
-    StreamedRequest proxyRequest = getHttpClient().newStreamedRequest()
+    final proxyRequest = getHttpClient().newStreamedRequest()
       ..headers = headers
       ..body = request
       ..contentLength = request.contentLength
@@ -129,12 +128,13 @@ class DownloadProxy extends Handler {
     enableCors();
   }
 
-  Future get(HttpRequest request) async {
-    Map<String, String> headers = {};
+  @override
+  Future<Null> get(HttpRequest request) async {
+    final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    Request proxyRequest = getHttpClient().newRequest()
+    final proxyRequest = getHttpClient().newRequest()
       ..uri = downloadEndpoint
       ..query = request.uri.query
       ..headers = headers;

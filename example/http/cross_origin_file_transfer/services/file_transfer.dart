@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_file_transfer.services.file_transfer;
-
 import 'dart:async';
 import 'dart:html';
 import 'dart:math' as math;
@@ -26,12 +24,12 @@ import 'remote_files.dart';
 // Counter used to create unique upload IDs.
 int _transferNum = 0;
 
+// Current number of bytes in memory from concurrent file transfers.
+int _concurrentFileTransferSize = 0;
+
 // Maximum number of bytes from concurrent file transfers that can be
 // loaded into memory before potentially crashing the browser tab.
 final int _concurrentFileTransferSizeLimit = math.pow(2, 20) * 75; // 75 MB
-
-// Current number of bytes in memory from concurrent file transfers.
-int _concurrentFileTransferSize = 0;
 
 /// Encapsulates the file upload to or file download from the server.
 class FileTransfer {
@@ -41,8 +39,8 @@ class FileTransfer {
   FileTransfer(this.name)
       : id = 'fileTransfer${_transferNum++}',
         _canceled = false,
-        _doneCompleter = new Completer(),
-        _percentComplete = 0.0 {}
+        _doneCompleter = new Completer<Null>(),
+        _percentComplete = 0.0;
 
   /// Unique file transfer identifier.
   final String id;
@@ -59,8 +57,8 @@ class FileTransfer {
   double _percentComplete;
 
   /// Whether or not the request has finished.
-  Future get done => _doneCompleter.future;
-  Completer _doneCompleter;
+  Future<Null> get done => _doneCompleter.future;
+  Completer<Null> _doneCompleter;
 
   /// Cancel the request (will do nothing if the request has already finished).
   void cancel(String reason) {
@@ -76,11 +74,6 @@ class FileTransfer {
 
 /// Encapsulates the upload of a file from the client to the server.
 class Upload extends FileTransfer {
-  /// Start a new file upload. This will begin the upload to the server immediately.
-  static Upload start(File file) {
-    return new Upload._fromFile(file);
-  }
-
   /// Construct a new file upload.
   Upload._fromFile(File file) : super(file.name) {
     // Prepare the upload request.
@@ -100,14 +93,14 @@ class Upload extends FileTransfer {
         .then((_) => _doneCompleter.complete())
         .catchError((error, sT) => _doneCompleter.completeError(error, sT));
   }
+
+  /// Start a new file upload. This will begin the upload to the server immediately.
+  static Upload start(File file) {
+    return new Upload._fromFile(file);
+  }
 }
 
 class Download extends FileTransfer {
-  /// Start a new file download. This will begin the download from the server immediately.
-  static Download start(RemoteFileDescription rfd) {
-    return new Download._ofRemoteFile(rfd);
-  }
-
   int _bytesLoaded;
 
   /// Construct a new file download.
@@ -157,4 +150,9 @@ class Download extends FileTransfer {
   /// File being downloaded.
   File get file => _file;
   File _file;
+
+  /// Start a new file download. This will begin the download from the server immediately.
+  static Download start(RemoteFileDescription rfd) {
+    return new Download._ofRemoteFile(rfd);
+  }
 }

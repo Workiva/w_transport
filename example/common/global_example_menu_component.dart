@@ -12,32 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.common.global_example_menu_component;
-
 import 'dart:async';
 import 'dart:html';
 
 import 'package:react/react.dart' as react;
 import 'package:w_transport/w_transport.dart';
 
-const int _pollingInterval = 10; // 10 seconds
-
-void renderGlobalExampleMenu({nav: true, serverStatus: false}) {
+void renderGlobalExampleMenu({bool nav: true, bool serverStatus: false}) {
   // Insert a container div within which we will mount the global example menu.
-  var container = document.createElement('div');
+  final container = document.createElement('div');
   container.id = 'global-example-menu';
   document.body.insertBefore(container, document.body.firstChild);
 
   // Use react to render the menu.
-  var menu =
+  final menu =
       globalExampleMenuComponent({'nav': nav, 'serverStatus': serverStatus});
   react.render(menu, container);
 }
 
 Future<bool> _ping(Uri uri) async {
   try {
-    Response response = await Http.get(uri);
-    return response.status == 200;
+    await Http.get(uri);
+    return true;
   } on RequestException {
     return false;
   }
@@ -46,40 +42,42 @@ Future<bool> _ping(Uri uri) async {
 Future<bool> _pingServer() async =>
     _ping(Uri.parse('http://localhost:8024/ping'));
 
-var globalExampleMenuComponent =
+dynamic globalExampleMenuComponent =
     react.registerComponent(() => new GlobalExampleMenuComponent());
 
 class GlobalExampleMenuComponent extends react.Component {
   Timer serverPolling;
 
+  @override
   Map getDefaultProps() {
     return {'nav': true, 'serverStatus': false};
   }
 
+  @override
   Map getInitialState() {
     return {'serverOnline': false};
   }
 
+  @override
   void componentWillMount() {
     if (this.props['serverStatus']) {
-      _pingServer().then((bool status) {
+      _pingServer().then((status) {
         this.setState({'serverOnline': status});
       });
       serverPolling =
           new Timer.periodic(new Duration(seconds: 4), (Timer timer) async {
-        bool status = await _pingServer();
+        final status = await _pingServer();
         this.setState({'serverOnline': status});
       });
     }
   }
 
+  @override
   void componentWillUnmount() {
-    if (serverPolling != null) {
-      serverPolling.cancel();
-    }
+    serverPolling?.cancel();
   }
 
-  _buildServerStatusComponent(String name, bool online) {
+  Object _buildServerStatusComponent(String name, bool online) {
     String statusClass = 'server-status';
     String statusDesc = '$name offline';
     if (online) {
@@ -95,20 +93,21 @@ class GlobalExampleMenuComponent extends react.Component {
     ]);
   }
 
-  render() {
-    var nav;
+  @override
+  dynamic render() {
+    dynamic nav;
     if (this.props['nav']) {
       nav = react.a({'href': '/'}, '\u2190 All Examples');
     }
 
-    var serverStatus;
+    dynamic serverStatus;
     if (this.props['serverStatus']) {
       serverStatus =
           _buildServerStatusComponent('Server', this.state['serverOnline']);
     }
 
-    var serverTip;
-    bool serverTipNeeded =
+    dynamic serverTip;
+    final serverTipNeeded =
         this.props['serverStatus'] && !this.state['serverOnline'];
     if (serverTipNeeded) {
       serverTip = react.div({

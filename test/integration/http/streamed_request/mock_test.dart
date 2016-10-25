@@ -13,10 +13,8 @@
 // limitations under the License.
 
 @TestOn('browser || vm')
-library w_transport.test.integration.http.streamed_request.mock_test;
-
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 import '../../../naming.dart';
 import '../../integration_paths.dart';
@@ -26,23 +24,24 @@ import '../mock_endpoints/reflect.dart';
 import 'suite.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformMock
     ..testType = testTypeIntegration
     ..topic = topicHttp;
 
   group(naming.toString(), () {
     setUp(() {
-      configureWTransportForTest();
+      MockTransports.install();
       mock404Endpoint(IntegrationPaths.fourOhFourEndpointUri);
       mockEchoEndpoint(IntegrationPaths.echoEndpointUri);
       mockReflectEndpoint(IntegrationPaths.reflectEndpointUri);
     });
 
-    runStreamedRequestSuite();
-
-    tearDown(() {
+    tearDown(() async {
       MockTransports.verifyNoOutstandingExceptions();
+      await MockTransports.uninstall();
     });
+
+    runStreamedRequestSuite();
   });
 }

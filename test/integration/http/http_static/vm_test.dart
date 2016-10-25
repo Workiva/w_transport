@@ -13,25 +13,19 @@
 // limitations under the License.
 
 @TestOn('vm')
-library w_transport.test.integration.http.http_static.vm_test;
-
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport_vm.dart';
+import 'package:w_transport/vm.dart';
 
 import '../../../naming.dart';
 import 'suite.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformVM
     ..testType = testTypeIntegration
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForVM();
-    });
-
-    runHttpStaticSuite();
+    runHttpStaticSuite(vmTransportPlatform);
   });
 }

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.common.request;
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -30,12 +28,18 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
-import 'package:w_transport/src/http/common/backoff.dart';
+import 'package:w_transport/src/http/utils.dart' as utils;
+import 'package:w_transport/src/mocks/mock_transports.dart'
+    show MockHttpInternal;
+import 'package:w_transport/src/mocks/mock_transports.dart'
+    show MockTransportsInternal;
+import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonRequest extends Object
     with FluriMixin
     implements BaseRequest, RequestDispatchers {
-  CommonRequest() {
+  CommonRequest(TransportPlatform transportPlatform)
+      : this._transportPlatform = transportPlatform {
     autoRetry = new RequestAutoRetry(this);
   }
 
@@ -49,6 +53,7 @@ abstract class CommonRequest extends Object
   /// object to enable or disable automatic retrying, configure the criteria
   /// that determines whether or not a request should be retried, as well as the
   /// number of retries to attempt.
+  @override
   RequestAutoRetry autoRetry;
 
   /// The underlying HTTP client instance. In the browser, this will be null
@@ -56,7 +61,7 @@ abstract class CommonRequest extends Object
   /// instance of `dart:io.HttpClient`.
   ///
   /// If this is not null, it should be used to open and send the HTTP request.
-  dynamic client;
+  Object client;
 
   /// Configuration callback for advanced request configuration.
   /// See [configure].
@@ -79,6 +84,7 @@ abstract class CommonRequest extends Object
   bool isTimedOut = false;
 
   /// HTTP method ('GET', 'POST', etc).
+  @override
   String method;
 
   /// Request interceptor. Called right before request is sent.
@@ -92,6 +98,7 @@ abstract class CommonRequest extends Object
   /// considering it "timed out" (results in a [RequestException] being thrown).
   ///
   /// If null, no timeout threshold will be enforced.
+  @override
   Duration timeoutThreshold;
 
   /// [RequestProgress] stream controller for this HTTP request's upload.
@@ -99,7 +106,7 @@ abstract class CommonRequest extends Object
       new StreamController<RequestProgress>();
 
   /// Completes only when a request is canceled.
-  Completer _cancellationCompleter = new Completer();
+  Completer<Null> _cancellationCompleter = new Completer<Null>();
 
   /// Error associated with a cancellation.
   Object _cancellationError;
@@ -114,20 +121,24 @@ abstract class CommonRequest extends Object
 
   /// Completer that should complete when the request has finished (successful
   /// or otherwise).
-  Completer<Null> _done = new Completer();
+  Completer<Null> _done = new Completer<Null>();
 
   /// Request body encoding.
   Encoding _encoding = UTF8;
 
   /// Request headers. Stored in a case-insensitive map since HTTP headers are
   /// case-insensitive.
-  CaseInsensitiveMap<String> _headers = new CaseInsensitiveMap();
+  CaseInsensitiveMap<String> _headers = new CaseInsensitiveMap<String>();
 
   /// Completes only when a request times out.
-  Completer _timeoutCompleter = new Completer();
+  Completer<Null> _timeoutCompleter = new Completer<Null>();
 
   /// Error associated with a cancellation.
   Object _timeoutError;
+
+  /// TransportPlatform used to create this request. Required in order to
+  /// support cloning and auto retrying.
+  TransportPlatform _transportPlatform;
 
   /// Whether or not to send the request with credentials.
   bool _withCredentials = false;
@@ -138,11 +149,13 @@ abstract class CommonRequest extends Object
 
   /// Gets the content length of the request. If the size of the request is not
   /// known in advance, the content length should be null.
+  @override
   int get contentLength;
 
   /// Sets the content length of the request body. This is only supported in
   /// streamed requests since the body may be sent asynchronously after the
   /// headers have been sent.
+  @override
   set contentLength(int length) {
     throw new UnsupportedError(
         'The content-length of a request cannot be set manually when the request body is known in advance.');
@@ -150,6 +163,7 @@ abstract class CommonRequest extends Object
 
   /// Content-type of this request. Set automatically based on the body type and
   /// the [encoding].
+  @override
   MediaType get contentType {
     if (_contentType == null) {
       _contentType = defaultContentType;
@@ -166,6 +180,7 @@ abstract class CommonRequest extends Object
   /// request type and the [encoding]. Once you set the content-type manually,
   /// we assume you are intentionally overriding this behavior and the
   /// content-type will no longer be updated when [encoding] changes.
+  @override
   set contentType(MediaType contentType) {
     verifyUnsent();
     _contentTypeSetManually = true;
@@ -174,7 +189,7 @@ abstract class CommonRequest extends Object
 
   /// Set the content-type of this request. Used to update the charset
   /// parameter when the encoding changes.
-  updateContentType(MediaType contentType) {
+  void updateContentType(MediaType contentType) {
     _contentType = contentType;
   }
 
@@ -184,17 +199,21 @@ abstract class CommonRequest extends Object
 
   /// Future that resolves when the request has completed (successful or
   /// otherwise).
+  @override
   Future<Null> get done => _done.future;
 
   /// [RequestProgress] stream for this HTTP request's download.
+  @override
   Stream<RequestProgress> get downloadProgress =>
       downloadProgressController.stream;
 
   /// Encoding to use to encode/decode the request body.
+  @override
   Encoding get encoding => _encoding;
 
   /// Set the encoding to use to encode/decode the request body. Setting this
   /// will update the [contentType] `charset` parameter.
+  @override
   set encoding(Encoding encoding) {
     verifyUnsent();
     if (encoding == null) throw new ArgumentError.notNull('encoding');
@@ -206,10 +225,11 @@ abstract class CommonRequest extends Object
   }
 
   /// Get the request headers to be sent with this HTTP request.
+  @override
   Map<String, String> get headers {
     // If the request has been sent, the headers are effectively frozen.
     // To respect this, an unmodifiable Map is returned.
-    if (isSent) return new Map.unmodifiable(_headers);
+    if (isSent) return new Map<String, String>.unmodifiable(_headers);
 
     // Otherwise, the underlying case-insensitive Map is returned, which allows
     // modification of the individual headers.
@@ -217,20 +237,27 @@ abstract class CommonRequest extends Object
   }
 
   /// Set the request headers to send with this HTTP request.
+  @override
   set headers(Map<String, String> headers) {
     verifyUnsent();
-    _headers = new CaseInsensitiveMap.from(headers);
+    _headers = new CaseInsensitiveMap<String>.from(headers);
   }
 
   /// Returns `true` if this request is complete (successful or failed), `false`
   /// otherwise.
+  @override
   bool get isDone => isCanceled || _done.isCompleted;
 
+  /// Whether or not this request is wrapped in a mock-aware class.
+  bool get isMockAware => false;
+
   /// Request interceptor. Called right before request is sent.
+  @override
   RequestInterceptor get requestInterceptor => _requestInterceptor;
 
   /// Set the request interceptor. Will throw if the request has already been
   /// sent.
+  @override
   set requestInterceptor(RequestInterceptor interceptor) {
     verifyUnsent();
     _requestInterceptor = interceptor;
@@ -238,23 +265,28 @@ abstract class CommonRequest extends Object
 
   /// Response interceptor. Called after response is received and before it is
   /// delivered to the request sender.
+  @override
   ResponseInterceptor get responseInterceptor => _responseInterceptor;
 
   /// Set the response interceptor. Will throw if the request has already been
   /// sent.
+  @override
   set responseInterceptor(ResponseInterceptor interceptor) {
     verifyUnsent();
     _responseInterceptor = interceptor;
   }
 
   /// [RequestProgress] stream for this HTTP request's upload.
+  @override
   Stream<RequestProgress> get uploadProgress => uploadProgressController.stream;
 
   /// Whether or not to send the request with credentials.
+  @override
   bool get withCredentials => _withCredentials;
 
   /// Set the withCredentials flag, determining whether or not the request
   /// will include credentials (secure cookies).
+  @override
   set withCredentials(bool flag) {
     verifyUnsent();
     _withCredentials = flag;
@@ -274,13 +306,13 @@ abstract class CommonRequest extends Object
   /// request should be used.
   ///
   /// This logic is platform-specific and should be implemented by the subclass.
-  Future<BaseHttpBody> finalizeBody([body]);
+  Future<BaseHttpBody> finalizeBody([dynamic body]);
 
   /// Open the request. If [client] is given, that client should be used to open
   /// the request.
   ///
   /// This logic is platform-specific and should be implemented by the subclass.
-  Future openRequest([client]);
+  Future<Null> openRequest([Object client]);
 
   /// Send the request described in [finalizedRequest] and fetch the response.
   /// If [streamResponse] is true, the response should be streamed.
@@ -292,6 +324,7 @@ abstract class CommonRequest extends Object
 
   /// Cancel this request. If the request has already finished, this will do
   /// nothing.
+  @override
   void abort([Object error]) {
     if (isCanceled) return;
     isCanceled = true;
@@ -304,7 +337,7 @@ abstract class CommonRequest extends Object
   /// Check if this request has been canceled.
   void checkForCancellation({BaseResponse response}) {
     if (isCanceled) {
-      var error = new RequestException(
+      final error = new RequestException(
           method,
           this.uri,
           this,
@@ -328,25 +361,29 @@ abstract class CommonRequest extends Object
   ///
   /// Sub classes should override this, call super.clone() first to get the base
   /// clone, and then add fields specific to their implementation.
+  @override
   BaseRequest clone() {
     // StreamedRequests can't be cloned.
     if (this is StreamedRequest) return null;
 
     BaseRequest requestClone;
-    bool fromClient = _wTransportClient != null;
+    final fromClient = _wTransportClient != null;
     if (this is FormRequest) {
-      requestClone =
-          fromClient ? _wTransportClient.newFormRequest() : new FormRequest();
+      requestClone = fromClient
+          ? _wTransportClient.newFormRequest()
+          : new FormRequest(transportPlatform: _transportPlatform);
     } else if (this is JsonRequest) {
-      requestClone =
-          fromClient ? _wTransportClient.newJsonRequest() : new JsonRequest();
+      requestClone = fromClient
+          ? _wTransportClient.newJsonRequest()
+          : new JsonRequest(transportPlatform: _transportPlatform);
     } else if (this is MultipartRequest) {
       requestClone = fromClient
           ? _wTransportClient.newMultipartRequest()
-          : new MultipartRequest();
+          : new MultipartRequest(transportPlatform: _transportPlatform);
     } else if (this is Request) {
-      requestClone =
-          fromClient ? _wTransportClient.newRequest() : new Request();
+      requestClone = fromClient
+          ? _wTransportClient.newRequest()
+          : new Request(transportPlatform: _transportPlatform);
     }
 
     requestClone
@@ -375,7 +412,8 @@ abstract class CommonRequest extends Object
   /// be an instance of [HttpRequest] or [HttpClientRequest],
   /// depending on the w_transport usage. If [configureRequest] returns a Future,
   /// the request will not be sent until the returned Future completes.
-  void configure(configure(request)) {
+  @override
+  void configure(configure(Object request)) {
     verifyUnsent();
     configureFn = configure;
   }
@@ -388,16 +426,16 @@ abstract class CommonRequest extends Object
       headers['content-length'] = contentLength.toString();
     }
     headers['content-type'] = contentType.toString();
-    return new Map.unmodifiable(headers);
+    return new Map<String, String>.unmodifiable(headers);
   }
 
   /// Freeze this request in preparation of it being sent. This freezes all
   /// fields, preventing further unexpected modification, and triggers the
   /// creation of a finalized request body.
-  Future<FinalizedRequest> finalizeRequest([body]) async {
-    Map<String, String> finalizedHeaders = finalizeHeaders();
-    BaseHttpBody finalizedBody = await finalizeBody(body);
-    FinalizedRequest finalizedRequest = new FinalizedRequest(
+  Future<FinalizedRequest> finalizeRequest([dynamic body]) async {
+    final finalizedHeaders = finalizeHeaders();
+    final finalizedBody = await finalizeBody(body);
+    final finalizedRequest = new FinalizedRequest(
         method, uri, finalizedHeaders, finalizedBody, withCredentials);
 
     if (isSent)
@@ -406,6 +444,15 @@ abstract class CommonRequest extends Object
     isSent = true;
 
     return finalizedRequest;
+  }
+
+  /// When a mock request is sent, we check to see if there is a mock
+  /// expectation or handler setup to handle the request. If not, we switch to
+  /// a real request instance (created from a TransportPlatform instance).
+  ///
+  /// This is handled by the mock request mixin.
+  Future<BaseResponse> switchToRealRequest({bool streamResponse}) {
+    throw new UnimplementedError();
   }
 
   @override
@@ -420,70 +467,89 @@ abstract class CommonRequest extends Object
           'Request (${this.toString()}) has already been sent and can no longer be modified.');
   }
 
+  @override
   Future<Response> delete({Map<String, String> headers, Uri uri}) =>
       _send('DELETE', headers: headers, uri: uri);
 
+  @override
   Future<Response> get({Map<String, String> headers, Uri uri}) =>
       _send('GET', headers: headers, uri: uri);
 
+  @override
   Future<Response> head({Map<String, String> headers, Uri uri}) =>
       _send('HEAD', headers: headers, uri: uri);
 
+  @override
   Future<Response> options({Map<String, String> headers, Uri uri}) =>
       _send('OPTIONS', headers: headers, uri: uri);
 
-  Future<Response> patch({body, Map<String, String> headers, Uri uri}) =>
+  @override
+  Future<Response> patch(
+          {dynamic body, Map<String, String> headers, Uri uri}) =>
       _send('PATCH', body: body, headers: headers, uri: uri);
 
-  Future<Response> post({body, Map<String, String> headers, Uri uri}) =>
+  @override
+  Future<Response> post({dynamic body, Map<String, String> headers, Uri uri}) =>
       _send('POST', body: body, headers: headers, uri: uri);
 
-  Future<Response> put({body, Map<String, String> headers, Uri uri}) =>
+  @override
+  Future<Response> put({dynamic body, Map<String, String> headers, Uri uri}) =>
       _send('PUT', body: body, headers: headers, uri: uri);
 
+  @override
   Future<Response> send(String method,
-          {body, Map<String, String> headers, Uri uri}) =>
+          {dynamic body, Map<String, String> headers, Uri uri}) =>
       _send(method, headers: headers, uri: uri);
 
+  @override
   Future<StreamedResponse> streamDelete(
           {Map<String, String> headers, Uri uri}) =>
       _send('DELETE', headers: headers, streamResponse: true, uri: uri);
 
+  @override
   Future<StreamedResponse> streamGet({Map<String, String> headers, Uri uri}) =>
       _send('GET', headers: headers, streamResponse: true, uri: uri);
 
+  @override
   Future<StreamedResponse> streamHead({Map<String, String> headers, Uri uri}) =>
       _send('HEAD', headers: headers, streamResponse: true, uri: uri);
 
+  @override
   Future<StreamedResponse> streamOptions(
           {Map<String, String> headers, Uri uri}) =>
       _send('OPTIONS', headers: headers, streamResponse: true, uri: uri);
 
+  @override
   Future<StreamedResponse> streamPatch(
-          {body, Map<String, String> headers, Uri uri}) =>
+          {dynamic body, Map<String, String> headers, Uri uri}) =>
       _send('PATCH',
           body: body, headers: headers, streamResponse: true, uri: uri);
 
+  @override
   Future<StreamedResponse> streamPost(
-          {body, Map<String, String> headers, Uri uri}) =>
+          {dynamic body, Map<String, String> headers, Uri uri}) =>
       _send('POST',
           body: body, headers: headers, streamResponse: true, uri: uri);
 
+  @override
   Future<StreamedResponse> streamPut(
-          {body, Map<String, String> headers, Uri uri}) =>
+          {dynamic body, Map<String, String> headers, Uri uri}) =>
       _send('PUT',
           body: body, headers: headers, streamResponse: true, uri: uri);
 
+  @override
   Future<StreamedResponse> streamSend(String method,
-          {body, Map<String, String> headers, Uri uri}) =>
+          {dynamic body, Map<String, String> headers, Uri uri}) =>
       _send(method,
           body: body, headers: headers, streamResponse: true, uri: uri);
 
+  @override
   Future<Response> retry() {
     _verifyCanRetryManually();
     return clone().send(method);
   }
 
+  @override
   Future<StreamedResponse> streamRetry() {
     _verifyCanRetryManually();
     return clone().streamSend(method);
@@ -517,7 +583,7 @@ abstract class CommonRequest extends Object
 
   /// Retry this request by creating and sending a clone.
   Future<BaseResponse> _retry(bool streamResponse) async {
-    BaseRequest retry = clone();
+    final retry = clone();
     return streamResponse ? retry.streamSend(method) : retry.send(method);
   }
 
@@ -557,7 +623,7 @@ abstract class CommonRequest extends Object
 
     // Use a completer so that an exception can be wrapped in a RequestException
     // instance while still preserving the stack trace of the original error.
-    Completer c = new Completer();
+    final c = new Completer<BaseResponse>();
 
     this.method = method;
     if (uri != null) {
@@ -572,7 +638,7 @@ abstract class CommonRequest extends Object
     }
 
     // Ensure non-null.
-    streamResponse = streamResponse == true;
+    streamResponse ??= false;
 
     // Apply the request interceptor if set.
     if (requestInterceptor != null) {
@@ -582,9 +648,20 @@ abstract class CommonRequest extends Object
     }
 
     // No further changes should be made to the request at this point.
-    FinalizedRequest finalizedRequest = await finalizeRequest(body);
+    final finalizedRequest = await finalizeRequest(body);
     checkForCancellation();
     checkForTimeout();
+
+    // If this is a mock-aware request without an expectation or handler setup
+    // to process it, switch to a real request.
+    if (isMockAware &&
+        MockTransportsInternal.fallThrough &&
+        !MockHttpInternal.hasHandlerForRequest(finalizedRequest.method,
+            finalizedRequest.uri, finalizedRequest.headers)) {
+      return switchToRealRequest(streamResponse: streamResponse);
+    }
+
+    // Otherwise, carry on with the send logic and the mocks will do the rest.
 
     BaseResponse response;
     bool responseInterceptorThrew = false;
@@ -592,7 +669,7 @@ abstract class CommonRequest extends Object
       await openRequest(client);
       checkForCancellation();
       checkForTimeout();
-      Completer<BaseResponse> responseCompleter = new Completer();
+      final responseCompleter = new Completer<BaseResponse>();
 
       // Enforce a timeout threshold if set.
       Timer timeout;
@@ -601,6 +678,7 @@ abstract class CommonRequest extends Object
       }
 
       // Attempt to fetch the response.
+      // ignore: unawaited_futures
       sendRequestAndFetchResponse(finalizedRequest,
           streamResponse: streamResponse).then((response) {
         if (!responseCompleter.isCompleted) {
@@ -621,7 +699,9 @@ abstract class CommonRequest extends Object
         }
       }
 
+      // ignore: unawaited_futures
       _cancellationCompleter.future.then(breakOutOfResponseFetching);
+      // ignore: unawaited_futures
       _timeoutCompleter.future.then(breakOutOfResponseFetching);
 
       response = await responseCompleter.future;
@@ -656,11 +736,12 @@ abstract class CommonRequest extends Object
 
       c.complete();
     } catch (e, stackTrace) {
-      var requestException = e;
-      if (requestException is! RequestException) {
-        requestException = new RequestException(
-            method, this.uri, this, response, requestException);
+      Object exception = e;
+      if (exception is! RequestException) {
+        exception =
+            new RequestException(method, this.uri, this, response, exception);
       }
+      RequestException requestException = exception;
 
       // Apply the response interceptor even in the event of failure, unless the
       // response interceptor was the cause of failure.
@@ -677,15 +758,16 @@ abstract class CommonRequest extends Object
       // Attempt to retry the request if configuration and state permit it.
       bool retrySucceeded = false;
       if (await _canRetry(finalizedRequest, response, requestException)) {
-        Completer<BaseResponse> retryCompleter = new Completer();
+        final retryCompleter = new Completer<BaseResponse>();
 
         // If retry back-off is configured, wait as necessary.
-        Duration backOff = Backoff.calculateBackOff(autoRetry);
+        final backOff = utils.calculateBackOff(autoRetry);
 
         if (backOff != null) {
           await new Future.delayed(backOff);
         }
 
+        // ignore: unawaited_futures
         _retry(streamResponse).then((retryResponse) {
           if (!retryCompleter.isCompleted) {
             response = retryResponse;
@@ -702,6 +784,7 @@ abstract class CommonRequest extends Object
 
         // Listen for cancellation and break out of the retry early if
         // cancellation occurs before the retry has finished.
+        // ignore: unawaited_futures
         _cancellationCompleter.future.then((_) {
           if (!retryCompleter.isCompleted) {
             retryCompleter.complete();

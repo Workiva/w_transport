@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.http.echo;
-
 import 'dart:async';
 import 'dart:io';
 
@@ -27,20 +25,37 @@ class EchoHandler extends Handler {
     enableCors();
   }
 
-  Future echo(HttpRequest request) async {
+  Future<Null> echo(HttpRequest request) async {
     request.response.statusCode = HttpStatus.OK;
     request.response.headers.contentType = request.headers.contentType;
     setCorsHeaders(request);
     await request.response.addStream(request);
   }
 
-  Future copy(HttpRequest request) async => echo(request);
-  Future delete(HttpRequest request) async => echo(request);
-  Future get(HttpRequest request) async => echo(request);
-  Future head(HttpRequest request) async => echo(request);
-  Future options(HttpRequest request) async => echo(request);
-  Future patch(HttpRequest request) async => echo(request);
-  Future post(HttpRequest request) async => echo(request);
-  Future put(HttpRequest request) async => echo(request);
-  Future trace(HttpRequest request) async => echo(request);
+  @override
+  Future<Null> copy(HttpRequest request) async => echo(request);
+
+  @override
+  Future<Null> delete(HttpRequest request) async => echo(request);
+
+  @override
+  Future<Null> get(HttpRequest request) async => echo(request);
+
+  @override
+  Future<Null> head(HttpRequest request) async => echo(request);
+
+  @override
+  Future<Null> options(HttpRequest request) async => echo(request);
+
+  @override
+  Future<Null> patch(HttpRequest request) async => echo(request);
+
+  @override
+  Future<Null> post(HttpRequest request) async => echo(request);
+
+  @override
+  Future<Null> put(HttpRequest request) async => echo(request);
+
+  @override
+  Future<Null> trace(HttpRequest request) async => echo(request);
 }

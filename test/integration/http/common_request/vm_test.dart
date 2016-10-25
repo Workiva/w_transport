@@ -13,31 +13,26 @@
 // limitations under the License.
 
 @TestOn('vm')
-library w_transport.test.integration.http.common_request.vm_test;
-
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_vm.dart';
+import 'package:w_transport/vm.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../../naming.dart';
 import 'suite.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformVM
     ..testType = testTypeIntegration
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForVM();
-    });
-
-    runCommonRequestSuite();
+    runCommonRequestSuite(vmTransportPlatform);
 
     group('MultipartRequest', () {
       test('adding invalid type as file throws', () {
-        MultipartRequest request = new MultipartRequest();
+        final request = new transport.MultipartRequest(
+            transportPlatform: vmTransportPlatform);
         request.files['test'] = 'not a file';
         expect(() => request.contentLength, throwsUnsupportedError);
         expect(request.post(uri: Uri.parse('/test')), throwsUnsupportedError);

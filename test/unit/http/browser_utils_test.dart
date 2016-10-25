@@ -13,13 +13,10 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.unit.http.browser_utils_test;
-
 import 'dart:async';
 import 'dart:html';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart' show RequestProgress;
 
 import 'package:w_transport/src/http/browser/utils.dart'
     show transformProgressEvents;
@@ -27,7 +24,7 @@ import 'package:w_transport/src/http/browser/utils.dart'
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformBrowser
     ..testType = testTypeUnit
     ..topic = topicHttp;
@@ -37,16 +34,16 @@ void main() {
       test(
           'should convert computable ProgressEvents to WProgress instances with correct values',
           () async {
-        Stream eventStream = new Stream.fromIterable([
+        final eventStream = new Stream<ProgressEvent>.fromIterable([
           new MockProgressEvent.computable(0, 100),
           new MockProgressEvent.computable(10, 100),
           new MockProgressEvent.computable(50, 100),
           new MockProgressEvent.computable(73, 100),
           new MockProgressEvent.computable(100, 100),
         ]);
-        Stream<RequestProgress> requestProgressStream =
+        final requestProgressStream =
             eventStream.transform(transformProgressEvents);
-        List<RequestProgress> wEvents = await requestProgressStream.toList();
+        final wEvents = await requestProgressStream.toList();
         expect(wEvents[0].percent, equals(0.0));
         expect(wEvents[1].percent, equals(10.0));
         expect(wEvents[2].percent, equals(50.0));
@@ -57,23 +54,22 @@ void main() {
       test(
           'should convert non-computable ProgressEvents to WProgress instances with 0% values',
           () async {
-        Stream events = new Stream.fromIterable([
+        final events = new Stream<ProgressEvent>.fromIterable([
           new MockProgressEvent.nonComputable(),
           new MockProgressEvent.nonComputable(),
         ]);
-        Stream wEventStream = events.transform(transformProgressEvents);
-        List<RequestProgress> wEvents = await wEventStream.toList();
+        final wEventStream = events.transform(transformProgressEvents);
+        final wEvents = await wEventStream.toList();
         expect(wEvents[0].percent, equals(0.0));
         expect(wEvents[1].percent, equals(0.0));
       });
 
       test('should support pausing and resuming a subscription', () async {
-        StreamController<ProgressEvent> eventController =
-            new StreamController();
-        Stream<RequestProgress> wEventStream =
+        final eventController = new StreamController<ProgressEvent>();
+        final wEventStream =
             eventController.stream.transform(transformProgressEvents);
 
-        Completer c = new Completer();
+        final c = new Completer<Null>();
         int eventCount = 0;
         StreamSubscription subscription = wEventStream.listen((_) {
           eventCount++;
@@ -86,7 +82,7 @@ void main() {
         subscription.resume();
         eventController.add(new MockProgressEvent.nonComputable());
 
-        eventController.close();
+        await eventController.close();
         await c.future;
         expect(eventCount, equals(4));
       });
@@ -95,14 +91,20 @@ void main() {
 }
 
 class MockProgressEvent implements ProgressEvent {
+  @override
   bool lengthComputable;
+
+  @override
   int loaded;
+
+  @override
   int total;
 
-  MockProgressEvent.computable(int this.loaded, int this.total)
+  MockProgressEvent.computable(this.loaded, this.total)
       : lengthComputable = true;
   MockProgressEvent.nonComputable() : lengthComputable = false;
 
   // Silence dart analyzer warnings.
-  noSuchMethod(i) => super.noSuchMethod(i);
+  @override
+  dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
 }

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.integration_paths;
-
 class IntegrationPaths {
   static final Uri hostUri = Uri.parse('http://localhost:8024');
   static final Uri wsHostUri = hostUri.replace(scheme: 'ws');
@@ -22,6 +20,8 @@ class IntegrationPaths {
 
   static final Uri customEndpointUri =
       hostUri.replace(path: '/test/http/custom');
+  static final Pattern customEndpointUriPattern = new RegExp(
+      customEndpointUri.toString().replaceAll('/', '\/') + r'(\?.*)');
   static final Uri downloadEndpointUri =
       hostUri.replace(path: '/test/http/download');
   static final Uri echoEndpointUri = hostUri.replace(path: '/test/http/echo');

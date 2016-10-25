@@ -12,33 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.mock.request_mixin;
-
 import 'dart:async';
 
+import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/mock/base_request.dart';
 import 'package:w_transport/src/http/mock/response.dart';
 import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
+import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
-import 'package:w_transport/src/mocks/http.dart' show MockHttpInternal;
+import 'package:w_transport/src/mocks/mock_transports.dart'
+    show MockHttpInternal;
 
 abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
-  Completer _canceled = new Completer();
+  Completer<Null> _canceled = new Completer<Null>();
   bool _mockHandlersRegistered = false;
-  Completer<BaseResponse> _response = new Completer();
-  Completer<FinalizedRequest> _sent = new Completer();
+  Completer<BaseResponse> _response = new Completer<BaseResponse>();
+  Completer<FinalizedRequest> _sent = new Completer<FinalizedRequest>();
   bool _shouldFailToOpen = false;
   bool _streamResponse;
 
-  Future get onCanceled {
+  @override
+  bool get isMockAware => true;
+
+  @override
+  Future<Null> get onCanceled {
     _registerHandlers();
     return _canceled.future;
   }
 
+  @override
   Future<FinalizedRequest> get onSent {
     _registerHandlers();
     return _sent.future;
@@ -50,13 +56,38 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     _canceled.complete();
   }
 
+  BaseRequest createRealRequest();
+
   @override
-  Future openRequest([_]) async {
+  Future<Null> openRequest([_]) async {
     _registerHandlers();
 
     // Allow the controller of this mock request to trigger an unexpected
     // exception to test the handling of said exception.
     if (_shouldFailToOpen) throw new Exception('Mock request failed to open.');
+  }
+
+  @override
+  Future<BaseResponse> switchToRealRequest({bool streamResponse}) {
+    // There is not a mock expectation or handler set up to handle this request,
+    // so we fallback to the real TransportPlatform implementation.
+    final realRequest = createRealRequest()
+      ..autoRetry = autoRetry
+      ..headers = headers
+      ..requestInterceptor = requestInterceptor
+      ..responseInterceptor = responseInterceptor
+      ..timeoutThreshold = timeoutThreshold
+      ..uri = uri
+      ..withCredentials = withCredentials;
+
+    // Encoding cannot be set on MultipartRequests
+    if (this is! MultipartRequest) {
+      realRequest.encoding = encoding;
+    }
+
+    return streamResponse
+        ? realRequest.streamSend(method)
+        : realRequest.send(method);
   }
 
   @override
@@ -82,37 +113,37 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     return _response.future;
   }
 
+  @override
   void complete({BaseResponse response}) {
-    if (response == null) {
-      response = new MockResponse.ok();
-    }
+    response ??= new MockResponse.ok();
     // Defer the "fetching" of the response until the request has been sent.
     onSent.then((_) async {
       // Coerce the response to the correct format (streamed or not).
       if (_streamResponse && response is Response) {
+        final Response standardResponse = response;
         response = new StreamedResponse.fromByteStream(
             response.status,
             response.statusText,
             response.headers,
-            new Stream.fromIterable([(response as Response).body.asBytes()]));
+            new Stream.fromIterable([standardResponse.body.asBytes()]));
       }
       if (!_streamResponse && response is StreamedResponse) {
-        response = new Response.fromBytes(
-            response.status,
-            response.statusText,
-            response.headers,
-            await (response as StreamedResponse).body.toBytes());
+        final StreamedResponse streamedResponse = response;
+        response = new Response.fromBytes(response.status, response.statusText,
+            response.headers, await streamedResponse.body.toBytes());
       }
 
       if (response is StreamedResponse) {
-        var progressListener = new http_utils.ByteStreamProgressListener(
-            (response as StreamedResponse).body.byteStream,
+        final StreamedResponse streamedResponse = response;
+        final progressListener = new http_utils.ByteStreamProgressListener(
+            streamedResponse.body.byteStream,
             total: response.contentLength);
         progressListener.progressStream.listen(downloadProgressController.add);
         response = new StreamedResponse.fromByteStream(response.status,
             response.statusText, response.headers, progressListener.byteStream);
       } else {
-        int total = (response as Response).body.asBytes().length;
+        final Response standardResponse = response;
+        final total = standardResponse.body.asBytes().length;
         downloadProgressController.add(new RequestProgress(total, total));
       }
 
@@ -120,6 +151,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     });
   }
 
+  @override
   void completeError({Object error, BaseResponse response}) {
     // Defer the "fetching" of the response until the request has been sent.
     onSent.then((_) {
@@ -128,6 +160,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     });
   }
 
+  @override
   void causeFailureOnOpen() {
     _shouldFailToOpen = true;
   }

@@ -12,12 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.browser.request_mixin;
-
 import 'dart:async';
 import 'dart:html';
-
-import 'package:stack_trace/stack_trace.dart';
 
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/browser/form_data_body.dart';
@@ -33,32 +29,30 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
 
   @override
   void abortRequest() {
-    if (_request != null) {
-      _request.abort();
-    }
+    _request?.abort();
   }
 
   @override
-  Future openRequest([_]) async {
+  Future<Null> openRequest([_]) async {
     _request = new HttpRequest();
-    await _request.open(method, uri.toString());
+    _request.open(method, uri.toString());
   }
 
   @override
   Future<BaseResponse> sendRequestAndFetchResponse(
       FinalizedRequest finalizedRequest,
       {bool streamResponse: false}) async {
-    Completer<BaseResponse> c = new Completer();
+    final c = new Completer<BaseResponse>();
 
     // Add request headers.
     if (finalizedRequest.headers != null) {
       // The browser forbids setting these two headers:
       // - connection
       // - content-length
-      Map headersToAdd = new Map.from(finalizedRequest.headers);
+      final headersToAdd =
+          new Map<String, String>.from(finalizedRequest.headers);
       headersToAdd.remove('connection');
       headersToAdd.remove('content-length');
-
       headersToAdd.forEach(_request.setRequestHeader);
     }
 
@@ -67,9 +61,13 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     }
 
     // Pipe onProgress events to the progress controllers.
+
+    // ignore: unawaited_futures
     _request.onProgress
         .transform(browser_utils.transformProgressEvents)
         .pipe(downloadProgressController);
+
+    // ignore: unawaited_futures
     _request.upload.onProgress
         .transform(browser_utils.transformProgressEvents)
         .pipe(uploadProgressController);
@@ -80,12 +78,11 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         c.complete(_createResponse(streamResponse: streamResponse));
       }
     });
-    Future onError(error) async {
+    Future<Null> onError(Object error) async {
       if (!c.isCompleted) {
-        BaseResponse response =
-            await _createResponse(streamResponse: streamResponse);
+        final response = await _createResponse(streamResponse: streamResponse);
         error = new RequestException(method, uri, this, response, error);
-        c.completeError(error, new Chain.current());
+        c.completeError(error, StackTrace.current);
       }
     }
 
@@ -97,7 +94,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     }
 
     // Allow the caller to configure the request.
-    dynamic configurationResult;
+    Object configurationResult;
     if (configureFn != null) {
       configurationResult = configureFn(_request);
     }
@@ -108,33 +105,34 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     }
 
     if (finalizedRequest.body is HttpBody) {
-      _request.send((finalizedRequest.body as HttpBody).asBytes().buffer);
+      HttpBody body = finalizedRequest.body;
+      _request.send(body.asBytes().buffer);
     } else if (finalizedRequest.body is StreamedHttpBody) {
-      _request
-          .send(await (finalizedRequest.body as StreamedHttpBody).toBytes());
+      StreamedHttpBody body = finalizedRequest.body;
+      _request.send(await body.toBytes());
     } else if (finalizedRequest.body is FormDataBody) {
-      _request.send((finalizedRequest.body as FormDataBody).formData);
+      FormDataBody body = finalizedRequest.body;
+      _request.send(body.formData);
     }
     return await c.future;
   }
 
   Future<BaseResponse> _createResponse({bool streamResponse: false}) async {
-    if (streamResponse == null) {
-      streamResponse = false;
-    }
+    streamResponse ??= false;
 
     BaseResponse response;
     if (streamResponse) {
-      Completer result = new Completer();
-      FileReader reader = new FileReader();
+      final result = new Completer<List<int>>();
+      final reader = new FileReader();
+      // ignore: unawaited_futures
       reader.onLoad.first.then((_) {
         result.complete(reader.result);
       });
+      // ignore: unawaited_futures
       reader.onError.first.then(result.completeError);
-      reader.readAsArrayBuffer(
-          _request.response != null ? _request.response : new Blob([]));
-      List<int> bytes = await result.future;
-      var byteStream = new Stream.fromIterable([bytes]);
+      reader.readAsArrayBuffer(_request.response ?? new Blob([]));
+      final bytes = await result.future;
+      final byteStream = new Stream.fromIterable([bytes]);
       response = new StreamedResponse.fromByteStream(_request.status,
           _request.statusText, _request.responseHeaders, byteStream);
     } else {

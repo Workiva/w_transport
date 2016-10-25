@@ -12,38 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.http_static.suite;
-
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runHttpStaticSuite() {
+void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
   group('Http static methods', () {
-    var headers = {
+    final headers = <String, String>{
       'authorization': 'test',
       'x-custom': 'value',
       'x-tokens': 'token1, token2'
     };
 
     test('DELETE request', () async {
-      Response response =
-          await Http.delete(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.delete(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('DELETE'));
     });
 
     test('DELETE request with headers', () async {
-      Response response = await Http.delete(IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+      final response = await transport.Http.delete(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('DELETE'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -52,17 +52,21 @@ void runHttpStaticSuite() {
     });
 
     test('GET request', () async {
-      Response response = await Http.get(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.get(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('GET'));
     });
 
     test('GET request with headers', () async {
-      Response response = await Http.get(IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+      final response = await transport.Http.get(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('GET'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -71,30 +75,36 @@ void runHttpStaticSuite() {
     });
 
     test('HEAD request', () async {
-      Response response = await Http.head(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.head(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
     });
 
     test('HEAD request with headers', () async {
-      Response response = await Http.head(IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+      final response = await transport.Http.head(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
     });
 
     test('OPTIONS request', () async {
-      Response response =
-          await Http.options(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.options(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('OPTIONS'));
     });
 
     test('OPTIONS request with headers', () async {
-      Response response = await Http.options(
+      final response = await transport.Http.options(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('OPTIONS'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -103,17 +113,21 @@ void runHttpStaticSuite() {
     });
 
     test('PATCH request', () async {
-      Response response = await Http.patch(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.patch(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('PATCH'));
     });
 
     test('PATCH request with headers', () async {
-      Response response = await Http.patch(IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+      final response = await transport.Http.patch(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('PATCH'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -122,23 +136,29 @@ void runHttpStaticSuite() {
     });
 
     test('PATCH request with body', () async {
-      Response response =
-          await Http.patch(IntegrationPaths.echoEndpointUri, body: 'body');
+      final response = await transport.Http.patch(
+          IntegrationPaths.echoEndpointUri,
+          body: 'body',
+          transportPlatform: transportPlatform);
       expect(response.body.asString(), equals('body'));
     });
 
     test('POST request', () async {
-      Response response = await Http.post(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.post(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('POST'));
     });
 
     test('POST request with headers', () async {
-      Response response = await Http.post(IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+      final response = await transport.Http.post(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('POST'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -147,23 +167,29 @@ void runHttpStaticSuite() {
     });
 
     test('POST request with body', () async {
-      Response response =
-          await Http.post(IntegrationPaths.echoEndpointUri, body: 'body');
+      final response = await transport.Http.post(
+          IntegrationPaths.echoEndpointUri,
+          body: 'body',
+          transportPlatform: transportPlatform);
       expect(response.body.asString(), equals('body'));
     });
 
     test('PUT request', () async {
-      Response response = await Http.put(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.put(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('PUT'));
     });
 
     test('PUT request with headers', () async {
-      Response response = await Http.put(IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+      final response = await transport.Http.put(
+          IntegrationPaths.reflectEndpointUri,
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('PUT'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -172,25 +198,29 @@ void runHttpStaticSuite() {
     });
 
     test('PUT request with body', () async {
-      Response response =
-          await Http.put(IntegrationPaths.echoEndpointUri, body: 'body');
+      final response = await transport.Http.put(
+          IntegrationPaths.echoEndpointUri,
+          body: 'body',
+          transportPlatform: transportPlatform);
       expect(response.body.asString(), equals('body'));
     });
 
     test('custom HTTP method request', () async {
-      Response response =
-          await Http.send('COPY', IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.send(
+          'COPY', IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('COPY'));
     });
 
     test('custom HTTP method request with headers', () async {
-      Response response = await Http.send(
+      final response = await transport.Http.send(
           'COPY', IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('COPY'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -199,36 +229,40 @@ void runHttpStaticSuite() {
     });
 
     test('custom HTTP method request with body', () async {
-      Response response = await Http
-          .send('COPY', IntegrationPaths.echoEndpointUri, body: 'body');
+      final response = await transport.Http.send(
+          'COPY', IntegrationPaths.echoEndpointUri,
+          body: 'body', transportPlatform: transportPlatform);
       expect(response.body.asString(), equals('body'));
     });
 
     Future<String> _decodeStreamedResponseToString(
-        StreamedResponse response) async {
-      Uint8List bytes = await response.body.toBytes();
+        transport.StreamedResponse response) async {
+      final bytes = await response.body.toBytes();
       return response.encoding.decode(bytes.toList());
     }
 
-    Future<Map> _decodeStreamedResponseToJson(StreamedResponse response) async {
+    Future<Map> _decodeStreamedResponseToJson(
+        transport.StreamedResponse response) async {
       return JSON.decode(await _decodeStreamedResponseToString(response));
     }
 
     test('streamed DELETE request', () async {
-      StreamedResponse response =
-          await Http.streamDelete(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.streamDelete(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('DELETE'));
     });
 
     test('streamed DELETE request with headers', () async {
-      StreamedResponse response = await Http.streamDelete(
+      final response = await transport.Http.streamDelete(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('DELETE'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -237,20 +271,22 @@ void runHttpStaticSuite() {
     });
 
     test('streamed GET request', () async {
-      StreamedResponse response =
-          await Http.streamGet(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.streamGet(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('GET'));
     });
 
     test('streamed GET request with headers', () async {
-      StreamedResponse response = await Http.streamGet(
+      final response = await transport.Http.streamGet(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('GET'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -259,33 +295,37 @@ void runHttpStaticSuite() {
     });
 
     test('streamed HEAD request', () async {
-      StreamedResponse response =
-          await Http.streamHead(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.streamHead(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
     });
 
     test('streamed HEAD request with headers', () async {
-      StreamedResponse response = await Http.streamHead(
+      final response = await transport.Http.streamHead(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
     });
 
     test('streamed OPTIONS request', () async {
-      StreamedResponse response =
-          await Http.streamOptions(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.streamOptions(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('OPTIONS'));
     });
 
     test('streamed OPTIONS request with headers', () async {
-      StreamedResponse response = await Http.streamOptions(
+      final response = await transport.Http.streamOptions(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('OPTIONS'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -294,20 +334,22 @@ void runHttpStaticSuite() {
     });
 
     test('streamed PATCH request', () async {
-      StreamedResponse response =
-          await Http.streamPatch(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.streamPatch(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('PATCH'));
     });
 
     test('streamed PATCH request with headers', () async {
-      StreamedResponse response = await Http.streamPatch(
+      final response = await transport.Http.streamPatch(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('PATCH'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -316,27 +358,31 @@ void runHttpStaticSuite() {
     });
 
     test('streamed PATCH request with body', () async {
-      StreamedResponse response = await Http
-          .streamPatch(IntegrationPaths.echoEndpointUri, body: 'body');
-      String body = await _decodeStreamedResponseToString(response);
+      final response = await transport.Http.streamPatch(
+          IntegrationPaths.echoEndpointUri,
+          body: 'body',
+          transportPlatform: transportPlatform);
+      final body = await _decodeStreamedResponseToString(response);
       expect(body, equals('body'));
     });
 
     test('streamed POST request', () async {
-      StreamedResponse response =
-          await Http.streamPost(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.streamPost(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('POST'));
     });
 
     test('streamed POST request with headers', () async {
-      StreamedResponse response = await Http.streamPost(
+      final response = await transport.Http.streamPost(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('POST'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -345,27 +391,31 @@ void runHttpStaticSuite() {
     });
 
     test('streamed POST request with body', () async {
-      StreamedResponse response =
-          await Http.streamPost(IntegrationPaths.echoEndpointUri, body: 'body');
-      String body = await _decodeStreamedResponseToString(response);
+      final response = await transport.Http.streamPost(
+          IntegrationPaths.echoEndpointUri,
+          body: 'body',
+          transportPlatform: transportPlatform);
+      final body = await _decodeStreamedResponseToString(response);
       expect(body, equals('body'));
     });
 
     test('streamed PUT request', () async {
-      StreamedResponse response =
-          await Http.streamPut(IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.streamPut(
+          IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('PUT'));
     });
 
     test('streamed PUT request with headers', () async {
-      StreamedResponse response = await Http.streamPut(
+      final response = await transport.Http.streamPut(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('PUT'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -374,27 +424,31 @@ void runHttpStaticSuite() {
     });
 
     test('streamed PUT request with body', () async {
-      StreamedResponse response =
-          await Http.streamPut(IntegrationPaths.echoEndpointUri, body: 'body');
-      String body = await _decodeStreamedResponseToString(response);
+      final response = await transport.Http.streamPut(
+          IntegrationPaths.echoEndpointUri,
+          body: 'body',
+          transportPlatform: transportPlatform);
+      final body = await _decodeStreamedResponseToString(response);
       expect(body, equals('body'));
     });
 
     test('streamed custom HTTP method request', () async {
-      StreamedResponse response =
-          await Http.streamSend('COPY', IntegrationPaths.reflectEndpointUri);
+      final response = await transport.Http.streamSend(
+          'COPY', IntegrationPaths.reflectEndpointUri,
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('COPY'));
     });
 
     test('streamed custom HTTP method request with headers', () async {
-      StreamedResponse response = await Http.streamSend(
+      final response = await transport.Http.streamSend(
           'COPY', IntegrationPaths.reflectEndpointUri,
-          headers: new Map.from(headers));
+          headers: new Map<String, String>.from(headers),
+          transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      Map json = await _decodeStreamedResponseToJson(response);
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json['method'], equals('COPY'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -403,9 +457,10 @@ void runHttpStaticSuite() {
     });
 
     test('streamed custom HTTP method request with body', () async {
-      StreamedResponse response = await Http
-          .streamSend('COPY', IntegrationPaths.echoEndpointUri, body: 'body');
-      String body = await _decodeStreamedResponseToString(response);
+      final response = await transport.Http.streamSend(
+          'COPY', IntegrationPaths.echoEndpointUri,
+          body: 'body', transportPlatform: transportPlatform);
+      final body = await _decodeStreamedResponseToString(response);
       expect(body, equals('body'));
     });
   });

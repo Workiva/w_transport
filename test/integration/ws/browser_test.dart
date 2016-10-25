@@ -13,59 +13,58 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.integration.ws.browser_test;
-
 import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_browser.dart';
+import 'package:w_transport/browser.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformBrowser
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser();
-    });
-
-    runCommonWebSocketIntegrationTests();
+    runCommonWebSocketIntegrationTests(
+        transportPlatform: browserTransportPlatform);
 
     test('should support Blob', () async {
-      Blob blob = new Blob(['one', 'two']);
-      WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+      final blob = new Blob(['one', 'two']);
+      final socket = await transport.WebSocket.connect(IntegrationPaths.echoUri,
+          transportPlatform: browserTransportPlatform);
       socket.add(blob);
-      socket.close();
+      await socket.close();
     });
 
     test('should support String', () async {
-      String data = 'data';
-      WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+      final data = 'data';
+      final socket = await transport.WebSocket.connect(IntegrationPaths.echoUri,
+          transportPlatform: browserTransportPlatform);
       socket.add(data);
-      socket.close();
+      await socket.close();
     });
 
     test('should support TypedData', () async {
-      TypedData data = new Uint16List.fromList([1, 2, 3]);
-      WSocket socket = await WSocket.connect(IntegrationPaths.echoUri);
+      final data = new Uint16List.fromList([1, 2, 3]);
+      final socket = await transport.WebSocket.connect(IntegrationPaths.echoUri,
+          transportPlatform: browserTransportPlatform);
       socket.add(data);
-      socket.close();
+      await socket.close();
     });
 
     test('should throw when attempting to send invalid data', () async {
-      WSocket socket = await WSocket.connect(IntegrationPaths.pingUri);
+      final socket = await transport.WebSocket.connect(IntegrationPaths.pingUri,
+          transportPlatform: browserTransportPlatform);
       expect(() {
         socket.add(true);
       }, throwsArgumentError);
-      socket.close();
+      await socket.close();
     });
   });
 }

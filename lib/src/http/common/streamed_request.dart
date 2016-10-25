@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.common.streamed_request;
-
 import 'dart:async';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
@@ -22,10 +20,12 @@ import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/requests.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonStreamedRequest extends CommonRequest
     implements StreamedRequest {
-  CommonStreamedRequest() : super();
+  CommonStreamedRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   CommonStreamedRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
@@ -33,8 +33,10 @@ abstract class CommonStreamedRequest extends CommonRequest
 
   int _contentLength;
 
+  @override
   Stream<List<int>> get body => _body;
 
+  @override
   set body(Stream<List<int>> byteStream) {
     verifyUnsent();
     _body = byteStream;
@@ -61,7 +63,7 @@ abstract class CommonStreamedRequest extends CommonRequest
   }
 
   @override
-  Future<StreamedHttpBody> finalizeBody([body]) async {
+  Future<StreamedHttpBody> finalizeBody([dynamic body]) async {
     if (body != null) {
       if (body is Stream<List<int>>) {
         this.body = body;
@@ -71,9 +73,7 @@ abstract class CommonStreamedRequest extends CommonRequest
       }
     }
 
-    if (this.body == null) {
-      this.body = new Stream.fromIterable([]);
-    }
+    this.body ??= new Stream.fromIterable([]);
     return new StreamedHttpBody.fromByteStream(contentType, this.body,
         contentLength: contentLength);
   }

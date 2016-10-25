@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.echo_handler;
+import 'dart:io';
 
 import '../handler.dart';
 import '../logger.dart';
@@ -20,11 +20,12 @@ import '../logger.dart';
 class EchoHandler extends WebSocketHandler {
   Logger _logger;
 
-  EchoHandler(Logger this._logger) : super() {
+  EchoHandler(this._logger) : super() {
     enableCors();
   }
 
-  void onConnection(webSocket) {
+  @override
+  void onConnection(WebSocket webSocket) {
     webSocket.listen((message) {
       webSocket.add(message);
       _logger.withTime(' \t WS \tEcho: $message');

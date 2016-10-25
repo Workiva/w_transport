@@ -18,11 +18,11 @@
 /// If possible, APIs built using these classes should also avoid
 /// importing `dart:html` and `dart:io` in order to remain platform-agnostic,
 /// as it provides much greater reuse value.
-library w_transport.src.web_socket.w_socket;
-
 import 'dart:async';
 
-import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
+import 'package:w_transport/src/web_socket/web_socket.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 /// A two-way communication object for WebSocket clients. Establishes
 /// a WebSocket connection, sends data or streams of data to the server,
@@ -76,6 +76,8 @@ import 'package:w_transport/src/platform_adapter.dart';
 ///     // registering an "onDone()" handler also works
 ///     webSocket.listen((_) {}, onDone: () { ... });
 ///
+/// TODO: Remove this class in 4.0.0 and move the abstract definition into the `WebSocket` class.
+@Deprecated(v3Deprecation + 'Use `WebSocket` instead.')
 abstract class WSocket implements Stream, StreamSink {
   /// Create a new WebSocket connection. The given [uri] must use the scheme
   /// `ws` or `wss`.
@@ -86,22 +88,23 @@ abstract class WSocket implements Stream, StreamSink {
   /// specified in [headers]. This only applies to server-side usage. See
   /// `dart:io`'s [WebSocket] for more information.
   static Future<WSocket> connect(Uri uri,
-      {Map<String, dynamic> headers,
-      Iterable<String> protocols,
-      bool sockJSDebug,
-      bool sockJSNoCredentials,
-      List<String> sockJSProtocolsWhitelist,
-      Duration sockJSTimeout,
-      bool useSockJS}) async {
-    return PlatformAdapter.retrieve().newWSocket(uri,
-        headers: headers,
-        protocols: protocols,
-        sockJSDebug: sockJSDebug,
-        sockJSNoCredentials: sockJSNoCredentials,
-        sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
-        sockJSTimeout: sockJSTimeout,
-        useSockJS: useSockJS);
-  }
+          {Map<String, dynamic> headers,
+          Iterable<String> protocols,
+          TransportPlatform transportPlatform,
+          @Deprecated(v3Deprecation) bool sockJSDebug,
+          @Deprecated(v3Deprecation) bool sockJSNoCredentials,
+          @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist,
+          @Deprecated(v3Deprecation) Duration sockJSTimeout,
+          @Deprecated(v3Deprecation) bool useSockJS}) =>
+      WebSocket.connect(uri,
+          headers: headers,
+          protocols: protocols,
+          transportPlatform: transportPlatform,
+          sockJSDebug: sockJSDebug,
+          sockJSNoCredentials: sockJSNoCredentials,
+          sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
+          sockJSTimeout: sockJSTimeout,
+          useSockJS: useSockJS);
 
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
@@ -112,6 +115,7 @@ abstract class WSocket implements Stream, StreamSink {
   String get closeReason;
 
   /// Future that resolves when this WebSocket connection has completely closed.
+  @override
   Future<Null> get done;
 
   /// Sends a message over the WebSocket connection.
@@ -125,10 +129,12 @@ abstract class WSocket implements Stream, StreamSink {
   /// On the server:
   ///   - String
   ///   - List<int>
-  void add(message);
+  @override
+  void add(dynamic message);
 
   /// Add an error to the sink. This will cause the WebSocket connection to close.
-  void addError(errorEvent, [StackTrace stackTrace]);
+  @override
+  void addError(Object errorEvent, [StackTrace stackTrace]);
 
   /// Adds a stream of data to send over the WebSocket connection.
   /// This will wait for the stream to complete, sending each element
@@ -138,9 +144,11 @@ abstract class WSocket implements Stream, StreamSink {
   ///
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
-  Future addStream(Stream stream);
+  @override
+  Future<Null> addStream(Stream stream);
 
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
-  Future close([int code, String reason]);
+  @override
+  Future<Null> close([int code, String reason]);
 }

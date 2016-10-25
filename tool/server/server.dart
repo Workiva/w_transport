@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.server;
-
 import 'dart:async';
 import 'dart:io';
 
@@ -23,18 +21,9 @@ import 'router.dart';
 const String defaultHost = 'localhost';
 const int defaultPort = 8024;
 
-main() => Server.run(dumpOutput: true);
+Future<Null> main() => Server.run(dumpOutput: true);
 
 class Server {
-  static Future run(
-      {bool dumpOutput: false,
-      String host: defaultHost,
-      int port: defaultPort}) {
-    Server server = new Server(host: host, port: port);
-    server.output.listen(print);
-    return server.start();
-  }
-
   final String host;
   final int port;
 
@@ -44,10 +33,19 @@ class Server {
 
   Server({this.host: defaultHost, this.port: defaultPort});
 
+  static Future<Null> run(
+      {bool dumpOutput: false,
+      String host: defaultHost,
+      int port: defaultPort}) {
+    final server = new Server(host: host, port: port);
+    server.output.listen(print);
+    return server.start();
+  }
+
   Stream get output => _logger.stream;
 
-  Future start() async {
-    var router = new Router(_logger);
+  Future<Null> start() async {
+    final router = new Router(_logger);
 
     try {
       _server = await HttpServer.bind(host, port);
@@ -69,7 +67,7 @@ class Server {
     }
   }
 
-  Future stop() async {
+  Future<Null> stop() async {
     await Future.wait(
         [_server.close(force: true), _subscription.cancel(), _logger.close()]);
   }

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.http.custom;
-
 import 'dart:async';
 import 'dart:io';
 
@@ -25,10 +23,11 @@ class CustomHandler extends Handler {
     enableCors();
   }
 
-  Future get(HttpRequest request) async {
+  @override
+  Future<Null> get(HttpRequest request) async {
     request.response.statusCode =
         request.uri.queryParameters['status'] ?? HttpStatus.OK;
-    request.response.headers.contentType = request.headers.contentType;
+    request.response.headers.contentType = ContentType.TEXT;
     setCorsHeaders(request);
   }
 }

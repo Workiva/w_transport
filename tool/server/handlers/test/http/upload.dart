@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.http.upload;
-
 import 'dart:async';
 import 'dart:io';
 
@@ -28,11 +26,11 @@ class UploadHandler extends Handler {
     enableCors();
   }
 
-  Future upload(HttpRequest request) async {
-    ContentType contentType =
+  Future<Null> upload(HttpRequest request) async {
+    final contentType =
         ContentType.parse(request.headers.value('content-type'));
-    String boundary = contentType.parameters['boundary'];
-    Stream stream = request
+    final boundary = contentType.parameters['boundary'];
+    final stream = request
         .transform(new MimeMultipartTransformer(boundary))
         .map(HttpMultipartFormData.parse);
 
@@ -48,12 +46,27 @@ class UploadHandler extends Handler {
     setCorsHeaders(request);
   }
 
-  Future delete(HttpRequest request) async => upload(request);
-  Future get(HttpRequest request) async => upload(request);
-  Future head(HttpRequest request) async => upload(request);
-  Future options(HttpRequest request) async => upload(request);
-  Future patch(HttpRequest request) async => upload(request);
-  Future post(HttpRequest request) async => upload(request);
-  Future put(HttpRequest request) async => upload(request);
-  Future trace(HttpRequest request) async => upload(request);
+  @override
+  Future<Null> delete(HttpRequest request) async => upload(request);
+
+  @override
+  Future<Null> get(HttpRequest request) async => upload(request);
+
+  @override
+  Future<Null> head(HttpRequest request) async => upload(request);
+
+  @override
+  Future<Null> options(HttpRequest request) async => upload(request);
+
+  @override
+  Future<Null> patch(HttpRequest request) async => upload(request);
+
+  @override
+  Future<Null> post(HttpRequest request) async => upload(request);
+
+  @override
+  Future<Null> put(HttpRequest request) async => upload(request);
+
+  @override
+  Future<Null> trace(HttpRequest request) async => upload(request);
 }

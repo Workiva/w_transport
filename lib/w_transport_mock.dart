@@ -12,45 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Easily mock out the platform-specific details of w_transport. Exposes a
-/// single configuration method that must be called before instantiating any of
-/// the transport classes.
-///
-///     import 'package:w_transport/w_transport_mock.dart'
-///         show configureWTransportForTest;
-///
-///     void main() {
-///       configureWTransportForTest();
-///     }
+@Deprecated(v3Deprecation + 'Import \'package:w_transport/mock.dart\' instead.')
 library w_transport.w_transport_mock;
 
-import 'package:w_transport/src/mock_adapter.dart';
-import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
 
-export 'package:w_transport/src/http/finalized_request.dart'
-    show FinalizedRequest;
-export 'package:w_transport/src/http/mock/base_request.dart'
-    show MockBaseRequest;
-export 'package:w_transport/src/http/mock/client.dart' show MockClient;
-export 'package:w_transport/src/http/mock/requests.dart'
+export 'package:w_transport/mock.dart'
     show
+        FinalizedRequest,
+        MockBaseRequest,
+        MockClient,
         MockFormRequest,
+        MockHttpHandler,
         MockJsonRequest,
         MockPlainTextRequest,
-        MockStreamedRequest;
-export 'package:w_transport/src/http/mock/response.dart'
-    show MockResponse, MockStreamedResponse;
-
-export 'package:w_transport/src/mocks/http.dart'
-    show MockHttpHandler, PatternRequestHandler, RequestHandler;
-export 'package:w_transport/src/mocks/transport.dart' show MockTransports;
-export 'package:w_transport/src/mocks/web_socket.dart'
-    show MockWebSocketHandler;
-
-export 'package:w_transport/src/web_socket/mock/w_socket.dart' show MockWSocket;
-
-/// Configure w_transport for use in tests, allowing you to easily mock out the
-/// behavior of the w_transport classes.
-void configureWTransportForTest() {
-  adapter = new MockAdapter();
-}
+        MockResponse,
+        MockStreamedRequest,
+        MockStreamedResponse,
+        MockTransports,
+        MockWSocket,
+        MockWebSocketHandler,
+        PatternRequestHandler,
+        RequestHandler,
+        configureWTransportForTest;

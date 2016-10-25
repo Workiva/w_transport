@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.request_exception;
-
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/response.dart';
 
@@ -21,7 +19,7 @@ import 'package:w_transport/src/http/response.dart';
 /// an unsuccessful status code.
 class RequestException implements Exception {
   /// Original error, if any.
-  final error;
+  final Object error;
 
   /// HTTP method.
   final String method;
@@ -46,9 +44,9 @@ class RequestException implements Exception {
     String msg;
     if (request != null && request.autoRetry.numAttempts > 1) {
       msg = '$method $uri';
-      for (var i = 0; i < request.autoRetry.failures.length; i++) {
-        var failure = request.autoRetry.failures[i];
-        var attempt = '\n\tAttempt #${i+1}:';
+      for (int i = 0; i < request.autoRetry.failures.length; i++) {
+        final failure = request.autoRetry.failures[i];
+        String attempt = '\n\tAttempt #${i+1}:';
         if (failure.response != null) {
           attempt +=
               ' ${failure.response.status} ${failure.response.statusText}';

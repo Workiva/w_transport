@@ -13,32 +13,33 @@
 // limitations under the License.
 
 @TestOn('browser || vm')
-library w_transport.test.integration.http.http_static.mock_test;
-
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 import '../../../naming.dart';
 import '../../integration_paths.dart';
+import '../mock_endpoints/echo.dart';
 import '../mock_endpoints/reflect.dart';
 import 'suite.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformMock
     ..testType = testTypeIntegration
     ..topic = topicHttp;
 
   group(naming.toString(), () {
     setUp(() {
-      configureWTransportForTest();
+      MockTransports.install();
+      mockEchoEndpoint(IntegrationPaths.echoEndpointUri);
       mockReflectEndpoint(IntegrationPaths.reflectEndpointUri);
     });
 
-    runHttpStaticSuite();
-
-    tearDown(() {
+    tearDown(() async {
       MockTransports.verifyNoOutstandingExceptions();
+      await MockTransports.uninstall();
     });
+
+    runHttpStaticSuite();
   });
 }

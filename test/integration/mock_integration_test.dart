@@ -13,8 +13,6 @@
 // limitations under the License.
 
 @TestOn('browser || vm')
-library w_transport.test.integration.mock_suite_test;
-
 import 'package:test/test.dart';
 
 import 'http/client/mock_test.dart' as http_client_mock;
@@ -26,8 +24,9 @@ import 'http/multipart_request/mock_test.dart' as http_multipart_request_mock;
 import 'http/plain_text_request/mock_test.dart' as http_plain_text_request_mock;
 import 'http/streamed_request/mock_test.dart' as http_streamed_request_mock;
 
-import 'platforms/mock_platform_test.dart' as mock_platform_adapter_test;
-import 'platforms/platform_adapter_test.dart' as platform_adapter_test;
+import 'platforms/mock_aware_transport_platform.dart'
+    as mock_aware_transport_platform_test;
+import 'platforms/transport_platform_test.dart' as transport_platform_test;
 
 import 'ws/mock_test.dart' as ws_mock;
 
@@ -41,8 +40,8 @@ void main() {
   http_plain_text_request_mock.main();
   http_streamed_request_mock.main();
 
-  mock_platform_adapter_test.main();
-  platform_adapter_test.main();
+  mock_aware_transport_platform_test.main();
+  transport_platform_test.main();
 
   ws_mock.main();
 }

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.multipart_file;
-
 import 'dart:async';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
@@ -35,12 +33,12 @@ class MultipartFile {
 
   /// Construct a [MultipartFile] by supplying the file contents and the file
   /// length. Optionally include a filename and content-type.
-  MultipartFile(Stream<List<int>> this.byteStream, int this.length,
-      {MediaType contentType, String this.filename}) {
+  MultipartFile(this.byteStream, this.length,
+      {MediaType contentType, this.filename}) {
     if (contentType != null) {
       _contentType = contentType;
     } else {
-      var mimeType = filename != null ? mime.lookupMimeType(filename) : null;
+      String mimeType = filename != null ? mime.lookupMimeType(filename) : null;
       if (mimeType == null) {
         mimeType = 'application/octet-stream';
       }

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.naming;
-
 /// Platforms.
 const String platformBrowser = 'browser';
 const String platformBrowserSockjsWS = 'browser (SockJS WS)';
@@ -33,7 +31,7 @@ const String testTypeUnit = 'unit';
 const String topicBackoff = 'Backoff';
 const String topicHttp = 'HTTP';
 const String topicMocks = 'Mocks';
-const String topicPlatformAdapter = 'Platform Adapter';
+const String topicTransportPlatform = 'Transport Platform';
 const String topicWebSocket = 'WS';
 
 class Naming {
@@ -43,7 +41,7 @@ class Naming {
 
   @override
   String toString() {
-    var s = '$topic [$testType]';
+    String s = '$topic [$testType]';
     if (platform != null) {
       s += ' [$platform]';
     }

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.common.finalized_request;
-
 import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
 
 import 'package:w_transport/src/http/http_body.dart';
@@ -37,12 +35,8 @@ class FinalizedRequest {
   /// request. Applicable only to the browser platform.
   final bool withCredentials;
 
-  FinalizedRequest(
-      String this.method,
-      Uri this.uri,
-      Map<String, String> headers,
-      BaseHttpBody this.body,
-      bool this.withCredentials)
-      : this.headers =
-            new Map.unmodifiable(new CaseInsensitiveMap.from(headers));
+  FinalizedRequest(this.method, this.uri, Map<String, String> headers,
+      this.body, this.withCredentials)
+      : this.headers = new Map<String, String>.unmodifiable(
+            new CaseInsensitiveMap<String>.from(headers));
 }

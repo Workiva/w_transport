@@ -12,64 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.web_socket.browser.sockjs;
-
 import 'dart:async';
 
 import 'package:sockjs_client/sockjs_client.dart' as sockjs;
 
-import 'package:w_transport/src/web_socket/common/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket.dart';
-import 'package:w_transport/src/web_socket/w_socket_exception.dart';
+import 'package:w_transport/src/web_socket/common/web_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket.dart';
+import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 
-/// Implementation of the platform-dependent pieces of the [WSocket] class for
+/// Implementation of the platform-dependent pieces of the [WebSocket] class for
 /// the SockJS browser configuration. This class uses the SockJS library to
 /// establish a WebSocket-like connection (could be a native WebSocket, could
 /// be XHR-streaming).
-class SockJSSocket extends CommonWSocket implements WSocket {
-  static Future<WSocket> connect(Uri uri,
-      {bool debug: false,
-      bool noCredentials: false,
-      List<String> protocolsWhitelist,
-      Duration timeout}) async {
-    if (uri.scheme == 'ws') {
-      uri = uri.replace(scheme: 'http');
-    } else if (uri.scheme == 'wss') {
-      uri = uri.replace(scheme: 'https');
-    }
-
-    sockjs.Client client = new sockjs.Client(uri.toString(),
-        debug: debug == true,
-        noCredentials: noCredentials == true,
-        protocolsWhitelist: protocolsWhitelist,
-        timeout: timeout != null ? timeout.inMilliseconds : null);
-
-    // Listen for and store the close event. This will determine whether or
-    // not the socket connected successfully, and will also be used later
-    // to handle the web socket closing.
-    var closed = client.onClose.first;
-
-    // Will complete if the socket successfully opens, or complete with
-    // an error if the socket moves straight to the closed state.
-    Completer connected = new Completer();
-    client.onOpen.first.then(connected.complete);
-    closed.then((_) {
-      if (!connected.isCompleted) {
-        connected
-            .completeError(new WSocketException('Could not connect to $uri'));
-      }
-    });
-
-    await connected.future;
-    return new SockJSSocket._(client, closed);
-  }
-
+class SockJSWebSocket extends CommonWebSocket implements WebSocket {
   /// The "WebSocket" - in this case, it's a SockJS Client that has an API
   /// similar to that of a WebSocket, regardless of what protocol is actually
   /// used.
   sockjs.Client _webSocket;
 
-  SockJSSocket._(this._webSocket, Future webSocketClosed) : super() {
+  SockJSWebSocket._(this._webSocket, Future webSocketClosed) : super() {
     webSocketClosed.then((closeEvent) {
       closeCode = closeEvent.code;
       closeReason = closeEvent.reason;
@@ -88,6 +49,47 @@ class SockJSSocket extends CommonWSocket implements WSocket {
 
     // Additional note: the SockJS Client has no error stream, so no need to
     // listen for errors.
+  }
+
+  static Future<WebSocket> connect(Uri uri,
+      {bool debug: false,
+      bool noCredentials: false,
+      List<String> protocolsWhitelist,
+      Duration timeout}) async {
+    if (uri.scheme == 'ws') {
+      uri = uri.replace(scheme: 'http');
+    } else if (uri.scheme == 'wss') {
+      uri = uri.replace(scheme: 'https');
+    }
+
+    final client = new sockjs.Client(uri.toString(),
+        debug: debug == true,
+        noCredentials: noCredentials == true,
+        protocolsWhitelist: protocolsWhitelist,
+        timeout: timeout?.inMilliseconds);
+
+    // Listen for and store the close event. This will determine whether or
+    // not the socket connected successfully, and will also be used later
+    // to handle the web socket closing.
+    final closed = new Completer<Object /* CloseEvent */ >();
+    // ignore: unawaited_futures
+    client.onClose.first.then(closed.complete);
+
+    // Will complete if the socket successfully opens, or complete with
+    // an error if the socket moves straight to the closed state.
+    final connected = new Completer<Null>();
+    // ignore: unawaited_futures
+    client.onOpen.first.then((_) => connected.complete());
+    // ignore: unawaited_futures
+    closed.future.then((_) {
+      if (!connected.isCompleted) {
+        connected
+            .completeError(new WebSocketException('Could not connect to $uri'));
+      }
+    });
+
+    await connected.future;
+    return new SockJSWebSocket._(client, closed.future);
   }
 
   @override
@@ -125,7 +127,7 @@ class SockJSSocket extends CommonWSocket implements WSocket {
   }
 
   @override
-  void onOutgoingData(data) {
+  void onOutgoingData(dynamic data) {
     // Pipe messages through to the underlying socket.
     _webSocket.send(data);
   }

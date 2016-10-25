@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.ping_handler;
-
 import 'dart:async';
 import 'dart:io';
 
@@ -25,14 +23,29 @@ class TimeoutHandler extends Handler {
     enableCors();
   }
 
-  Future timeout() => new Completer().future;
+  Future<Null> timeout() => new Completer<Null>().future;
 
-  Future delete(HttpRequest request) => timeout();
-  Future get(HttpRequest request) => timeout();
-  Future head(HttpRequest request) => timeout();
-  Future options(HttpRequest request) => timeout();
-  Future patch(HttpRequest request) => timeout();
-  Future post(HttpRequest request) => timeout();
-  Future put(HttpRequest request) => timeout();
-  Future trace(HttpRequest request) => timeout();
+  @override
+  Future<Null> delete(HttpRequest request) => timeout();
+
+  @override
+  Future<Null> get(HttpRequest request) => timeout();
+
+  @override
+  Future<Null> head(HttpRequest request) => timeout();
+
+  @override
+  Future<Null> options(HttpRequest request) => timeout();
+
+  @override
+  Future<Null> patch(HttpRequest request) => timeout();
+
+  @override
+  Future<Null> post(HttpRequest request) => timeout();
+
+  @override
+  Future<Null> put(HttpRequest request) => timeout();
+
+  @override
+  Future<Null> trace(HttpRequest request) => timeout();
 }

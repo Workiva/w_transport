@@ -13,51 +13,55 @@
 // limitations under the License.
 
 @TestOn('browser || vm')
-library w_transport.test.unit.http.json_request_test;
-
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
   group(naming.toString(), () {
     group('JsonRequest', () {
       setUp(() {
-        configureWTransportForTest();
+        MockTransports.install();
+      });
+
+      tearDown(() async {
+        MockTransports.verifyNoOutstandingExceptions();
+        await MockTransports.uninstall();
       });
 
       test('setting entire body (Map)', () {
-        Map json = {'field': 'value'};
-        JsonRequest request = new JsonRequest()..body = json;
+        final json = <String, String>{'field': 'value'};
+        final request = new transport.JsonRequest()..body = json;
         expect(request.body, equals(json));
       });
 
       test('setting entire body (List)', () {
-        List json = [
+        final json = <Map<String, String>>[
           {'field': 'value'}
         ];
-        JsonRequest request = new JsonRequest()..body = json;
+        final request = new transport.JsonRequest()..body = json;
         expect(request.body, equals(json));
       });
 
       test('setting entire body (invalid JSON)', () {
-        JsonRequest request = new JsonRequest();
+        final request = new transport.JsonRequest();
         expect(() {
           request.body = new Stream.fromIterable([]);
         }, throws);
       });
 
       test('setting fields incrementally', () {
-        FormRequest request = new FormRequest()
+        final request = new transport.FormRequest()
           ..fields['field1'] = 'value1'
           ..fields['field2'] = 'value2';
         expect(
@@ -65,49 +69,51 @@ void main() {
       });
 
       test('setting body in request dispatcher is supported (Map)', () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
 
-        Completer body = new Completer();
+        final c = new Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          body.complete((request.body as HttpBody).asString());
+          transport.HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         });
 
-        JsonRequest request = new JsonRequest();
-        Map json = {'field': 'value'};
+        final request = new transport.JsonRequest();
+        final json = <String, String>{'field': 'value'};
         await request.post(uri: uri, body: json);
-        expect(await body.future, equals(JSON.encode(json)));
+        expect(await c.future, equals(JSON.encode(json)));
       });
 
       test('setting body in request dispatcher is supported (List)', () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
 
-        Completer body = new Completer();
+        final c = new Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          body.complete((request.body as HttpBody).asString());
+          transport.HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         });
 
-        JsonRequest request = new JsonRequest();
-        List json = [
+        final request = new transport.JsonRequest();
+        final json = <Map<String, String>>[
           {'field': 'value'}
         ];
         await request.post(uri: uri, body: json);
-        expect(await body.future, equals(JSON.encode(json)));
+        expect(await c.future, equals(JSON.encode(json)));
       });
 
       test('setting body in request dispatcher should throw if invalid',
           () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
 
-        JsonRequest request = new JsonRequest();
+        final request = new transport.JsonRequest();
         expect(request.post(uri: uri, body: UTF8), throws);
       });
 
       test('body should be unmodifiable once sent', () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        JsonRequest request = new JsonRequest();
+        final request = new transport.JsonRequest();
         await request.post(uri: uri);
         expect(() {
           request.body = {'too': 'late'};
@@ -115,21 +121,21 @@ void main() {
       });
 
       test('content-length cannot be set manually', () {
-        Request request = new Request();
+        final request = new transport.Request();
         expect(() {
           request.contentLength = 10;
         }, throwsUnsupportedError);
       });
 
       test('setting encoding to null should throw', () {
-        var request = new JsonRequest();
+        final request = new transport.JsonRequest();
         expect(() {
           request.encoding = null;
         }, throwsArgumentError);
       });
 
       test('setting encoding should update content-type', () {
-        JsonRequest request = new JsonRequest();
+        final request = new transport.JsonRequest();
         expect(request.contentType.parameters['charset'], equals(UTF8.name));
 
         request.encoding = LATIN1;
@@ -142,7 +148,7 @@ void main() {
       test(
           'setting encoding should not update content-type if content-type has been set manually',
           () {
-        JsonRequest request = new JsonRequest();
+        final request = new transport.JsonRequest();
         expect(request.contentType.parameters['charset'], equals(UTF8.name));
 
         // Manually override content-type.
@@ -157,9 +163,9 @@ void main() {
       });
 
       test('setting content-type should not be allowed once sent', () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        JsonRequest request = new JsonRequest();
+        final request = new transport.JsonRequest();
         await request.get(uri: uri);
         expect(() {
           request.contentType = new MediaType('application', 'x-custom');
@@ -167,9 +173,9 @@ void main() {
       });
 
       test('setting encoding should not be allowed once sent', () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        JsonRequest request = new JsonRequest();
+        final request = new transport.JsonRequest();
         await request.get(uri: uri);
         expect(() {
           request.encoding = LATIN1;
@@ -177,20 +183,20 @@ void main() {
       });
 
       test('custom content-type without inferrable encoding', () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        var request = new JsonRequest()
+        final request = new transport.JsonRequest()
           ..contentType = new MediaType('application', 'x-custom')
           ..body = {'foo': 'bar'};
         await request.post(uri: uri);
       });
 
       test('clone()', () {
-        var body = [
+        final body = <Map<String, String>>[
           {'f1': 'v1', 'f2': 'v2'}
         ];
-        JsonRequest orig = new JsonRequest()..body = body;
-        JsonRequest clone = orig.clone();
+        final orig = new transport.JsonRequest()..body = body;
+        final clone = orig.clone();
         expect(clone.body, equals(body));
       });
     });

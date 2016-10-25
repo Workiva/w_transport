@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.auto_retry;
-
 import 'dart:async';
 
 import 'package:w_transport/src/constants.dart' show v3Deprecation;
@@ -151,9 +149,9 @@ class RequestAutoRetry extends AutoRetryConfig {
   /// field/value pairs. If the request contains files (byte streams or blobs),
   /// it cannot be retried because they cannot be read more than once.
   bool get supported {
-    if (_request is StreamedRequest) return false;
-    if (_request is MultipartRequest &&
-        (_request as MultipartRequest).files.isNotEmpty) return false;
+    final request = _request;
+    if (request is StreamedRequest) return false;
+    if (request is MultipartRequest && request.files.isNotEmpty) return false;
     return true;
   }
 }
@@ -187,7 +185,7 @@ class RetryBackOff {
       {bool withJitter: true, Duration maxInterval})
       : method = RetryBackOffMethod.exponential,
         withJitter = withJitter,
-        maxInterval = maxInterval != null ? maxInterval : defaultMaxInterval;
+        maxInterval = maxInterval ?? defaultMaxInterval;
 
   /// Construct a new fixed back-off representation where [interval] is the
   /// delay between each retry.

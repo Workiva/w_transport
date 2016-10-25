@@ -1,11 +1,13 @@
 name: w_transport
-version: 2.9.4
+version: 3.0.0-rc.2
+
 description: >
-  Platform-agnostic transport library for sending and receiving data over HTTP
-  and WebSocket. HTTP support includes plain-text, JSON, form-data, and
-  multipart data, as well as custom encoding. WebSocket support includes native
-  WebSockets in the browser and the VM with the option to use SockJS in the
-  browser.
+  Transport library for sending HTTP requests and opening WebSockets.
+  Platform-independent with builtin support for browser and Dart VM (even
+  supports SockJS). Includes mock utilities for testing.
+
+homepage: https://github.com/Workiva/w_transport
+
 authors:
   - Workiva Client Platform Team <clientplatform@workiva.com>
   - Dustin Lessard <dustin.lessard@workiva.com>
@@ -13,31 +15,29 @@ authors:
   - Jay Udey <jay.udey@workiva.com>
   - Max Peterson <maxwell.peterson@workiva.com>
   - Trent Grover <trent.grover@workiva.com>
-homepage: https://github.com/Workiva/w_transport
 
 environment:
-  sdk: ">=1.9.0 <2.0.0"
+  sdk: ">=1.14.0 <2.0.0"
 
 dependencies:
   fluri: ^1.1.0
-  http_parser: ">=1.0.0 <4.0.0"
+  http_parser: ">=2.2.0 <4.0.0"
   mime: ^0.9.3
   sockjs_client:
     git:
       url: https://github.com/Workiva/sockjs-dart-client.git
       ref: 0.3.1
-  stack_trace: ^1.4.0
 
 dev_dependencies:
   ansicolor: ^0.0.9
   args: ^0.13.0
   browser: ^0.10.0+2
-  coverage: ^0.7.4
-  dart_dev: ^1.1.2
+  coverage: ^0.7.9
+  dart_dev: ^1.4.0
   dart_style: ^0.2.4
   http_server: ^0.9.5+1
-  mockito: ^0.9.0
-  path: ^1.3.5
+  mockito: ^0.11.0
+  path: ^1.3.9
   react: ^0.6.1
-  test: ^0.12.3+5
+  test: ^0.12.15
   uuid: ^0.5.0

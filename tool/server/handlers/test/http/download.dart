@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.http.download_handler;
-
 import 'dart:async';
 import 'dart:io';
 
@@ -26,9 +24,9 @@ class DownloadHandler extends Handler {
     enableCors();
   }
 
-  Future download(HttpRequest request) async {
-    File file = new File('tool/server/handlers/test/http/file.txt');
-    Stream downloadStream = file.openRead();
+  Future<Null> download(HttpRequest request) async {
+    final file = new File('tool/server/handlers/test/http/file.txt');
+    final downloadStream = file.openRead();
     request.response.statusCode = HttpStatus.OK;
     request.response.headers
         .set('content-length', file.lengthSync().toString());
@@ -37,13 +35,30 @@ class DownloadHandler extends Handler {
     await request.response.addStream(downloadStream);
   }
 
-  Future copy(HttpRequest request) async => download(request);
-  Future delete(HttpRequest request) async => download(request);
-  Future get(HttpRequest request) async => download(request);
-  Future head(HttpRequest request) async => download(request);
-  Future options(HttpRequest request) async => download(request);
-  Future patch(HttpRequest request) async => download(request);
-  Future post(HttpRequest request) async => download(request);
-  Future put(HttpRequest request) async => download(request);
-  Future trace(HttpRequest request) async => download(request);
+  @override
+  Future<Null> copy(HttpRequest request) async => download(request);
+
+  @override
+  Future<Null> delete(HttpRequest request) async => download(request);
+
+  @override
+  Future<Null> get(HttpRequest request) async => download(request);
+
+  @override
+  Future<Null> head(HttpRequest request) async => download(request);
+
+  @override
+  Future<Null> options(HttpRequest request) async => download(request);
+
+  @override
+  Future<Null> patch(HttpRequest request) async => download(request);
+
+  @override
+  Future<Null> post(HttpRequest request) async => download(request);
+
+  @override
+  Future<Null> put(HttpRequest request) async => download(request);
+
+  @override
+  Future<Null> trace(HttpRequest request) async => download(request);
 }

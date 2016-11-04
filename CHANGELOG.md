@@ -1,7 +1,7 @@
 # Changelog
 
 ## [3.0.0](https://github.com/Workiva/w_transport/compare/2.9.2...3.0.0)
-_TBD_
+_October 25th, 2016_
 
 This major release includes deprecations and an increased minimum Dart SDK
 version. **This release should be backwards compatible with version 2.x.**

@@ -1,0 +1,21 @@
+version: 1
+
+exclude:
+  - tests?/
+  - example/
+  - tool/
+  - .+\.md$
+
+raven_monitored_classes: null
+
+raven_monitored_files: null
+
+raven_monitored_functions: null
+
+raven_monitored_keywords:
+  withCredentials:
+    comments: false
+    languages:
+      - dart
+    reason: Secure requests with credentials
+

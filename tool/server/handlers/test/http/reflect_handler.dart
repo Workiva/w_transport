@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.http.reflect_handler;
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -33,8 +31,8 @@ class ReflectHandler extends Handler {
     enableCors();
   }
 
-  Future reflect(HttpRequest request) async {
-    Map<String, String> headers = {};
+  Future<Null> reflect(HttpRequest request) async {
+    final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
@@ -43,7 +41,7 @@ class ReflectHandler extends Handler {
     if (request.headers.contentType == null) {
       encoding = LATIN1;
     } else {
-      MediaType contentType = new MediaType(
+      final contentType = new MediaType(
           request.headers.contentType.primaryType,
           request.headers.contentType.subType,
           request.headers.contentType.parameters);
@@ -51,7 +49,7 @@ class ReflectHandler extends Handler {
           fallback: LATIN1);
     }
 
-    Map reflection = {
+    final reflection = <String, Object>{
       'method': request.method,
       'path': request.uri.path,
       'headers': headers,
@@ -65,13 +63,30 @@ class ReflectHandler extends Handler {
     request.response.write(JSON.encode(reflection));
   }
 
-  Future copy(HttpRequest request) async => reflect(request);
-  Future delete(HttpRequest request) async => reflect(request);
-  Future get(HttpRequest request) async => reflect(request);
-  Future head(HttpRequest request) async => reflect(request);
-  Future options(HttpRequest request) async => reflect(request);
-  Future patch(HttpRequest request) async => reflect(request);
-  Future post(HttpRequest request) async => reflect(request);
-  Future put(HttpRequest request) async => reflect(request);
-  Future trace(HttpRequest request) async => reflect(request);
+  @override
+  Future<Null> copy(HttpRequest request) async => reflect(request);
+
+  @override
+  Future<Null> delete(HttpRequest request) async => reflect(request);
+
+  @override
+  Future<Null> get(HttpRequest request) async => reflect(request);
+
+  @override
+  Future<Null> head(HttpRequest request) async => reflect(request);
+
+  @override
+  Future<Null> options(HttpRequest request) async => reflect(request);
+
+  @override
+  Future<Null> patch(HttpRequest request) async => reflect(request);
+
+  @override
+  Future<Null> post(HttpRequest request) async => reflect(request);
+
+  @override
+  Future<Null> put(HttpRequest request) async => reflect(request);
+
+  @override
+  Future<Null> trace(HttpRequest request) async => reflect(request);
 }

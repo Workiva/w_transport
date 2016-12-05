@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_file_transfer.components.download_page;
-
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -23,23 +21,28 @@ import '../services/file_transfer.dart';
 import '../services/remote_files.dart';
 import 'file_transfer_list_component.dart';
 
-final num _gb = math.pow(2, 30);
-final num _mb = math.pow(2, 20);
-final num _kb = math.pow(2, 10);
+final _gb = math.pow(2, 30);
+final _mb = math.pow(2, 20);
+final _kb = math.pow(2, 10);
 
-var downloadPage = react.registerComponent(() => new DownloadPage());
+dynamic downloadPage = react.registerComponent(() => new DownloadPage());
 
 class DownloadPage extends react.Component {
   RemoteFiles remoteFiles;
   StreamSubscription fileStreamSubscription;
   StreamSubscription fileStreamErrorSubscription;
 
+  Iterable<Download> get currentDownloads =>
+      new List<Download>.from(this.state['downloads']);
+
+  @override
   Map getDefaultProps() {
     return {
       'active': false,
     };
   }
 
+  @override
   Map getInitialState() {
     return {
       // List of in-progress or completed downloads
@@ -51,6 +54,7 @@ class DownloadPage extends react.Component {
     };
   }
 
+  @override
   void componentWillMount() {
     remoteFiles = RemoteFiles.connect();
     fileStreamSubscription = remoteFiles.stream
@@ -65,6 +69,7 @@ class DownloadPage extends react.Component {
     });
   }
 
+  @override
   void componentWillUnmount() {
     remoteFiles.close();
     fileStreamSubscription.cancel();
@@ -84,7 +89,7 @@ class DownloadPage extends react.Component {
   }
 
   void _downloadFile(RemoteFileDescription rfd) {
-    List downloads = new List.from(this.state['downloads']);
+    final downloads = new List<Download>.from(this.state['downloads']);
     downloads.add(Download.start(rfd));
     this.setState({'downloads': downloads});
   }
@@ -111,27 +116,28 @@ class DownloadPage extends react.Component {
       unit = 'KB';
     }
 
-    return '${size.toStringAsFixed(1)} ${unit}';
+    return '${size.toStringAsFixed(1)} $unit';
   }
 
   /// Called when the file transfer list component is done with the transfer
   /// and no longer needs to display it, meaning we can remove it
   /// from memory.
   void _removeDownload(Download download) {
-    List<Download> downloads = [];
-    downloads.addAll(this.state['downloads']);
+    final downloads = <Download>[];
+    downloads.addAll(currentDownloads);
     downloads.remove(download);
     this.setState({'downloads': downloads});
   }
 
-  render() {
-    var error = '';
+  @override
+  dynamic render() {
+    dynamic error = '';
     if (this.state['error'] != null) {
       error = react.p({'className': 'error'},
           'Could not retrieve the remote file list from the server.');
     }
 
-    var fileDescriptions = [];
+    final fileDescriptions = <dynamic>[];
     this.state['fileDescriptions'].forEach((RemoteFileDescription rfd) {
       fileDescriptions.add(react.a({
         'className': 'file',

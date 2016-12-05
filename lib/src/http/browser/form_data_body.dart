@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.browser.form_data_body;
-
 import 'dart:convert';
 import 'dart:html';
 
@@ -23,8 +21,15 @@ import 'package:w_transport/src/http/http_body.dart';
 
 class FormDataBody extends BaseHttpBody {
   final FormData formData;
-  FormDataBody(FormData this.formData);
+
+  FormDataBody(this.formData);
+
+  @override
   int get contentLength => null;
+
+  @override
   MediaType get contentType => null;
+
+  @override
   Encoding get encoding => null;
 }

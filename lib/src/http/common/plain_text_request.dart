@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.common.plain_text_request;
-
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -23,9 +21,11 @@ import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/requests.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonPlainTextRequest extends CommonRequest implements Request {
-  CommonPlainTextRequest() : super();
+  CommonPlainTextRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   CommonPlainTextRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
@@ -33,6 +33,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
 
   Uint8List _bodyBytes;
 
+  @override
   String get body {
     if (_body != null) return _body;
     if (_bodyBytes != null) {
@@ -42,12 +43,14 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
     return '';
   }
 
+  @override
   set body(String value) {
     verifyUnsent();
     _body = value;
     _bodyBytes = null;
   }
 
+  @override
   Uint8List get bodyBytes {
     if (_bodyBytes != null) return _bodyBytes;
     if (_body != null) {
@@ -57,6 +60,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
     return new Uint8List.fromList([]);
   }
 
+  @override
   set bodyBytes(List<int> bytes) {
     verifyUnsent();
     _bodyBytes = bytes;
@@ -72,7 +76,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
 
   @override
   Request clone() {
-    Request requestClone = super.clone() as Request;
+    final Request requestClone = super.clone();
     if (_body != null) {
       requestClone.body = body;
     } else if (_bodyBytes != null) {
@@ -82,7 +86,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   }
 
   @override
-  Future<HttpBody> finalizeBody([body]) async {
+  Future<HttpBody> finalizeBody([dynamic body]) async {
     if (body != null) {
       if (body is String) {
         this.body = body;

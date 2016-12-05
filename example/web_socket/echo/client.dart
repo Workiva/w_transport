@@ -12,36 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.web_socket.echo.client;
-
+import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
 
 import 'package:react/react_client.dart' as react_client;
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_browser.dart'
-    show configureWTransportForBrowser;
+import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
 import '../../common/global_example_menu_component.dart';
 import '../../common/loading_component.dart';
 
-final Uri wsServer = Uri.parse('ws://localhost:8024/example/ws/echo');
-final Uri sockJSServer = Uri.parse('ws://localhost:8026/example/ws/echo');
+final _wsServer = Uri.parse('ws://localhost:8024/example/ws/echo');
+final _sockJSServer = Uri.parse('ws://localhost:8026/example/ws/echo');
 
 String _echo(String message) =>
     JSON.encode({'action': 'echo', 'message': message});
 String _unecho(String response) => JSON.decode(response)['message'];
 
-ButtonElement connect = querySelector('#connect');
-FormElement form = querySelector('#prompt-form');
-TextInputElement prompt = querySelector('#prompt');
-PreElement logs = querySelector('#logs');
-NumberInputElement sockJSTimeout = querySelector('#sockjs-timeout');
-CheckboxInputElement sockJSWebSocket = querySelector('#sockjs-ws');
-CheckboxInputElement sockJSXhr = querySelector('#sockjs-xhr');
-CheckboxInputElement useSockJS = querySelector('#sockjs');
+ButtonElement _connect = querySelector('#connect');
+FormElement _form = querySelector('#prompt-form');
+TextInputElement _prompt = querySelector('#prompt');
+PreElement _logs = querySelector('#logs');
+NumberInputElement _sockJSTimeout = querySelector('#sockjs-timeout');
+CheckboxInputElement _sockJSWebSocket = querySelector('#sockjs-ws');
+CheckboxInputElement _sockJSXhr = querySelector('#sockjs-xhr');
+CheckboxInputElement _useSockJS = querySelector('#sockjs');
 
-main() async {
+Future<Null> main() async {
   react_client.setClientConfiguration();
   configureWTransportForBrowser();
 
@@ -50,21 +48,21 @@ main() async {
   WSocket webSocket;
 
   // Connect (or reconnect) when the connect button is clicked.
-  connect.onClick.listen((e) async {
-    logs.appendText('Connecting...\n');
+  _connect.onClick.listen((e) async {
+    _logs.appendText('Connecting...\n');
 
-    bool sockjs = useSockJS.checked;
-    Duration timeout = sockJSTimeout.value.isEmpty
+    final sockjs = _useSockJS.checked;
+    final timeout = _sockJSTimeout.value.isEmpty
         ? null
-        : new Duration(milliseconds: sockJSTimeout.valueAsNumber);
-    var protocols = [];
-    if (sockJSWebSocket.checked) {
+        : new Duration(milliseconds: _sockJSTimeout.valueAsNumber);
+    final protocols = <String>[];
+    if (_sockJSWebSocket.checked) {
       protocols.add('websocket');
     }
-    if (sockJSXhr.checked) {
+    if (_sockJSXhr.checked) {
       protocols.add('xhr-streaming');
     }
-    Uri uri = sockjs ? sockJSServer : wsServer;
+    final uri = sockjs ? _sockJSServer : _wsServer;
 
     try {
       webSocket = await WSocket.connect(uri,
@@ -74,25 +72,25 @@ main() async {
 
       // Display messages from web socket
       webSocket.listen((message) {
-        logs.appendText('${_unecho(message)}\n');
+        _logs.appendText('${_unecho(message)}\n');
       });
 
-      logs.appendText('Connected.\n');
-    } on WSocketException catch (e, stackTrace) {
-      logs.appendText(
-          '> ERROR: Could not connect to web socket on $wsServer\n');
+      _logs.appendText('Connected.\n');
+    } on WebSocketException catch (e, stackTrace) {
+      _logs.appendText(
+          '> ERROR: Could not connect to web socket on $_wsServer\n');
       print('Could not connect to web socket.\n$e\n$stackTrace');
     }
   });
 
   // Send message upon form submit.
-  form.onSubmit.listen((e) {
+  _form.onSubmit.listen((e) {
     e.preventDefault();
 
     if (webSocket == null) return;
 
-    String message = prompt.value;
-    logs.appendText('> $message\n');
+    final message = _prompt.value;
+    _logs.appendText('> $message\n');
     webSocket.add(_echo(message));
   });
 

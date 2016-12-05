@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.response_exception;
-
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -50,8 +48,8 @@ class ResponseFormatException implements Exception {
       bodyLine = 'Bytes: $bytes';
     }
 
-    var msg = description;
-    var encodingName = encoding != null ? encoding.name : 'null';
+    String msg = description;
+    final encodingName = encoding?.name ?? 'null';
     msg += '\n\tContent-Type: $contentType';
     msg += '\n\tEncoding: $encodingName';
     msg += '\n\t$bodyLine';

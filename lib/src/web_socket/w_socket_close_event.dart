@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.web_socket.w_socket_close_event;
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
 
 /// Represents the close event from a WebSocket.
 ///
 /// This was previously only used internally, but was erroneously exported as a
 /// part of the public API. It is no longer used at all, and has thus been
 /// deprecated and will be removed in 3.0.0.
-@Deprecated('in 3.0.0')
+@Deprecated(v3Deprecation)
 class WSocketCloseEvent {
   final int code;
   final String reason;

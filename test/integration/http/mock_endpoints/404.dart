@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.mock_endpoints.fourOhFour;
-
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 void mock404Endpoint(Uri uri) {
-  MockTransports.http.when(
-      uri, (FinalizedRequest request) async => new MockResponse.notFound());
+  MockTransports.http.when(uri, (request) async => new MockResponse.notFound());
 }

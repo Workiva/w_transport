@@ -1,19 +1,73 @@
 # Changelog
 
-## [2.9.3](https://github.com/Workvia/w_transport/compare/2.9.2...2.9.3)
+## [3.0.0](https://github.com/Workiva/w_transport/compare/2.9.2...3.0.0)
+_October 25th, 2016_
+
+This major release includes deprecations and an increased minimum Dart SDK
+version. **This release should be backwards compatible with version 2.x.**
+
+To upgrade, check out the [v3.0.0 upgrade guide](/docs/upgrade-guides/v3.0.0.md).
+
+### Features
+
+- There is a new pattern for configuring `w_transport` for a particular
+  platform. Check out the [Transport Platform Configuration guide](/docs/TransportPlatformConfiguration.md).
+  
+- There is a new way to install the transport mocks (instead of
+  `configureWTransportForTest()`). Check out the
+  [Mock Transports Installation guide](/docs/guides/MockInstallation.md).
+
+### Changes/Deprecations
+
+- Renamed entry points:
+  - `w_transport_browser.dart` --> `browser.dart`
+  - `w_transport_mock.dart` --> `mock.dart`
+  - `w_transport_vm.dart` --> `vm.dart`
+
+- Other renames:
+  - `Client` --> `HttpClient`
+  - `WSocket` --> `WebSocket`
+  - `WSocketException` --> `WebSocketException`
+  - `RetryBackOff.duration` --> `RetryBackOff.interval`
+
+- Other deprecations:
+  - `WSocketCloseEvent`
+  - `MockBaseRequest`
+  - `MockClient`
+  - `MockFormRequest`
+  - `MockJsonRequest`
+  - `MockPlainTextRequest`
+  - `MockResponse`
+  - `MockStreamedRequest`
+  - `MockStreamedResponse`
+  - `MockWSocket`
+
+### Documentation
+
+- The `w_transport` documentation has been revamped with an emphasis on examples
+  and guides. [Check them out now!](/docs/README.md)
+
+
+## [2.9.4](https://github.com/Workiva/w_transport/compare/2.9.3...2.9.4)
+_October 14, 2016_
+
+- **Bug Fix:** The `Future` returned from `WSocket.cancel()` no longer waits for
+  the WebSocket to be closed.
+
+## [2.9.3](https://github.com/Workiva/w_transport/compare/2.9.2...2.9.3)
 _September 8, 2016_
 
 - **Bug Fix:** if a request is canceled right before it would also have exceeded
   the timeout threshold, a `StateError` may be thrown due to a `Completer` being
   completed more than once. This is fixed now.
 
-## [2.9.2](https://github.com/Workvia/w_transport/compare/2.9.1...2.9.2)
+## [2.9.2](https://github.com/Workiva/w_transport/compare/2.9.1...2.9.2)
 _August 11, 2016_
 
 - Widen the version range for the `http_parser` dependency to speed up and/or
   fix downstream consumers experiencing version conflicts.
 
-## [2.9.1](https://github.com/Workvia/w_transport/compare/2.9.0...2.9.1)
+## [2.9.1](https://github.com/Workiva/w_transport/compare/2.9.0...2.9.1)
 _August 2, 2016_
 
 - **Bug Fix:** previously, listening to a `WSocket` instance and then canceling
@@ -22,7 +76,7 @@ _August 2, 2016_
   `WSocket.done` and `WSocket.close()` will always resolve once the connection
   is closed.
 
-## [2.9.0](https://github.com/Workvia/w_transport/compare/2.8.0...2.9.0)
+## [2.9.0](https://github.com/Workiva/w_transport/compare/2.8.0...2.9.0)
 _July 26, 2016_
 
 - **Improvement:** All request classes now have a `bool isDone` getter that can
@@ -32,7 +86,7 @@ _July 26, 2016_
 - **Bug Fix:** Calling `request.abort()` more than once will no longer throw a
   `StateError`.
 
-## [2.8.0](https://github.com/Workvia/w_transport/compare/2.7.1...2.8.0)
+## [2.8.0](https://github.com/Workiva/w_transport/compare/2.7.1...2.8.0)
 _July 21, 2016_
 
 - **Improvement:** Mock transport handlers can now be canceled. This will allow
@@ -52,7 +106,7 @@ _July 21, 2016_
     /// The same works for the `whenPattern()` methods, as well.
     ```
 
-## [2.7.1](https://github.com/Workvia/w_transport/compare/2.7.0...2.7.1)
+## [2.7.1](https://github.com/Workiva/w_transport/compare/2.7.0...2.7.1)
 _July 20, 2016_
 
 - **Bug Fix:** previously, you could not retry a request that failed with a
@@ -70,7 +124,7 @@ _July 20, 2016_
       };
     ```
 
-## [2.7.0](https://github.com/Workvia/w_transport/compare/2.6.0...2.7.0)
+## [2.7.0](https://github.com/Workiva/w_transport/compare/2.6.0...2.7.0)
 _June 23, 2016_
 
 - **Deprecation:** `autoRetry.backOff.duration` has been deprecated in
@@ -99,7 +153,7 @@ _June 23, 2016_
   will now pass in the value of its `encoding` property, which should now always
   be non-null.
 
-## [2.6.0](https://github.com/Workvia/w_transport/compare/2.5.1...2.6.0)
+## [2.6.0](https://github.com/Workiva/w_transport/compare/2.5.1...2.6.0)
 _June 20, 2016_
 
 - **Improvement:** The `MockTransport` utilities now support expecting

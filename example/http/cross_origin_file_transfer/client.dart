@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_file_transfer.client;
-
 import 'dart:html';
 
 import 'package:react/react.dart' as react;
 import 'package:react/react_client.dart' as react_client;
-import 'package:w_transport/w_transport_browser.dart'
-    show configureWTransportForBrowser;
+import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
 import '../../common/global_example_menu_component.dart';
 import '../../common/loading_component.dart';

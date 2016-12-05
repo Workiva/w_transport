@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.http_body;
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -46,10 +44,8 @@ abstract class BaseHttpBody {
 class HttpBody extends BaseHttpBody {
   /// The content type of this request/response. Includes the mime-type and
   /// parameters such as charset.
+  @override
   final MediaType contentType;
-
-  /// Encoding used to encode/decode this request/response body.
-  Encoding get encoding => _encoding;
 
   String _body;
   Uint8List _bytes;
@@ -69,22 +65,12 @@ class HttpBody extends BaseHttpBody {
   ///
   /// If an encoding cannot be parsed from the content-type header (via the
   /// `charset` param), then [fallbackEncoding] will be used (UTF8 by default).
-  HttpBody.fromBytes(MediaType this.contentType, List<int> bytes,
+  HttpBody.fromBytes(this.contentType, List<int> bytes,
       {Encoding encoding, Encoding fallbackEncoding}) {
-    if (fallbackEncoding == null) {
-      fallbackEncoding = UTF8;
-    }
-    if (encoding != null) {
-      _encoding = encoding;
-    } else {
-      _encoding = http_utils.parseEncodingFromContentType(contentType,
-          fallback: fallbackEncoding);
-    }
-
-    if (bytes == null) {
-      bytes = [];
-    }
-    _bytes = new Uint8List.fromList(bytes);
+    _encoding = encoding ??
+        http_utils.parseEncodingFromContentType(contentType,
+            fallback: fallbackEncoding ?? UTF8);
+    _bytes = new Uint8List.fromList(bytes ?? []);
   }
 
   /// Construct the body to an HTTP request or an HTTP response from text.
@@ -101,31 +87,26 @@ class HttpBody extends BaseHttpBody {
   ///
   /// If an encoding cannot be parsed from the content-type header (via the
   /// `charset` param), then [fallbackEncoding] will be used (UTF8 by default).
-  HttpBody.fromString(MediaType this.contentType, String body,
+  HttpBody.fromString(this.contentType, String body,
       {Encoding encoding, Encoding fallbackEncoding}) {
-    if (fallbackEncoding == null) {
-      fallbackEncoding = UTF8;
-    }
-    if (encoding != null) {
-      _encoding = encoding;
-    } else {
-      _encoding = http_utils.parseEncodingFromContentType(contentType,
-          fallback: fallbackEncoding);
-    }
-
-    if (body == null) {
-      body = '';
-    }
-    _body = body;
+    _encoding = encoding ??
+        http_utils.parseEncodingFromContentType(contentType,
+            fallback: fallbackEncoding ?? UTF8);
+    _body = body ?? '';
   }
 
   /// The size of this request/response body in bytes.
+  @override
   int get contentLength => asBytes().length;
+
+  /// Encoding used to encode/decode this request/response body.
+  @override
+  Encoding get encoding => _encoding;
 
   /// Returns this request/response body as a list of bytes.
   Uint8List asBytes() {
     if (_bytes == null) {
-      var encoded;
+      List<int> encoded;
       try {
         encoded = encoding.encode(_body);
       } on ArgumentError {
@@ -167,29 +148,30 @@ class StreamedHttpBody extends BaseHttpBody {
   /// The size of this request/response body in bytes.
   ///
   /// If the size is not known in advance, this will be null.
+  @override
   final int contentLength;
 
   /// The content type of this request/response. Includes the mime-type and
   /// parameters such as charset.
+  @override
   final MediaType contentType;
-
-  /// Encoding used to encode/decode this request/response body. Encoding is
-  /// selected by parsing the content-type from the headers.
-  Encoding get encoding => _encoding;
-
-  Encoding _encoding;
 
   /// Construct the body to an HTTP request or an HTTP response from a stream
   /// of chunks of bytes. The given [byteStream] should be a single-
   /// subscription stream.
-  StreamedHttpBody.fromByteStream(
-      MediaType this.contentType, Stream<List<int>> this.byteStream,
+  StreamedHttpBody.fromByteStream(this.contentType, this.byteStream,
       {int contentLength, Encoding fallbackEncoding})
       : this.contentLength = contentLength {
     if (byteStream == null) throw new ArgumentError.notNull('byteStream');
     _encoding = http_utils.parseEncodingFromContentType(contentType,
         fallback: fallbackEncoding);
   }
+
+  /// Encoding used to encode/decode this request/response body. Encoding is
+  /// selected by parsing the content-type from the headers.
+  @override
+  Encoding get encoding => _encoding;
+  Encoding _encoding;
 
   /// Listens to this streamed request/response body and combines all chunks of
   /// bytes into a single list of bytes.

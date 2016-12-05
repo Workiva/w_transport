@@ -12,23 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_file_transfer.components.upload_page;
-
 import 'package:react/react.dart' as react;
 
 import '../services/file_transfer.dart';
 import 'drop_zone_component.dart';
 import 'file_transfer_list_component.dart';
 
-var uploadPage = react.registerComponent(() => new UploadPage());
+dynamic uploadPage = react.registerComponent(() => new UploadPage());
 
 class UploadPage extends react.Component {
+  Iterable<Upload> get currentUploads =>
+      new List<Upload>.from(this.state['uploads']);
+
+  @override
   Map getDefaultProps() {
     return {
       'active': true,
     };
   }
 
+  @override
   Map getInitialState() {
     return {
       // Whether or not the user is currently dragging something.
@@ -41,8 +44,8 @@ class UploadPage extends react.Component {
 
   /// Listen for new file uploads and forward them to the file transfer list component.
   void _newUploads(List<Upload> newUploads) {
-    List<Upload> uploads = [];
-    uploads.addAll(this.state['uploads']);
+    final uploads = <Upload>[];
+    uploads.addAll(currentUploads);
     uploads.addAll(newUploads);
     this.setState({'uploads': uploads});
   }
@@ -51,8 +54,8 @@ class UploadPage extends react.Component {
   /// and no longer needs to display it, meaning we can remove it
   /// from memory.
   void _removeUpload(Upload upload) {
-    List<Upload> uploads = [];
-    uploads.addAll(this.state['uploads']);
+    final uploads = <Upload>[];
+    uploads.addAll(currentUploads);
     uploads.remove(upload);
     this.setState({'uploads': uploads});
   }
@@ -65,7 +68,8 @@ class UploadPage extends react.Component {
     this.setState({'dragging': false});
   }
 
-  render() {
+  @override
+  dynamic render() {
     return react.div({
       'className': this.props['active'] ? '' : 'hidden'
     }, [

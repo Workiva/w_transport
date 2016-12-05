@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.ws.close_handler;
+import 'dart:io';
 
 import '../../../handler.dart';
 import '../../../logger.dart';
@@ -20,16 +20,17 @@ import '../../../logger.dart';
 class CloseHandler extends WebSocketHandler {
   Logger _logger;
 
-  CloseHandler(Logger this._logger) : super() {
+  CloseHandler(this._logger) : super() {
     enableCors();
   }
 
-  void onConnection(webSocket) {
+  @override
+  void onConnection(WebSocket webSocket) {
     webSocket.listen((message) {
       if (message.startsWith('close')) {
-        var parts = message.split(':');
-        var closeCode;
-        var closeReason;
+        final parts = message.split(':');
+        int closeCode;
+        String closeReason;
         if (parts.length >= 2) {
           closeCode = int.parse(parts[1]);
         }

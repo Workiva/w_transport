@@ -12,18 +12,66 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.utils;
-
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
 
+import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 
 /// RegExp that only matches strings containing only ASCII-compatible chars.
-final RegExp _asciiOnly = new RegExp(r"^[\x00-\x7F]+$");
+final _asciiOnly = new RegExp(r'^[\x00-\x7F]+$');
+
+/// Base used when calculating the exponential backoff.
+const _exponentialBase = 2;
+
+/// Calculate the backoff duration based on [RequestAutoRetry] configuration.
+/// Returns [null] if backoff is not applicable.
+Duration calculateBackOff(RequestAutoRetry autoRetry) {
+  Duration backOff;
+  switch (autoRetry.backOff.method) {
+    case RetryBackOffMethod.exponential:
+      backOff = _calculateExponentialBackOff(autoRetry);
+      break;
+    case RetryBackOffMethod.fixed:
+      backOff = _calculateFixedBackOff(autoRetry);
+      break;
+    case RetryBackOffMethod.none:
+    default:
+      break;
+  }
+  return backOff;
+}
+
+Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry) {
+  int backOffInMs = autoRetry.backOff.interval.inMilliseconds *
+      pow(_exponentialBase, autoRetry.numAttempts);
+  backOffInMs = min(autoRetry.backOff.maxInterval.inMilliseconds, backOffInMs);
+
+  if (autoRetry.backOff.withJitter == true) {
+    final random = new Random();
+    backOffInMs = random.nextInt(backOffInMs);
+  }
+  return new Duration(milliseconds: backOffInMs);
+}
+
+Duration _calculateFixedBackOff(RequestAutoRetry autoRetry) {
+  Duration backOff;
+
+  if (autoRetry.backOff.withJitter == true) {
+    final random = new Random();
+    backOff = new Duration(
+        milliseconds: autoRetry.backOff.interval.inMilliseconds ~/ 2 +
+            random.nextInt(autoRetry.backOff.interval.inMilliseconds).toInt());
+  } else {
+    backOff = autoRetry.backOff.interval;
+  }
+
+  return backOff;
+}
 
 /// Returns true if all characters in [value] are ASCII-compatible chars.
 /// Returns false otherwise.
@@ -32,21 +80,16 @@ bool isAsciiOnly(String value) => _asciiOnly.hasMatch(value);
 /// Converts a [Map] of field names to values to a query string. The resulting
 /// query string can be used as a URI query string or the body of a
 /// `application/x-www-form-urlencoded` request or response.
-String mapToQuery(Map<String, String> map, {Encoding encoding}) {
-  List<String> params = [];
+String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
+  final params = <String>[];
   map.forEach((key, value) {
     // Support fields with multiple values.
-    var valueList = value is List ? value : [value];
-    for (var v in valueList) {
-      var encoded;
-      if (encoding != null) {
-        encoded = [
-          Uri.encodeQueryComponent(key, encoding: encoding),
-          Uri.encodeQueryComponent(v, encoding: encoding)
-        ];
-      } else {
-        encoded = [Uri.encodeQueryComponent(key), Uri.encodeQueryComponent(v)];
-      }
+    final valueList = value is List ? value : [value];
+    for (final v in valueList) {
+      final encoded = <String>[
+        Uri.encodeQueryComponent(key, encoding: encoding ?? UTF8),
+        Uri.encodeQueryComponent(v, encoding: encoding ?? UTF8),
+      ];
       params.add(encoded.join('='));
     }
   });
@@ -60,9 +103,10 @@ String mapToQuery(Map<String, String> map, {Encoding encoding}) {
 /// http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html#sec7.2.1).
 MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
   // Ensure the headers are case-insensitive.
-  headers = new CaseInsensitiveMap.from(headers);
-  if (headers['content-type'] != null)
+  headers = new CaseInsensitiveMap<String>.from(headers);
+  if (headers['content-type'] != null) {
     return new MediaType.parse(headers['content-type']);
+  }
   return new MediaType('application', 'octet-stream');
 }
 
@@ -76,8 +120,8 @@ Encoding parseEncodingFromContentType(MediaType contentType,
     {Encoding fallback}) {
   if (contentType == null) return fallback;
   if (contentType.parameters['charset'] == null) return fallback;
-  var encoding = Encoding.getByName(contentType.parameters['charset']);
-  return encoding != null ? encoding : fallback;
+  final encoding = Encoding.getByName(contentType.parameters['charset']);
+  return encoding ?? fallback;
 }
 
 /// Returns the [Encoding] specified by the `charset` parameter of
@@ -89,9 +133,11 @@ Encoding parseEncodingFromContentType(MediaType contentType,
 /// [FormatException] will be thrown.
 Encoding parseEncodingFromContentTypeOrFail(MediaType contentType,
     {Encoding fallback}) {
-  var encoding = parseEncodingFromContentType(contentType, fallback: fallback);
+  final encoding =
+      parseEncodingFromContentType(contentType, fallback: fallback);
   if (encoding != null) return encoding;
-  var charset = contentType != null ? contentType.parameters['charset'] : null;
+  final charset =
+      contentType != null ? contentType.parameters['charset'] : null;
   throw new FormatException('Unsupported charset: $charset');
 }
 
@@ -104,31 +150,30 @@ Encoding parseEncodingFromContentTypeOrFail(MediaType contentType,
 /// will be returned.
 Encoding parseEncodingFromHeaders(Map<String, String> headers,
     {Encoding fallback}) {
-  MediaType contentType = parseContentTypeFromHeaders(headers);
+  final contentType = parseContentTypeFromHeaders(headers);
   return parseEncodingFromContentType(contentType, fallback: fallback);
 }
 
 /// Converts a query string to a [Map] of parameter names to values. Works for
 /// URI query string or an `application/x-www-form-urlencoded` body.
-Map<String, dynamic> queryToMap(String query, {Encoding encoding}) {
-  var fields = {};
-  for (var pair in query.split('&')) {
-    var pieces = pair.split('=');
+Map<String, Object> queryToMap(String query, {Encoding encoding}) {
+  final fields = <String, Object>{};
+  for (final pair in query.split('&')) {
+    final pieces = pair.split('=');
     if (pieces.isEmpty) continue;
-    var key = pieces.first;
-    var value = pieces.length > 1 ? pieces.sublist(1).join('') : '';
-    if (encoding != null) {
-      key = Uri.decodeQueryComponent(key, encoding: encoding);
-      value = Uri.decodeQueryComponent(value, encoding: encoding);
-    } else {
-      key = Uri.decodeQueryComponent(key);
-      value = Uri.decodeQueryComponent(value);
-    }
+
+    String key = pieces.first;
+    String value = pieces.length > 1 ? pieces.sublist(1).join('') : '';
+
+    key = Uri.decodeQueryComponent(key, encoding: encoding ?? UTF8);
+    value = Uri.decodeQueryComponent(value, encoding: encoding ?? UTF8);
+
     if (fields.containsKey(key)) {
       if (fields[key] is! List) {
         fields[key] = [fields[key]];
       }
-      fields[key].add(value);
+      final List currentFields = fields[key];
+      currentFields.add(value);
     } else {
       fields[key] = value;
     }
@@ -139,9 +184,8 @@ Map<String, dynamic> queryToMap(String query, {Encoding encoding}) {
 /// Reduces a byte stream to a single list of bytes.
 Future<Uint8List> reduceByteStream(Stream<List<int>> byteStream) async {
   try {
-    List<int> bytes = await byteStream.reduce((prev, next) {
-      var combined = new List.from(prev)..addAll(next);
-      return combined;
+    final bytes = await byteStream.reduce((prev, next) {
+      return new List<int>.from(prev)..addAll(next);
     });
     return new Uint8List.fromList(bytes);
   } on StateError {
@@ -152,7 +196,7 @@ Future<Uint8List> reduceByteStream(Stream<List<int>> byteStream) async {
 
 class ByteStreamProgressListener {
   StreamController<RequestProgress> _progressController =
-      new StreamController();
+      new StreamController<RequestProgress>();
 
   Stream<List<int>> _transformed;
 
@@ -167,19 +211,23 @@ class ByteStreamProgressListener {
   Stream<List<int>> _listenTo(Stream<List<int>> byteStream, {int total}) {
     int loaded = 0;
 
-    var progressListener =
-        new StreamTransformer((Stream<List<int>> input, bool cancelOnError) {
-      StreamController controller;
-      StreamSubscription subscription;
+    final progressListener = new StreamTransformer<List<int>, List<int>>(
+        (Stream<List<int>> input, bool cancelOnError) {
+      StreamController<List<int>> controller;
+      StreamSubscription<List<int>> subscription;
 
-      controller = new StreamController(onListen: () {
+      controller = new StreamController<List<int>>(onListen: () {
         subscription = input.listen(
             (bytes) {
               controller.add(bytes);
               try {
-                loaded += (bytes as List<int>).length;
+                loaded += bytes.length;
                 _progressController.add(new RequestProgress(loaded, total));
-              } catch (e) {}
+              } catch (e) {
+                // If one item from the stream is not of type List<int>,
+                // attempting to add the length to the `loaded` counter would
+                // throw. Fail quietly if that happens.
+              }
             },
             onError: controller.addError,
             onDone: () {

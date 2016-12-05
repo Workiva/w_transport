@@ -12,24 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.ws.common;
-
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart' show WSocket, WSocketException;
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../integration_paths.dart';
 
 void runCommonWebSocketIntegrationTests(
-    {Future<WSocket> connect(Uri uri), int port}) {
-  if (connect == null) {
-    connect = (uri) => WSocket.connect(uri);
-  }
-  var closeUri = IntegrationPaths.closeUri;
-  var echoUri = IntegrationPaths.echoUri;
-  var fourOhFourUri = IntegrationPaths.fourOhFourUri;
-  var pingUri = IntegrationPaths.pingUri;
+    {Future<transport.WebSocket> connect(Uri uri),
+    int port,
+    transport.TransportPlatform transportPlatform}) {
+  connect ??= (uri) =>
+      transport.WebSocket.connect(uri, transportPlatform: transportPlatform);
+  Uri closeUri = IntegrationPaths.closeUri;
+  Uri echoUri = IntegrationPaths.echoUri;
+  final fourOhFourUri = IntegrationPaths.fourOhFourUri;
+  Uri pingUri = IntegrationPaths.pingUri;
   if (port != null) {
     closeUri = closeUri.replace(port: port);
     echoUri = echoUri.replace(port: port);
@@ -37,13 +36,13 @@ void runCommonWebSocketIntegrationTests(
   }
 
   test('should throw if connection cannot be established', () async {
-    expect(
-        connect(fourOhFourUri), throwsA(new isInstanceOf<WSocketException>()));
+    expect(connect(fourOhFourUri),
+        throwsA(new isInstanceOf<transport.WebSocketException>()));
   });
 
   test('add() should send a message', () async {
-    var webSocket = await connect(echoUri);
-    var helper = new WSHelper(webSocket);
+    final webSocket = await connect(echoUri);
+    final helper = new WSHelper(webSocket);
 
     webSocket.add('message');
     await helper.messagesReceived(1);
@@ -52,8 +51,8 @@ void runCommonWebSocketIntegrationTests(
   });
 
   test('add() should support sending multiple messages', () async {
-    var webSocket = await connect(echoUri);
-    var helper = new WSHelper(webSocket);
+    final webSocket = await connect(echoUri);
+    final helper = new WSHelper(webSocket);
 
     webSocket.add('message1');
     webSocket.add('message2');
@@ -63,7 +62,7 @@ void runCommonWebSocketIntegrationTests(
   });
 
   test('add() should throw after sink has been closed', () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
     await webSocket.close();
     expect(() {
       webSocket.add('too late');
@@ -72,11 +71,11 @@ void runCommonWebSocketIntegrationTests(
 
   test('addError() should close the socket with an error that can be caught',
       () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
     webSocket.addError(
         new Exception('Exception should close the socket with an error.'));
 
-    var error;
+    Object error;
     try {
       await webSocket.done;
     } catch (e) {
@@ -88,11 +87,11 @@ void runCommonWebSocketIntegrationTests(
   });
 
   test('addStream() should send a Stream of data', () async {
-    var webSocket = await connect(echoUri);
-    var helper = new WSHelper(webSocket);
+    final webSocket = await connect(echoUri);
+    final helper = new WSHelper(webSocket);
 
-    var stream = new Stream.fromIterable(['message1', 'message2']);
-    webSocket.addStream(stream);
+    final stream = new Stream.fromIterable(['message1', 'message2']);
+    await webSocket.addStream(stream);
     await helper.messagesReceived(2);
     expect(helper.messages, unorderedEquals(['message1', 'message2']));
     await webSocket.close();
@@ -100,11 +99,11 @@ void runCommonWebSocketIntegrationTests(
 
   test('addStream() should support sending multiple Streams serially',
       () async {
-    var webSocket = await connect(echoUri);
-    var helper = new WSHelper(webSocket);
+    final webSocket = await connect(echoUri);
+    final helper = new WSHelper(webSocket);
 
-    var stream1 = new Stream.fromIterable(['message1a', 'message2a']);
-    var stream2 = new Stream.fromIterable(['message1b', 'message2b']);
+    final stream1 = new Stream.fromIterable(['message1a', 'message2a']);
+    final stream2 = new Stream.fromIterable(['message1b', 'message2b']);
     await webSocket.addStream(stream1);
     await webSocket.addStream(stream2);
     await helper.messagesReceived(4);
@@ -115,41 +114,40 @@ void runCommonWebSocketIntegrationTests(
 
   test('addStream() should throw if multiple Streams added concurrently',
       () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
 
-    var stream = new Stream.fromIterable(['message1', 'message2']);
-    var firstFuture = webSocket.addStream(stream);
-    var lateFuture = webSocket.addStream(stream);
+    final stream = new Stream.fromIterable(['message1', 'message2']);
+    final firstFuture = webSocket.addStream(stream);
+    final lateFuture = webSocket.addStream(stream);
     expect(lateFuture, throwsStateError);
     await firstFuture;
     try {
       await lateFuture;
-    } catch (e) {}
+    } catch (_) {}
     try {
       await webSocket.close();
-    } catch (e) {}
+    } catch (_) {}
   });
 
   test('addStream() should throw after sink has been closed', () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
     await webSocket.close();
     expect(webSocket.addStream(new Stream.fromIterable(['too late'])),
         throwsStateError);
   });
 
   test('addStream() should cause socket to close if error is added', () async {
-    var webSocket = await connect(echoUri);
-    var controller = new StreamController();
+    final webSocket = await connect(echoUri);
+    final controller = new StreamController<dynamic>();
     controller.add('message1');
     controller.addError(new Exception('addStream error, should close socket'));
-    controller.close();
     await webSocket.addStream(controller.stream);
     expect(webSocket.done, throwsException);
   });
 
   test('should support listening to incoming messages', () async {
-    var webSocket = await connect(pingUri);
-    var helper = new WSHelper(webSocket);
+    final webSocket = await connect(pingUri);
+    final helper = new WSHelper(webSocket);
 
     webSocket.add('ping2');
     await helper.messagesReceived(2);
@@ -159,7 +157,7 @@ void runCommonWebSocketIntegrationTests(
   });
 
   test('should not allow multiple listeners by default', () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
     webSocket.listen((_) {});
     expect(() {
       webSocket.listen((_) {});
@@ -168,12 +166,12 @@ void runCommonWebSocketIntegrationTests(
   });
 
   test('should lose messages if a listener is registered late', () async {
-    var webSocket = await connect(pingUri);
+    final webSocket = await connect(pingUri);
     // First two pings should be lost because no listener has been registered.
     webSocket.add('ping2');
 
     await new Future.delayed(new Duration(milliseconds: 200));
-    var helper = new WSHelper(webSocket);
+    final helper = new WSHelper(webSocket);
 
     // Next round of pings should now be received.
     webSocket.add('ping3');
@@ -185,22 +183,24 @@ void runCommonWebSocketIntegrationTests(
   });
 
   test('should call onDone() when socket closes', () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
 
-    Completer c = new Completer();
+    final c = new Completer<Null>();
     webSocket.listen((_) {}, onDone: () {
       c.complete();
     });
 
+    // ignore: unawaited_futures
     webSocket.close();
+
     await c.future;
   });
 
   test('should have the close code and reason available in onDone() callback',
       () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
 
-    Completer c = new Completer();
+    final c = new Completer<Null>();
     webSocket.listen((_) {}, onDone: () {
       expect(webSocket.closeCode, equals(4001));
       expect(webSocket.closeReason, equals('Closed.'));
@@ -220,10 +220,10 @@ void runCommonWebSocketIntegrationTests(
   test(
       'should close successfully if a subscription is canceled prior to closing',
       () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
 
-    var subscription = webSocket.listen((_) {});
-    subscription.cancel();
+    final subscription = webSocket.listen((_) {});
+    await subscription.cancel();
 
     await webSocket.close(4001, 'Closed.');
     expect(webSocket.closeCode, equals(4001));
@@ -231,12 +231,12 @@ void runCommonWebSocketIntegrationTests(
   });
 
   test('should not receive events once the subscription is canceled', () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
 
     bool doneEventReceived = false;
     int messagesReceived = 0;
 
-    var subscription = webSocket.listen((_) {
+    final subscription = webSocket.listen((_) {
       messagesReceived++;
     }, onDone: () {
       doneEventReceived = true;
@@ -244,7 +244,7 @@ void runCommonWebSocketIntegrationTests(
     webSocket.add('one');
     await new Future.delayed(new Duration(milliseconds: 50));
 
-    subscription.cancel();
+    await subscription.cancel();
 
     webSocket.add('two');
     await new Future.delayed(new Duration(milliseconds: 50));
@@ -254,12 +254,24 @@ void runCommonWebSocketIntegrationTests(
     expect(doneEventReceived, isFalse);
   });
 
-  test('should work as a broadcast stream', () async {
-    var webSocket = await connect(pingUri);
-    Stream stream = webSocket.asBroadcastStream();
+  test('should not close if the only listener is canceled', () async {
+    final webSocket = await connect(echoUri);
 
-    Completer c1 = new Completer();
-    Completer c2 = new Completer();
+    final subscription = webSocket.listen((_) {});
+    await subscription.cancel();
+
+    // Should still be able to add events.
+    webSocket.add('one');
+    expect(webSocket.closeCode, isNull);
+    expect(webSocket.closeReason, isNull);
+  });
+
+  test('should work as a broadcast stream', () async {
+    final webSocket = await connect(pingUri);
+    final stream = webSocket.asBroadcastStream();
+
+    final c1 = new Completer<Null>();
+    final c2 = new Completer<Null>();
 
     stream.listen((_) {
       c1.complete();
@@ -276,7 +288,7 @@ void runCommonWebSocketIntegrationTests(
 
   test('should have the close code and reason available after closing',
       () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
     await webSocket.close(4001, 'Closed.');
     expect(webSocket.closeCode, equals(4001));
     expect(webSocket.closeReason, equals('Closed.'));
@@ -285,12 +297,12 @@ void runCommonWebSocketIntegrationTests(
   test(
       'should close and properly drain stream even if no listeners were registered',
       () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
     await webSocket.close();
   });
 
   test('should handle the server closing the connection', () async {
-    var webSocket = await connect(closeUri);
+    final webSocket = await connect(closeUri);
     webSocket.add(_closeRequest());
     await webSocket.done;
   });
@@ -298,7 +310,7 @@ void runCommonWebSocketIntegrationTests(
   test(
       'should ignore close() being called after the server closes the connection',
       () async {
-    var webSocket = await connect(closeUri);
+    final webSocket = await connect(closeUri);
     webSocket.add(_closeRequest(4001, 'Closed by server.'));
     await webSocket.done;
     await webSocket.close(4002, 'Late close.');
@@ -306,8 +318,8 @@ void runCommonWebSocketIntegrationTests(
     expect(webSocket.closeReason, equals('Closed by server.'));
   });
 
-  test('should ignore close() calls after the first', () async {
-    var webSocket = await connect(echoUri);
+  test('should ignore close() calls after the first call', () async {
+    final webSocket = await connect(echoUri);
     await webSocket.close(4001, 'Custom close.');
     await webSocket.close(4002, 'Late close.');
     expect(webSocket.closeCode, equals(4001));
@@ -317,7 +329,7 @@ void runCommonWebSocketIntegrationTests(
   test(
       'should report the close code and reason that the server used when closing the connection',
       () async {
-    var socket = await connect(closeUri);
+    final socket = await connect(closeUri);
     socket.add(_closeRequest(4001, 'Closed by server.'));
     await socket.done;
     expect(socket.closeCode, equals(4001));
@@ -325,13 +337,13 @@ void runCommonWebSocketIntegrationTests(
   });
 
   test('message events should be discarded prior to a subscription', () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
 
     webSocket.add('1');
     webSocket.add('2');
     await new Future.delayed(new Duration(milliseconds: 200));
 
-    var messages = [];
+    final messages = <String>[];
     webSocket.listen((data) {
       messages.add(data);
     });
@@ -347,9 +359,9 @@ void runCommonWebSocketIntegrationTests(
   test(
       'the first event should be received if a subscription is made immediately',
       () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
 
-    var c = new Completer();
+    final c = new Completer<String>();
     webSocket.listen((data) {
       c.complete(data);
     });
@@ -361,15 +373,15 @@ void runCommonWebSocketIntegrationTests(
 
   test('all event streams should respect pause() and resume() signals',
       () async {
-    var webSocket = await connect(echoUri);
-    var messages = [];
+    final webSocket = await connect(echoUri);
+    final messages = <String>[];
 
     // no subscription yet, messages should be discarded
     webSocket.add('1');
     await new Future.delayed(new Duration(milliseconds: 200));
 
     // setup a subscription, messages should be recorded
-    var sub = webSocket.listen((data) {
+    final sub = webSocket.listen((data) {
       messages.add(data);
     });
     webSocket.add('2');
@@ -392,11 +404,11 @@ void runCommonWebSocketIntegrationTests(
   });
 
   test('should support calling pause() with a resume signal', () async {
-    var webSocket = await connect(echoUri);
-    var messages = [];
+    final webSocket = await connect(echoUri);
+    final messages = <String>[];
 
     // setup a subscription, messages should be recorded
-    var sub = webSocket.listen((data) {
+    final sub = webSocket.listen((data) {
       messages.add(data);
     });
     webSocket.add('1');
@@ -404,7 +416,7 @@ void runCommonWebSocketIntegrationTests(
 
     // pause the subscription, messages should be discarded until the resume
     // signal future resolves.
-    var c = new Completer();
+    final c = new Completer<Null>();
     sub.pause(c.future);
     await new Future.delayed(new Duration(milliseconds: 200));
     webSocket.add('2');
@@ -423,11 +435,11 @@ void runCommonWebSocketIntegrationTests(
   test(
       'should support calling pause() with a resume signal even if it resolves with an error',
       () async {
-    var webSocket = await connect(echoUri);
-    var messages = [];
+    final webSocket = await connect(echoUri);
+    final messages = <String>[];
 
     // setup a subscription, messages should be recorded
-    var sub = webSocket.listen((data) {
+    final sub = webSocket.listen((data) {
       messages.add(data);
     });
     webSocket.add('1');
@@ -435,7 +447,7 @@ void runCommonWebSocketIntegrationTests(
 
     // pause the subscription, messages should be discarded until the resume
     // signal future resolves.
-    var c = new Completer();
+    final c = new Completer<Null>();
     sub.pause(c.future);
     await new Future.delayed(new Duration(milliseconds: 200));
     webSocket.add('2');
@@ -452,11 +464,11 @@ void runCommonWebSocketIntegrationTests(
   }, skip: 'Can\'t test without the exception causing the test to fail.');
 
   test('should handle calling pause() multiple times', () async {
-    var webSocket = await connect(echoUri);
-    var messages = [];
+    final webSocket = await connect(echoUri);
+    final messages = <String>[];
 
     // setup a subscription, messages should be recorded
-    var sub = webSocket.listen((data) {
+    final sub = webSocket.listen((data) {
       messages.add(data);
     });
     webSocket.add('1');
@@ -486,27 +498,28 @@ void runCommonWebSocketIntegrationTests(
   });
 
   test('should support converting StreamSubscription to a Future', () async {
-    var webSocket = await connect(pingUri);
-    var sub = webSocket.listen((_) {});
-    var future = sub.asFuture('futureValue');
+    final webSocket = await connect(pingUri);
+    final sub = webSocket.listen((_) {});
+    final future = sub.asFuture('futureValue');
+    // ignore: unawaited_futures
     webSocket.close();
     expect(await future, equals('futureValue'));
   });
 
   test('should support reassigning the onData() handler', () async {
-    var webSocket = await connect(echoUri);
+    final webSocket = await connect(echoUri);
 
-    var origMessages = [];
-    var origOnData = (data) {
+    final origMessages = <String>[];
+    final origOnData = (data) {
       origMessages.add(data);
     };
 
-    var newMessages = [];
-    var newOnData = (data) {
+    final newMessages = <String>[];
+    final newOnData = (data) {
       newMessages.add(data);
     };
 
-    var subscription = webSocket.listen(origOnData);
+    final subscription = webSocket.listen(origOnData);
     webSocket.add('1');
     webSocket.add('2');
     // SockJS requires a delay longer than 1 tick for the echos to be received.
@@ -524,9 +537,9 @@ void runCommonWebSocketIntegrationTests(
   });
 
   test('should support reassigning the onDone() handler', () async {
-    var webSocket = await connect(closeUri);
-    var c = new Completer();
-    var subscription = webSocket.listen((_) {}, onDone: () {});
+    final webSocket = await connect(closeUri);
+    final c = new Completer<Null>();
+    final subscription = webSocket.listen((_) {}, onDone: () {});
     subscription.onDone(() {
       c.complete();
     });
@@ -536,7 +549,7 @@ void runCommonWebSocketIntegrationTests(
 }
 
 String _closeRequest([int closeCode, String closeReason]) {
-  var c = 'close';
+  String c = 'close';
   if (closeCode != null) {
     c = '$c:$closeCode';
     if (closeReason != null) {
@@ -547,11 +560,11 @@ String _closeRequest([int closeCode, String closeReason]) {
 }
 
 class WSHelper {
-  WSocket socket;
-  Map<int, Completer> _completers = {};
+  transport.WebSocket socket;
+  Map<int, Completer<Null>> _completers = {};
   List<String> _messages = [];
 
-  WSHelper(WSocket this.socket) {
+  WSHelper(this.socket) {
     socket.listen((message) {
       _messages.add(message);
       _completers.forEach((k, v) {
@@ -564,10 +577,10 @@ class WSHelper {
 
   Iterable<String> get messages => _messages;
 
-  Future messagesReceived(int numMessages) async {
+  Future<Null> messagesReceived(int numMessages) async {
     if (_messages.length >= numMessages) return;
 
-    Completer c = new Completer();
+    final c = new Completer<Null>();
     _completers[numMessages] = c;
     await c.future;
   }

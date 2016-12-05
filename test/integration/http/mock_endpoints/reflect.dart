@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.mock_endpoints.reflect;
-
 import 'dart:convert';
 
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 void mockReflectEndpoint(Uri uri) {
-  MockTransports.http.when(uri, (FinalizedRequest request) async {
-    Map reflection = {
+  MockTransports.http.when(uri, (request) async {
+    final reflection = <String, Object>{
       'method': request.method,
       'path': request.uri.path,
       'headers': request.headers,

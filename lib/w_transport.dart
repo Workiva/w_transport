@@ -89,6 +89,13 @@
 /// server, and listen to it like a stream to receive data from the server.
 library w_transport;
 
+// Transport Platforms
+export 'package:w_transport/src/global_transport_platform.dart'
+    show globalTransportPlatform, resetGlobalTransportPlatform;
+export 'package:w_transport/src/transport_platform.dart'
+    show TransportPlatform, TransportPlatformMissing;
+
+// HTTP
 export 'package:w_transport/src/http/auto_retry.dart'
     show RetryBackOff, RetryBackOffMethod;
 export 'package:w_transport/src/http/base_request.dart' show BaseRequest;
@@ -100,6 +107,7 @@ export 'package:w_transport/src/http/http_body.dart'
     show HttpBody, StreamedHttpBody;
 export 'package:w_transport/src/http/http_interceptor.dart'
     show HttpInterceptor, RequestPayload, ResponsePayload;
+export 'package:w_transport/src/http/http_client.dart' show HttpClient;
 export 'package:w_transport/src/http/multipart_file.dart' show MultipartFile;
 export 'package:w_transport/src/http/request_exception.dart'
     show RequestException;
@@ -112,10 +120,15 @@ export 'package:w_transport/src/http/response.dart'
 export 'package:w_transport/src/http/response_format_exception.dart'
     show ResponseFormatException;
 
+// WebSocket
 export 'package:w_transport/src/web_socket/w_socket.dart' show WSocket;
 export 'package:w_transport/src/web_socket/w_socket_close_event.dart'
     show WSocketCloseEvent;
 export 'package:w_transport/src/web_socket/w_socket_exception.dart'
     show WSocketException;
+export 'package:w_transport/src/web_socket/web_socket_exception.dart'
+    show WebSocketException;
+export 'package:w_transport/src/web_socket/web_socket.dart' show WebSocket;
 
+// Third-party
 export 'package:http_parser/http_parser.dart' show MediaType;

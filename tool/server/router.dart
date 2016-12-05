@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.router;
-
 import 'dart:async';
 import 'dart:io';
 
@@ -34,7 +32,7 @@ class Router implements Function {
   Logger logger;
   Map<String, Handler> routes;
 
-  Router(Logger this.logger) {
+  Router(this.logger) {
     routes = {'/ping': new PingHandler()}
       ..addAll(exampleHttpCrossOriginCredentialsRoutes)
       ..addAll(exampleHttpCrossOriginFileTransferRoutes)
@@ -44,12 +42,12 @@ class Router implements Function {
       ..addAll(getTestWebSocketIntegrationRoutes(logger));
   }
 
-  Future call(HttpRequest request) async {
+  Future<Null> call(HttpRequest request) async {
     if (routes.containsKey(request.uri.path)) {
       await routes[request.uri.path].processRequest(request);
     } else {
       request.response.statusCode = HttpStatus.NOT_FOUND;
-      request.response.close();
+      await request.response.close();
     }
   }
 }

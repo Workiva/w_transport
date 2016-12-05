@@ -13,25 +13,19 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.integration.http.client.browser_test;
-
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport_browser.dart';
+import 'package:w_transport/browser.dart';
 
 import '../../../naming.dart';
 import 'suite.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformBrowser
     ..testType = testTypeIntegration
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser();
-    });
-
-    runClientSuite();
+    runHttpTransportClientSuite(browserTransportPlatform);
   });
 }

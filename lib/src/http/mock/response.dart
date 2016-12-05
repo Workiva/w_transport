@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.mock.response;
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -32,23 +30,18 @@ class MockResponse implements Response {
       Map<String, String> headers,
       String statusText}) {
     // Ensure the headers are case insensitive.
-    headers = new CaseInsensitiveMap.from(headers != null ? headers : {});
+    headers = new CaseInsensitiveMap<String>.from(headers ?? {});
 
     // If an encoding was given, update the content-type charset parameter.
     if (encoding != null) {
-      var contentType = http_utils.parseContentTypeFromHeaders(headers);
+      MediaType contentType = http_utils.parseContentTypeFromHeaders(headers);
       contentType = contentType.change(parameters: {'charset': encoding.name});
       headers['content-type'] = contentType.toString();
     }
 
     // Use a default status text based on the status code if one is not given.
-    if (statusText == null) {
-      statusText = _mapStatusToText(status);
-    }
-
-    if (body == null) {
-      body = '';
-    }
+    statusText ??= _mapStatusToText(status);
+    body ??= '';
 
     // Construct the body according to the data type.
     if (body is String) {
@@ -60,20 +53,6 @@ class MockResponse implements Response {
           'Mock response body must be a String or bytes (List<int>).');
     }
   }
-
-  HttpBody get body => _response.body;
-
-  int get contentLength => _response.contentLength;
-
-  MediaType get contentType => _response.contentType;
-
-  Encoding get encoding => _response.encoding;
-
-  Map<String, String> get headers => _response.headers;
-
-  int get status => _response.status;
-
-  String get statusText => _response.statusText;
 
   factory MockResponse.ok(
           {body, Map<String, String> headers, String statusText}) =>
@@ -120,6 +99,28 @@ class MockResponse implements Response {
       new MockResponse(502,
           body: body, headers: headers, statusText: statusText);
 
+  @override
+  HttpBody get body => _response.body;
+
+  @override
+  int get contentLength => _response.contentLength;
+
+  @override
+  MediaType get contentType => _response.contentType;
+
+  @override
+  Encoding get encoding => _response.encoding;
+
+  @override
+  Map<String, String> get headers => _response.headers;
+
+  @override
+  int get status => _response.status;
+
+  @override
+  String get statusText => _response.statusText;
+
+  @override
   Response replace(
       {List<int> bodyBytes,
       String bodyString,
@@ -144,88 +145,109 @@ class MockStreamedResponse implements StreamedResponse {
       Map<String, String> headers,
       String statusText}) {
     // Ensure the headers are case insensitive.
-    headers = new CaseInsensitiveMap.from(headers != null ? headers : {});
+    headers = new CaseInsensitiveMap<String>.from(headers ?? {});
 
     // If an encoding was given, update the content-type charset parameter.
     if (encoding != null) {
-      var contentType = http_utils.parseContentTypeFromHeaders(headers);
+      MediaType contentType = http_utils.parseContentTypeFromHeaders(headers);
       contentType = contentType.change(parameters: {'charset': encoding.name});
       headers['content-type'] = contentType.toString();
     }
 
     // Use a default status text based on the status code if one is not given.
-    if (statusText == null) {
-      statusText = _mapStatusToText(status);
-    }
-
-    if (byteStream == null) {
-      byteStream = new Stream.fromIterable([]);
-    }
+    statusText ??= _mapStatusToText(status);
+    byteStream ??= new Stream.fromIterable([]);
 
     // Construct the body according to the data type.
     _response = new StreamedResponse.fromByteStream(
         status, statusText, headers, byteStream);
   }
 
-  StreamedHttpBody get body => _response.body;
-
-  int get contentLength => _response.contentLength;
-
-  MediaType get contentType => _response.contentType;
-
-  Encoding get encoding => _response.encoding;
-
-  Map<String, String> get headers => _response.headers;
-
-  int get status => _response.status;
-
-  String get statusText => _response.statusText;
-
   factory MockStreamedResponse.ok(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(200,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.badRequest(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(400,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.unauthorized(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(401,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.forbidden(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(403,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.notFound(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(404,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.methodNotAllowed(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(405,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.internalServerError(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(500,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.notImplemented(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(501,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.badGateway(
-          {byteStream, Map<String, String> headers, String statusText}) =>
+          {Stream<List<int>> byteStream,
+          Map<String, String> headers,
+          String statusText}) =>
       new MockStreamedResponse(502,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
+  @override
+  StreamedHttpBody get body => _response.body;
+
+  @override
+  int get contentLength => _response.contentLength;
+
+  @override
+  MediaType get contentType => _response.contentType;
+
+  @override
+  Encoding get encoding => _response.encoding;
+
+  @override
+  Map<String, String> get headers => _response.headers;
+
+  @override
+  int get status => _response.status;
+
+  @override
+  String get statusText => _response.statusText;
+
+  @override
   StreamedResponse replace(
       {Stream<List<int>> byteStream,
       int status,

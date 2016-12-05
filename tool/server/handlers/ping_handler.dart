@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.ping_handler;
-
 import 'dart:async';
 import 'dart:io';
 
@@ -25,7 +23,8 @@ class PingHandler extends Handler {
     enableCors();
   }
 
-  Future get(HttpRequest request) async {
+  @override
+  Future<Null> get(HttpRequest request) async {
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
   }

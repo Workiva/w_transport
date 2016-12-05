@@ -13,38 +13,34 @@
 // limitations under the License.
 
 @TestOn('vm')
-library w_transport.test.integration.http.json_request.vm_test;
-
 import 'dart:io';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_vm.dart';
+import 'package:w_transport/vm.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../../naming.dart';
 import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformVM
     ..testType = testTypeIntegration
     ..topic = topicHttp;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForVM();
-    });
-
-    runJsonRequestSuite();
+    runJsonRequestSuite(vmTransportPlatform);
 
     test('underlying HttpRequest configuration', () async {
-      JsonRequest request = new JsonRequest()
-        ..uri = IntegrationPaths.reflectEndpointUri;
-      request.configure((HttpClientRequest ioRequest) async {
+      final request =
+          new transport.JsonRequest(transportPlatform: vmTransportPlatform)
+            ..uri = IntegrationPaths.reflectEndpointUri;
+      request.configure((request) async {
+        HttpClientRequest ioRequest = request;
         ioRequest.headers.set('x-configured', 'true');
       });
-      Response response = await request.get();
+      final response = await request.get();
       expect(response.body.asJson()['headers']['x-configured'], equals('true'));
     });
   });

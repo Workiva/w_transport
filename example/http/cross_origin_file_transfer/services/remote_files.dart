@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_file_transfer.services.remote_files;
-
 import 'dart:async';
 
 import 'package:w_transport/w_transport.dart';
@@ -23,6 +21,30 @@ import './proxy.dart';
 int _remoteFilePollingInterval = 10; // 10 seconds
 
 class RemoteFiles {
+  bool _connected;
+  StreamController<RequestException> _errorStreamController;
+  Stream<RequestException> _errorStream;
+  StreamController<List<RemoteFileDescription>> _fileStreamController;
+  Stream<List<RemoteFileDescription>> _fileStream;
+  Timer _pollingTimer;
+
+  /// Construct a RemoteFiles instance and connect to the proxy server
+  /// via HTTP polling.
+  RemoteFiles._() {
+    _connected = true;
+    _errorStreamController = new StreamController<RequestException>();
+    _errorStream = _errorStreamController.stream.asBroadcastStream();
+    _fileStreamController = new StreamController<List<RemoteFileDescription>>();
+    _fileStream = _fileStreamController.stream.asBroadcastStream();
+    _startPolling();
+  }
+
+  /// Stream that updates with the latest list of remote files.
+  Stream<List<RemoteFileDescription>> get stream => _fileStream;
+
+  /// Stream of errors that may occur when trying to communicate with the proxy file server.
+  Stream<RequestException> get errorStream => _errorStream;
+
   /// Establish a connection with the remote files server.
   static RemoteFiles connect() {
     return new RemoteFiles._();
@@ -35,31 +57,9 @@ class RemoteFiles {
   /// Close the connection with the remote files server.
   void close() {
     _connected = false;
+    _errorStreamController.close();
+    _fileStreamController.close();
     _endPolling();
-  }
-
-  /// Stream that updates with the latest list of remote files.
-  Stream<List<RemoteFileDescription>> get stream => _fileStream;
-
-  /// Stream of errors that may occur when trying to communicate with the proxy file server.
-  Stream<RequestException> get errorStream => _errorStream;
-
-  bool _connected;
-  StreamController _errorStreamController;
-  Stream _errorStream;
-  StreamController<List<RemoteFileDescription>> _fileStreamController;
-  Stream<List<RemoteFileDescription>> _fileStream;
-  Timer _pollingTimer;
-
-  /// Construct a RemoteFiles instance and connect to the proxy server
-  /// via HTTP polling.
-  RemoteFiles._() {
-    _connected = true;
-    _errorStreamController = new StreamController();
-    _errorStream = _errorStreamController.stream.asBroadcastStream();
-    _fileStreamController = new StreamController<List<RemoteFileDescription>>();
-    _fileStream = _fileStreamController.stream.asBroadcastStream();
-    _startPolling();
   }
 
   /// Send polling requests 2 seconds apart.
@@ -72,10 +72,10 @@ class RemoteFiles {
   }
 
   /// Send the HTTP polling request.
-  Future _poll() async {
+  Future<Null> _poll() async {
     if (!_connected) return;
     try {
-      Response response = await Http.get(getFilesEndpointUrl());
+      final response = await Http.get(getFilesEndpointUrl());
 
       // Parse the file list from the response
       List results = response.body.asJson()['results'];
@@ -96,9 +96,7 @@ class RemoteFiles {
 
   /// Cancel polling.
   void _endPolling() {
-    if (_pollingTimer != null) {
-      _pollingTimer.cancel();
-    }
+    _pollingTimer?.cancel();
   }
 }
 

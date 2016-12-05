@@ -13,14 +13,13 @@
 // limitations under the License.
 
 @TestOn('browser')
-library w_transport.test.integration.ws.sockjs_test;
-
+import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_browser.dart';
+import 'package:w_transport/browser.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 import '../integration_paths.dart';
@@ -29,107 +28,93 @@ import 'common.dart';
 const int sockjsPort = 8026;
 
 void main() {
-  Naming wsNaming = new Naming()
+  final wsNaming = new Naming()
     ..platform = platformBrowserSockjsWS
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
-  Naming xhrNaming = new Naming()
+  final xhrNaming = new Naming()
     ..platform = platformBrowserSockjsXhr
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
-  Naming wsDeprecatedNaming = new Naming()
+  final wsDeprecatedNaming = new Naming()
     ..platform = platformBrowserSockjsWSDeprecated
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
-  Naming xhrDeprecatedNaming = new Naming()
+  final xhrDeprecatedNaming = new Naming()
     ..platform = platformBrowserSockjsXhrDeprecated
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
   group(wsNaming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser();
-    });
-
-    sockJSSuite((Uri uri) => WSocket.connect(uri,
+    sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
         useSockJS: true,
         sockJSNoCredentials: true,
-        sockJSProtocolsWhitelist: ['websocket']));
+        sockJSProtocolsWhitelist: ['websocket'],
+        transportPlatform: browserTransportPlatform));
   });
 
   group(xhrNaming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser();
-    });
-
-    sockJSSuite((Uri uri) => WSocket.connect(uri,
+    sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
         useSockJS: true,
         sockJSNoCredentials: true,
-        sockJSProtocolsWhitelist: ['xhr-streaming']));
+        sockJSProtocolsWhitelist: ['xhr-streaming'],
+        transportPlatform: browserTransportPlatform));
   });
 
   group(wsDeprecatedNaming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser(
-          useSockJS: true,
-          sockJSNoCredentials: true,
-          sockJSProtocolsWhitelist: ['websocket']);
-    });
-
-    sockJSSuite((Uri uri) => WSocket.connect(uri));
+    sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
+        transportPlatform: new BrowserTransportPlatformWithSockJS(
+            sockJSNoCredentials: true,
+            sockJSProtocolsWhitelist: ['websocket'])));
   });
 
   group(xhrDeprecatedNaming.toString(), () {
-    setUp(() {
-      configureWTransportForBrowser(
-          useSockJS: true,
-          sockJSNoCredentials: true,
-          sockJSProtocolsWhitelist: ['xhr-streaming']);
-    });
-
-    sockJSSuite((Uri uri) => WSocket.connect(uri));
+    sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
+        transportPlatform: new BrowserTransportPlatformWithSockJS(
+            sockJSNoCredentials: true,
+            sockJSProtocolsWhitelist: ['xhr-streaming'])));
   });
 }
 
-sockJSSuite(connect(Uri uri)) {
+void sockJSSuite(Future<transport.WebSocket> connect(Uri uri)) {
   runCommonWebSocketIntegrationTests(connect: connect, port: sockjsPort);
 
-  var echoUri = IntegrationPaths.echoUri.replace(port: sockjsPort);
-  var pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
+  final echoUri = IntegrationPaths.echoUri.replace(port: sockjsPort);
+  final pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
 
   test('should not support Blob', () async {
-    Blob blob = new Blob(['one', 'two']);
-    WSocket socket = await connect(pingUri);
+    final blob = new Blob(['one', 'two']);
+    final socket = await connect(pingUri);
     expect(() {
       socket.add(blob);
     }, throwsArgumentError);
-    socket.close();
+    await socket.close();
   });
 
   test('should support String', () async {
-    String data = 'data';
-    WSocket socket = await connect(echoUri);
+    final data = 'data';
+    final socket = await connect(echoUri);
     socket.add(data);
-    socket.close();
+    await socket.close();
   });
 
   test('should not support TypedData', () async {
-    TypedData data = new Uint16List.fromList([1, 2, 3]);
-    WSocket socket = await connect(echoUri);
+    final data = new Uint16List.fromList([1, 2, 3]);
+    final socket = await connect(echoUri);
     expect(() {
       socket.add(data);
     }, throwsArgumentError);
-    socket.close();
+    await socket.close();
   });
 
   test('should throw when attempting to send invalid data', () async {
-    WSocket socket = await connect(pingUri);
+    final socket = await connect(pingUri);
     expect(() {
       socket.add(true);
     }, throwsArgumentError);
-    socket.close();
+    await socket.close();
   });
 }

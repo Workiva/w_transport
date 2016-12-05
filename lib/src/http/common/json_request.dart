@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.common.json_request;
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -24,17 +22,21 @@ import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/requests.dart';
+import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
-  CommonJsonRequest() : super();
+  CommonJsonRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   CommonJsonRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
   String _encodedJson;
   dynamic _source;
 
+  @override
   dynamic get body => _source;
 
+  @override
   set body(dynamic json) {
     verifyUnsent();
     // Store the source so it can be returned from the getter without having to
@@ -61,11 +63,12 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
 
   @override
   JsonRequest clone() {
-    return (super.clone() as JsonRequest)..body = _source;
+    final JsonRequest requestClone = super.clone();
+    return requestClone..body = _source;
   }
 
   @override
-  Future<HttpBody> finalizeBody([body]) async {
+  Future<HttpBody> finalizeBody([dynamic body]) async {
     if (body != null) {
       this.body = body;
     }

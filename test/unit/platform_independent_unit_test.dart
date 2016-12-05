@@ -13,12 +13,9 @@
 // limitations under the License.
 
 @TestOn('browser || vm')
-library w_transport.test.unit.unit_test_suite;
-
 import 'package:test/test.dart';
 
 import 'http/client_test.dart' as http_client_test;
-import 'http/backoff_test.dart' as http_backoff_test;
 import 'http/form_request_test.dart' as http_form_request_test;
 import 'http/http_body_test.dart' as http_body_test;
 import 'http/http_interceptor_test.dart' as http_interceptor_test;
@@ -40,12 +37,11 @@ import 'mocks/mock_http_test.dart' as mock_http_test;
 import 'mocks/mock_response_test.dart' as mock_response_test;
 import 'mocks/mock_web_socket_test.dart' as mock_web_socket_test;
 
-import 'ws/w_socket_exception_test.dart' as ws_w_socket_exception_test;
+import 'ws/web_socket_exception_test.dart' as ws_w_socket_exception_test;
 import 'ws/w_socket_subscription_test.dart' as ws_w_socket_subscription_test;
-import 'ws/w_socket_test.dart' as ws_w_socket_test;
+import 'ws/web_socket_test.dart' as ws_web_socket_test;
 
 void main() {
-  http_backoff_test.main();
   http_client_test.main();
   http_body_test.main();
   http_interceptor_test.main();
@@ -69,5 +65,5 @@ void main() {
 
   ws_w_socket_exception_test.main();
   ws_w_socket_subscription_test.main();
-  ws_w_socket_test.main();
+  ws_web_socket_test.main();
 }

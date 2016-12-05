@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.mock.base_request;
-
 import 'dart:async';
 
+import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/response.dart';
 
+@Deprecated(v3Deprecation)
 abstract class MockBaseRequest extends BaseRequest {
-  Future get onCanceled;
+  Future<Null> get onCanceled;
   Future<FinalizedRequest> get onSent;
   void complete({BaseResponse response});
   void completeError({Object error, BaseResponse response});

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.common.loading_component;
-
 import 'dart:html';
 
 void removeLoadingOverlay() {

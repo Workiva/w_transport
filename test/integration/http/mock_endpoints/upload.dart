@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.mock_endpoints.upload;
-
-import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 void mockUploadEndpoint(Uri uri) {
-  MockTransports.http.when(uri, (FinalizedRequest request) async {
-    await (request.body as StreamedHttpBody).byteStream.drain();
+  MockTransports.http.when(uri, (request) async {
+    transport.StreamedHttpBody body = request.body;
+    await body.byteStream.drain();
     return new MockResponse.ok();
   });
 }

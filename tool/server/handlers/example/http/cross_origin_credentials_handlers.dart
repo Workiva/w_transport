@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.example.http.cross_origin_credentials_handlers;
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -55,35 +53,38 @@ class SessionHandler extends Handler {
     enableCors(credentials: true);
   }
 
-  Map createSessionHeaders(String sessionCookieValue) {
+  Map<String, String> createSessionHeaders(String sessionCookieValue) {
     Cookie sessionCookie = new Cookie('session', sessionCookieValue);
     sessionCookie.httpOnly = true;
     sessionCookie.path = '/';
     return {'set-cookie': sessionCookie.toString()};
   }
 
-  Future get(HttpRequest request) async {
+  @override
+  Future<Null> get(HttpRequest request) async {
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
     request.response
         .write(JSON.encode({'authenticated': isValidSession(request)}));
   }
 
-  Future post(HttpRequest request) async {
+  @override
+  Future<Null> post(HttpRequest request) async {
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
-    Map<String, String> headers = createSessionHeaders(generateSessionCookie());
+    final headers = createSessionHeaders(generateSessionCookie());
     headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
     request.response.write(JSON.encode({'authenticated': true}));
   }
 
-  Future delete(HttpRequest request) async {
+  @override
+  Future<Null> delete(HttpRequest request) async {
     session = null;
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
-    Map<String, String> headers = createSessionHeaders('deleted');
+    final headers = createSessionHeaders('deleted');
     headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
@@ -96,7 +97,8 @@ class CredentialedRequestHandler extends Handler {
     enableCors(credentials: true);
   }
 
-  Future get(HttpRequest request) async {
+  @override
+  Future<Null> get(HttpRequest request) async {
     // Verify the request has a valid session cookie
     if (isValidSession(request)) {
       request.response.statusCode = HttpStatus.OK;

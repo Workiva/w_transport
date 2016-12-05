@@ -13,40 +13,45 @@
 // limitations under the License.
 
 @TestOn('browser || vm')
-library w_transport.test.unit.http.form_request_test;
-
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
   group(naming.toString(), () {
     group('FormRequest', () {
       setUp(() {
-        configureWTransportForTest();
+        MockTransports.install();
+      });
+
+      tearDown(() async {
+        MockTransports.verifyNoOutstandingExceptions();
+        await MockTransports.uninstall();
       });
 
       test('setting fields defaults to empty map if null', () {
-        FormRequest request = new FormRequest()..fields = null;
+        final request = new transport.FormRequest()..fields = null;
         expect(request.fields, equals({}));
       });
 
       test('setting entire fields map', () {
-        FormRequest request = new FormRequest()..fields = {'field': 'value'};
+        final request = new transport.FormRequest()
+          ..fields = {'field': 'value'};
         expect(request.fields, equals({'field': 'value'}));
       });
 
       test('setting fields incrementally', () {
-        FormRequest request = new FormRequest()
+        final request = new transport.FormRequest()
           ..fields['field1'] = 'value1'
           ..fields['field2'] = 'value2';
         expect(
@@ -54,31 +59,32 @@ void main() {
       });
 
       test('setting body in request dispatcher is supported', () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
 
-        Completer body = new Completer();
+        final c = new Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          body.complete((request.body as HttpBody).asString());
+          transport.HttpBody body = request.body;
+          c.complete(body.asString());
           return new MockResponse.ok();
         });
 
-        FormRequest request = new FormRequest();
+        final request = new transport.FormRequest();
         await request.post(uri: uri, body: {'field': 'value'});
-        expect(await body.future, equals('field=value'));
+        expect(await c.future, equals('field=value'));
       });
 
       test('setting body in request dispatcher should throw if invalid',
           () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
 
-        FormRequest request = new FormRequest();
+        final request = new transport.FormRequest();
         expect(request.post(uri: uri, body: 'invalid'), throws);
       });
 
       test('body should be unmodifiable once sent', () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        FormRequest request = new FormRequest();
+        final request = new transport.FormRequest();
         await request.post(uri: uri);
         expect(() {
           request.fields['too'] = 'late';
@@ -89,21 +95,21 @@ void main() {
       });
 
       test('content-length cannot be set manually', () {
-        Request request = new Request();
+        final request = new transport.Request();
         expect(() {
           request.contentLength = 10;
         }, throwsUnsupportedError);
       });
 
       test('setting encoding to null should throw', () {
-        var request = new FormRequest();
+        final request = new transport.FormRequest();
         expect(() {
           request.encoding = null;
         }, throwsArgumentError);
       });
 
       test('setting encoding should update content-type', () {
-        FormRequest request = new FormRequest();
+        final request = new transport.FormRequest();
         expect(request.contentType.parameters['charset'], equals(UTF8.name));
 
         request.encoding = LATIN1;
@@ -116,7 +122,7 @@ void main() {
       test(
           'setting encoding should not update content-type if content-type has been set manually',
           () {
-        FormRequest request = new FormRequest();
+        final request = new transport.FormRequest();
         expect(request.contentType.parameters['charset'], equals(UTF8.name));
 
         // Manually override content-type.
@@ -131,9 +137,9 @@ void main() {
       });
 
       test('setting content-type should not be allowed once sent', () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        FormRequest request = new FormRequest();
+        final request = new transport.FormRequest();
         await request.get(uri: uri);
         expect(() {
           request.contentType = new MediaType('application', 'x-custom');
@@ -141,9 +147,9 @@ void main() {
       });
 
       test('setting encoding should not be allowed once sent', () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        FormRequest request = new FormRequest();
+        final request = new transport.FormRequest();
         await request.get(uri: uri);
         expect(() {
           request.encoding = LATIN1;
@@ -151,18 +157,18 @@ void main() {
       });
 
       test('custom content-type without inferrable encoding', () async {
-        Uri uri = Uri.parse('/test');
+        final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        var request = new FormRequest()
+        final request = new transport.FormRequest()
           ..contentType = new MediaType('application', 'x-custom')
           ..fields['foo'] = 'bar';
         await request.post(uri: uri);
       });
 
       test('clone()', () {
-        var fields = {'f1': 'v1', 'f2': 'v2'};
-        FormRequest orig = new FormRequest()..fields = fields;
-        FormRequest clone = orig.clone();
+        final fields = <String, String>{'f1': 'v1', 'f2': 'v2'};
+        final orig = new transport.FormRequest()..fields = fields;
+        final clone = orig.clone();
         expect(clone.fields, equals(fields));
       });
     });

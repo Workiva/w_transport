@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_file_transfer.components.file_transfer_list_item_component;
-
 import 'dart:async';
 
 import 'package:react/react.dart' as react;
@@ -25,10 +23,11 @@ const int _transferCompleteFadeoutDuration = 2; // 2 seconds
 
 /// A single file upload or download. Contains the file name, a progressbar,
 /// and a control that allows cancellation of the upload or download.
-var fileTransferListItemComponent =
+dynamic fileTransferListItemComponent =
     react.registerComponent(() => new FileTransferListItemComponent());
 
 class FileTransferListItemComponent extends react.Component {
+  @override
   Map getInitialState() {
     return {
       'done': false,
@@ -37,6 +36,7 @@ class FileTransferListItemComponent extends react.Component {
     };
   }
 
+  @override
   Map getDefaultProps() {
     return {
       'transfer': null,
@@ -44,6 +44,7 @@ class FileTransferListItemComponent extends react.Component {
     };
   }
 
+  @override
   void componentWillMount() {
     FileTransfer transfer = this.props['transfer'];
     if (transfer != null) {
@@ -76,7 +77,7 @@ class FileTransferListItemComponent extends react.Component {
     _fadeTransferOut().then((_) => _removeTransfer());
   }
 
-  Future _fadeTransferOut() async {
+  Future<Null> _fadeTransferOut() async {
     // wait a few seconds before beginning to fade the item out
     await new Future.delayed(
         new Duration(seconds: _transferCompleteLingerDuration));
@@ -90,7 +91,8 @@ class FileTransferListItemComponent extends react.Component {
     this.props['onTransferDone'](this.props['transfer']);
   }
 
-  render() {
+  @override
+  dynamic render() {
     FileTransfer transfer = this.props['transfer'];
     if (transfer == null) return react.div({});
     String transferClass = '';
@@ -102,7 +104,7 @@ class FileTransferListItemComponent extends react.Component {
       transferClass += ' hide';
     }
 
-    var label = [transfer.name];
+    final label = <dynamic>[transfer.name];
     if (!this.state['done']) {
       label.addAll([
         ' (',

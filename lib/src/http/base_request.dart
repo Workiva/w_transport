@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.base_request;
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -135,7 +133,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// of [HttpRequest] or [HttpClientRequest], depending on the platform. If
   /// [configure] returns a `Future`, the request will not be sent until the
   /// returned `Future` completes.
-  void configure(configure(request));
+  void configure(configure(Object request));
 
   /// Retry this request. Throws a `StateError` if this request did not or has
   /// yet to fail.

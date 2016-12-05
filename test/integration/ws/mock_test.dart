@@ -13,41 +13,113 @@
 // limitations under the License.
 
 @TestOn('vm || browser')
-library w_transport.test.integration.ws.mock_test;
-
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport_mock.dart';
+import 'package:w_transport/mock.dart';
 
 import '../../naming.dart';
 import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  Naming naming = new Naming()
+  final naming = new Naming()
     ..platform = platformMock
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
   group(naming.toString(), () {
-    setUp(() {
-      configureWTransportForTest();
+    MockWebSocketServer mockCloseWebSocketServer;
+    MockWebSocketServer mockEchoWebSocketServer;
+    MockWebSocketServer mockPingWebSocketServer;
 
-      MockTransports.reset();
+    setUp(() {
+      MockTransports.install();
+
+      mockCloseWebSocketServer = new MockWebSocketServer();
+      mockEchoWebSocketServer = new MockWebSocketServer();
+      mockPingWebSocketServer = new MockWebSocketServer();
+
+      mockCloseWebSocketServer.onClientConnected.listen((connection) {
+        connection.onData((data) {
+          if (data.startsWith('close')) {
+            final parts = data.split(':');
+            int closeCode;
+            String closeReason;
+            if (parts.length >= 2) {
+              closeCode = int.parse(parts[1]);
+            }
+            if (parts.length >= 3) {
+              closeReason = parts[2];
+            }
+            connection.close(closeCode, closeReason);
+          }
+        });
+      });
+
+      mockEchoWebSocketServer.onClientConnected.listen((connection) {
+        connection.onData(connection.send);
+      });
+
+      mockPingWebSocketServer.onClientConnected.listen((connection) {
+        connection.onData((data) async {
+          data = data.replaceAll('ping', '');
+          int numPongs = 1;
+          try {
+            numPongs = int.parse(data);
+          } catch (_) {}
+          for (int i = 0; i < numPongs; i++) {
+            await new Future.delayed(new Duration(milliseconds: 5));
+            connection.send('pong');
+          }
+        });
+      });
 
       MockTransports.webSocket
           .when(IntegrationPaths.fourOhFourUri, reject: true);
 
       MockTransports.webSocket.when(IntegrationPaths.closeUri,
-          handler: (Uri uri, {protocols, headers}) {
-        MockWSocket webSocket = new MockWSocket();
+          handler: (Uri uri, {protocols, headers}) async =>
+              mockCloseWebSocketServer);
+
+      MockTransports.webSocket.when(IntegrationPaths.echoUri,
+          handler: (Uri uri, {protocols, headers}) async =>
+              mockEchoWebSocketServer);
+
+      MockTransports.webSocket.when(IntegrationPaths.pingUri,
+          handler: (Uri uri, {protocols, headers}) async =>
+              mockPingWebSocketServer);
+    });
+
+    tearDown(() async {
+      await Future.wait([
+        mockCloseWebSocketServer.shutDown(),
+        mockEchoWebSocketServer.shutDown(),
+        mockPingWebSocketServer.shutDown(),
+      ]);
+      MockTransports.verifyNoOutstandingExceptions();
+      await MockTransports.uninstall();
+    });
+
+    runCommonWebSocketIntegrationTests();
+  });
+
+  group(naming.toString() + ' legacy', () {
+    setUp(() {
+      MockTransports.install();
+
+      MockTransports.webSocket
+          .when(IntegrationPaths.fourOhFourUri, reject: true);
+
+      MockTransports.webSocket.when(IntegrationPaths.closeUri,
+          handler: (Uri uri, {protocols, headers}) async {
+        final webSocket = new MockWSocket();
 
         webSocket.onOutgoing((data) {
           if (data.startsWith('close')) {
-            var parts = data.split(':');
-            var closeCode;
-            var closeReason;
+            final parts = data.split(':');
+            int closeCode;
+            String closeReason;
             if (parts.length >= 2) {
               closeCode = int.parse(parts[1]);
             }
@@ -62,22 +134,22 @@ void main() {
       });
 
       MockTransports.webSocket.when(IntegrationPaths.echoUri,
-          handler: (Uri uri, {protocols, headers}) {
-        MockWSocket webSocket = new MockWSocket();
+          handler: (Uri uri, {protocols, headers}) async {
+        final webSocket = new MockWSocket();
         webSocket.onOutgoing(webSocket.addIncoming);
         return webSocket;
       });
 
       MockTransports.webSocket.when(IntegrationPaths.pingUri,
-          handler: (Uri uri, {protocols, headers}) {
-        MockWSocket webSocket = new MockWSocket();
+          handler: (Uri uri, {protocols, headers}) async {
+        final webSocket = new MockWSocket();
 
         webSocket.onOutgoing((data) async {
           data = data.replaceAll('ping', '');
-          var numPongs = 1;
+          int numPongs = 1;
           try {
             numPongs = int.parse(data);
-          } catch (e) {}
+          } catch (_) {}
           for (int i = 0; i < numPongs; i++) {
             await new Future.delayed(new Duration(milliseconds: 5));
             webSocket.addIncoming('pong');
@@ -86,6 +158,11 @@ void main() {
 
         return webSocket;
       });
+    });
+
+    tearDown(() async {
+      MockTransports.verifyNoOutstandingExceptions();
+      await MockTransports.uninstall();
     });
 
     runCommonWebSocketIntegrationTests();

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.src.http.common.form_request;
-
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -24,9 +22,11 @@ import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
+import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonFormRequest extends CommonRequest implements FormRequest {
-  CommonFormRequest() : super();
+  CommonFormRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
   CommonFormRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
@@ -39,15 +39,14 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
   MediaType get defaultContentType => new MediaType(
       'application', 'x-www-form-urlencoded', {'charset': encoding.name});
 
+  @override
   Map<String, dynamic> get fields =>
-      isSent ? new Map.unmodifiable(_fields) : _fields;
+      isSent ? new Map<String, dynamic>.unmodifiable(_fields) : _fields;
 
+  @override
   set fields(Map<String, dynamic> fields) {
     verifyUnsent();
-    if (fields == null) {
-      fields = {};
-    }
-    _fields = fields;
+    _fields = fields ?? {};
   }
 
   Uint8List get _encodedQuery {
@@ -62,13 +61,19 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
 
   @override
   FormRequest clone() {
-    return (super.clone() as FormRequest)..fields = fields;
+    final FormRequest requestClone = super.clone();
+    return requestClone..fields = fields;
   }
 
   @override
-  Future<HttpBody> finalizeBody([body]) async {
+  Future<HttpBody> finalizeBody([dynamic body]) async {
     if (body != null) {
-      this.fields = body;
+      if (body is Map<String, dynamic>) {
+        this.fields = body;
+      } else {
+        throw new ArgumentError.value(
+            body, 'body', 'Body must be of type Map<String, dynamic>');
+      }
     }
     return new HttpBody.fromBytes(contentType, _encodedQuery,
         fallbackEncoding: encoding);

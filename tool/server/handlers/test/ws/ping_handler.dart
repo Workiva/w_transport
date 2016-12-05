@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.tool.server.handlers.test.ws.ping_handler;
-
 import 'dart:async';
+import 'dart:io';
 
 import '../../../handler.dart';
 import '../../../logger.dart';
@@ -22,17 +21,18 @@ import '../../../logger.dart';
 class PingHandler extends WebSocketHandler {
   Logger _logger;
 
-  PingHandler(Logger this._logger) : super() {
+  PingHandler(this._logger) : super() {
     enableCors();
   }
 
-  void onConnection(webSocket) {
+  @override
+  void onConnection(WebSocket webSocket) {
     webSocket.listen((message) async {
       message = message.replaceAll('ping', '');
-      var numPongs = 1;
+      int numPongs = 1;
       try {
         numPongs = int.parse(message);
-      } catch (e) {}
+      } catch (_) {}
       for (int i = 0; i < numPongs; i++) {
         await new Future.delayed(new Duration(milliseconds: 50));
         webSocket.add('pong');

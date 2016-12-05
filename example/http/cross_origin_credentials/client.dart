@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.example.http.cross_origin_credentials.client;
+import 'dart:async';
 
 import 'package:react/react_client.dart' as react_client;
-import 'package:w_transport/w_transport_browser.dart'
-    show configureWTransportForBrowser;
+import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
 import '../../common/global_example_menu_component.dart';
 import '../../common/loading_component.dart';
@@ -25,11 +24,11 @@ import './service.dart' as service;
 import './status.dart' as status;
 
 /// Setup the example application.
-main() async {
+Future<Null> main() async {
   react_client.setClientConfiguration();
   configureWTransportForBrowser();
   renderGlobalExampleMenu(serverStatus: true);
-  dom.setupControlBindings();
+  await dom.setupControlBindings();
   removeLoadingOverlay();
 
   // Check auth status right away to see if valid session already exists

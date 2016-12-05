@@ -12,44 +12,50 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-library w_transport.test.integration.http.common_request.suite;
-
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:test/test.dart';
-import 'package:w_transport/w_transport.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runCommonRequestSuite() {
+void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
   group('Common Request API', () {
-    formReqFactory({bool withBody: false}) {
-      if (!withBody) return new FormRequest();
-      return new FormRequest()..fields['field'] = 'value';
+    transport.FormRequest formReqFactory({bool withBody: false}) {
+      if (!withBody)
+        return new transport.FormRequest(transportPlatform: transportPlatform);
+      return new transport.FormRequest(transportPlatform: transportPlatform)
+        ..fields['field'] = 'value';
     }
 
-    jsonReqFactory({bool withBody: false}) {
-      if (!withBody) return new JsonRequest();
-      return new JsonRequest()
+    transport.JsonRequest jsonReqFactory({bool withBody: false}) {
+      if (!withBody)
+        return new transport.JsonRequest(transportPlatform: transportPlatform);
+      return new transport.JsonRequest(transportPlatform: transportPlatform)
         ..body = [
           {'field': 'value'}
         ];
     }
 
-    multipartReqFactory({bool withBody}) {
+    transport.MultipartRequest multipartReqFactory({bool withBody}) {
       // Multipart requests can't be empty.
-      return new MultipartRequest()..fields['field'] = 'value';
+      return new transport.MultipartRequest(
+          transportPlatform: transportPlatform)..fields['field'] = 'value';
     }
 
-    reqFactory({bool withBody: false}) {
-      if (!withBody) return new Request();
-      return new Request()..body = 'body';
+    transport.Request reqFactory({bool withBody: false}) {
+      if (!withBody)
+        return new transport.Request(transportPlatform: transportPlatform);
+      return new transport.Request(transportPlatform: transportPlatform)
+        ..body = 'body';
     }
 
-    streamedReqFactory({bool withBody: false}) {
-      if (!withBody) return new StreamedRequest();
-      return new StreamedRequest()
+    transport.StreamedRequest streamedReqFactory({bool withBody: false}) {
+      if (!withBody)
+        return new transport.StreamedRequest(
+            transportPlatform: transportPlatform);
+      return new transport.StreamedRequest(transportPlatform: transportPlatform)
         ..body = new Stream.fromIterable([UTF8.encode('bytes')])
         ..contentLength = UTF8.encode('bytes').length;
     }
@@ -61,127 +67,128 @@ void runCommonRequestSuite() {
     _runCommonRequestSuiteFor('StreamedRequest', streamedReqFactory);
 
     _runAutoRetryTestSuiteFor('FormRequest', formReqFactory);
-    _runAutoRetryTestSuiteFor('JsonRequest', formReqFactory);
-    _runAutoRetryTestSuiteFor('MultipartRequest', formReqFactory);
-    _runAutoRetryTestSuiteFor('Request', formReqFactory);
+    _runAutoRetryTestSuiteFor('JsonRequest', jsonReqFactory);
+    _runAutoRetryTestSuiteFor('MultipartRequest', multipartReqFactory);
+    _runAutoRetryTestSuiteFor('Request', reqFactory);
   });
 }
 
 void _runCommonRequestSuiteFor(
-    String name, BaseRequest requestFactory({bool withBody})) {
+    String name, transport.BaseRequest requestFactory({bool withBody})) {
   group(name, () {
-    var headers = {
+    final headers = <String, String>{
       'authorization': 'test',
       'x-custom': 'value',
       'x-tokens': 'token1, token2'
     };
 
     test('"done" should complete when the request succeeds', () async {
-      BaseRequest request = requestFactory();
+      final request = requestFactory();
+      // ignore: unawaited_futures
       request.post(uri: IntegrationPaths.reflectEndpointUri);
       await request.done;
     });
 
     test('"done" should complete when the request is canceled', () async {
-      BaseRequest request = requestFactory();
+      final request = requestFactory();
 
       try {
-        Future future = request.post(uri: IntegrationPaths.timeoutEndpointUri);
+        final future = request.post(uri: IntegrationPaths.timeoutEndpointUri);
         await new Future.delayed(new Duration(milliseconds: 5));
         request.abort();
         await future;
-      } on RequestException {}
+      } on transport.RequestException catch (_) {}
 
       await request.done;
     });
 
     test('"done" should complete when the request fails', () async {
-      BaseRequest request = requestFactory();
+      final request = requestFactory();
       try {
         await request.post(uri: IntegrationPaths.fourOhFourEndpointUri);
-      } on RequestException {}
+      } on transport.RequestException catch (_) {}
       await request.done;
     });
 
     test('DELETE (streamed)', () async {
-      BaseRequest request = requestFactory();
-      StreamedResponse response =
+      final request = requestFactory();
+      final response =
           await request.streamDelete(uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
       expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('GET (streamed)', () async {
-      BaseRequest request = requestFactory();
-      StreamedResponse response =
+      final request = requestFactory();
+      final response =
           await request.streamGet(uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
       expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('HEAD (streamed)', () async {
-      BaseRequest request = requestFactory();
-      StreamedResponse response =
+      final request = requestFactory();
+      final response =
           await request.streamHead(uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
     });
 
     test('OPTIONS (streamed)', () async {
-      BaseRequest request = requestFactory();
-      StreamedResponse response = await request.streamOptions(
+      final request = requestFactory();
+      final response = await request.streamOptions(
           uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
       expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('PATCH (streamed)', () async {
-      BaseRequest request = requestFactory();
-      StreamedResponse response =
+      final request = requestFactory();
+      final response =
           await request.streamPatch(uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
       expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('POST (streamed)', () async {
-      BaseRequest request = requestFactory();
-      StreamedResponse response =
+      final request = requestFactory();
+      final response =
           await request.streamPost(uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
       expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('PUT (streamed)', () async {
-      BaseRequest request = requestFactory();
-      StreamedResponse response =
+      final request = requestFactory();
+      final response =
           await request.streamPut(uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
       expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('custom HTTP method (streamed)', () async {
-      BaseRequest request = requestFactory();
-      StreamedResponse response = await request.streamSend('COPY',
+      final request = requestFactory();
+      final response = await request.streamSend('COPY',
           uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
       expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('DELETE request', () async {
-      BaseRequest request = requestFactory();
-      Response response =
+      final request = requestFactory();
+      final response =
           await request.delete(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('DELETE'));
     });
 
     test('DELETE request with headers', () async {
-      BaseRequest request = requestFactory()
+      final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map.from(headers);
-      Response response = await request.delete();
+        ..headers = new Map<String, String>.from(headers);
+      final response = await request.delete();
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('DELETE'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -192,21 +199,21 @@ void _runCommonRequestSuiteFor(
     });
 
     test('GET request', () async {
-      BaseRequest request = requestFactory();
-      Response response =
+      final request = requestFactory();
+      final response =
           await request.get(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('GET'));
     });
 
     test('GET request with headers', () async {
-      BaseRequest request = requestFactory()
+      final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map.from(headers);
-      Response response = await request.get();
+        ..headers = new Map<String, String>.from(headers);
+      final response = await request.get();
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('GET'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -217,36 +224,36 @@ void _runCommonRequestSuiteFor(
     });
 
     test('HEAD request', () async {
-      BaseRequest request = requestFactory();
-      Response response =
+      final request = requestFactory();
+      final response =
           await request.head(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
     });
 
     test('HEAD request with headers', () async {
-      BaseRequest request = requestFactory()
+      final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map.from(headers);
-      Response response = await request.head();
+        ..headers = new Map<String, String>.from(headers);
+      final response = await request.head();
       expect(response.status, equals(200));
     });
 
     test('OPTIONS request', () async {
-      BaseRequest request = requestFactory();
-      Response response =
+      final request = requestFactory();
+      final response =
           await request.options(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('OPTIONS'));
     });
 
     test('OPTIONS request with headers', () async {
-      BaseRequest request = requestFactory()
+      final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map.from(headers);
-      Response response = await request.options();
+        ..headers = new Map<String, String>.from(headers);
+      final response = await request.options();
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('OPTIONS'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -257,21 +264,21 @@ void _runCommonRequestSuiteFor(
     });
 
     test('PATCH request', () async {
-      BaseRequest request = requestFactory();
-      Response response =
+      final request = requestFactory();
+      final response =
           await request.patch(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('PATCH'));
     });
 
     test('PATCH request with headers', () async {
-      BaseRequest request = requestFactory()
+      final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map.from(headers);
-      Response response = await request.patch();
+        ..headers = new Map<String, String>.from(headers);
+      final response = await request.patch();
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('PATCH'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -282,21 +289,21 @@ void _runCommonRequestSuiteFor(
     });
 
     test('POST request', () async {
-      BaseRequest request = requestFactory();
-      Response response =
+      final request = requestFactory();
+      final response =
           await request.post(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('POST'));
     });
 
     test('POST request with headers', () async {
-      BaseRequest request = requestFactory()
+      final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map.from(headers);
-      Response response = await request.post();
+        ..headers = new Map<String, String>.from(headers);
+      final response = await request.post();
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('POST'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -307,21 +314,21 @@ void _runCommonRequestSuiteFor(
     });
 
     test('PUT request', () async {
-      BaseRequest request = requestFactory();
-      Response response =
+      final request = requestFactory();
+      final response =
           await request.put(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
       expect(response.body.asJson()['method'], equals('PUT'));
     });
 
     test('PUT request with headers', () async {
-      BaseRequest request = requestFactory()
+      final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map.from(headers);
-      Response response = await request.put();
+        ..headers = new Map<String, String>.from(headers);
+      final response = await request.put();
       expect(response.status, equals(200));
 
-      var json = response.body.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('PUT'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -332,10 +339,10 @@ void _runCommonRequestSuiteFor(
     });
 
     test('upload progress stream', () async {
-      Completer uploadProgressListenedTo = new Completer();
-      BaseRequest request = requestFactory(withBody: true)
+      final uploadProgressListenedTo = new Completer<Null>();
+      final request = requestFactory(withBody: true)
         ..uri = IntegrationPaths.reflectEndpointUri;
-      request.uploadProgress.listen((RequestProgress progress) {
+      request.uploadProgress.listen((progress) {
         if (progress.percent > 0 && !uploadProgressListenedTo.isCompleted) {
           uploadProgressListenedTo.complete();
         }
@@ -345,10 +352,10 @@ void _runCommonRequestSuiteFor(
     });
 
     test('download progress stream', () async {
-      Completer downloadProgressListenedTo = new Completer();
-      BaseRequest request = requestFactory()
+      final downloadProgressListenedTo = new Completer<Null>();
+      final request = requestFactory()
         ..uri = IntegrationPaths.downloadEndpointUri;
-      request.downloadProgress.listen((RequestProgress progress) {
+      request.downloadProgress.listen((progress) {
         if (progress.percent > 0 && !downloadProgressListenedTo.isCompleted) {
           downloadProgressListenedTo.complete();
         }
@@ -358,13 +365,13 @@ void _runCommonRequestSuiteFor(
     });
 
     test('should throw RequestException on failed requests', () async {
-      BaseRequest request = requestFactory()
+      final request = requestFactory()
         ..uri = IntegrationPaths.fourOhFourEndpointUri;
       expect(
           request.get(),
           throwsA(predicate((exception) {
             return exception != null &&
-                exception is RequestException &&
+                exception is transport.RequestException &&
                 exception.method == 'GET' &&
                 exception.uri == IntegrationPaths.fourOhFourEndpointUri;
           }, 'throws a RequestException')));
@@ -372,10 +379,10 @@ void _runCommonRequestSuiteFor(
 
     test('request cancellation prior to dispatch should cause request to fail',
         () async {
-      BaseRequest request = requestFactory()..uri = IntegrationPaths.hostUri;
+      final request = requestFactory()..uri = IntegrationPaths.hostUri;
       request.abort();
       expect(request.get(), throwsA(predicate((exception) {
-        return exception is RequestException &&
+        return exception is transport.RequestException &&
             exception.toString().contains('canceled');
       })));
     });
@@ -383,9 +390,9 @@ void _runCommonRequestSuiteFor(
     test(
         'request cancellation after dispatch but prior to resolution should cause request to fail',
         () async {
-      BaseRequest request = requestFactory()
+      final request = requestFactory()
         ..uri = IntegrationPaths.timeoutEndpointUri;
-      Future future = request.get();
+      final future = request.get();
 
       // Wait a sufficient amount of time to allow the request to open.
       // Since we're hitting a timeout endpoint, it shouldn't complete.
@@ -393,44 +400,46 @@ void _runCommonRequestSuiteFor(
 
       // Abort the request now that it is in flight.
       request.abort();
-      expect(future, throwsA(new isInstanceOf<RequestException>()));
+      expect(future, throwsA(new isInstanceOf<transport.RequestException>()));
     });
 
     test('timeoutThreshold does nothing if request completes in time',
         () async {
-      BaseRequest request = requestFactory()
+      final request = requestFactory()
         ..timeoutThreshold = new Duration(seconds: 5);
       await request.get(uri: IntegrationPaths.pingEndpointUri);
     });
 
     test('timeoutThreshold cancels the request if exceeded', () async {
-      BaseRequest request = requestFactory()
+      final request = requestFactory()
         ..timeoutThreshold = new Duration(milliseconds: 250);
       expect(request.get(uri: IntegrationPaths.timeoutEndpointUri),
           throwsA(predicate((error) {
-        return error is RequestException && error.error is TimeoutException;
+        return error is transport.RequestException &&
+            error.error is TimeoutException;
       })));
     });
   });
 }
 
-_runAutoRetryTestSuiteFor(
-    String name, BaseRequest requestFactory({bool withBody})) {
+void _runAutoRetryTestSuiteFor(
+    String name, transport.BaseRequest requestFactory({bool withBody})) {
   group(name, () {
     group('auto retry', () {
       test('disabled', () async {
-        BaseRequest request = requestFactory();
+        final request = requestFactory();
 
         defineResponseChain(request, [500]);
 
-        expect(request.get(), throwsA(new isInstanceOf<RequestException>()));
+        expect(request.get(),
+            throwsA(new isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
       });
 
       test('no retries', () async {
-        BaseRequest request = requestFactory();
+        final request = requestFactory();
         request.autoRetry
           ..enabled = true
           ..maxRetries = 2;
@@ -443,7 +452,7 @@ _runAutoRetryTestSuiteFor(
       });
 
       test('1 successful retry', () async {
-        BaseRequest request = requestFactory();
+        final request = requestFactory();
         request.autoRetry
           ..enabled = true
           ..maxRetries = 2;
@@ -456,7 +465,7 @@ _runAutoRetryTestSuiteFor(
       });
 
       test('1 failed retry, 1 successful retry', () async {
-        BaseRequest request = requestFactory();
+        final request = requestFactory();
         request.autoRetry
           ..enabled = true
           ..maxRetries = 2;
@@ -469,14 +478,15 @@ _runAutoRetryTestSuiteFor(
       });
 
       test('maximum retries exceeded', () async {
-        BaseRequest request = requestFactory();
+        final request = requestFactory();
         request.autoRetry
           ..enabled = true
           ..maxRetries = 2;
 
         defineResponseChain(request, [500, 500, 500]);
 
-        expect(request.get(), throwsA(new isInstanceOf<RequestException>()));
+        expect(request.get(),
+            throwsA(new isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(3));
         expect(request.autoRetry.failures.length, equals(3));
@@ -485,10 +495,10 @@ _runAutoRetryTestSuiteFor(
   });
 }
 
-void defineResponseChain(BaseRequest request, List<int> statusCodes) {
+void defineResponseChain(transport.BaseRequest request, List<int> statusCodes) {
   request
     ..uri = IntegrationPaths.customEndpointUri
-    ..requestInterceptor = (BaseRequest request) {
+    ..requestInterceptor = (transport.BaseRequest request) {
       request.updateQuery({'status': statusCodes.removeAt(0).toString()});
     };
 }

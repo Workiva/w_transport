@@ -297,7 +297,7 @@ void _runCommonRequestSuiteFor(
         () async {
       final request = requestFactory();
       final future = request.get(uri: requestUri);
-      await new Future.delayed(new Duration(milliseconds: 500));
+      await new Future.delayed(new Duration(milliseconds: 100));
       request.abort();
       expect(future, throwsA(new isInstanceOf<transport.RequestException>()));
     });
@@ -339,6 +339,20 @@ void _runCommonRequestSuiteFor(
       }, returnsNormally);
       expect(request.get(uri: requestUri),
           throwsA(new isInstanceOf<transport.RequestException>()));
+    });
+
+    test('request cancellations should not be retried', () async {
+      final request = requestFactory();
+      request.autoRetry
+        ..enabled = true
+        ..test = (request, response, willRetry) async => true;
+      final future = request.get(uri: requestUri);
+      await new Future.delayed(new Duration(milliseconds: 100));
+      request.abort();
+      expect(future, throwsA(predicate((error) {
+        return error is transport.RequestException &&
+            error.request.autoRetry.numAttempts == 1;
+      })));
     });
 
     test('should wrap an unexpected exception in RequestException', () async {

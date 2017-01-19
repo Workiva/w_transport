@@ -1,6 +1,14 @@
 # Changelog
 
-## [3.0.0](https://github.com/Workiva/w_transport/compare/2.9.2...3.0.0)
+## [3.0.1](https://github.com/Workiva/w_transport/compare/3.0.0...3.0.1)
+_January 18th, 2017_
+
+- **Bug Fix:** If a request's `autoRetry.test` function is supplied and returns
+  true when the `response` is null, a request that was canceled would
+  erroneously be retried. Canceling a request now properly makes it ineligible
+  for retry regardless of other factors.
+
+## [3.0.0](https://github.com/Workiva/w_transport/compare/2.9.4...3.0.0)
 _October 25th, 2016_
 
 This major release includes deprecations and an increased minimum Dart SDK

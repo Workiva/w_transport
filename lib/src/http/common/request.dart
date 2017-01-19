@@ -562,6 +562,9 @@ abstract class CommonRequest extends Object
         !autoRetry.supported ||
         autoRetry.didExceedMaxNumberOfAttempts) return false;
 
+    // If the request was explicitly canceled, then there is no reason to retry.
+    if (isCanceled) return false;
+
     // If the request failed due to exceeding the timeout threshold, check if
     // it is configured to retry for timeouts.
     if (requestException.error is TimeoutException) {

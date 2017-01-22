@@ -16,7 +16,7 @@
 /// must be called before instantiating any of the transport classes.
 ///
 ///     import 'package:w_transport/vm.dart'
-///         show configureWTransportForServer;
+///         show configureWTransportForVM;
 ///
 ///     void main() {
 ///       configureWTransportForVM();

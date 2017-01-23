@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.9.5](https://github.com/Workiva/w_transport/compare/2.9.4...2.9.5)
+_January 19th, 2017_
+
+- **Bug Fix:** If a request's `autoRetry.test` function is supplied and returns
+  true when the `response` is null, a request that was canceled would
+  erroneously be retried. Canceling a request now properly makes it ineligible
+  for retry regardless of other factors.
+
 ## [2.9.4](https://github.com/Workiva/w_transport/compare/2.9.3...2.9.4)
 _October 14, 2016_
 

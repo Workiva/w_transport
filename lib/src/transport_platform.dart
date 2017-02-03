@@ -88,7 +88,13 @@ class MockAwareTransportPlatform {
     } else if (MockTransportsInternal.fallThrough &&
         realTransportPlatform != null) {
       return realTransportPlatform.newWebSocket(uri,
-          headers: headers, protocols: protocols);
+          headers: headers,
+          protocols: protocols,
+          sockJSDebug: sockJSDebug,
+          sockJSNoCredentials: sockJSNoCredentials,
+          sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
+          sockJSTimeout: sockJSTimeout,
+          useSockJS: useSockJS);
     } else {
       throw new TransportPlatformMissing.webSocketFailed(uri);
     }

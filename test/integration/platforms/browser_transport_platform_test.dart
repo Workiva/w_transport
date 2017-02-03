@@ -697,12 +697,21 @@ void main() {
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatform);
+          expect(webSocket, new isInstanceOf<BrowserWebSocket>());
           await webSocket.close();
 
           final pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
           final sockJS = await transport.WebSocket.connect(pingUri,
               transportPlatform: browserTransportPlatformWithSockJS);
+          expect(sockJS, new isInstanceOf<SockJSWebSocket>());
           await sockJS.close();
+
+          // This verifies the ability to override the transport platform's
+          // "useSockJS" value when constructing a single WebSocket instance.
+          final singleSockJS = await transport.WebSocket.connect(pingUri,
+              transportPlatform: browserTransportPlatform, useSockJS: true);
+          expect(singleSockJS, new isInstanceOf<SockJSWebSocket>());
+          await singleSockJS.close();
         });
       });
     });

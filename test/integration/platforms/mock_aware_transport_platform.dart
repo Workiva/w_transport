@@ -19,7 +19,6 @@ import 'package:w_transport/w_transport.dart' as transport;
 
 import 'package:w_transport/src/http/mock/http_client.dart';
 import 'package:w_transport/src/http/mock/requests.dart';
-import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 import 'package:w_transport/src/web_socket/mock/web_socket.dart';
 
 import '../../naming.dart';
@@ -65,7 +64,7 @@ void main() {
       await MockTransports.uninstall();
     });
 
-    test('configureWTransportForVM()', () async {
+    test('configureWTransportForTest()', () async {
       configureWTransportForTest();
 
       // Properly constructs mock-aware implementations of HTTP classes

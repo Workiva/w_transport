@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.0.2](https://github.com/Workiva/w_transport/compare/3.0.1...3.0.2)
+_February 3rd, 2017_
+
+- **Bug Fix:** When `MockTransports` is installed with "fall-through" enabled,
+  the optional SockJS params that are available on the
+  `new transport.WebSocket()` constructor are now properly passed through.
+  Previously, a standard WebSocket implementation would have been constructed
+  erroneously if `useSockJS: true` was set, but it now correctly constructs the
+  SockJS implementation.
+
 ## [3.0.1](https://github.com/Workiva/w_transport/compare/3.0.0...3.0.1)
 _January 18th, 2017_
 

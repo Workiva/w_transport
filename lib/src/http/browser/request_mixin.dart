@@ -48,6 +48,8 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
   Future<BaseResponse> sendRequestAndFetchResponse(
       FinalizedRequest finalizedRequest,
       {bool streamResponse: false}) async {
+    if (isCanceled) return null;
+
     Completer<BaseResponse> c = new Completer();
 
     // Add request headers.
@@ -58,7 +60,6 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
       Map headersToAdd = new Map.from(finalizedRequest.headers);
       headersToAdd.remove('connection');
       headersToAdd.remove('content-length');
-
       headersToAdd.forEach(_request.setRequestHeader);
     }
 
@@ -105,13 +106,15 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     // Wait for the configuration if applicable before sending the request.
     if (configurationResult != null && configurationResult is Future) {
       await configurationResult;
+      if (isCanceled) return null;
     }
 
     if (finalizedRequest.body is HttpBody) {
       _request.send((finalizedRequest.body as HttpBody).asBytes().buffer);
     } else if (finalizedRequest.body is StreamedHttpBody) {
-      _request
-          .send(await (finalizedRequest.body as StreamedHttpBody).toBytes());
+      var bytes = await (finalizedRequest.body as StreamedHttpBody).toBytes();
+      if (isCanceled) return null;
+      _request.send(bytes);
     } else if (finalizedRequest.body is FormDataBody) {
       _request.send((finalizedRequest.body as FormDataBody).formData);
     }

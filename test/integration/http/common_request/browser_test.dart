@@ -15,9 +15,13 @@
 @TestOn('browser')
 library w_transport.test.integration.http.common_request.browser_test;
 
+import 'dart:async';
+
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_browser.dart';
+
+import 'package:w_transport/src/http/common/request.dart';
 
 import '../../integration_paths.dart';
 import '../../../naming.dart';
@@ -69,6 +73,35 @@ void main() {
         await request.done;
         expect(request.autoRetry.numAttempts, equals(3));
         expect(request.autoRetry.failures.length, equals(3));
+      });
+
+      test(
+          'request cancellation while underlying XHR instance is being built should not throw',
+          () async {
+        CommonRequest request = (new Request() as CommonRequest)
+          ..headers = {
+            'one': 'one',
+            'two': 'two',
+            'three': 'three',
+            'four': 'four',
+          }
+          ..uri = IntegrationPaths.timeoutEndpointUri;
+
+        // Manually enter the step where the browser request mixin opens and
+        // builds the XHR instance.
+        var finalizedRequest = await request.finalizeRequest();
+        await request.openRequest();
+        var future = request.sendRequestAndFetchResponse(finalizedRequest);
+
+        // Manually abort the underlying XHR before request headers would be
+        // applied. This will exercise the guard around `setRequestHeader`,
+        // which is the point of this test.
+        request.abort();
+
+        // Without the "isCanceled" guard, this call would have failed because
+        // the XHR instance would not be "OPENED" when `setRequestHeader` is
+        // called. It should now return normally.
+        expect(future, completes);
       });
     });
   });

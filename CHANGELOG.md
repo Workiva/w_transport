@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.6](https://github.com/Workiva/w_transport/compare/2.9.5...2.9.6)
+_February 9th, 2017_
+
+- **Bug Fix:** If a request is canceled while the underlying XHR instance is
+  being built, it previously would throw due to the XHR not being OPENED. This
+  unhandled exception is now prevented.
+
 ## [2.9.5](https://github.com/Workiva/w_transport/compare/2.9.4...2.9.5)
 _January 19th, 2017_
 

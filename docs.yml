@@ -47,4 +47,4 @@ topics:
   - title: Web Socket Sock JS
     src: docs/guides/WebSocketSockJS.md
   - title: Upgrade Guide v3.0.0
-      src: docs/upgrade-guides/v3.0.0.md
+    src: docs/upgrade-guides/v3.0.0.md

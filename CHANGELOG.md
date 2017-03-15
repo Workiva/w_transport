@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.9.7](https://github.com/Workiva/w_transport/compare/2.9.6...2.9.7)
+_March 15th, 2017_
+
+- **Bug Fix:** When a request is canceled, it will now always result in the
+  `done` Future resolving. Previously it was possible for the `done` Future to
+  never resolve if the request was canceled at a certain point during the
+  request lifecycle.
+
 ## [2.9.6](https://github.com/Workiva/w_transport/compare/2.9.5...2.9.6)
 _February 9th, 2017_
 

@@ -1,6 +1,14 @@
 # Changelog
 
 ## [3.0.2](https://github.com/Workiva/w_transport/compare/3.0.1...3.0.2)
+_March 15th, 2017_
+
+- **Bug Fix:** When a request is canceled, it will now always result in the
+  `done` Future resolving. Previously it was possible for the `done` Future to
+  never resolve if the request was canceled at a certain point during the
+  request lifecycle.
+
+## [3.0.2](https://github.com/Workiva/w_transport/compare/3.0.1...3.0.2)
 _February 3rd, 2017_
 
 - **Bug Fix:** When `MockTransports` is installed with "fall-through" enabled,

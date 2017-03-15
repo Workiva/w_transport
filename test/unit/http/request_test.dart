@@ -271,8 +271,14 @@ void _runCommonRequestSuiteFor(
         () async {
       BaseRequest request = requestFactory();
       request.abort();
-      expect(request.get(uri: requestUri),
-          throwsA(new isInstanceOf<RequestException>()));
+      Future future = request.get(uri: requestUri);
+      expect(future, throwsA(new isInstanceOf<RequestException>()));
+      await future.catchError((_) {});
+      expect(request.isDone, isTrue,
+          reason: 'canceled request should be marked as "done"');
+      expect(request.done, completes,
+          reason:
+              'canceled request should trigger completion of `done` future');
     });
 
     test(
@@ -283,6 +289,12 @@ void _runCommonRequestSuiteFor(
       await new Future.delayed(new Duration(milliseconds: 100));
       request.abort();
       expect(future, throwsA(new isInstanceOf<RequestException>()));
+      await future.catchError((_) {});
+      expect(request.isDone, isTrue,
+          reason: 'canceled request should be marked as "done"');
+      expect(request.done, completes,
+          reason:
+              'canceled request should trigger completion of `done` future');
     });
 
     test('request cancellation after request has succeeded should do nothing',

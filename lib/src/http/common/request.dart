@@ -299,6 +299,9 @@ abstract class CommonRequest extends Object
     abortRequest();
     _cancellationError = error;
     _cancellationCompleter.complete();
+    if (!_done.isCompleted) {
+      _done.complete();
+    }
   }
 
   /// Check if this request has been canceled.

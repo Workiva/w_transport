@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.2](https://github.com/Workiva/w_transport/compare/3.0.1...3.0.2)
+## [3.0.3](https://github.com/Workiva/w_transport/compare/3.0.2...3.0.3)
 _March 15th, 2017_
 
 - **Bug Fix:** When a request is canceled, it will now always result in the

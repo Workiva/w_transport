@@ -82,7 +82,7 @@ abstract class Client {
 
   /// Constructs a new [Request] that will use this client to send the request.
   /// Throws a [StateError] if this client has been closed.
-  Request newRequest();
+  Request newRequest({String test});
 
   /// Constructs a new [StreamedRequest] that will use this client to send the
   /// request. Throws a [StateError] if this client has been closed.

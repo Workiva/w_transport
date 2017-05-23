@@ -2,49 +2,70 @@ title: w_transport
 base: github:Workiva/w_transport/
 src: README.md
 topics:
-  - title: Http Auto Retry
-    src: docs/guides/HttpAutoRetry.md
-  - title: Http Cancellation and Timeout
-    src: docs/guides/HttpCancellationAndTimeout.md
-  - title: Http Client
-    src: docs/guides/HttpClient.md
-  - title: Http Content Encoding
-    src: docs/guides/HttpContentEncoding.md
-  - title: Http Intercepting
-    src: docs/guides/HttpIntercepting.md
-  - title: Http Request Types
-    src: docs/guides/HttpRequestTypes.md
-  - title: Http Secure Cookies
-    src: docs/guides/HttpSecureCookies.md
-  - title: Http Send Request Receive Response Handle Failure
-    src: docs/guides/HttpSendRequestReceiveResponseHandleFailure.md
-  - title: Http Streaming
-    src: docs/guides/HttpStreaming.md
-  - title: Mock Http Expectations
-    src: docs/guides/MockHttpExpectations.md
-  - title: Mock Http Handlers
-    src: docs/guides/MockHttpHandlers.md
-  - title: Mock Installation
-    src: docs/guides/MockInstallation.md
-  - title: Mock Response
-    src: docs/guides/MockResponse.md
-  - title: Mock Selective Mocking With Fallback
-    src: docs/guides/MockSelectiveMockingWithFallback.md
-  - title: Mock Web Socket Expectations
-    src: docs/guides/MockWebSocketExpectations.md
-  - title: Mock Web Socket Handlers
-    src: docs/guides/MockWebSocketHandlers.md
-  - title: Mock Web Socket Server
-    src: docs/guides/MockWebSocketServer.md
-  - title: Transport Platform Configuration
+  - title: Platform Configuration
     src: docs/guides/TransportPlatformConfiguration.md
-  - title: Web Socket Completion
-    src: docs/guides/WebSocketCompletion.md
-  - title: Web Socket Connect
-    src: docs/guides/WebSocketConnect.md
-  - title: Web Socket Send Receive
-    src: docs/guides/WebSocketSendReceive.md
-  - title: Web Socket Sock JS
-    src: docs/guides/WebSocketSockJS.md
-  - title: Upgrade Guide v3.0.0
-    src: docs/upgrade-guides/v3.0.0.md
+  - title: Basics
+    topics:
+      - title: HTTP
+        topics:
+          - title: Sending requests
+            src: docs/guides/HttpSendRequestReceiveResponseHandleFailure.md
+          - title: Request Types
+            src: docs/guides/HttpRequestTypes.md
+          - title: Using an HttpClient
+            src: docs/guides/HttpClient.md
+      - title: WebSocket
+        topics:
+          - title: Establishing a connection
+            src: docs/guides/WebSocketConnect.md
+          - title: Sending and receiving data
+            src: docs/guides/WebSocketSendReceive.md
+          - title: Listening for completion
+            src: docs/guides/WebSocketCompletion.md
+  - title: Advanced Usage
+    topics:
+      - title: HTTP
+        topics:
+          - title: Sending secure cookies
+            src: docs/guides/HttpSecureCookies.md
+          - title: Encoding, content-type, and content-length
+            src: docs/guides/HttpContentEncoding.md
+          - title: Canceling and timing-out requests
+            src: docs/guides/HttpCancellationAndTimeout.md
+          - title: Streaming requests and responses
+            src: docs/guides/HttpStreaming.md
+          - title: Intercepting requests and responses
+            src: docs/guides/HttpIntercepting.md
+          - title: Automatic request retrying
+            src: docs/guides/HttpAutoRetry.md
+      - title: WebSocket
+        topics:
+          - title: Using SockJS
+            src: docs/guides/WebSocketSockJS.md
+  - title: Testing/Mocks
+    topics:
+      - title: Installing / uninstalling transport mocks
+        src: docs/guides/MockInstallation.md
+      - title: HTTP
+        topics:
+          - title: Mock responses
+            src: docs/guides/MockResponse.md
+          - title: Expecting requests (one-time use)
+            src: docs/guides/MockHttpExpectations.md
+          - title: Request handlers (many-time use)
+            src: docs/guides/MockHttpHandlers.md
+      - title: WebSocket
+        topics:
+          - title: Creating and controlling a mock WebSocket server
+            src: docs/guides/MockWebSocketServer.md
+          - title: Expecting WebSocket connections (one-time use)
+            src: docs/guides/MockWebSocketExpectations.md
+          - title: WebSocket connections handlers (many-time use)
+            src: docs/guides/MockWebSocketHandlers.md
+      - title: Selective mocking with fallback
+        src: docs/guides/MockSelectiveMockingWithFallback.md
+  - title: Changelog
+    src: CHANGELOG.md
+    topics:
+      - title: Upgrading to v3.0.0
+        src: docs/upgrade-guides/v3.0.0.md

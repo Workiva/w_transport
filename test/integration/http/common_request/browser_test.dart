@@ -15,8 +15,6 @@
 @TestOn('browser')
 library w_transport.test.integration.http.common_request.browser_test;
 
-import 'dart:async';
-
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_browser.dart';

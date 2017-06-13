@@ -304,7 +304,7 @@ void main() {
         Client client = new Client();
         Future future = client.newRequest().get(uri: Uri.parse('/test'));
         client.close();
-        expect(future, throws);
+        expect(future, throwsA(anything));
       });
     });
   });

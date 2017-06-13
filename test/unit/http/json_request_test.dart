@@ -53,7 +53,7 @@ void main() {
         JsonRequest request = new JsonRequest();
         expect(() {
           request.body = new Stream.fromIterable([]);
-        }, throws);
+        }, throwsA(anything));
       });
 
       test('setting fields incrementally', () {
@@ -101,7 +101,7 @@ void main() {
         Uri uri = Uri.parse('/test');
 
         JsonRequest request = new JsonRequest();
-        expect(request.post(uri: uri, body: UTF8), throws);
+        expect(request.post(uri: uri, body: UTF8), throwsA(anything));
       });
 
       test('body should be unmodifiable once sent', () async {

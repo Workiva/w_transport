@@ -119,7 +119,7 @@ void main() {
 
         MockTransports.webSocket.reset();
 
-        expect(WSocket.connect(webSocketUri), throws);
+        expect(WSocket.connect(webSocketUri), throwsA(anything));
       });
 
       group('when()', () {
@@ -135,7 +135,7 @@ void main() {
           expect(await WSocket.connect(webSocketUri), equals(webSocket));
 
           // Non-matching connection fails.
-          expect(WSocket.connect(Uri.parse('/other')), throws);
+          expect(WSocket.connect(Uri.parse('/other')), throwsA(anything));
         });
 
         test('registers a rejection for all requests with matching URI',
@@ -224,7 +224,7 @@ void main() {
           expect(await WSocket.connect(webSocketUri), equals(webSocket));
 
           // Non-matching connection fails.
-          expect(WSocket.connect(Uri.parse('/other')), throws);
+          expect(WSocket.connect(Uri.parse('/other')), throwsA(anything));
         });
 
         test('registers a rejection for all requests with matching URI',
@@ -278,7 +278,7 @@ void main() {
               equals(webSocket));
 
           // Non-matching connection fails.
-          expect(WSocket.connect(Uri.parse('/other')), throws);
+          expect(WSocket.connect(Uri.parse('/other')), throwsA(anything));
         });
 
         test(

@@ -72,7 +72,7 @@ void main() {
         Uri uri = Uri.parse('/test');
 
         FormRequest request = new FormRequest();
-        expect(request.post(uri: uri, body: 'invalid'), throws);
+        expect(request.post(uri: uri, body: 'invalid'), throwsA(anything));
       });
 
       test('body should be unmodifiable once sent', () async {

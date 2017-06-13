@@ -37,7 +37,6 @@ Future<bool> checkStatus() async {
     // Server probably isn't running
     return false;
   }
-  return false;
 }
 
 /// Login by sending a POST request to the /session endpoint.

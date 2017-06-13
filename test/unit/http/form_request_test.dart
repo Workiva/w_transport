@@ -78,7 +78,7 @@ void main() {
         final uri = Uri.parse('/test');
 
         final request = new transport.FormRequest();
-        expect(request.post(uri: uri, body: 'invalid'), throws);
+        expect(request.post(uri: uri, body: 'invalid'), throwsA(anything));
       });
 
       test('body should be unmodifiable once sent', () async {

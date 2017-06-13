@@ -75,6 +75,9 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
     await connection.close();
     await webSocket.done;
     expect(messages, orderedEquals(['3', '4']));
+
+    // ignore: unawaited_futures
+    webSocket.close();
   });
 
   test(
@@ -91,6 +94,9 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     connection.send('first');
     expect(await c.future, equals('first'));
+
+    // ignore: unawaited_futures
+    webSocket.close();
   });
 
   test('all event streams should respect pause() and resume() signals',
@@ -122,6 +128,11 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
     await nextTick();
 
     expect(messages, orderedEquals(['2', '4']));
+
+    // ignore: unawaited_futures
+    webSocket.close();
+    // ignore: unawaited_futures
+    sub.cancel();
   });
 
   test('onData() handler should be reassignable', () async {
@@ -148,6 +159,11 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     expect(origHandlerMessages, equals(['orig']));
     expect(newHandlerMessages, equals(['new']));
+
+    // ignore: unawaited_futures
+    webSocket.close();
+    // ignore: unawaited_futures
+    sub.cancel();
   });
 
   test('onDone() handler should be reassignable', () async {
@@ -164,6 +180,11 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     await connection.close();
     await c.future;
+
+    // ignore: unawaited_futures
+    webSocket.close();
+    // ignore: unawaited_futures
+    sub.cancel();
   });
 
   test('add() should send data to underlying web socket', () async {
@@ -214,6 +235,9 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     await webSocket.addStream(controller.stream);
     expect(webSocket.done, throwsException);
+
+    // ignore: unawaited_futures
+    webSocket.close();
   });
 
   test('addError() should cause the web socket to close', () async {
@@ -222,6 +246,9 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     expect(webSocket.done, throwsException);
     webSocket.addError(new Exception('web socket consumer error'));
+
+    // ignore: unawaited_futures
+    webSocket.close();
   });
 
   test('server closing the connection should close the socket', () async {
@@ -233,6 +260,9 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
     await webSocket.done;
     expect(webSocket.closeCode, equals(1000));
     expect(webSocket.closeReason, equals('closed'));
+
+    // ignore: unawaited_futures
+    webSocket.close();
   });
 }
 
@@ -267,6 +297,11 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       mockWebSocket.triggerServerClose();
       await webSocket.done;
       expect(messages, orderedEquals(['3', '4']));
+
+      // ignore: unawaited_futures
+      mockWebSocket.close();
+      // ignore: unawaited_futures
+      webSocket.close();
     });
 
     test(
@@ -283,6 +318,11 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       mockWebSocket.addIncoming('first');
 
       expect(await c.future, equals('first'));
+
+      // ignore: unawaited_futures
+      mockWebSocket.close();
+      // ignore: unawaited_futures
+      webSocket.close();
     });
 
     test('all event streams should respect pause() and resume() signals',
@@ -314,6 +354,13 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       await nextTick();
 
       expect(messages, orderedEquals(['2', '4']));
+
+      // ignore: unawaited_futures
+      mockWebSocket.close();
+      // ignore: unawaited_futures
+      webSocket.close();
+      // ignore: unawaited_futures
+      sub.cancel();
     });
 
     test('onData() handler should be reassignable', () async {
@@ -340,6 +387,13 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
       expect(origHandlerMessages, equals(['orig']));
       expect(newHandlerMessages, equals(['new']));
+
+      // ignore: unawaited_futures
+      mockWebSocket.close();
+      // ignore: unawaited_futures
+      webSocket.close();
+      // ignore: unawaited_futures
+      sub.cancel();
     });
 
     test('onDone() handler should be reassignable', () async {
@@ -356,6 +410,13 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
       mockWebSocket.triggerServerClose();
       await c.future;
+
+      // ignore: unawaited_futures
+      mockWebSocket.close();
+      // ignore: unawaited_futures
+      webSocket.close();
+      // ignore: unawaited_futures
+      sub.cancel();
     });
 
     test('add() should send data to underlying web socket', () async {
@@ -369,7 +430,11 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       webSocket.add('message');
 
       expect(await c.future, equals('message'));
-      await webSocket.close();
+
+      // ignore: unawaited_futures
+      mockWebSocket.close();
+      // ignore: unawaited_futures
+      webSocket.close();
     });
 
     test('addStream() should send data to underlying web socket', () async {
@@ -387,6 +452,9 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       webSocket.close();
 
       expect(await controller.stream.toList(), equals(['one', 'two']));
+
+      // ignore: unawaited_futures
+      mockWebSocket.close();
     });
 
     test('addStream() should cause the web socket to close when erorr is added',
@@ -405,6 +473,11 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       await webSocket.addStream(controller.stream);
 
       expect(webSocket.done, throwsException);
+
+      // ignore: unawaited_futures
+      mockWebSocket.close();
+      // ignore: unawaited_futures
+      webSocket.close();
     });
 
     test('addError() should cause the web socket to close', () async {
@@ -414,6 +487,11 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
       expect(webSocket.done, throwsException);
       webSocket.addError(new Exception('web socket consumer error'));
+
+      // ignore: unawaited_futures
+      mockWebSocket.close();
+      // ignore: unawaited_futures
+      webSocket.close();
     });
 
     // TODO: remove this test once triggerServerError has been removed
@@ -424,6 +502,11 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
       mockWebSocket.triggerServerError(new Exception('Server Exception'));
       await webSocket.done;
+
+      // ignore: unawaited_futures
+      mockWebSocket.close();
+      // ignore: unawaited_futures
+      webSocket.close();
     });
 
     test('server closing the connection should close the socket', () async {
@@ -434,6 +517,11 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       await webSocket.done;
       expect(webSocket.closeCode, equals(1000));
       expect(webSocket.closeReason, equals('closed'));
+
+      // ignore: unawaited_futures
+      mockWebSocket.close();
+      // ignore: unawaited_futures
+      webSocket.close();
     });
   });
 }

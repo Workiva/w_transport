@@ -85,6 +85,8 @@ void main() {
         await eventController.close();
         await c.future;
         expect(eventCount, equals(4));
+        // ignore: unawaited_futures
+        subscription.cancel();
       });
     });
   });

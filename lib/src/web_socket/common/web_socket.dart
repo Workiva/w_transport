@@ -155,6 +155,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
     final sub = _incoming.stream
         .listen(onData, onError: onError, cancelOnError: cancelOnError);
     _incomingSubscription = new WSocketSubscription(sub, onDone, onCancel: () {
+      sub.cancel();
       _incomingSubscription = null;
     });
     return _incomingSubscription;

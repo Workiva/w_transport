@@ -42,6 +42,13 @@ void main() {
           wsub.cancel(),
           onCancelCalled.future,
         ]);
+
+
+        // ignore: unawaited_futures
+        sc.close();
+
+        // ignore: unawaited_futures
+        sub.cancel();
       });
 
       test('isPaused should return the status of the underlying subscription',
@@ -56,6 +63,13 @@ void main() {
         sub.pause();
         expect(sub.isPaused, isTrue);
         expect(wsub.isPaused, isTrue);
+
+        // ignore: unawaited_futures
+        sc.close();
+        // ignore: unawaited_futures
+        sub.cancel();
+        // ignore: unawaited_futures
+        wsub.cancel();
       });
 
       test('onDone() should update the done handler', () {
@@ -65,6 +79,11 @@ void main() {
 
         wsub.onDone(doneHandler);
         expect(wsub.doneHandler, equals(doneHandler));
+
+        // ignore: unawaited_futures
+        sub.cancel();
+        // ignore: unawaited_futures
+        wsub.cancel();
       });
 
       test('onError() should call onError() on the underlying subscription',
@@ -75,6 +94,11 @@ void main() {
 
         wsub.onError(errorHandler);
         verify(sub.onError(errorHandler));
+
+        // ignore: unawaited_futures
+        sub.cancel();
+        // ignore: unawaited_futures
+        wsub.cancel();
       });
 
       test('onData() should call onData() on the underlying subscription', () {
@@ -84,6 +108,11 @@ void main() {
 
         wsub.onData(dataHandler);
         verify(sub.onData(dataHandler));
+
+        // ignore: unawaited_futures
+        sub.cancel();
+        // ignore: unawaited_futures
+        wsub.cancel();
       });
     });
   });

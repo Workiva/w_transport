@@ -471,6 +471,9 @@ void main() {
         sub.pause();
         sub.resume();
         await done.future;
+
+        // ignore: unawaited_futures
+        sub.cancel();
       });
     });
   });

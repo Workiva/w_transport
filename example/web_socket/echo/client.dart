@@ -17,7 +17,7 @@ import 'dart:convert';
 import 'dart:html';
 
 import 'package:react/react_client.dart' as react_client;
-import 'package:w_transport/w_transport.dart';
+import 'package:w_transport/w_transport.dart' as transport;
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
 import '../../common/global_example_menu_component.dart';
@@ -45,7 +45,7 @@ Future<Null> main() async {
 
   renderGlobalExampleMenu(serverStatus: true);
 
-  WSocket webSocket;
+  transport.WebSocket webSocket;
 
   // Connect (or reconnect) when the connect button is clicked.
   _connect.onClick.listen((e) async {
@@ -65,7 +65,7 @@ Future<Null> main() async {
     final uri = sockjs ? _sockJSServer : _wsServer;
 
     try {
-      webSocket = await WSocket.connect(uri,
+      webSocket = await transport.WebSocket.connect(uri,
           useSockJS: sockjs,
           sockJSTimeout: timeout,
           sockJSProtocolsWhitelist: protocols);
@@ -76,7 +76,7 @@ Future<Null> main() async {
       });
 
       _logs.appendText('Connected.\n');
-    } on WebSocketException catch (e, stackTrace) {
+    } on transport.WebSocketException catch (e, stackTrace) {
       _logs.appendText(
           '> ERROR: Could not connect to web socket on $_wsServer\n');
       print('Could not connect to web socket.\n$e\n$stackTrace');
@@ -96,4 +96,5 @@ Future<Null> main() async {
 
   // Remove the loading overlay
   removeLoadingOverlay();
+  await webSocket?.close();
 }

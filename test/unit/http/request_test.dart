@@ -433,7 +433,7 @@ void _runCommonRequestSuiteFor(
           .expect('GET', requestUri, respondWith: new MockResponse.notFound());
       final request = requestFactory();
       final future = request.get(uri: requestUri);
-      expect(future, throws);
+      expect(future, throwsA(anything));
       await future.catchError((_) {});
       expect(request.isDone, isTrue);
     });
@@ -522,7 +522,7 @@ void _runCommonRequestSuiteFor(
         expect(exception, isNotNull);
         expect(exception.toString(), contains('mock failure'));
       };
-      expect(request.get(uri: requestUri), throws);
+      expect(request.get(uri: requestUri), throwsA(anything));
     });
 
     test('responseInterceptor allows replacement of BaseResponse', () async {
@@ -779,7 +779,7 @@ void _runAutoRetryTestSuiteFor(
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(request.get(uri: requestUri), throws);
+        expect(request.get(uri: requestUri), throwsA(anything));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(2));
         expect(request.autoRetry.failures.length, equals(2));
@@ -795,7 +795,7 @@ void _runAutoRetryTestSuiteFor(
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(request.post(uri: requestUri), throws);
+        expect(request.post(uri: requestUri), throwsA(anything));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -812,7 +812,7 @@ void _runAutoRetryTestSuiteFor(
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(request.get(uri: requestUri), throws);
+        expect(request.get(uri: requestUri), throwsA(anything));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -832,7 +832,7 @@ void _runAutoRetryTestSuiteFor(
               (request, transport.BaseResponse response, willRetry) async =>
                   response.headers['x-retry'] == 'yes';
 
-        expect(request.get(uri: requestUri), throws);
+        expect(request.get(uri: requestUri), throwsA(anything));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -849,7 +849,7 @@ void _runAutoRetryTestSuiteFor(
           if (shouldSucceed) {
             await request.get(uri: requestUri);
           } else {
-            expect(request.get(uri: requestUri), throws);
+            expect(request.get(uri: requestUri), throwsA(anything));
           }
           await request.done;
           expect(request.autoRetry.numAttempts, equals(num + 1));
@@ -891,7 +891,7 @@ void _runAutoRetryTestSuiteFor(
           if (shouldSucceed) {
             await request.send(method, uri: requestUri);
           } else {
-            expect(request.send(method, uri: requestUri), throws);
+            expect(request.send(method, uri: requestUri), throwsA(anything));
           }
 
           await request.done;

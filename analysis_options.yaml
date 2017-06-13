@@ -18,8 +18,8 @@ linter:
     - valid_regexps
 
     # TODO: enable these when addressing memory audit/disposables
-    #- cancel_subscriptions
-    #- close_sinks
+    - cancel_subscriptions
+    - close_sinks
 
     # TODO: enable in docs branch
     #- comment_references

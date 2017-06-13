@@ -315,6 +315,6 @@ void _runHttpClientSuite(transport.Client getClient()) {
   test('close()', () async {
     final future = client.newRequest().get(uri: Uri.parse('/test'));
     client.close();
-    expect(future, throws);
+    expect(future, throwsA(anything));
   });
 }

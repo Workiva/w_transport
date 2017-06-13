@@ -41,6 +41,10 @@ abstract class CommonRequest extends Object
   CommonRequest(TransportPlatform transportPlatform)
       : this._transportPlatform = transportPlatform {
     autoRetry = new RequestAutoRetry(this);
+    _done.future.whenComplete(() {
+      downloadProgressController.close();
+      uploadProgressController.close();
+    });
   }
 
   CommonRequest.fromClient(Client wTransportClient, client)

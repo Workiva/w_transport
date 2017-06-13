@@ -151,7 +151,7 @@ void main() {
 
         MockTransports.webSocket.reset();
 
-        expect(transport.WSocket.connect(webSocketUri), throws);
+        expect(transport.WSocket.connect(webSocketUri), throwsA(anything));
       });
 
       group('when()', () {
@@ -172,7 +172,7 @@ void main() {
               await transport.WSocket.connect(webSocketUri), equals(webSocket));
 
           // Non-matching connection fails.
-          expect(transport.WSocket.connect(Uri.parse('/other')), throws);
+          expect(transport.WSocket.connect(Uri.parse('/other')), throwsA(anything));
         });
 
         test('registers a rejection for all requests with matching URI',
@@ -256,6 +256,9 @@ void main() {
           }, returnsNormally);
 
           expect(transport.WSocket.connect(webSocketUri), throwsStateError);
+
+          // ignore: unawaited_futures
+          webSocket.close();
         });
       });
 
@@ -279,7 +282,7 @@ void main() {
               await transport.WSocket.connect(webSocketUri), equals(webSocket));
 
           // Non-matching connection fails.
-          expect(transport.WSocket.connect(Uri.parse('/other')), throws);
+          expect(transport.WSocket.connect(Uri.parse('/other')), throwsA(anything));
         });
 
         test('registers a rejection for all requests with matching URI',
@@ -351,7 +354,7 @@ void main() {
               equals(webSocket));
 
           // Non-matching connection fails.
-          expect(transport.WSocket.connect(Uri.parse('/other')), throws);
+          expect(transport.WSocket.connect(Uri.parse('/other')), throwsA(anything));
         });
 
         test(
@@ -414,6 +417,9 @@ void main() {
           }, returnsNormally);
 
           expect(transport.WSocket.connect(webSocketUri), throwsStateError);
+
+          // ignore: unawaited_futures
+          webSocket.close();
         });
       });
     });

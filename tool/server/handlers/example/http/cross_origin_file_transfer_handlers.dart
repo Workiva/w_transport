@@ -153,8 +153,8 @@ class UploadHandler extends Handler {
 class FilesHandler extends Handler {
   FileWatcher fw;
   FilesHandler()
-      :
-        fw = new FileWatcher(filesDirectory) , super(){
+      : fw = new FileWatcher(filesDirectory),
+        super() {
     enableCors();
   }
 

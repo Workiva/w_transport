@@ -177,7 +177,7 @@ class ByteStreamProgressListener {
             (bytes) {
               controller.add(bytes);
               try {
-                loaded += (bytes as List<int>).length;
+                loaded += (bytes).length;
                 _progressController.add(new RequestProgress(loaded, total));
               } catch (e) {}
             },

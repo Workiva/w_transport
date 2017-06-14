@@ -60,6 +60,8 @@ void main() {
         mockWebSocket.triggerServerClose();
         await webSocket.done;
         expect(messages, orderedEquals(['3', '4']));
+        await mockWebSocket.close();
+        await webSocket.close();
       });
 
       test(
@@ -76,6 +78,8 @@ void main() {
         mockWebSocket.addIncoming('first');
 
         expect(await c.future, equals('first'));
+        await mockWebSocket.close();
+        await webSocket.close();
       });
 
       test('all event streams should respect pause() and resume() signals',
@@ -107,6 +111,9 @@ void main() {
         await nextTick();
 
         expect(messages, orderedEquals(['2', '4']));
+        await sub.cancel();
+        await mockWebSocket.close();
+        await webSocket.close();
       });
 
       test('onData() handler should be reassignable', () async {
@@ -133,6 +140,10 @@ void main() {
 
         expect(origHandlerMessages, equals(['orig']));
         expect(newHandlerMessages, equals(['new']));
+
+        await mockWebSocket.close();
+        await webSocket.close();
+        await sub.cancel();
       });
 
       test('onDone() handler should be reassignable', () async {
@@ -149,6 +160,9 @@ void main() {
 
         mockWebSocket.triggerServerClose();
         await c.future;
+        await mockWebSocket.close();
+        await webSocket.close();
+        await sub.cancel();
       });
 
       test('add() should send data to underlying web socket', () async {
@@ -163,6 +177,7 @@ void main() {
 
         expect(await c.future, equals('message'));
         await webSocket.close();
+        await mockWebSocket.close();
       });
 
       test('addStream() should send data to underlying web socket', () async {
@@ -178,6 +193,7 @@ void main() {
         webSocket.close();
 
         expect(await controller.stream.toList(), equals(['one', 'two']));
+        await mockWebSocket.close();
       });
 
       test(
@@ -195,6 +211,8 @@ void main() {
 
         await webSocket.addStream(controller.stream);
         expect(webSocket.done, throwsException);
+        await mockWebSocket.close();
+        await webSocket.close();
       });
 
       test('addError() should cause the web socket to close', () async {
@@ -204,6 +222,8 @@ void main() {
 
         expect(webSocket.done, throwsException);
         webSocket.addError(new Exception('web socket consumer error'));
+        await mockWebSocket.close();
+        await webSocket.close();
       });
 
       // TODO: remove this test once triggerServerError has been removed
@@ -214,6 +234,8 @@ void main() {
 
         mockWebSocket.triggerServerError(new Exception('Server Exception'));
         await webSocket.done;
+        await mockWebSocket.close();
+        await webSocket.close();
       });
 
       test('server closing the connection should close the socket', () async {
@@ -224,6 +246,8 @@ void main() {
         await webSocket.done;
         expect(webSocket.closeCode, equals(1000));
         expect(webSocket.closeReason, equals('closed'));
+        await mockWebSocket.close();
+        await webSocket.close();
       });
     });
   });

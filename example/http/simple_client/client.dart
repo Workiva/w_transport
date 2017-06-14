@@ -63,7 +63,8 @@ void main() {
 
   // Wire all anchors up to the file click handler
   querySelectorAll('a.file').forEach((Element elem) {
-    elem.onClick.listen(handleFileClick);
+    // TODO
+    var sub = elem.onClick.listen(handleFileClick);
   });
 
   // Remove the loading overlay

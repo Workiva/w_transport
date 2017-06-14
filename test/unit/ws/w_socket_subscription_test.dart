@@ -44,10 +44,12 @@ void main() {
           wsub.cancel(),
           onCancelCalled.future,
         ]);
+        await sc.close();
+        await sub.cancel();
       });
 
       test('isPaused should return the status of the underlying subscription',
-          () {
+          () async {
         var sc = new StreamController();
         var sub = sc.stream.listen((_) {});
         var wsub = new WSocketSubscription(sub, () {});
@@ -58,34 +60,44 @@ void main() {
         sub.pause();
         expect(sub.isPaused, isTrue);
         expect(wsub.isPaused, isTrue);
+        await sc.close();
+        await sub.cancel();
+        await wsub.cancel();
       });
 
-      test('onDone() should update the done handler', () {
+      test('onDone() should update the done handler', () async {
         var sub = new MockStreamSubscription();
         var wsub = new WSocketSubscription(sub, () {});
         var doneHandler = () {};
 
         wsub.onDone(doneHandler);
         expect(wsub.doneHandler, equals(doneHandler));
+        await sub.cancel();
+        await wsub.cancel();
       });
 
       test('onError() should call onError() on the underlying subscription',
-          () {
+          () async {
         var sub = new MockStreamSubscription();
         var wsub = new WSocketSubscription(sub, () {});
         var errorHandler = (_) {};
 
         wsub.onError(errorHandler);
         verify(sub.onError(errorHandler));
+        await sub.cancel();
+        await wsub.cancel();
       });
 
-      test('onData() should call onData() on the underlying subscription', () {
+      test('onData() should call onData() on the underlying subscription', () async {
         var sub = new MockStreamSubscription();
         var wsub = new WSocketSubscription(sub, () {});
         var dataHandler = (_) {};
 
         wsub.onData(dataHandler);
         verify(sub.onData(dataHandler));
+
+        await sub.cancel();
+        await wsub.cancel();
       });
     });
   });

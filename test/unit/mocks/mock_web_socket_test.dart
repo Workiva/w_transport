@@ -206,6 +206,7 @@ void main() {
           }, returnsNormally);
 
           expect(WSocket.connect(webSocketUri), throwsStateError);
+          await webSocket.close();
         });
       });
 
@@ -335,6 +336,7 @@ void main() {
           }, returnsNormally);
 
           expect(WSocket.connect(webSocketUri), throwsStateError);
+          await webSocket.close();
         });
       });
     });

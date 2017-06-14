@@ -40,7 +40,7 @@ void main() {
           .when(IntegrationPaths.fourOhFourUri, reject: true);
 
       MockTransports.webSocket.when(IntegrationPaths.closeUri,
-          handler: (Uri uri, {protocols, headers}) {
+          handler: (Uri uri, {protocols, headers}) async {
         MockWSocket webSocket = new MockWSocket();
 
         webSocket.onOutgoing((data) {
@@ -62,14 +62,14 @@ void main() {
       });
 
       MockTransports.webSocket.when(IntegrationPaths.echoUri,
-          handler: (Uri uri, {protocols, headers}) {
+          handler: (Uri uri, {protocols, headers}) async {
         MockWSocket webSocket = new MockWSocket();
         webSocket.onOutgoing(webSocket.addIncoming);
         return webSocket;
       });
 
       MockTransports.webSocket.when(IntegrationPaths.pingUri,
-          handler: (Uri uri, {protocols, headers}) {
+          handler: (Uri uri, {protocols, headers}) async {
         MockWSocket webSocket = new MockWSocket();
 
         webSocket.onOutgoing((data) async {

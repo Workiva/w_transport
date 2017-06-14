@@ -153,8 +153,8 @@ class UploadHandler extends Handler {
 class FilesHandler extends Handler {
   FileWatcher fw;
   FilesHandler()
-      : super(),
-        fw = new FileWatcher(filesDirectory) {
+      :
+        fw = new FileWatcher(filesDirectory) , super(){
     enableCors();
   }
 
@@ -162,9 +162,9 @@ class FilesHandler extends Handler {
     List<Map> filesPayload = fw.files
         .where(
             (FileSystemEntity entity) => entity is File && entity.existsSync())
-        .map((File entity) => {
+        .map((FileSystemEntity entity) => {
               'name': Uri.parse(entity.path).pathSegments.last,
-              'size': entity.lengthSync()
+              'size': (entity as File).lengthSync()
             })
         .toList();
     request.response.statusCode = HttpStatus.OK;
@@ -175,7 +175,7 @@ class FilesHandler extends Handler {
   Future delete(HttpRequest request) async {
     fw.files
         .where((FileSystemEntity entity) => entity is File)
-        .forEach((File entity) {
+        .forEach((FileSystemEntity entity) {
       entity.deleteSync();
     });
     request.response.statusCode = HttpStatus.OK;

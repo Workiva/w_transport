@@ -88,7 +88,8 @@ abstract class CommonWSocket extends Stream implements WSocket {
 
     // Outgoing communication will be handled by this stream controller.
     _outgoing = new StreamController();
-    _outgoing.stream.listen(onOutgoingData,
+    // TODO
+    var sub = _outgoing.stream.listen(onOutgoingData,
         onError: onOutgoingError, onDone: onOutgoingDone);
 
     // Map events from the underlying socket to the incoming controller.
@@ -102,7 +103,7 @@ abstract class CommonWSocket extends Stream implements WSocket {
   }
 
   /// Future that resolves when this WebSocket connection has completely closed.
-  Future get done => _done.future;
+  Future<Null> get done => _done.future;
 
   /// Sends a message over the WebSocket connection.
   ///
@@ -147,6 +148,7 @@ abstract class CommonWSocket extends Stream implements WSocket {
   @override
   StreamSubscription listen(void onData(event),
       {Function onError, void onDone(), bool cancelOnError}) {
+    // TODO
     var sub = _incoming.stream
         .listen(onData, onError: onError, cancelOnError: cancelOnError);
     _incomingSubscription = new WSocketSubscription(sub, onDone, onCancel: () {

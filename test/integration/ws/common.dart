@@ -85,6 +85,7 @@ void runCommonWebSocketIntegrationTests(
 
     expect(error, isNotNull);
     expect(error, isException);
+    await webSocket.close();
   });
 
   test('addStream() should send a Stream of data', () async {
@@ -145,6 +146,7 @@ void runCommonWebSocketIntegrationTests(
     controller.close();
     await webSocket.addStream(controller.stream);
     expect(webSocket.done, throwsException);
+    await webSocket.close();
   });
 
   test('should support listening to incoming messages', () async {
@@ -264,6 +266,7 @@ void runCommonWebSocketIntegrationTests(
     webSocket.add('one');
     expect(webSocket.closeCode, isNull);
     expect(webSocket.closeReason, isNull);
+    webSocket.close();
   });
 
   test('should work as a broadcast stream', () async {
@@ -305,6 +308,7 @@ void runCommonWebSocketIntegrationTests(
     var webSocket = await connect(closeUri);
     webSocket.add(_closeRequest());
     await webSocket.done;
+    webSocket.close();
   });
 
   test(
@@ -334,6 +338,7 @@ void runCommonWebSocketIntegrationTests(
     await socket.done;
     expect(socket.closeCode, equals(4001));
     expect(socket.closeReason, equals('Closed by server.'));
+    socket.close();
   });
 
   test('message events should be discarded prior to a subscription', () async {
@@ -401,6 +406,7 @@ void runCommonWebSocketIntegrationTests(
 
     expect(messages, orderedEquals(['2', '4']));
     await webSocket.close();
+    await sub.cancel();
   });
 
   test('should support calling pause() with a resume signal', () async {
@@ -430,6 +436,7 @@ void runCommonWebSocketIntegrationTests(
 
     expect(messages, orderedEquals(['1', '3']));
     await webSocket.close();
+    await sub.cancel();
   });
 
   test(
@@ -461,6 +468,7 @@ void runCommonWebSocketIntegrationTests(
 
     expect(messages, orderedEquals(['1', '3']));
     await webSocket.close();
+    await sub.cancel();
   }, skip: 'Can\'t test without the exception causing the test to fail.');
 
   test('should handle calling pause() multiple times', () async {
@@ -495,6 +503,7 @@ void runCommonWebSocketIntegrationTests(
 
     expect(messages, orderedEquals(['1', '4']));
     await webSocket.close();
+    await sub.cancel();
   });
 
   test('should support converting StreamSubscription to a Future', () async {
@@ -503,6 +512,7 @@ void runCommonWebSocketIntegrationTests(
     var future = sub.asFuture('futureValue');
     webSocket.close();
     expect(await future, equals('futureValue'));
+    await sub.cancel();
   });
 
   test('should support reassigning the onData() handler', () async {
@@ -518,13 +528,13 @@ void runCommonWebSocketIntegrationTests(
       newMessages.add(data);
     };
 
-    var subscription = webSocket.listen(origOnData);
+    var sub = webSocket.listen(origOnData);
     webSocket.add('1');
     webSocket.add('2');
     // SockJS requires a delay longer than 1 tick for the echos to be received.
     await new Future.delayed(new Duration(milliseconds: 200));
 
-    subscription.onData(newOnData);
+    sub.onData(newOnData);
     webSocket.add('3');
     webSocket.add('4');
     // SockJS requires a delay longer than 1 tick for the echos to be received.
@@ -533,17 +543,20 @@ void runCommonWebSocketIntegrationTests(
     expect(origMessages, orderedEquals(['1', '2']));
     expect(newMessages, orderedEquals(['3', '4']));
     await webSocket.close();
+    await sub.cancel();
   });
 
   test('should support reassigning the onDone() handler', () async {
     var webSocket = await connect(closeUri);
     var c = new Completer();
-    var subscription = webSocket.listen((_) {}, onDone: () {});
-    subscription.onDone(() {
+    var sub = webSocket.listen((_) {}, onDone: () {});
+    sub.onDone(() {
       c.complete();
     });
     webSocket.add(_closeRequest());
     await c.future;
+    await webSocket.close();
+    await sub.cancel();
   });
 }
 

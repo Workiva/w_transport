@@ -65,6 +65,7 @@ abstract class CommonRequest extends Object
   /// Whether or not the request has completed successfully.
   bool didSucceed = false;
 
+  // TODO
   /// [RequestProgress] stream controller for this HTTP request's download.
   StreamController<RequestProgress> downloadProgressController =
       new StreamController<RequestProgress>();
@@ -94,6 +95,7 @@ abstract class CommonRequest extends Object
   /// If null, no timeout threshold will be enforced.
   Duration timeoutThreshold;
 
+  // TODO
   /// [RequestProgress] stream controller for this HTTP request's upload.
   StreamController<RequestProgress> uploadProgressController =
       new StreamController<RequestProgress>();

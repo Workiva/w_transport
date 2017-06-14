@@ -26,6 +26,7 @@ import 'package:w_transport/src/web_socket/w_socket_exception.dart';
 class VMWSocket extends CommonWSocket implements WSocket {
   static Future<WSocket> connect(Uri uri,
       {Iterable<String> protocols, Map<String, dynamic> headers}) async {
+    // TODO
     WebSocket webSocket;
     try {
       webSocket = await WebSocket.connect(uri.toString(),

@@ -47,7 +47,8 @@ class FileTransferListItemComponent extends react.Component {
   void componentWillMount() {
     FileTransfer transfer = this.props['transfer'];
     if (transfer != null) {
-      transfer.progressStream.listen((_) => this.redraw());
+      // TODO
+      var sub = transfer.progressStream.listen((_) => this.redraw());
       transfer.done
           .then((_) => _transferSucceeded())
           .catchError((error, sT) => _transferFailed(error, sT));

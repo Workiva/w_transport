@@ -75,8 +75,9 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         .transform(browser_utils.transformProgressEvents)
         .pipe(uploadProgressController);
 
+    // TODO
     // Listen for request completion/errors.
-    _request.onLoad.listen((event) {
+    var onLoadSub = _request.onLoad.listen((event) {
       if (!c.isCompleted) {
         c.complete(_createResponse(streamResponse: streamResponse));
       }
@@ -90,8 +91,9 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
       }
     }
 
-    _request.onError.listen(onError);
-    _request.onAbort.listen(onError);
+    // TODO
+    var onErrorSub = _request.onError.listen(onError);
+    var onAbortSub = _request.onAbort.listen(onError);
 
     if (streamResponse == true) {
       _request.responseType = 'blob';

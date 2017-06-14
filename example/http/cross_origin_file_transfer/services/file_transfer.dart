@@ -92,7 +92,8 @@ class Upload extends FileTransfer {
     // Convert the progress stream into a broadcast stream to
     // allow multiple listeners.
     _progressStream = _request.uploadProgress.asBroadcastStream();
-    _progressStream.listen(_progressListener);
+    // TODO
+    var sub = _progressStream.listen(_progressListener);
 
     // Send the request.
     _request
@@ -120,9 +121,10 @@ class Download extends FileTransfer {
     // Convert the progress stream into a broadcast stream to
     // allow multiple listeners.
     _progressStream = _request.downloadProgress.asBroadcastStream();
-    _progressStream.listen(_progressListener);
+    // TODO
+    var sub = _progressStream.listen(_progressListener);
 
-    _progressStream.listen((RequestProgress progress) {
+    var sub2 = _progressStream.listen((RequestProgress progress) {
       if (_canceled) return;
 
       if (progress.lengthComputable) {

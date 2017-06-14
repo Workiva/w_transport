@@ -29,6 +29,8 @@ var fileTransferListItemComponent =
     react.registerComponent(() => new FileTransferListItemComponent());
 
 class FileTransferListItemComponent extends react.Component {
+  StreamSubscription _transferStream;
+
   Map getInitialState() {
     return {
       'done': false,
@@ -48,7 +50,7 @@ class FileTransferListItemComponent extends react.Component {
     FileTransfer transfer = this.props['transfer'];
     if (transfer != null) {
       // TODO
-      var sub = transfer.progressStream.listen((_) => this.redraw());
+      _transferStream = transfer.progressStream.listen((_) => this.redraw());
       transfer.done
           .then((_) => _transferSucceeded())
           .catchError((error, sT) => _transferFailed(error, sT));
@@ -60,6 +62,7 @@ class FileTransferListItemComponent extends react.Component {
     e.preventDefault();
     if (this.props['transfer'] == null || this.state['done']) return;
     this.props['transfer'].cancel('User canceled the file transfer.');
+    _transferStream.cancel();
     this.setState({'done': true, 'success': false});
   }
 
@@ -89,6 +92,7 @@ class FileTransferListItemComponent extends react.Component {
 
   void _removeTransfer() {
     this.props['onTransferDone'](this.props['transfer']);
+    _transferStream.cancel();
   }
 
   render() {

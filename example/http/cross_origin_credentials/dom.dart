@@ -55,9 +55,9 @@ void display(String message, bool isSuccessful) {
 
 /// Setup bindings for the controls.
 Future setupControlBindings() async {
-  // TODO
   // Handle login/logout
-  var authSub = querySelector('#toggle-auth').onClick.listen((_) async {
+  // ignore: cancel_subscriptions
+  querySelector('#toggle-auth').onClick.listen((_) async {
     if (!status.authenticated) {
       try {
         if (await service.login()) {
@@ -87,9 +87,9 @@ Future setupControlBindings() async {
     }
   });
 
-  // TODO
   // Send a request with credentials (will succeed if authenticated)
-  var credentialedSub = querySelector('#make-credentialed-request').onClick.listen((_) async {
+  // ignore: cancel_subscriptions
+  querySelector('#make-credentialed-request').onClick.listen((_) async {
     try {
       String response = await service.makeCredentialedRequest();
       display(response, true);
@@ -98,9 +98,9 @@ Future setupControlBindings() async {
     }
   });
 
-  // TODO
   // Send a request without credentials (will always fail)
-  var uncredentialedSub = querySelector('#make-uncredentialed-request').onClick.listen((_) async {
+  // ignore: cancel_subscriptions
+  querySelector('#make-uncredentialed-request').onClick.listen((_) async {
     try {
       String response = await service.makeUncredentialedRequest();
       display(response, true);

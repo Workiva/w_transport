@@ -47,12 +47,12 @@ main() async {
 
   renderGlobalExampleMenu(serverStatus: true);
 
-  // TODO
+  // ignore: close_sinks
   WSocket webSocket;
 
-  // TODO
   // Connect (or reconnect) when the connect button is clicked.
-  var sub = connect.onClick.listen((e) async {
+  // ignore: cancel_subscriptions
+  connect.onClick.listen((e) async {
     logs.appendText('Connecting...\n');
 
     bool sockjs = useSockJS.checked;
@@ -74,9 +74,9 @@ main() async {
           sockJSTimeout: timeout,
           sockJSProtocolsWhitelist: protocols);
 
-      // TODO
       // Display messages from web socket
-      var sub = webSocket.listen((message) {
+      // ignore: cancel_subscriptions
+      webSocket.listen((message) {
         logs.appendText('${_unecho(message)}\n');
       });
 
@@ -88,9 +88,9 @@ main() async {
     }
   });
 
-  // TODO
   // Send message upon form submit.
-  var submitSub = form.onSubmit.listen((e) {
+  // ignore: cancel_subscriptions
+  form.onSubmit.listen((e) {
     e.preventDefault();
 
     if (webSocket == null) return;

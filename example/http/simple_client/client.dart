@@ -63,8 +63,8 @@ void main() {
 
   // Wire all anchors up to the file click handler
   querySelectorAll('a.file').forEach((Element elem) {
-    // TODO
-    var sub = elem.onClick.listen(handleFileClick);
+    // ignore: cancel_subscriptions
+    elem.onClick.listen(handleFileClick);
   });
 
   // Remove the loading overlay

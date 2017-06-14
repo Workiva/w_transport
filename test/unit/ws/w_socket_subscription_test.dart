@@ -88,7 +88,8 @@ void main() {
         await wsub.cancel();
       });
 
-      test('onData() should call onData() on the underlying subscription', () async {
+      test('onData() should call onData() on the underlying subscription',
+          () async {
         var sub = new MockStreamSubscription();
         var wsub = new WSocketSubscription(sub, () {});
         var dataHandler = (_) {};

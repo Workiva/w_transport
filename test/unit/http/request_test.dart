@@ -634,8 +634,8 @@ _runAutoRetryTestSuiteFor(
 
     test('clone()', () {
       var headers = {'x-custom': 'header'};
-      var reqInt = (request) async {};
-      respInt (request, response, [exception]) async {};
+      reqInt(request) async {}
+      respInt(request, response, [exception]) async {}
       var tt = new Duration(seconds: 10);
       var encoding = LATIN1;
 
@@ -1233,8 +1233,8 @@ _runAutoRetryTestSuiteFor(
       });
 
       test('manual retry() throws if not yet complete', () async {
-        MockTransports.http
-            .when(requestUri, (request) => new Completer<BaseResponse>().future);
+        MockTransports.http.when(
+            requestUri, (request) => new Completer<BaseResponse>().future);
         BaseRequest request = requestFactory();
         request.get(uri: requestUri);
         await new Future.delayed(new Duration(milliseconds: 10));
@@ -1263,8 +1263,8 @@ _runAutoRetryTestSuiteFor(
       });
 
       test('manual streamRetry() throws if not yet complete', () async {
-        MockTransports.http
-            .when(requestUri, (request) => new Completer<BaseResponse>().future);
+        MockTransports.http.when(
+            requestUri, (request) => new Completer<BaseResponse>().future);
         BaseRequest request = requestFactory();
         request.get(uri: requestUri);
         await new Future.delayed(new Duration(milliseconds: 10));

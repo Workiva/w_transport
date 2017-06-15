@@ -50,7 +50,6 @@ void main() {
 
       test('isPaused should return the status of the underlying subscription',
           () async {
-        print('a');
         var sc = new StreamController();
         var sub = sc.stream.listen((_) {});
         var wsub = new WSocketSubscription(sub, () {});
@@ -61,9 +60,13 @@ void main() {
         sub.pause();
         expect(sub.isPaused, isTrue);
         expect(wsub.isPaused, isTrue);
-        await sc.close();
-        await sub.cancel();
-        await wsub.cancel();
+
+        sub.resume();
+        await Future.wait([
+          sc.close(),
+          sub.cancel(),
+          wsub.cancel(),
+        ]);
       });
 
       test('onDone() should update the done handler', () async {

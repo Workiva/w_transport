@@ -197,7 +197,7 @@ void main() {
       });
 
       test(
-          'addStream() should cause the web socket to close when erorr is added',
+          'addStream() should cause the web socket to close when error is added',
           () async {
         var mockWebSocket = new MockWSocket();
         MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
@@ -211,8 +211,9 @@ void main() {
 
         await webSocket.addStream(controller.stream);
         expect(webSocket.done, throwsException);
-        await mockWebSocket.close();
-        await webSocket.close();
+
+        await mockWebSocket.close().catchError((_) {});
+        await webSocket.close().catchError((_) {});
       });
 
       test('addError() should cause the web socket to close', () async {
@@ -222,8 +223,10 @@ void main() {
 
         expect(webSocket.done, throwsException);
         webSocket.addError(new Exception('web socket consumer error'));
-        await mockWebSocket.close();
-        await webSocket.close();
+
+        await webSocket.done.catchError((_) {});
+        await mockWebSocket.close().catchError((_) {});
+        await webSocket.close().catchError((_) {});
       });
 
       // TODO: remove this test once triggerServerError has been removed

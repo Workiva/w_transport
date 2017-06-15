@@ -50,6 +50,7 @@ void main() {
 
       test('isPaused should return the status of the underlying subscription',
           () async {
+        print('a');
         var sc = new StreamController();
         var sub = sc.stream.listen((_) {});
         var wsub = new WSocketSubscription(sub, () {});

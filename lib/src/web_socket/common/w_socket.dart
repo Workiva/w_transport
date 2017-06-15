@@ -148,9 +148,10 @@ abstract class CommonWSocket extends Stream implements WSocket {
   @override
   StreamSubscription listen(void onData(event),
       {Function onError, void onDone(), bool cancelOnError}) {
+
     // TODO
-    var sub = _incoming.stream
-        .listen(onData, onError: onError, cancelOnError: cancelOnError);
+    var sub = _incoming.stream.listen(onData,
+        onError: onError, cancelOnError: cancelOnError);
     _incomingSubscription = new WSocketSubscription(sub, onDone, onCancel: () {
       _incomingSubscription = null;
     });

@@ -31,6 +31,10 @@ import 'package:w_transport/src/http/response.dart';
 abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
   HttpRequest _request;
 
+  StreamSubscription _onAbortSub;
+  StreamSubscription _onErrorSub;
+  StreamSubscription _onLoadSub;
+
   @override
   void abortRequest() {
     if (_request != null) {
@@ -75,10 +79,10 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         .transform(browser_utils.transformProgressEvents)
         .pipe(uploadProgressController);
 
-    // TODO
     // Listen for request completion/errors.
-    var onLoadSub = _request.onLoad.listen((event) {
+    _onLoadSub = _request.onLoad.listen((event) {
       if (!c.isCompleted) {
+        _cancelSubs();
         c.complete(_createResponse(streamResponse: streamResponse));
       }
     });
@@ -87,13 +91,13 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         BaseResponse response =
             await _createResponse(streamResponse: streamResponse);
         error = new RequestException(method, uri, this, response, error);
+        _cancelSubs();
         c.completeError(error, new Chain.current());
       }
     }
 
-    // TODO
-    var onErrorSub = _request.onError.listen(onError);
-    var onAbortSub = _request.onAbort.listen(onError);
+    _onErrorSub = _request.onError.listen(onError);
+    _onAbortSub = _request.onAbort.listen(onError);
 
     if (streamResponse == true) {
       _request.responseType = 'blob';
@@ -121,6 +125,12 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
       _request.send((finalizedRequest.body as FormDataBody).formData);
     }
     return await c.future;
+  }
+
+  void _cancelSubs() {
+    _onLoadSub.cancel();
+    _onErrorSub.cancel();
+    _onAbortSub.cancel();
   }
 
   Future<BaseResponse> _createResponse({bool streamResponse: false}) async {

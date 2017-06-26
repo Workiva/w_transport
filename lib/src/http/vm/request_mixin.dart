@@ -103,7 +103,8 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
 
       // TODO
       // Map the progress stream back to this request's upload progress.
-      var sub = progressListener.progressStream.listen(uploadProgressController.add);
+      var sub =
+          progressListener.progressStream.listen(uploadProgressController.add);
     } else {
       // The entire request body is available immediately as bytes.
       _request.add((finalizedRequest.body as HttpBody).asBytes());
@@ -133,7 +134,8 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
 
     // TODO
     // Map the progress stream back to this request's download progress.
-    var sub = progressListener.progressStream.listen(downloadProgressController.add);
+    var sub =
+        progressListener.progressStream.listen(downloadProgressController.add);
 
     // Parse the response headers into a platform-independent format.
     Map<String, String> responseHeaders =

@@ -85,7 +85,7 @@ void runCommonWebSocketIntegrationTests(
 
     expect(error, isNotNull);
     expect(error, isException);
-    await webSocket.close();
+    await webSocket.close().catchError((_) {});
   });
 
   test('addStream() should send a Stream of data', () async {
@@ -146,7 +146,7 @@ void runCommonWebSocketIntegrationTests(
     controller.close();
     await webSocket.addStream(controller.stream);
     expect(webSocket.done, throwsException);
-    await webSocket.close();
+    await webSocket.close().catchError((_) {});
   });
 
   test('should support listening to incoming messages', () async {
@@ -266,7 +266,7 @@ void runCommonWebSocketIntegrationTests(
     webSocket.add('one');
     expect(webSocket.closeCode, isNull);
     expect(webSocket.closeReason, isNull);
-    webSocket.close();
+    await webSocket.close();
   });
 
   test('should work as a broadcast stream', () async {

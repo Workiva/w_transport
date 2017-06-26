@@ -14,7 +14,7 @@
 
 import 'dart:html';
 
-import 'package:react/react.dart' as react;
+import 'package:react/react_dom.dart' as react_dom;
 import 'package:react/react_client.dart' as react_client;
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
@@ -28,6 +28,6 @@ void main() {
   configureWTransportForBrowser();
   renderGlobalExampleMenu(serverStatus: true);
   Element container = querySelector('#app');
-  react.render(appComponent({}), container);
+  react_dom.render(appComponent({}), container);
   removeLoadingOverlay();
 }

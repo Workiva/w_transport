@@ -16,6 +16,7 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:react/react.dart' as react;
+import 'package:react/react_dom.dart' as react_dom;
 import 'package:w_transport/w_transport.dart';
 
 void renderGlobalExampleMenu({bool nav: true, bool serverStatus: false}) {
@@ -27,7 +28,7 @@ void renderGlobalExampleMenu({bool nav: true, bool serverStatus: false}) {
   // Use react to render the menu.
   final menu =
       globalExampleMenuComponent({'nav': nav, 'serverStatus': serverStatus});
-  react.render(menu, container);
+  react_dom.render(menu, container);
 }
 
 Future<bool> _ping(Uri uri) async {

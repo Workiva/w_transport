@@ -17,7 +17,7 @@ authors:
   - Trent Grover <trent.grover@workiva.com>
 
 environment:
-  sdk: ">=1.14.0 <2.0.0"
+  sdk: ">=1.23.0 <2.0.0"
 
 dependencies:
   fluri: ^1.1.0
@@ -26,18 +26,26 @@ dependencies:
   sockjs_client:
     git:
       url: https://github.com/Workiva/sockjs-dart-client.git
-      ref: 0.3.1
+      ref: 0.3.2
 
 dev_dependencies:
   ansicolor: ^0.0.9
   args: ^0.13.0
   browser: ^0.10.0+2
   coverage: ^0.7.9
-  dart_dev: ^1.4.0
-  dart_style: ^0.2.4
+  dart_dev: ^1.7.7
+  dart_style: ^1.0.6
   http_server: ^0.9.5+1
-  mockito: ^0.11.0
+  mockito: ">=1.0.0 <3.0.0"
   path: ^1.3.9
-  react: ^0.6.1
-  test: ^0.12.15
+  react: ^3.4.0
+  test: ^0.12.22+1
   uuid: ^0.5.0
+
+
+dependency_overrides:
+  fluri:
+    git:
+      url: git@github.com:aaronlademann-wf/fluri.git
+      ref: update-deps
+

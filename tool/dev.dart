@@ -49,7 +49,7 @@ Future<Null> main(List<String> args) async {
     ..before = [_streamServer, _streamSockJSServer]
     ..after = [_stopServer, _stopSockJSServer];
 
-  config.format.directories = directories;
+  config.format.paths = directories;
 
   config.test
     ..unitTests = [

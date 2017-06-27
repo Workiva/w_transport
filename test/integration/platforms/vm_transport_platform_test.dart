@@ -109,7 +109,8 @@ void main() {
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)..fields['foo'] = 'bar';
+              transportPlatform: vmTransportPlatform)
+            ..fields['foo'] = 'bar';
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
@@ -174,7 +175,8 @@ void main() {
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)..fields['foo'] = 'bar';
+              transportPlatform: vmTransportPlatform)
+            ..fields['foo'] = 'bar';
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final request =
@@ -260,7 +262,8 @@ void main() {
           jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)..fields['foo'] = 'bar';
+              transportPlatform: vmTransportPlatform)
+            ..fields['foo'] = 'bar';
           // ignore: unawaited_futures
           multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
@@ -341,7 +344,8 @@ void main() {
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)..fields['foo'] = 'bar';
+              transportPlatform: vmTransportPlatform)
+            ..fields['foo'] = 'bar';
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
@@ -406,7 +410,8 @@ void main() {
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)..fields['foo'] = 'bar';
+              transportPlatform: vmTransportPlatform)
+            ..fields['foo'] = 'bar';
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final request =
@@ -491,7 +496,8 @@ void main() {
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)..fields['foo'] = 'bar';
+              transportPlatform: vmTransportPlatform)
+            ..fields['foo'] = 'bar';
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final request =

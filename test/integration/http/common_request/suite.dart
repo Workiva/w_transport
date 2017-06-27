@@ -41,7 +41,8 @@ void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
     transport.MultipartRequest multipartReqFactory({bool withBody}) {
       // Multipart requests can't be empty.
       return new transport.MultipartRequest(
-          transportPlatform: transportPlatform)..fields['field'] = 'value';
+          transportPlatform: transportPlatform)
+        ..fields['field'] = 'value';
     }
 
     transport.Request reqFactory({bool withBody: false}) {

@@ -244,12 +244,12 @@ void runCommonWebSocketIntegrationTests(
       doneEventReceived = true;
     });
     webSocket.add('one');
-    await new Future.delayed(new Duration(milliseconds: 50));
+    await new Future.delayed(new Duration(milliseconds: 200));
 
     await subscription.cancel();
 
     webSocket.add('two');
-    await new Future.delayed(new Duration(milliseconds: 50));
+    await new Future.delayed(new Duration(milliseconds: 200));
     expect(messagesReceived, equals(1));
 
     await webSocket.close();
@@ -266,6 +266,8 @@ void runCommonWebSocketIntegrationTests(
     webSocket.add('one');
     expect(webSocket.closeCode, isNull);
     expect(webSocket.closeReason, isNull);
+
+    await new Future.delayed(const Duration(milliseconds: 100));
     await webSocket.close();
   });
 

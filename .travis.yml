@@ -1,12 +1,13 @@
 language: dart
 dart:
-  - 1.19.1
+  - 1.24.2
 with_content_shell: true
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 script:
   - npm install
+  - pub get --packages-dir
   - pub run dart_dev format --check
   - pub run dart_dev analyze
   - pub run dart_dev test --integration

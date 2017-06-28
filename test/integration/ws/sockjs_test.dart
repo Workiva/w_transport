@@ -48,7 +48,7 @@ void main() {
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
-  group(wsNaming.toString(), () {
+  group(wsDeprecatedNaming.toString(), () {
     sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
         useSockJS: true,
         sockJSNoCredentials: true,
@@ -56,7 +56,7 @@ void main() {
         transportPlatform: browserTransportPlatform));
   });
 
-  group(xhrNaming.toString(), () {
+  group(xhrDeprecatedNaming.toString(), () {
     sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
         useSockJS: true,
         sockJSNoCredentials: true,
@@ -64,14 +64,14 @@ void main() {
         transportPlatform: browserTransportPlatform));
   });
 
-  group(wsDeprecatedNaming.toString(), () {
+  group(wsNaming.toString(), () {
     sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
         transportPlatform: new BrowserTransportPlatformWithSockJS(
             sockJSNoCredentials: true,
             sockJSProtocolsWhitelist: ['websocket'])));
   });
 
-  group(xhrDeprecatedNaming.toString(), () {
+  group(xhrNaming.toString(), () {
     sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
         transportPlatform: new BrowserTransportPlatformWithSockJS(
             sockJSNoCredentials: true,

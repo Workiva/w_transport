@@ -51,9 +51,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
   }
 
   @override
-  Future openRequest([var client]) async {
-    // TODO: type checks
-    var _client = client as HttpClient;
+  Future openRequest([covariant HttpClient client]) async {
     if (client != null) {
       _client = client;
       _isSingle = false;
@@ -91,6 +89,8 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
       _request.contentLength = finalizedRequest.body.contentLength;
     }
 
+    StreamSubscription uploadProgressSub;
+
     if (finalizedRequest.body is StreamedHttpBody) {
       // Use a byte stream progress listener to transform the request body such
       // that it produces a stream of progress events.
@@ -101,9 +101,8 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
       // Add the now-transformed request body stream.
       await _request.addStream(progressListener.byteStream);
 
-      // TODO
       // Map the progress stream back to this request's upload progress.
-      var sub =
+      uploadProgressSub =
           progressListener.progressStream.listen(uploadProgressController.add);
     } else {
       // The entire request body is available immediately as bytes.
@@ -123,6 +122,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
 
     // Close the request now that data has been sent and wait for the response.
     HttpClientResponse response = await _request.close();
+    uploadProgressSub?.cancel();
 
     // Use a byte stream progress listener to transform the response stream such
     // that it produces a stream of progress events.
@@ -132,9 +132,8 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
     // Response body now resides in this transformed byte stream.
     Stream<List<int>> byteStream = progressListener.byteStream;
 
-    // TODO
     // Map the progress stream back to this request's download progress.
-    var sub =
+    var downloadProgressSub =
         progressListener.progressStream.listen(downloadProgressController.add);
 
     // Parse the response headers into a platform-independent format.
@@ -148,10 +147,14 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
         response.reasonPhrase,
         responseHeaders,
         byteStream);
+    // TODO: canceling download progress sub?
     if (streamResponse) return streamedResponse;
+
+    var bytes = await streamedResponse.body.toBytes();
+    downloadProgressSub?.cancel();
 
     // Otherwise, the byte stream needs to be reduced to a single list of bytes.
     return new Response.fromBytes(response.statusCode, response.reasonPhrase,
-        responseHeaders, await streamedResponse.body.toBytes());
+        responseHeaders, bytes);
   }
 }

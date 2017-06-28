@@ -4,6 +4,9 @@
 packages
 pubspec.lock
 
+# IDEs
+.idea
+
 # Coverage
 /coverage/
 

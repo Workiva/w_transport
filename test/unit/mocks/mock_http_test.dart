@@ -39,7 +39,7 @@ void main() {
       test('causeFailureOnOpen() should cause request to throw', () async {
         Request request = new Request();
         MockTransports.http.causeFailureOnOpen(request);
-        expect(request.get(uri: requestUri), throws);
+        expect(request.get(uri: requestUri), throwsA(anything));
       });
 
       test('verifies that requests are mock requests before controlling them',
@@ -159,7 +159,7 @@ void main() {
         test('causes request to throw', () async {
           Request request = new Request();
           MockTransports.http.failRequest(request);
-          expect(request.get(uri: requestUri), throws);
+          expect(request.get(uri: requestUri), throwsA(anything));
         });
 
         test('can include a custom exception', () async {
@@ -292,7 +292,7 @@ void main() {
             () async {
           MockTransports.http
               .when(requestUri, (_) async => throw new Exception());
-          expect(Http.get(requestUri), throws);
+          expect(Http.get(requestUri), throwsA(anything));
         });
 
         test('registers a handler that can be canceled', () async {
@@ -375,7 +375,7 @@ void main() {
             () async {
           MockTransports.http.whenPattern(
               requestUri.toString(), (_1, _2) async => throw new Exception());
-          expect(Http.get(requestUri), throws);
+          expect(Http.get(requestUri), throwsA(anything));
         });
 
         test(

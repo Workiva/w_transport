@@ -63,6 +63,7 @@ void main() {
 
   // Wire all anchors up to the file click handler
   querySelectorAll('a.file').forEach((Element elem) {
+    // ignore: cancel_subscriptions
     elem.onClick.listen(handleFileClick);
   });
 

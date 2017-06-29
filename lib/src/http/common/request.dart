@@ -65,7 +65,10 @@ abstract class CommonRequest extends Object
   /// Whether or not the request has completed successfully.
   bool didSucceed = false;
 
+  // Ignoring close() here because it cannot be closed, but it should not live
+  // past the request's lifecycle
   /// [RequestProgress] stream controller for this HTTP request's download.
+  // ignore: close_sinks
   StreamController<RequestProgress> downloadProgressController =
       new StreamController<RequestProgress>();
 
@@ -94,7 +97,10 @@ abstract class CommonRequest extends Object
   /// If null, no timeout threshold will be enforced.
   Duration timeoutThreshold;
 
+  // Ignoring close() here because it cannot be closed, but it should not live
+  // past the request's lifecycle
   /// [RequestProgress] stream controller for this HTTP request's upload.
+  // ignore: close_sinks
   StreamController<RequestProgress> uploadProgressController =
       new StreamController<RequestProgress>();
 

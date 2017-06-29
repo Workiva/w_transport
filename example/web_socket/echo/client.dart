@@ -47,9 +47,11 @@ main() async {
 
   renderGlobalExampleMenu(serverStatus: true);
 
+  // ignore: close_sinks
   WSocket webSocket;
 
   // Connect (or reconnect) when the connect button is clicked.
+  // ignore: cancel_subscriptions
   connect.onClick.listen((e) async {
     logs.appendText('Connecting...\n');
 
@@ -73,6 +75,7 @@ main() async {
           sockJSProtocolsWhitelist: protocols);
 
       // Display messages from web socket
+      // ignore: cancel_subscriptions
       webSocket.listen((message) {
         logs.appendText('${_unecho(message)}\n');
       });
@@ -86,6 +89,7 @@ main() async {
   });
 
   // Send message upon form submit.
+  // ignore: cancel_subscriptions
   form.onSubmit.listen((e) {
     e.preventDefault();
 

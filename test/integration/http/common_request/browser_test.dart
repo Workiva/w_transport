@@ -15,8 +15,6 @@
 @TestOn('browser')
 library w_transport.test.integration.http.common_request.browser_test;
 
-import 'dart:async';
-
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/w_transport_browser.dart';
@@ -62,7 +60,7 @@ void main() {
         request.autoRetry
           ..enabled = true
           ..maxRetries = 2
-          ..test = (request, response, willRetry) {
+          ..test = (request, response, willRetry) async {
             if (response == null) {
               return true;
             }

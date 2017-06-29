@@ -62,7 +62,7 @@ class _MockWSocket extends CommonWSocket implements MockWSocket, WSocket {
 
   /// The mock underlying WebSocket. Events are added manually via the
   /// [MockWSocket] api.
-  StreamController _mocket = new StreamController();
+  StreamController _mocket = new StreamController.broadcast();
 
   _MockWSocket() : super() {
     webSocketSubscription =
@@ -71,6 +71,7 @@ class _MockWSocket extends CommonWSocket implements MockWSocket, WSocket {
 
   @override
   void addIncoming(data) {
+    if (_mocket.isClosed) return;
     _mocket.add(data);
   }
 

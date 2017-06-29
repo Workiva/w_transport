@@ -416,7 +416,7 @@ void _runCommonRequestSuiteFor(
           .expect('GET', requestUri, respondWith: new MockResponse.notFound());
       var request = requestFactory();
       var future = request.get(uri: requestUri);
-      expect(future, throws);
+      expect(future, throwsA(anything));
       await future.catchError((_) {});
       expect(request.isDone, isTrue);
     });
@@ -504,7 +504,7 @@ void _runCommonRequestSuiteFor(
         expect(exception, isNotNull);
         expect(exception.toString(), contains('mock failure'));
       };
-      expect(request.get(uri: requestUri), throws);
+      expect(request.get(uri: requestUri), throwsA(anything));
     });
 
     test('responseInterceptor allows replacement of BaseResponse', () async {
@@ -634,8 +634,8 @@ _runAutoRetryTestSuiteFor(
 
     test('clone()', () {
       var headers = {'x-custom': 'header'};
-      var reqInt = (request) async {};
-      var respInt = (request, response, [exception]) async {};
+      reqInt(request) async {}
+      respInt(request, response, [exception]) async {}
       var tt = new Duration(seconds: 10);
       var encoding = LATIN1;
 
@@ -755,7 +755,7 @@ _runAutoRetryTestSuiteFor(
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(request.get(uri: requestUri), throws);
+        expect(request.get(uri: requestUri), throwsA(anything));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(2));
         expect(request.autoRetry.failures.length, equals(2));
@@ -771,7 +771,7 @@ _runAutoRetryTestSuiteFor(
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(request.post(uri: requestUri), throws);
+        expect(request.post(uri: requestUri), throwsA(anything));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -788,7 +788,7 @@ _runAutoRetryTestSuiteFor(
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(request.get(uri: requestUri), throws);
+        expect(request.get(uri: requestUri), throwsA(anything));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -807,7 +807,7 @@ _runAutoRetryTestSuiteFor(
           ..test = (request, BaseResponse response, willRetry) async =>
               response.headers['x-retry'] == 'yes';
 
-        expect(request.get(uri: requestUri), throws);
+        expect(request.get(uri: requestUri), throwsA(anything));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -823,7 +823,7 @@ _runAutoRetryTestSuiteFor(
           if (shouldSucceed) {
             await request.get(uri: requestUri);
           } else {
-            expect(request.get(uri: requestUri), throws);
+            expect(request.get(uri: requestUri), throwsA(anything));
           }
           await request.done;
           expect(request.autoRetry.numAttempts, equals(num + 1));
@@ -865,7 +865,7 @@ _runAutoRetryTestSuiteFor(
           if (shouldSucceed) {
             await request.send(method, uri: requestUri);
           } else {
-            expect(request.send(method, uri: requestUri), throws);
+            expect(request.send(method, uri: requestUri), throwsA(anything));
           }
 
           await request.done;
@@ -1233,8 +1233,8 @@ _runAutoRetryTestSuiteFor(
       });
 
       test('manual retry() throws if not yet complete', () async {
-        MockTransports.http
-            .when(requestUri, (request) => new Completer().future);
+        MockTransports.http.when(
+            requestUri, (request) => new Completer<BaseResponse>().future);
         BaseRequest request = requestFactory();
         request.get(uri: requestUri);
         await new Future.delayed(new Duration(milliseconds: 10));
@@ -1263,8 +1263,8 @@ _runAutoRetryTestSuiteFor(
       });
 
       test('manual streamRetry() throws if not yet complete', () async {
-        MockTransports.http
-            .when(requestUri, (request) => new Completer().future);
+        MockTransports.http.when(
+            requestUri, (request) => new Completer<BaseResponse>().future);
         BaseRequest request = requestFactory();
         request.get(uri: requestUri);
         await new Future.delayed(new Duration(milliseconds: 10));

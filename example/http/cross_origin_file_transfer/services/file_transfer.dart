@@ -76,6 +76,8 @@ class FileTransfer {
 
 /// Encapsulates the upload of a file from the client to the server.
 class Upload extends FileTransfer {
+  StreamSubscription _uploadProgress;
+
   /// Start a new file upload. This will begin the upload to the server immediately.
   static Upload start(File file) {
     return new Upload._fromFile(file);
@@ -92,7 +94,8 @@ class Upload extends FileTransfer {
     // Convert the progress stream into a broadcast stream to
     // allow multiple listeners.
     _progressStream = _request.uploadProgress.asBroadcastStream();
-    _progressStream.listen(_progressListener);
+    // TODO
+    _uploadProgress = _progressStream.listen(_progressListener);
 
     // Send the request.
     _request
@@ -100,9 +103,17 @@ class Upload extends FileTransfer {
         .then((_) => _doneCompleter.complete())
         .catchError((error, sT) => _doneCompleter.completeError(error, sT));
   }
+
+  @override
+  cancel(String reason) {
+    super.cancel(reason);
+    _uploadProgress.cancel();
+  }
 }
 
 class Download extends FileTransfer {
+  StreamSubscription _downloadProgress;
+
   /// Start a new file download. This will begin the download from the server immediately.
   static Download start(RemoteFileDescription rfd) {
     return new Download._ofRemoteFile(rfd);
@@ -120,7 +131,8 @@ class Download extends FileTransfer {
     // Convert the progress stream into a broadcast stream to
     // allow multiple listeners.
     _progressStream = _request.downloadProgress.asBroadcastStream();
-    _progressStream.listen(_progressListener);
+    // TODO
+    _downloadProgress = _progressStream.listen(_progressListener);
 
     _progressStream.listen((RequestProgress progress) {
       if (_canceled) return;
@@ -157,4 +169,10 @@ class Download extends FileTransfer {
   /// File being downloaded.
   File get file => _file;
   File _file;
+
+  @override
+  cancel(String reason) {
+    super.cancel(reason);
+    _downloadProgress.cancel();
+  }
 }

@@ -191,7 +191,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       write(_crlf); // Ending newline.
     });
 
-    var fileList = [];
+    var fileList = <Map>[];
     files.forEach((name, file) {
       fileList.add({
         'headers': _multipartFileHeaders(name, file),

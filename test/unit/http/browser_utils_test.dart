@@ -75,20 +75,21 @@ void main() {
 
         Completer c = new Completer();
         int eventCount = 0;
-        StreamSubscription subscription = wEventStream.listen((_) {
+        StreamSubscription sub = wEventStream.listen((_) {
           eventCount++;
         }, onDone: c.complete);
 
         eventController.add(new MockProgressEvent.nonComputable());
-        subscription.pause();
+        sub.pause();
         eventController.add(new MockProgressEvent.nonComputable());
         eventController.add(new MockProgressEvent.nonComputable());
-        subscription.resume();
+        sub.resume();
         eventController.add(new MockProgressEvent.nonComputable());
 
         eventController.close();
         await c.future;
         expect(eventCount, equals(4));
+        await sub.cancel();
       });
     });
   });

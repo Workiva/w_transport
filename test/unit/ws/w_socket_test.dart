@@ -111,9 +111,12 @@ void main() {
         await nextTick();
 
         expect(messages, orderedEquals(['2', '4']));
-        await sub.cancel();
-        await mockWebSocket.close();
-        await webSocket.close();
+
+        await Future.wait([
+          sub.cancel(),
+          mockWebSocket.close(),
+          webSocket.close(),
+        ]);
       });
 
       test('onData() handler should be reassignable', () async {
@@ -141,9 +144,11 @@ void main() {
         expect(origHandlerMessages, equals(['orig']));
         expect(newHandlerMessages, equals(['new']));
 
-        await mockWebSocket.close();
-        await webSocket.close();
-        await sub.cancel();
+        await Future.wait([
+          sub.cancel(),
+          mockWebSocket.close(),
+          webSocket.close(),
+        ]);
       });
 
       test('onDone() handler should be reassignable', () async {

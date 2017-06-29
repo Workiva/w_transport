@@ -154,7 +154,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
     downloadProgressSub?.cancel();
 
     // Otherwise, the byte stream needs to be reduced to a single list of bytes.
-    return new Response.fromBytes(response.statusCode, response.reasonPhrase,
-        responseHeaders, bytes);
+    return new Response.fromBytes(
+        response.statusCode, response.reasonPhrase, responseHeaders, bytes);
   }
 }

@@ -20,6 +20,7 @@ import 'dart:io';
 import 'package:w_transport/src/web_socket/common/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket_exception.dart';
+import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
 
 /// Implementation of the platform-dependent pieces of the [WSocket] class for
 /// the Dart VM. This class uses native Dart WebSockets.
@@ -29,11 +30,17 @@ class VMWSocket extends CommonWSocket implements WSocket {
     // Note: closing this sink is handled by VMWSocket
     // ignore: close_sinks
     WebSocket webSocket;
+    bool wasSuccessful;
     try {
       webSocket = await WebSocket.connect(uri.toString(),
           protocols: protocols, headers: headers);
+      wasSuccessful = true;
     } on SocketException catch (e) {
+      wasSuccessful = false;
       throw new WSocketException(e.toString());
+    } finally {
+      emitWebSocketConnectEvent(newWebSocketConnectEvent(
+          url: uri.toString(), wasSuccessful: wasSuccessful));
     }
 
     return new VMWSocket._(webSocket);

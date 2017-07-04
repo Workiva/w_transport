@@ -23,6 +23,7 @@ library w_transport.src.web_socket.w_socket;
 import 'dart:async';
 
 import 'package:w_transport/src/platform_adapter.dart';
+import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
 
 /// A two-way communication object for WebSocket clients. Establishes
 /// a WebSocket connection, sends data or streams of data to the server,
@@ -77,6 +78,13 @@ import 'package:w_transport/src/platform_adapter.dart';
 ///     webSocket.listen((_) {}, onDone: () { ... });
 ///
 abstract class WSocket implements Stream, StreamSink {
+  /// Returns a monitor that provides streams of events for all WebSockets
+  /// constructed via w_transport.
+  ///
+  /// These streams may be useful for reporting analytics/metrics.
+  static GlobalWebSocketMonitor getGlobalEventMonitor() =>
+      newGlobalWebSocketMonitor();
+
   /// Create a new WebSocket connection. The given [uri] must use the scheme
   /// `ws` or `wss`.
   ///

@@ -31,6 +31,7 @@ const String testTypeUnit = 'unit';
 
 /// Topics
 const String topicBackoff = 'Backoff';
+const String topicGlobalWebSocketMonitor = 'GlobalWebSocketMonitor';
 const String topicHttp = 'HTTP';
 const String topicMocks = 'Mocks';
 const String topicPlatformAdapter = 'Platform Adapter';

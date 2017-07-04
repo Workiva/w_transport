@@ -117,5 +117,7 @@ export 'package:w_transport/src/web_socket/w_socket_close_event.dart'
     show WSocketCloseEvent;
 export 'package:w_transport/src/web_socket/w_socket_exception.dart'
     show WSocketException;
+export 'package:w_transport/src/web_socket/global_web_socket_monitor.dart'
+    show GlobalWebSocketMonitor, WebSocketConnectEvent;
 
 export 'package:http_parser/http_parser.dart' show MediaType;

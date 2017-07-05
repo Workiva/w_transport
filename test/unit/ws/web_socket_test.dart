@@ -231,6 +231,7 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     expect(webSocket.done, throwsException);
     webSocket.addError(new Exception('web socket consumer error'));
+    await new Future(() {});
     await webSocket.close().catchError((_) {});
   });
 
@@ -297,6 +298,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
       expect(await c.future, equals('first'));
       await webSocket.close().catchError((_) {});
+      await mockWebSocket.close().catchError((_) {});
     });
 
     test('all event streams should respect pause() and resume() signals',
@@ -376,6 +378,9 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
       mockWebSocket.triggerServerClose();
       await c.future;
+      await sub.cancel();
+      await mockWebSocket.close();
+      await webSocket.close();
     });
 
     test('add() should send data to underlying web socket', () async {
@@ -427,6 +432,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       await webSocket.addStream(controller.stream);
 
       expect(webSocket.done, throwsException);
+      await new Future(() {});
       await webSocket.close().catchError((_) {});
       await mockWebSocket.close().catchError((_) {});
     });
@@ -438,6 +444,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
       expect(webSocket.done, throwsException);
       webSocket.addError(new Exception('web socket consumer error'));
+      await new Future(() {});
       await mockWebSocket.close().catchError((_) {});
       await webSocket.close().catchError((_) {});
     });

@@ -84,6 +84,7 @@ void runCommonWebSocketIntegrationTests(
 
     expect(error, isNotNull);
     expect(error, isException);
+    await webSocket.close().catchError((_) {});
   });
 
   test('addStream() should send a Stream of data', () async {
@@ -143,6 +144,8 @@ void runCommonWebSocketIntegrationTests(
     controller.addError(new Exception('addStream error, should close socket'));
     await webSocket.addStream(controller.stream);
     expect(webSocket.done, throwsException);
+    await webSocket.close().catchError((_) {});
+    await controller.close().catchError((_) {});
   });
 
   test('should support listening to incoming messages', () async {
@@ -308,6 +311,7 @@ void runCommonWebSocketIntegrationTests(
     final webSocket = await connect(closeUri);
     webSocket.add(_closeRequest());
     await webSocket.done;
+    await webSocket.close();
   });
 
   test(
@@ -337,6 +341,7 @@ void runCommonWebSocketIntegrationTests(
     await socket.done;
     expect(socket.closeCode, equals(4001));
     expect(socket.closeReason, equals('Closed by server.'));
+    await socket.close();
   });
 
   test('message events should be discarded prior to a subscription', () async {
@@ -404,6 +409,7 @@ void runCommonWebSocketIntegrationTests(
 
     expect(messages, orderedEquals(['2', '4']));
     await webSocket.close();
+    await sub.cancel();
   });
 
   test('should support calling pause() with a resume signal', () async {
@@ -433,6 +439,7 @@ void runCommonWebSocketIntegrationTests(
 
     expect(messages, orderedEquals(['1', '3']));
     await webSocket.close();
+    await sub.cancel();
   });
 
   test(
@@ -464,6 +471,7 @@ void runCommonWebSocketIntegrationTests(
 
     expect(messages, orderedEquals(['1', '3']));
     await webSocket.close();
+    await sub.cancel();
   }, skip: 'Can\'t test without the exception causing the test to fail.');
 
   test('should handle calling pause() multiple times', () async {
@@ -498,6 +506,7 @@ void runCommonWebSocketIntegrationTests(
 
     expect(messages, orderedEquals(['1', '4']));
     await webSocket.close();
+    await sub.cancel();
   });
 
   test('should support converting StreamSubscription to a Future', () async {
@@ -507,6 +516,7 @@ void runCommonWebSocketIntegrationTests(
     // ignore: unawaited_futures
     webSocket.close();
     expect(await future, equals('futureValue'));
+    await sub.cancel();
   });
 
   test('should support reassigning the onData() handler', () async {
@@ -537,6 +547,7 @@ void runCommonWebSocketIntegrationTests(
     expect(origMessages, orderedEquals(['1', '2']));
     expect(newMessages, orderedEquals(['3', '4']));
     await webSocket.close();
+    await subscription.cancel();
   });
 
   test('should support reassigning the onDone() handler', () async {
@@ -548,6 +559,8 @@ void runCommonWebSocketIntegrationTests(
     });
     webSocket.add(_closeRequest());
     await c.future;
+    await webSocket.close();
+    await subscription.cancel();
   });
 }
 

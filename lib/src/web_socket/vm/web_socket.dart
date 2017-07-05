@@ -35,6 +35,8 @@ class VMWebSocket extends CommonWebSocket implements WebSocket {
 
   static Future<WebSocket> connect(Uri uri,
       {Map<String, dynamic> headers, Iterable<String> protocols}) async {
+    // Note: closing this sink is handled by VMWSocket
+    // ignore: close_sinks
     io.WebSocket webSocket;
     try {
       webSocket = await io.WebSocket

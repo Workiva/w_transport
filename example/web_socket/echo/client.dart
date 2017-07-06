@@ -45,6 +45,7 @@ Future<Null> main() async {
 
   renderGlobalExampleMenu(serverStatus: true);
 
+  // ignore: close_sinks
   WSocket webSocket;
 
   // Connect (or reconnect) when the connect button is clicked.

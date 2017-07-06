@@ -42,10 +42,12 @@ void main() {
           wsub.cancel(),
           onCancelCalled.future,
         ]);
+        await sc.close();
+        await sub.cancel();
       });
 
       test('isPaused should return the status of the underlying subscription',
-          () {
+          () async {
         final sc = new StreamController<dynamic>();
         final sub = sc.stream.listen((_) {});
         final wsub = new WSocketSubscription(sub, () {});
@@ -56,34 +58,50 @@ void main() {
         sub.pause();
         expect(sub.isPaused, isTrue);
         expect(wsub.isPaused, isTrue);
+        sub.resume();
+
+        await Future.wait([
+          sc.close(),
+          sub.cancel(),
+          wsub.cancel(),
+        ]);
       });
 
-      test('onDone() should update the done handler', () {
+      test('onDone() should update the done handler', () async {
         final sub = new MockStreamSubscription();
         final wsub = new WSocketSubscription(sub, () {});
         final doneHandler = () {};
 
         wsub.onDone(doneHandler);
         expect(wsub.doneHandler, equals(doneHandler));
+        await wsub.cancel();
+        await sub.cancel();
       });
 
       test('onError() should call onError() on the underlying subscription',
-          () {
+          () async {
         final sub = new MockStreamSubscription();
         final wsub = new WSocketSubscription(sub, () {});
         final errorHandler = (_) {};
 
         wsub.onError(errorHandler);
         verify(sub.onError(errorHandler));
+
+        await wsub.cancel();
+        await sub.cancel();
       });
 
-      test('onData() should call onData() on the underlying subscription', () {
+      test('onData() should call onData() on the underlying subscription',
+          () async {
         final sub = new MockStreamSubscription();
         final wsub = new WSocketSubscription(sub, () {});
         final dataHandler = (_) {};
 
         wsub.onData(dataHandler);
         verify(sub.onData(dataHandler));
+
+        await wsub.cancel();
+        await sub.cancel();
       });
     });
   });

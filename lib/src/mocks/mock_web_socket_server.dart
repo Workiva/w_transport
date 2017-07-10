@@ -5,6 +5,7 @@ class MockWebSocketConnection {
   final Iterable<String> protocols;
   final Uri uri;
 
+  // ignore: deprecated_member_use
   final MockWSocket _connectedClient;
 
   MockWebSocketConnection._(this._connectedClient, this.uri,
@@ -19,15 +20,18 @@ class MockWebSocketConnection {
   }
 
   void onData(callback(dynamic data)) {
+    // ignore: deprecated_member_use
     _connectedClient.onOutgoing(callback);
   }
 
   void send(Object data) {
+    // ignore: deprecated_member_use
     _connectedClient.addIncoming(data);
   }
 }
 
 class MockWebSocketServer {
+  // ignore: deprecated_member_use
   List<MockWSocket> _connectedClients = [];
 
   StreamController<MockWebSocketConnection> _onClientConnected =
@@ -41,6 +45,7 @@ class MockWebSocketServer {
     await Future.wait(futures);
   }
 
+  // ignore: deprecated_member_use
   void _connectClient(MockWSocket client, Uri uri,
       {Map<String, dynamic> headers, Iterable<String> protocols}) {
     _connectedClients.add(client);

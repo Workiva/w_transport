@@ -50,16 +50,22 @@ void main() {
 
   group(wsDeprecatedNaming.toString(), () {
     sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
+        // ignore: deprecated_member_use
         useSockJS: true,
+        // ignore: deprecated_member_use
         sockJSNoCredentials: true,
+        // ignore: deprecated_member_use
         sockJSProtocolsWhitelist: ['websocket'],
         transportPlatform: browserTransportPlatform));
   });
 
   group(xhrDeprecatedNaming.toString(), () {
     sockJSSuite((Uri uri) => transport.WebSocket.connect(uri,
+        // ignore: deprecated_member_use
         useSockJS: true,
+        // ignore: deprecated_member_use
         sockJSNoCredentials: true,
+        // ignore: deprecated_member_use
         sockJSProtocolsWhitelist: ['xhr-streaming'],
         transportPlatform: browserTransportPlatform));
   });

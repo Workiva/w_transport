@@ -35,14 +35,22 @@ void main() {
       MockTransports.install();
 
       // Properly constructs mock-aware implementations of HTTP classes
+      // ignore: deprecated_member_use
       expect(new transport.Client(), new isInstanceOf<MockHttpClient>());
       expect(new transport.HttpClient(), new isInstanceOf<MockHttpClient>());
+      // ignore: deprecated_member_use
       expect(new transport.FormRequest(), new isInstanceOf<MockFormRequest>());
+      // ignore: deprecated_member_use
       expect(new transport.JsonRequest(), new isInstanceOf<MockJsonRequest>());
-      expect(new transport.MultipartRequest(),
+      expect(
+          new transport.MultipartRequest(),
+          // ignore: deprecated_member_use
           new isInstanceOf<MockMultipartRequest>());
+      // ignore: deprecated_member_use
       expect(new transport.Request(), new isInstanceOf<MockPlainTextRequest>());
-      expect(new transport.StreamedRequest(),
+      expect(
+          new transport.StreamedRequest(),
+          // ignore: deprecated_member_use
           new isInstanceOf<MockStreamedRequest>());
 
       // Properly constructs a mock-aware implementation of WebSocket
@@ -55,6 +63,7 @@ void main() {
       await webSocket.close();
       MockTransports.webSocket
           .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
+      // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, new isInstanceOf<MockWebSocket>());
       await wSocket.close();
@@ -68,14 +77,22 @@ void main() {
       configureWTransportForTest();
 
       // Properly constructs mock-aware implementations of HTTP classes
+      // ignore: deprecated_member_use
       expect(new transport.Client(), new isInstanceOf<MockHttpClient>());
       expect(new transport.HttpClient(), new isInstanceOf<MockHttpClient>());
+      // ignore: deprecated_member_use
       expect(new transport.FormRequest(), new isInstanceOf<MockFormRequest>());
+      // ignore: deprecated_member_use
       expect(new transport.JsonRequest(), new isInstanceOf<MockJsonRequest>());
-      expect(new transport.MultipartRequest(),
+      expect(
+          new transport.MultipartRequest(),
+          // ignore: deprecated_member_use
           new isInstanceOf<MockMultipartRequest>());
+      // ignore: deprecated_member_use
       expect(new transport.Request(), new isInstanceOf<MockPlainTextRequest>());
-      expect(new transport.StreamedRequest(),
+      expect(
+          new transport.StreamedRequest(),
+          // ignore: deprecated_member_use
           new isInstanceOf<MockStreamedRequest>());
 
       // Properly constructs a mock-aware implementation of WebSocket
@@ -88,6 +105,7 @@ void main() {
       await webSocket.close();
       MockTransports.webSocket
           .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
+      // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, new isInstanceOf<MockWebSocket>());
       await wSocket.close();

@@ -26,6 +26,7 @@ export 'package:w_transport/src/http/browser/multipart_request.dart'
 class BrowserFormRequest extends CommonFormRequest with BrowserRequestMixin {
   BrowserFormRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
+  // ignore: deprecated_member_use
   BrowserFormRequest.fromClient(Client wTransportClient)
       : super.fromClient(wTransportClient, null);
 }
@@ -33,6 +34,7 @@ class BrowserFormRequest extends CommonFormRequest with BrowserRequestMixin {
 class BrowserJsonRequest extends CommonJsonRequest with BrowserRequestMixin {
   BrowserJsonRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
+  // ignore: deprecated_member_use
   BrowserJsonRequest.fromClient(Client wTransportClient)
       : super.fromClient(wTransportClient, null);
 }
@@ -41,6 +43,7 @@ class BrowserPlainTextRequest extends CommonPlainTextRequest
     with BrowserRequestMixin {
   BrowserPlainTextRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
+  // ignore: deprecated_member_use
   BrowserPlainTextRequest.fromClient(Client wTransportClient)
       : super.fromClient(wTransportClient, null);
 }
@@ -49,6 +52,7 @@ class BrowserStreamedRequest extends CommonStreamedRequest
     with BrowserRequestMixin {
   BrowserStreamedRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
+  // ignore: deprecated_member_use
   BrowserStreamedRequest.fromClient(Client wTransportClient)
       : super.fromClient(wTransportClient, null);
 }

@@ -12,5 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO: Add link to upgrade guide.
 const String v3Deprecation = 'in 4.0.0. ';

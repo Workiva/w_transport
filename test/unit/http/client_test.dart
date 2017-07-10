@@ -79,6 +79,7 @@ class AsyncInt extends transport.HttpInterceptor {
   }
 }
 
+// ignore: deprecated_member_use
 Iterable<transport.BaseRequest> createAllRequestTypes(transport.Client client) {
   return <transport.BaseRequest>[
     client.newFormRequest(),
@@ -105,6 +106,7 @@ void main() {
     });
 
     group('Client', () {
+      // ignore: deprecated_member_use
       _runHttpClientSuite(() => new transport.Client());
     });
 
@@ -114,7 +116,9 @@ void main() {
   });
 }
 
+// ignore: deprecated_member_use
 void _runHttpClientSuite(transport.Client getClient()) {
+  // ignore: deprecated_member_use
   transport.Client client;
 
   setUp(() {
@@ -315,6 +319,6 @@ void _runHttpClientSuite(transport.Client getClient()) {
   test('close()', () async {
     final future = client.newRequest().get(uri: Uri.parse('/test'));
     client.close();
-    expect(future, throws);
+    expect(future, throwsA(new isInstanceOf<transport.RequestException>()));
   });
 }

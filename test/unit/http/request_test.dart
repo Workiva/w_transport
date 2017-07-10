@@ -109,15 +109,21 @@ void main() {
 
       final exponentialBackOff =
           new transport.RetryBackOff.exponential(interval);
+      // ignore: deprecated_member_use
       expect(exponentialBackOff.duration, equals(interval));
+      // ignore: deprecated_member_use
       expect(exponentialBackOff.duration, equals(exponentialBackOff.interval));
 
       final fixedBackOff = new transport.RetryBackOff.fixed(interval);
+      // ignore: deprecated_member_use
       expect(fixedBackOff.duration, equals(interval));
+      // ignore: deprecated_member_use
       expect(fixedBackOff.duration, equals(exponentialBackOff.interval));
 
       final noBackOff = new transport.RetryBackOff.none();
+      // ignore: deprecated_member_use
       expect(noBackOff.duration, isNull);
+      // ignore: deprecated_member_use
       expect(noBackOff.duration, equals(noBackOff.interval));
     });
   });
@@ -433,7 +439,7 @@ void _runCommonRequestSuiteFor(
           .expect('GET', requestUri, respondWith: new MockResponse.notFound());
       final request = requestFactory();
       final future = request.get(uri: requestUri);
-      expect(future, throws);
+      expect(future, throwsA(new isInstanceOf<transport.RequestException>()));
       await future.catchError((_) {});
       expect(request.isDone, isTrue);
     });
@@ -525,7 +531,8 @@ void _runCommonRequestSuiteFor(
         expect(exception, isNotNull);
         expect(exception.toString(), contains('mock failure'));
       };
-      expect(request.get(uri: requestUri), throws);
+      expect(request.get(uri: requestUri),
+          throwsA(new isInstanceOf<transport.RequestException>()));
     });
 
     test('responseInterceptor allows replacement of BaseResponse', () async {
@@ -583,6 +590,7 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory();
       final future = request.get(uri: requestUri);
       await new Future.delayed(new Duration(milliseconds: 250));
+      // ignore: deprecated_member_use
       MockTransports.http.completeRequest(request);
       await future;
     });
@@ -593,6 +601,7 @@ void _runCommonRequestSuiteFor(
         ..timeoutThreshold = new Duration(milliseconds: 500);
       final future = request.get(uri: requestUri);
       await new Future.delayed(new Duration(milliseconds: 250));
+      // ignore: deprecated_member_use
       MockTransports.http.completeRequest(request);
       await future;
     });
@@ -782,7 +791,8 @@ void _runAutoRetryTestSuiteFor(
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(request.get(uri: requestUri), throws);
+        expect(request.get(uri: requestUri),
+            throwsA(new isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(2));
         expect(request.autoRetry.failures.length, equals(2));
@@ -798,7 +808,8 @@ void _runAutoRetryTestSuiteFor(
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(request.post(uri: requestUri), throws);
+        expect(request.post(uri: requestUri),
+            throwsA(new isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -815,7 +826,8 @@ void _runAutoRetryTestSuiteFor(
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(request.get(uri: requestUri), throws);
+        expect(request.get(uri: requestUri),
+            throwsA(new isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -835,7 +847,8 @@ void _runAutoRetryTestSuiteFor(
               (request, transport.BaseResponse response, willRetry) async =>
                   response.headers['x-retry'] == 'yes';
 
-        expect(request.get(uri: requestUri), throws);
+        expect(request.get(uri: requestUri),
+            throwsA(new isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -852,7 +865,8 @@ void _runAutoRetryTestSuiteFor(
           if (shouldSucceed) {
             await request.get(uri: requestUri);
           } else {
-            expect(request.get(uri: requestUri), throws);
+            expect(request.get(uri: requestUri),
+                throwsA(new isInstanceOf<transport.RequestException>()));
           }
           await request.done;
           expect(request.autoRetry.numAttempts, equals(num + 1));
@@ -894,7 +908,8 @@ void _runAutoRetryTestSuiteFor(
           if (shouldSucceed) {
             await request.send(method, uri: requestUri);
           } else {
-            expect(request.send(method, uri: requestUri), throws);
+            expect(request.send(method, uri: requestUri),
+                throwsA(new isInstanceOf<transport.RequestException>()));
           }
 
           await request.done;

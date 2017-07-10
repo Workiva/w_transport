@@ -23,6 +23,7 @@ void runHttpTransportClientSuite(
     [transport.TransportPlatform transportPlatform]) {
   group('Client', () {
     _runHttpClientSuite(
+        // ignore: deprecated_member_use
         () => new transport.Client(transportPlatform: transportPlatform));
   });
 
@@ -32,7 +33,9 @@ void runHttpTransportClientSuite(
   });
 }
 
+// ignore: deprecated_member_use
 void _runHttpClientSuite(transport.Client getClient()) {
+  // ignore: deprecated_member_use
   transport.Client client;
 
   setUp(() {

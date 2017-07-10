@@ -42,6 +42,7 @@ void main() {
       transport.globalTransportPlatform = vmTransportPlatform;
 
       // Properly constructs VM implementations of HTTP classes
+      // ignore: deprecated_member_use
       expect(new transport.Client(), new isInstanceOf<VMHttpClient>());
       expect(new transport.HttpClient(), new isInstanceOf<VMHttpClient>());
       expect(new transport.FormRequest(), new isInstanceOf<VMFormRequest>());
@@ -57,6 +58,7 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, new isInstanceOf<VMWebSocket>());
       await webSocket.close();
+      // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
       expect(wSocket, new isInstanceOf<VMWebSocket>());
       await wSocket.close();
@@ -66,6 +68,7 @@ void main() {
       configureWTransportForVM();
 
       // Properly constructs VM implementations of HTTP classes
+      // ignore: deprecated_member_use
       expect(new transport.Client(), new isInstanceOf<VMHttpClient>());
       expect(new transport.HttpClient(), new isInstanceOf<VMHttpClient>());
       expect(new transport.FormRequest(), new isInstanceOf<VMFormRequest>());
@@ -81,6 +84,7 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, new isInstanceOf<VMWebSocket>());
       await webSocket.close();
+      // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
       expect(wSocket, new isInstanceOf<VMWebSocket>());
       await wSocket.close();

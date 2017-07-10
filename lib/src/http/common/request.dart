@@ -43,6 +43,7 @@ abstract class CommonRequest extends Object
     autoRetry = new RequestAutoRetry(this);
   }
 
+  // ignore: deprecated_member_use
   CommonRequest.fromClient(Client wTransportClient, client)
       : this._wTransportClient = wTransportClient,
         this.client = client {
@@ -149,8 +150,9 @@ abstract class CommonRequest extends Object
   /// Whether or not to send the request with credentials.
   bool _withCredentials = false;
 
-  /// [Client] instance from which this request was created. Used in [clone] to
-  /// correctly tie the clone to the same client.
+  /// HttpClient instance from which this request was created. Used in [clone]
+  /// to correctly tie the clone to the same client.
+  // ignore: deprecated_member_use
   Client _wTransportClient;
 
   /// Gets the content length of the request. If the size of the request is not

@@ -42,6 +42,7 @@ void main() {
     });
 
     test('MockClient extends MockHttpClient', () {
+      // ignore: deprecated_member_use
       expect(new MockClient(null), new isInstanceOf<MockHttpClient>());
     });
 
@@ -49,13 +50,15 @@ void main() {
       test('causeFailureOnOpen() should cause request to throw', () async {
         final request = new transport.Request();
         MockTransports.http.causeFailureOnOpen(request);
-        expect(request.get(uri: requestUri), throws);
+        expect(request.get(uri: requestUri),
+            throwsA(new isInstanceOf<transport.RequestException>()));
       });
 
       test('verifies that requests are mock requests before controlling them',
           () {
         transport.BaseRequest request;
         expect(() {
+          // ignore: deprecated_member_use
           MockTransports.http.completeRequest(request);
         }, throwsArgumentError);
       });
@@ -63,6 +66,7 @@ void main() {
       group('completeRequest()', () {
         test('completes a request with 200 OK by default', () async {
           final request = new transport.Request();
+          // ignore: deprecated_member_use
           MockTransports.http.completeRequest(request);
           expect((await request.get(uri: requestUri)).status, equals(200));
         });
@@ -70,6 +74,7 @@ void main() {
         test('can complete a request with custom response', () async {
           final request = new transport.Request();
           final response = new MockResponse(202);
+          // ignore: deprecated_member_use
           MockTransports.http.completeRequest(request, response: response);
           expect((await request.get(uri: requestUri)).status, equals(202));
         });
@@ -178,13 +183,16 @@ void main() {
       group('failRequest()', () {
         test('causes request to throw', () async {
           final request = new transport.Request();
+          // ignore: deprecated_member_use
           MockTransports.http.failRequest(request);
-          expect(request.get(uri: requestUri), throws);
+          expect(request.get(uri: requestUri),
+              throwsA(new isInstanceOf<transport.RequestException>()));
         });
 
         test('can include a custom exception', () async {
           final request = new transport.Request();
           MockTransports.http
+              // ignore: deprecated_member_use
               .failRequest(request, error: new Exception('Custom exception'));
           expect(request.get(uri: requestUri), throwsA(predicate((error) {
             return error.toString().contains('Custom exception');
@@ -194,6 +202,7 @@ void main() {
         test('can include a custom response', () async {
           final request = new transport.Request();
           final response = new MockResponse.internalServerError();
+          // ignore: deprecated_member_use
           MockTransports.http.failRequest(request, response: response);
           expect(request.get(uri: requestUri), throwsA(predicate((error) {
             return error is transport.RequestException &&
@@ -214,6 +223,7 @@ void main() {
         final request = new transport.Request();
         // ignore: unawaited_futures
         request.get(uri: Uri.parse('/other'));
+        // ignore: deprecated_member_use
         MockPlainTextRequest mockRequest = request;
         await mockRequest.onSent;
         expect(MockTransports.http.numPendingRequests, equals(1));
@@ -225,6 +235,7 @@ void main() {
         final request2 = new transport.Request();
         // ignore: unawaited_futures
         request2.delete(uri: requestUri);
+        // ignore: deprecated_member_use
         MockPlainTextRequest mockRequest2 = request2;
         await mockRequest2.onSent;
 
@@ -232,6 +243,7 @@ void main() {
         final request3 = new transport.Request();
         // ignore: unawaited_futures
         request3.get(uri: Uri.parse('/expected'));
+        // ignore: deprecated_member_use
         MockPlainTextRequest mockRequest3 = request3;
         await mockRequest3.onSent;
 
@@ -250,6 +262,7 @@ void main() {
           final request = new transport.Request();
           // ignore: unawaited_futures
           request.get(uri: requestUri);
+          // ignore: deprecated_member_use
           MockPlainTextRequest mockRequest = request;
           await mockRequest.onSent;
           expect(() {
@@ -333,7 +346,8 @@ void main() {
             () async {
           MockTransports.http
               .when(requestUri, (_) async => throw new Exception());
-          expect(transport.Http.get(requestUri), throws);
+          expect(transport.Http.get(requestUri),
+              throwsA(new isInstanceOf<transport.RequestException>()));
         });
 
         test('registers a handler that can be canceled', () async {
@@ -429,7 +443,8 @@ void main() {
             () async {
           MockTransports.http.whenPattern(
               requestUri.toString(), (_a, _b) async => throw new Exception());
-          expect(transport.Http.get(requestUri), throws);
+          expect(transport.Http.get(requestUri),
+              throwsA(new isInstanceOf<transport.RequestException>()));
         });
 
         test(

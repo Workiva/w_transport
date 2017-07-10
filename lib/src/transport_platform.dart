@@ -45,31 +45,41 @@ class MockAwareTransportPlatform {
   static HttpClient newHttpClient(TransportPlatform realTransportPlatform) =>
       new MockHttpClient(realTransportPlatform);
 
+  // ignore: deprecated_member_use
   /// Construct a new [MockFormRequest] instance that implements
   /// [FormRequest].
   static FormRequest newFormRequest(TransportPlatform realTransportPlatform) =>
+      // ignore: deprecated_member_use
       new MockFormRequest(realTransportPlatform);
 
+  // ignore: deprecated_member_use
   /// Construct a new [MockJsonRequest] instance that implements
   /// [JsonRequest].
   static JsonRequest newJsonRequest(TransportPlatform realTransportPlatform) =>
+      // ignore: deprecated_member_use
       new MockJsonRequest(realTransportPlatform);
 
+  // ignore: deprecated_member_use
   /// Construct a new [MockMultipartRequest] instance that implements
   /// [MultipartRequest].
   static MultipartRequest newMultipartRequest(
           TransportPlatform realTransportPlatform) =>
+      // ignore: deprecated_member_use
       new MockMultipartRequest(realTransportPlatform);
 
+  // ignore: deprecated_member_use
   /// Construct a new [MockPlainTextRequest] instance that implements
   /// [Request].
   static Request newRequest(TransportPlatform realTransportPlatform) =>
+      // ignore: deprecated_member_use
       new MockPlainTextRequest(realTransportPlatform);
 
+  // ignore: deprecated_member_use
   /// Construct a new [MockStreamedRequest] instance that implements
   /// [StreamedRequest].
   static StreamedRequest newStreamedRequest(
           TransportPlatform realTransportPlatform) =>
+      // ignore: deprecated_member_use
       new MockStreamedRequest(realTransportPlatform);
 
   /// Construct a new [MockWebSocket] instance that implements [WebSocket].
@@ -84,16 +94,22 @@ class MockAwareTransportPlatform {
       @Deprecated(v3Deprecation) bool useSockJS}) {
     if (MockTransportsInternal.isInstalled &&
         MockWebSocketInternal.hasHandlerForWebSocket(uri)) {
+      // ignore: deprecated_member_use
       return MockWSocket.connect(uri, headers: headers, protocols: protocols);
     } else if (MockTransportsInternal.fallThrough &&
         realTransportPlatform != null) {
       return realTransportPlatform.newWebSocket(uri,
           headers: headers,
           protocols: protocols,
+          // ignore: deprecated_member_use
           sockJSDebug: sockJSDebug,
+          // ignore: deprecated_member_use
           sockJSNoCredentials: sockJSNoCredentials,
+          // ignore: deprecated_member_use
           sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
+          // ignore: deprecated_member_use
           sockJSTimeout: sockJSTimeout,
+          // ignore: deprecated_member_use
           useSockJS: useSockJS);
     } else {
       throw new TransportPlatformMissing.webSocketFailed(uri);

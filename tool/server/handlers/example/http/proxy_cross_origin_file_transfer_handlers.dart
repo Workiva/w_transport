@@ -15,8 +15,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/vm.dart' show configureWTransportForVM;
+import 'package:w_transport/w_transport.dart' as transport;
+import 'package:w_transport/vm.dart' show vmTransportPlatform;
 
 import '../../../handler.dart';
 
@@ -34,11 +34,10 @@ Uri uploadEndpoint = Uri.parse(
 Uri downloadEndpoint = Uri.parse(
     'http://localhost:8024/example/http/cross_origin_file_transfer/download');
 
-Client client;
-Client getHttpClient() {
+transport.HttpClient client;
+transport.HttpClient getHttpClient() {
   if (client == null) {
-    configureWTransportForVM();
-    client = new Client();
+    client = new transport.HttpClient(transportPlatform: vmTransportPlatform);
   }
   return client;
 }
@@ -95,18 +94,18 @@ class UploadProxy extends Handler {
       headers[name] = values.join(', ');
     });
     final contentType =
-        new MediaType.parse(request.headers.value('content-type'));
+        new transport.MediaType.parse(request.headers.value('content-type'));
     final proxyRequest = getHttpClient().newStreamedRequest()
       ..headers = headers
       ..body = request
       ..contentLength = request.contentLength
       ..contentType = contentType;
 
-    proxyRequest.uploadProgress.listen((RequestProgress progress) {
+    proxyRequest.uploadProgress.listen((progress) {
       print('Uploading: ${progress.percent}%');
     });
 
-    StreamedResponse proxyResponse;
+    transport.StreamedResponse proxyResponse;
     try {
       proxyResponse = await proxyRequest.streamPost(uri: uploadEndpoint);
       request.response.statusCode = HttpStatus.OK;
@@ -139,12 +138,12 @@ class DownloadProxy extends Handler {
       ..query = request.uri.query
       ..headers = headers;
 
-    proxyRequest.downloadProgress.listen((RequestProgress progress) {
+    proxyRequest.downloadProgress.listen((progress) {
       print(
           'Downloading ${request.uri.queryParameters['file']}: ${progress.percent}%');
     });
 
-    StreamedResponse proxyResponse;
+    transport.StreamedResponse proxyResponse;
     try {
       proxyResponse = await proxyRequest.streamGet();
       request.response.statusCode = HttpStatus.OK;

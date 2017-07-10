@@ -17,7 +17,7 @@ import 'dart:async';
 import 'package:w_transport/w_transport.dart';
 
 /// Base class representing an interceptor that can be registered with a
-/// [Client] instance to intercept HTTP requests and responses in order to
+/// HttpClient instance to intercept HTTP requests and responses in order to
 /// modify or augment them prior to dispatch and delivery, respectively.
 class HttpInterceptor {
   Future<RequestPayload> interceptRequest(RequestPayload payload) async {

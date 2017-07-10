@@ -34,7 +34,7 @@ import 'package:w_transport/src/web_socket/w_socket.dart';
 /// This class mirrors the native Dart WebSocket API from the dart:io library.
 /// The benefit is that it's platform agnostic and can be used on the server or
 /// in the browser - so you can write libraries or APIs that can run in either
-/// place just by building them on [WSocket].
+/// place just by building them on [WebSocket].
 ///
 /// To establish a connection, use the static [connect] method:
 ///
@@ -79,6 +79,7 @@ import 'package:w_transport/src/web_socket/w_socket.dart';
 ///     // registering an "onDone()" handler also works
 ///     webSocket.listen((_) {}, onDone: () { ... });
 ///
+// ignore: deprecated_member_use
 abstract class WebSocket extends WSocket implements Stream, StreamSink {
   /// Create a new WebSocket connection. The given [uri] must use the scheme
   /// `ws` or `wss`.
@@ -108,20 +109,30 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
       return MockAwareTransportPlatform.newWebSocket(transportPlatform, uri,
           headers: headers,
           protocols: protocols,
+          // ignore: deprecated_member_use
           sockJSDebug: sockJSDebug,
+          // ignore: deprecated_member_use
           sockJSNoCredentials: sockJSNoCredentials,
+          // ignore: deprecated_member_use
           sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
+          // ignore: deprecated_member_use
           sockJSTimeout: sockJSTimeout,
+          // ignore: deprecated_member_use
           useSockJS: useSockJS);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
       return transportPlatform.newWebSocket(uri,
           headers: headers,
           protocols: protocols,
+          // ignore: deprecated_member_use
           sockJSDebug: sockJSDebug,
+          // ignore: deprecated_member_use
           sockJSNoCredentials: sockJSNoCredentials,
+          // ignore: deprecated_member_use
           sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
+          // ignore: deprecated_member_use
           sockJSTimeout: sockJSTimeout,
+          // ignore: deprecated_member_use
           useSockJS: useSockJS);
     } else {
       // If transports are not mocked and a transport platform is not available

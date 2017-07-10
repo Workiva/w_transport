@@ -57,7 +57,7 @@ void main() {
         final request = new transport.JsonRequest();
         expect(() {
           request.body = new Stream.fromIterable([]);
-        }, throws);
+        }, throwsA(new isInstanceOf<JsonUnsupportedObjectError>()));
       });
 
       test('setting fields incrementally', () {
@@ -107,7 +107,8 @@ void main() {
         final uri = Uri.parse('/test');
 
         final request = new transport.JsonRequest();
-        expect(request.post(uri: uri, body: UTF8), throws);
+        expect(request.post(uri: uri, body: UTF8),
+            throwsA(new isInstanceOf<JsonUnsupportedObjectError>()));
       });
 
       test('body should be unmodifiable once sent', () async {

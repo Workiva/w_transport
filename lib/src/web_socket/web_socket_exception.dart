@@ -15,6 +15,7 @@
 import 'package:w_transport/src/web_socket/w_socket_exception.dart';
 
 /// Represents an exception in the connection process of a Web Socket.
+// ignore: deprecated_member_use
 class WebSocketException extends WSocketException {
   WebSocketException([String message]) : super(message);
   @override

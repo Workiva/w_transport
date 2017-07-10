@@ -40,3 +40,7 @@ dev_dependencies:
   react: ^0.6.1
   test: ^0.12.23+1
   uuid: ^0.5.3
+
+transformers:
+- test/pub_serve:
+    $include: test/**_test.dart

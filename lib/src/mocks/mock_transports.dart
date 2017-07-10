@@ -28,6 +28,7 @@ import 'package:w_transport/src/http/mock/response.dart' show MockResponse;
 import 'package:w_transport/src/http/response.dart' show BaseResponse;
 import 'package:w_transport/src/web_socket/mock/w_socket.dart' show MockWSocket;
 import 'package:w_transport/src/web_socket/w_socket.dart' show WSocket;
+import 'package:w_transport/src/web_socket/web_socket.dart' show WebSocket;
 import 'package:w_transport/src/web_socket/web_socket_exception.dart'
     show WebSocketException;
 

@@ -87,7 +87,7 @@ abstract class WSocket implements Stream, StreamSink {
   /// Additional headers to be used in setting up the connection can be
   /// specified in [headers]. This only applies to server-side usage. See
   /// `dart:io`'s [WebSocket] for more information.
-  static Future<WSocket> connect(Uri uri,
+  static Future<WebSocket> connect(Uri uri,
           {Map<String, dynamic> headers,
           Iterable<String> protocols,
           TransportPlatform transportPlatform,

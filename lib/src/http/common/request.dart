@@ -477,80 +477,160 @@ abstract class CommonRequest extends Object
   }
 
   @override
-  Future<Response> delete({Map<String, String> headers, Uri uri}) =>
-      _send('DELETE', headers: headers, uri: uri);
+  Future<Response> delete({Map<String, String> headers, Uri uri}) async {
+    final r = await _send('DELETE', headers: headers, uri: uri);
+    assert(r is Response, 'delete() should return a Response');
+    Response response = r;
+    return response;
+  }
 
   @override
-  Future<Response> get({Map<String, String> headers, Uri uri}) =>
-      _send('GET', headers: headers, uri: uri);
+  Future<Response> get({Map<String, String> headers, Uri uri}) async {
+    final r = await _send('GET', headers: headers, uri: uri);
+    assert(r is Response, 'get() should return a Response');
+    Response response = r;
+    return response;
+  }
 
   @override
-  Future<Response> head({Map<String, String> headers, Uri uri}) =>
-      _send('HEAD', headers: headers, uri: uri);
+  Future<Response> head({Map<String, String> headers, Uri uri}) async {
+    final r = await _send('HEAD', headers: headers, uri: uri);
+    assert(r is Response, 'head() should return a Response');
+    Response response = r;
+    return response;
+  }
 
   @override
-  Future<Response> options({Map<String, String> headers, Uri uri}) =>
-      _send('OPTIONS', headers: headers, uri: uri);
+  Future<Response> options({Map<String, String> headers, Uri uri}) async {
+    final r = await _send('OPTIONS', headers: headers, uri: uri);
+    assert(r is Response, 'options() should return a Response');
+    Response response = r;
+    return response;
+  }
 
   @override
   Future<Response> patch(
-          {dynamic body, Map<String, String> headers, Uri uri}) =>
-      _send('PATCH', body: body, headers: headers, uri: uri);
+      {dynamic body, Map<String, String> headers, Uri uri}) async {
+    final r = await _send('PATCH', body: body, headers: headers, uri: uri);
+    assert(r is Response, 'patch() should return a Response');
+    Response response = r;
+    return response;
+  }
 
   @override
-  Future<Response> post({dynamic body, Map<String, String> headers, Uri uri}) =>
-      _send('POST', body: body, headers: headers, uri: uri);
+  Future<Response> post(
+      {dynamic body, Map<String, String> headers, Uri uri}) async {
+    final r = await _send('POST', body: body, headers: headers, uri: uri);
+    assert(r is Response, 'post() should return a Response');
+    Response response = r;
+    return response;
+  }
 
   @override
-  Future<Response> put({dynamic body, Map<String, String> headers, Uri uri}) =>
-      _send('PUT', body: body, headers: headers, uri: uri);
+  Future<Response> put(
+      {dynamic body, Map<String, String> headers, Uri uri}) async {
+    final r = await _send('PUT', body: body, headers: headers, uri: uri);
+    assert(r is Response, 'put() should return a Response');
+    Response response = r;
+    return response;
+  }
 
   @override
   Future<Response> send(String method,
-          {dynamic body, Map<String, String> headers, Uri uri}) =>
-      _send(method, headers: headers, uri: uri);
+      {dynamic body, Map<String, String> headers, Uri uri}) async {
+    final r = await _send(method, headers: headers, uri: uri);
+    assert(r is Response, 'delete() should return a Response');
+    Response response = r;
+    return response;
+  }
 
   @override
   Future<StreamedResponse> streamDelete(
-          {Map<String, String> headers, Uri uri}) =>
-      _send('DELETE', headers: headers, streamResponse: true, uri: uri);
+      {Map<String, String> headers, Uri uri}) async {
+    final r =
+        await _send('DELETE', headers: headers, streamResponse: true, uri: uri);
+    assert(r is StreamedResponse,
+        'streamDelete() should return a StreamedResponse');
+    StreamedResponse response = r;
+    return response;
+  }
 
   @override
-  Future<StreamedResponse> streamGet({Map<String, String> headers, Uri uri}) =>
-      _send('GET', headers: headers, streamResponse: true, uri: uri);
+  Future<StreamedResponse> streamGet(
+      {Map<String, String> headers, Uri uri}) async {
+    final r =
+        await _send('GET', headers: headers, streamResponse: true, uri: uri);
+    assert(
+        r is StreamedResponse, 'streamGet() should return a StreamedResponse');
+    StreamedResponse response = r;
+    return response;
+  }
 
   @override
-  Future<StreamedResponse> streamHead({Map<String, String> headers, Uri uri}) =>
-      _send('HEAD', headers: headers, streamResponse: true, uri: uri);
+  Future<StreamedResponse> streamHead(
+      {Map<String, String> headers, Uri uri}) async {
+    final r =
+        await _send('HEAD', headers: headers, streamResponse: true, uri: uri);
+    assert(
+        r is StreamedResponse, 'streamHead() should return a StreamedResponse');
+    StreamedResponse response = r;
+    return response;
+  }
 
   @override
   Future<StreamedResponse> streamOptions(
-          {Map<String, String> headers, Uri uri}) =>
-      _send('OPTIONS', headers: headers, streamResponse: true, uri: uri);
+      {Map<String, String> headers, Uri uri}) async {
+    final r = await _send('OPTIONS',
+        headers: headers, streamResponse: true, uri: uri);
+    assert(r is StreamedResponse,
+        'streamOptions() should return a StreamedResponse');
+    StreamedResponse response = r;
+    return response;
+  }
 
   @override
   Future<StreamedResponse> streamPatch(
-          {dynamic body, Map<String, String> headers, Uri uri}) =>
-      _send('PATCH',
-          body: body, headers: headers, streamResponse: true, uri: uri);
+      {dynamic body, Map<String, String> headers, Uri uri}) async {
+    final r = await _send('PATCH',
+        body: body, headers: headers, streamResponse: true, uri: uri);
+    assert(r is StreamedResponse,
+        'streamPatch() should return a StreamedResponse');
+    StreamedResponse response = r;
+    return response;
+  }
 
   @override
   Future<StreamedResponse> streamPost(
-          {dynamic body, Map<String, String> headers, Uri uri}) =>
-      _send('POST',
-          body: body, headers: headers, streamResponse: true, uri: uri);
+      {dynamic body, Map<String, String> headers, Uri uri}) async {
+    final r = await _send('POST',
+        body: body, headers: headers, streamResponse: true, uri: uri);
+    assert(
+        r is StreamedResponse, 'streamPost() should return a StreamedResponse');
+    StreamedResponse response = r;
+    return response;
+  }
 
   @override
   Future<StreamedResponse> streamPut(
-          {dynamic body, Map<String, String> headers, Uri uri}) =>
-      _send('PUT',
-          body: body, headers: headers, streamResponse: true, uri: uri);
+      {dynamic body, Map<String, String> headers, Uri uri}) async {
+    final r = await _send('PUT',
+        body: body, headers: headers, streamResponse: true, uri: uri);
+    assert(
+        r is StreamedResponse, 'streamPut() should return a StreamedResponse');
+    StreamedResponse response = r;
+    return response;
+  }
 
   @override
   Future<StreamedResponse> streamSend(String method,
-          {dynamic body, Map<String, String> headers, Uri uri}) =>
-      _send(method,
-          body: body, headers: headers, streamResponse: true, uri: uri);
+      {dynamic body, Map<String, String> headers, Uri uri}) async {
+    final r = await _send(method,
+        body: body, headers: headers, streamResponse: true, uri: uri);
+    assert(
+        r is StreamedResponse, 'streamSend() should return a StreamedResponse');
+    StreamedResponse response = r;
+    return response;
+  }
 
   @override
   Future<Response> retry() {

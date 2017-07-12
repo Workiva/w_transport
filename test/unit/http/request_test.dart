@@ -485,6 +485,7 @@ void _runCommonRequestSuiteFor(
           (FinalizedRequest request, response, [exception]) async {
         expect(request.method, equals('GET'));
         expect(request.uri, equals(requestUri));
+        return response;
       };
       await request.get(uri: requestUri);
     });
@@ -498,6 +499,7 @@ void _runCommonRequestSuiteFor(
         expect(response, new isInstanceOf<transport.Response>());
         transport.Response standardResponse = response;
         expect(standardResponse.body.asString(), equals('original'));
+        return standardResponse;
       };
       await request.get(uri: requestUri);
     });
@@ -508,6 +510,7 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory();
       request.responseInterceptor = (request, response, [exception]) async {
         expect(exception, isNull);
+        return response;
       };
       await request.get(uri: requestUri);
     });

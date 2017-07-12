@@ -26,6 +26,7 @@ abstract class CommonStreamedRequest extends CommonRequest
     implements StreamedRequest {
   CommonStreamedRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
+  // ignore: deprecated_member_use
   CommonStreamedRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 

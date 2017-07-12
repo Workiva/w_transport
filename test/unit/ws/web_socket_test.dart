@@ -29,7 +29,9 @@ void main() {
 
   group(naming.toString(), () {
     group('WSocket', () {
+      // ignore: deprecated_member_use
       _runWebSocketSuite((Uri uri) => transport.WSocket.connect(uri));
+      // ignore: deprecated_member_use
       _runLegacyWebSocketSuite((Uri uri) => transport.WSocket.connect(uri));
     });
 
@@ -40,6 +42,7 @@ void main() {
   });
 }
 
+// ignore: deprecated_member_use
 void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
   MockWebSocketServer mockServer;
   final webSocketUri = Uri.parse('ws://mock.com/ws');
@@ -248,6 +251,7 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
   });
 }
 
+// ignore: deprecated_member_use
 void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
   group('legacy', () {
     final webSocketUri = Uri.parse('ws://mock.com/ws');
@@ -259,11 +263,14 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     test('message events should be discarded prior to a subscription',
         () async {
+      // ignore: deprecated_member_use
       final mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       final webSocket = await getWebSocket(webSocketUri);
 
+      // ignore: deprecated_member_use
       mockWebSocket.addIncoming('1');
+      // ignore: deprecated_member_use
       mockWebSocket.addIncoming('2');
       await nextTick();
 
@@ -272,10 +279,13 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
         messages.add(data);
       });
 
+      // ignore: deprecated_member_use
       mockWebSocket.addIncoming('3');
+      // ignore: deprecated_member_use
       mockWebSocket.addIncoming('4');
       await nextTick();
 
+      // ignore: deprecated_member_use
       mockWebSocket.triggerServerClose();
       await webSocket.done;
       expect(messages, orderedEquals(['3', '4']));
@@ -286,6 +296,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
     test(
         'the first event should be received if a subscription is made immediately',
         () async {
+      // ignore: deprecated_member_use
       final mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       final webSocket = await getWebSocket(webSocketUri);
@@ -294,6 +305,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       webSocket.listen((data) {
         c.complete(data);
       });
+      // ignore: deprecated_member_use
       mockWebSocket.addIncoming('first');
 
       expect(await c.future, equals('first'));
@@ -303,12 +315,14 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     test('all event streams should respect pause() and resume() signals',
         () async {
+      // ignore: deprecated_member_use
       final mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       final webSocket = await getWebSocket(webSocketUri);
       final messages = <String>[];
 
       // no subscription yet, messages should be discarded
+      // ignore: deprecated_member_use
       mockWebSocket.addIncoming('1');
       await nextTick();
 
@@ -316,16 +330,19 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       final sub = webSocket.listen((data) {
         messages.add(data);
       });
+      // ignore: deprecated_member_use
       mockWebSocket.addIncoming('2');
       await nextTick();
 
       // pause the subscription, messages should be discarded
       sub.pause();
+      // ignore: deprecated_member_use
       mockWebSocket.addIncoming('3');
       await nextTick();
 
       // resume the subscription, messages should be recorded again
       sub.resume();
+      // ignore: deprecated_member_use
       mockWebSocket.addIncoming('4');
       await nextTick();
 
@@ -336,6 +353,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
     });
 
     test('onData() handler should be reassignable', () async {
+      // ignore: deprecated_member_use
       final mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       final webSocket = await getWebSocket(webSocketUri);
@@ -347,6 +365,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       final sub = webSocket.listen((data) {
         origHandlerMessages.add(data);
       });
+      // ignore: deprecated_member_use
       mockWebSocket.addIncoming('orig');
       await nextTick();
 
@@ -354,6 +373,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
       sub.onData((data) {
         newHandlerMessages.add(data);
       });
+      // ignore: deprecated_member_use
       mockWebSocket.addIncoming('new');
       await nextTick();
 
@@ -365,6 +385,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
     });
 
     test('onDone() handler should be reassignable', () async {
+      // ignore: deprecated_member_use
       final mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       final webSocket = await getWebSocket(webSocketUri);
@@ -376,6 +397,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
         c.complete();
       });
 
+      // ignore: deprecated_member_use
       mockWebSocket.triggerServerClose();
       await c.future;
       await sub.cancel();
@@ -384,11 +406,13 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
     });
 
     test('add() should send data to underlying web socket', () async {
+      // ignore: deprecated_member_use
       final mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       final webSocket = await getWebSocket(webSocketUri);
 
       final c = new Completer<String>();
+      // ignore: deprecated_member_use
       mockWebSocket.onOutgoing(c.complete);
 
       webSocket.add('message');
@@ -399,11 +423,13 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
     });
 
     test('addStream() should send data to underlying web socket', () async {
+      // ignore: deprecated_member_use
       final mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       final webSocket = await getWebSocket(webSocketUri);
 
       final controller = new StreamController<dynamic>();
+      // ignore: deprecated_member_use
       mockWebSocket.onOutgoing(controller.add);
 
       await webSocket.addStream(new Stream.fromIterable(['one', 'two']));
@@ -418,6 +444,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     test('addStream() should cause the web socket to close when erorr is added',
         () async {
+      // ignore: deprecated_member_use
       final mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       final webSocket = await getWebSocket(webSocketUri);
@@ -438,6 +465,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
     });
 
     test('addError() should cause the web socket to close', () async {
+      // ignore: deprecated_member_use
       final mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       final webSocket = await getWebSocket(webSocketUri);
@@ -451,10 +479,12 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     // TODO: remove this test once triggerServerError has been removed
     test('DEPRECATED: error should close the socket', () async {
+      // ignore: deprecated_member_use
       final mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       final webSocket = await getWebSocket(webSocketUri);
 
+      // ignore: deprecated_member_use
       mockWebSocket.triggerServerError(new Exception('Server Exception'));
       await webSocket.done;
 
@@ -463,9 +493,11 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
     });
 
     test('server closing the connection should close the socket', () async {
+      // ignore: deprecated_member_use
       final mockWebSocket = new MockWSocket();
       MockTransports.webSocket.expect(webSocketUri, connectTo: mockWebSocket);
       final webSocket = await getWebSocket(webSocketUri);
+      // ignore: deprecated_member_use
       mockWebSocket.triggerServerClose(1000, 'closed');
       await webSocket.done;
       expect(webSocket.closeCode, equals(1000));

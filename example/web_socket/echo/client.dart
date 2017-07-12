@@ -45,7 +45,7 @@ Future<Null> main() async {
 
   renderGlobalExampleMenu(serverStatus: true);
 
-  // ignore: close_sinks
+  // ignore: close_sinks,deprecated_member_use
   WSocket webSocket;
 
   // Connect (or reconnect) when the connect button is clicked.
@@ -66,9 +66,13 @@ Future<Null> main() async {
     final uri = sockjs ? _sockJSServer : _wsServer;
 
     try {
+      // ignore: deprecated_member_use
       webSocket = await WSocket.connect(uri,
+          // ignore: deprecated_member_use
           useSockJS: sockjs,
+          // ignore: deprecated_member_use
           sockJSTimeout: timeout,
+          // ignore: deprecated_member_use
           sockJSProtocolsWhitelist: protocols);
 
       // Display messages from web socket

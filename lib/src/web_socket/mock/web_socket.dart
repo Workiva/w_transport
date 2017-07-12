@@ -58,7 +58,11 @@ abstract class MockWebSocket implements WebSocket {
 }
 
 class _MockWebSocket extends CommonWebSocket
-    implements MockWebSocket, MockWSocket, WebSocket {
+    implements
+        MockWebSocket,
+        // ignore: deprecated_member_use
+        MockWSocket,
+        WebSocket {
   /// List of "onOutgoing" callbacks that have been registered. Any time a piece
   /// of data is added to the mock [WSocket], all callbacks in this list will be
   /// called with said data, allowing them to react and mock out the server.

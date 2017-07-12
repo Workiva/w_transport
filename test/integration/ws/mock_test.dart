@@ -113,8 +113,10 @@ void main() {
 
       MockTransports.webSocket.when(IntegrationPaths.closeUri,
           handler: (Uri uri, {protocols, headers}) async {
+        // ignore: deprecated_member_use
         final webSocket = new MockWSocket();
 
+        // ignore: deprecated_member_use
         webSocket.onOutgoing((data) {
           if (data.startsWith('close')) {
             final parts = data.split(':');
@@ -135,15 +137,19 @@ void main() {
 
       MockTransports.webSocket.when(IntegrationPaths.echoUri,
           handler: (Uri uri, {protocols, headers}) async {
+        // ignore: deprecated_member_use
         final webSocket = new MockWSocket();
+        // ignore: deprecated_member_use
         webSocket.onOutgoing(webSocket.addIncoming);
         return webSocket;
       });
 
       MockTransports.webSocket.when(IntegrationPaths.pingUri,
           handler: (Uri uri, {protocols, headers}) async {
+        // ignore: deprecated_member_use
         final webSocket = new MockWSocket();
 
+        // ignore: deprecated_member_use
         webSocket.onOutgoing((data) async {
           data = data.replaceAll('ping', '');
           int numPongs = 1;
@@ -152,6 +158,7 @@ void main() {
           } catch (_) {}
           for (int i = 0; i < numPongs; i++) {
             await new Future.delayed(new Duration(milliseconds: 5));
+            // ignore: deprecated_member_use
             webSocket.addIncoming('pong');
           }
         });

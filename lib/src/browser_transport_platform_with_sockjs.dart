@@ -51,6 +51,7 @@ class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
     // that for backwards compatibility.
 
     // If useSockJS is for some reason disabled, revert to standard WebSocket.
+    // ignore: deprecated_member_use
     if (useSockJS == false) {
       return BrowserWebSocket.connect(uri,
           headers: headers, protocols: protocols);
@@ -59,10 +60,14 @@ class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
     // Otherwise, use the given sockJS params if given and fallback to the
     // settings configured with this TransportPlatform instance.
     return SockJSWebSocket.connect(uri,
+        // ignore: deprecated_member_use
         debug: sockJSDebug ?? _sockJSDebug,
+        // ignore: deprecated_member_use
         noCredentials: sockJSNoCredentials ?? _sockJSNoCredentials,
         protocolsWhitelist:
+            // ignore: deprecated_member_use
             sockJSProtocolsWhitelist ?? _sockJSProtocolsWhitelist,
+        // ignore: deprecated_member_use
         timeout: sockJSTimeout ?? _sockJSTimeout);
   }
 }

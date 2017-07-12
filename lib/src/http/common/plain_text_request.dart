@@ -26,6 +26,7 @@ import 'package:w_transport/src/transport_platform.dart';
 abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   CommonPlainTextRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
+  // ignore: deprecated_member_use
   CommonPlainTextRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 

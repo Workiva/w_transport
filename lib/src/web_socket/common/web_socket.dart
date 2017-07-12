@@ -152,6 +152,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   @override
   StreamSubscription listen(void onData(dynamic event),
       {Function onError, void onDone(), bool cancelOnError}) {
+    // ignore: cancel_subscriptions
     final sub = _incoming.stream
         .listen(onData, onError: onError, cancelOnError: cancelOnError);
     _incomingSubscription = new WSocketSubscription(sub, onDone, onCancel: () {

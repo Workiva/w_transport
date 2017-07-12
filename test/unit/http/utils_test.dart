@@ -471,6 +471,7 @@ void main() {
         sub.pause();
         sub.resume();
         await done.future;
+        await sub.cancel();
       });
     });
   });

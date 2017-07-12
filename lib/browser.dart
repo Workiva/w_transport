@@ -53,16 +53,21 @@ void configureWTransportForBrowser(
     @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist}) {
   // Configuring SockJS at this level is deprecated. SockJS configuration should
   // occur on a per-socket basis.
+  // ignore: deprecated_member_use
   if (useSockJS == true) {
     print('Deprecation Warning: Configuring all w_transport sockets to use '
         'SockJS is deprecated. Instead, SockJS usage should be configured on a '
         'per-socket basis via the optional parameters in WSocket.connect().');
   }
 
+  // ignore: deprecated_member_use
   if (useSockJS == true) {
     globalTransportPlatform = new BrowserTransportPlatformWithSockJS(
+        // ignore: deprecated_member_use
         sockJSNoCredentials: sockJSNoCredentials,
+        // ignore: deprecated_member_use
         sockJSDebug: sockJSDebug,
+        // ignore: deprecated_member_use
         sockJSProtocolsWhitelist: sockJSProtocolsWhitelist);
   } else {
     globalTransportPlatform = browserTransportPlatform;

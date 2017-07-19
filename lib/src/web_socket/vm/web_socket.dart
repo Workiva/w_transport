@@ -16,6 +16,7 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:w_transport/src/web_socket/common/web_socket.dart';
+import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 
@@ -38,11 +39,17 @@ class VMWebSocket extends CommonWebSocket implements WebSocket {
     // Note: closing this sink is handled by VMWSocket
     // ignore: close_sinks
     io.WebSocket webSocket;
+    bool wasSuccessful;
     try {
       webSocket = await io.WebSocket
           .connect(uri.toString(), headers: headers, protocols: protocols);
+      wasSuccessful = true;
     } on io.SocketException catch (e) {
+      wasSuccessful = false;
       throw new WebSocketException(e.toString());
+    } finally {
+      emitWebSocketConnectEvent(newWebSocketConnectEvent(
+          url: uri.toString(), wasSuccessful: wasSuccessful));
     }
 
     return new VMWebSocket._(webSocket);

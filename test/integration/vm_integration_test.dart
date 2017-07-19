@@ -15,6 +15,8 @@
 @TestOn('vm')
 import 'package:test/test.dart';
 
+import 'global_web_socket_monitor/vm_test.dart' as global_web_socket_monitor_vm;
+
 import 'http/client/vm_test.dart' as http_client_vm;
 import 'http/common_request/vm_test.dart' as http_common_request_vm;
 import 'http/form_request/vm_test.dart' as http_form_request_vm;
@@ -30,6 +32,8 @@ import 'platforms/vm_transport_platform_test.dart'
 import 'ws/vm_test.dart' as ws_vm;
 
 void main() {
+  global_web_socket_monitor_vm.main();
+
   http_client_vm.main();
   http_common_request_vm.main();
   http_form_request_vm.main();

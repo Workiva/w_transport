@@ -17,6 +17,7 @@ import 'dart:async';
 import 'package:sockjs_client/sockjs_client.dart' as sockjs;
 
 import 'package:w_transport/src/web_socket/common/web_socket.dart';
+import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 
@@ -56,13 +57,14 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
       bool noCredentials: false,
       List<String> protocolsWhitelist,
       Duration timeout}) async {
+    Uri sockjsUri;
     if (uri.scheme == 'ws') {
-      uri = uri.replace(scheme: 'http');
+      sockjsUri = uri.replace(scheme: 'http');
     } else if (uri.scheme == 'wss') {
-      uri = uri.replace(scheme: 'https');
+      sockjsUri = uri.replace(scheme: 'https');
     }
 
-    final client = new sockjs.Client(uri.toString(),
+    final client = new sockjs.Client(sockjsUri.toString(),
         debug: debug == true,
         noCredentials: noCredentials == true,
         protocolsWhitelist: protocolsWhitelist,
@@ -79,12 +81,24 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
     // an error if the socket moves straight to the closed state.
     final connected = new Completer<Null>();
     // ignore: unawaited_futures
-    client.onOpen.first.then((_) => connected.complete());
+    client.onOpen.first.then((_) {
+      connected.complete();
+      emitWebSocketConnectEvent(newWebSocketConnectEvent(
+          url: uri.toString(),
+          wasSuccessful: true,
+          sockJsProtocolsWhitelist: protocolsWhitelist,
+          sockJsSelectedProtocol: client.protocol));
+    });
     // ignore: unawaited_futures
     closed.future.then((_) {
       if (!connected.isCompleted) {
         connected
             .completeError(new WebSocketException('Could not connect to $uri'));
+        emitWebSocketConnectEvent(newWebSocketConnectEvent(
+            url: uri.toString(),
+            wasSuccessful: false,
+            sockJsProtocolsWhitelist: protocolsWhitelist,
+            sockJsSelectedProtocol: client.protocol));
       }
     });
 

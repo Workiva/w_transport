@@ -17,6 +17,11 @@ library w_transport.test.integration.browser_suite_test;
 
 import 'package:test/test.dart';
 
+import 'global_web_socket_monitor/browser_test.dart'
+    as global_web_socket_monitor_browser;
+import 'global_web_socket_monitor/sockjs_test.dart'
+    as global_web_socket_monitor_sockjs;
+
 import 'http/client/browser_test.dart' as http_client_browser;
 import 'http/common_request/browser_test.dart' as http_common_request_browser;
 import 'http/form_request/browser_test.dart' as http_form_request_browser;
@@ -35,6 +40,9 @@ import 'ws/browser_test.dart' as ws_browser;
 import 'ws/sockjs_test.dart' as ws_sockjs;
 
 void main() {
+  global_web_socket_monitor_browser.main();
+  global_web_socket_monitor_sockjs.main();
+
   http_client_browser.main();
   http_common_request_browser.main();
   http_form_request_browser.main();

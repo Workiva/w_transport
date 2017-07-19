@@ -21,6 +21,7 @@ import 'dart:typed_data';
 import 'package:w_transport/src/web_socket/common/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket_exception.dart';
+import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
 
 /// Implementation of the platform-dependent pieces of the [WSocket] class for
 /// the browser. This class uses native WebSockets.
@@ -41,11 +42,17 @@ class BrowserWSocket extends CommonWSocket implements WSocket {
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
     Completer connected = new Completer();
-    socket.onOpen.first.then(connected.complete);
+    socket.onOpen.first.then((_) {
+      connected.complete();
+      emitWebSocketConnectEvent(
+          newWebSocketConnectEvent(url: uri.toString(), wasSuccessful: true));
+    });
     closed.then((_) {
       if (!connected.isCompleted) {
         connected
             .completeError(new WSocketException('Could not connect to $uri'));
+        emitWebSocketConnectEvent(newWebSocketConnectEvent(
+            url: uri.toString(), wasSuccessful: false));
       }
     });
 

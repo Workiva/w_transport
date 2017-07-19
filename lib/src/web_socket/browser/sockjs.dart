@@ -21,6 +21,7 @@ import 'package:sockjs_client/sockjs_client.dart' as sockjs;
 import 'package:w_transport/src/web_socket/common/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
 import 'package:w_transport/src/web_socket/w_socket_exception.dart';
+import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
 
 /// Implementation of the platform-dependent pieces of the [WSocket] class for
 /// the SockJS browser configuration. This class uses the SockJS library to
@@ -32,13 +33,14 @@ class SockJSSocket extends CommonWSocket implements WSocket {
       bool noCredentials: false,
       List<String> protocolsWhitelist,
       Duration timeout}) async {
+    Uri sockjsUri;
     if (uri.scheme == 'ws') {
-      uri = uri.replace(scheme: 'http');
+      sockjsUri = uri.replace(scheme: 'http');
     } else if (uri.scheme == 'wss') {
-      uri = uri.replace(scheme: 'https');
+      sockjsUri = uri.replace(scheme: 'https');
     }
 
-    sockjs.Client client = new sockjs.Client(uri.toString(),
+    sockjs.Client client = new sockjs.Client(sockjsUri.toString(),
         debug: debug == true,
         noCredentials: noCredentials == true,
         protocolsWhitelist: protocolsWhitelist,
@@ -52,11 +54,23 @@ class SockJSSocket extends CommonWSocket implements WSocket {
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
     Completer connected = new Completer();
-    client.onOpen.first.then(connected.complete);
+    client.onOpen.first.then((_) {
+      connected.complete();
+      emitWebSocketConnectEvent(newWebSocketConnectEvent(
+          url: uri.toString(),
+          wasSuccessful: true,
+          sockJsProtocolsWhitelist: protocolsWhitelist,
+          sockJsSelectedProtocol: client.protocol));
+    });
     closed.then((_) {
       if (!connected.isCompleted) {
         connected
             .completeError(new WSocketException('Could not connect to $uri'));
+        emitWebSocketConnectEvent(newWebSocketConnectEvent(
+            url: uri.toString(),
+            wasSuccessful: false,
+            sockJsProtocolsWhitelist: protocolsWhitelist,
+            sockJsSelectedProtocol: client.protocol));
       }
     });
 

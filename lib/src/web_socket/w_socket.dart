@@ -21,6 +21,7 @@
 import 'dart:async';
 
 import 'package:w_transport/src/constants.dart' show v3Deprecation;
+import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 import 'package:w_transport/src/transport_platform.dart';
 
@@ -105,6 +106,13 @@ abstract class WSocket implements Stream, StreamSink {
           sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
           sockJSTimeout: sockJSTimeout,
           useSockJS: useSockJS);
+
+  /// Returns a monitor that provides streams of events for all WebSockets
+  /// constructed via w_transport.
+  ///
+  /// These streams may be useful for reporting analytics/metrics.
+  static GlobalWebSocketMonitor getGlobalEventMonitor() =>
+      newGlobalWebSocketMonitor();
 
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.

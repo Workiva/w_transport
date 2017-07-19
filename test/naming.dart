@@ -33,6 +33,7 @@ const String topicHttp = 'HTTP';
 const String topicMocks = 'Mocks';
 const String topicTransportPlatform = 'Transport Platform';
 const String topicWebSocket = 'WS';
+const String topicGlobalWebSocketMonitor = 'GlobalWebSocketMonitor';
 
 class Naming {
   String platform;

@@ -25,6 +25,7 @@ import 'package:w_transport/src/global_transport_platform.dart';
 import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 import 'package:w_transport/src/transport_platform.dart';
+import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
 import 'package:w_transport/src/web_socket/w_socket.dart';
 
 /// A two-way communication object for WebSocket clients. Establishes
@@ -141,6 +142,13 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
       throw new TransportPlatformMissing.webSocketFailed(uri);
     }
   }
+
+  /// Returns a monitor that provides streams of events for all WebSockets
+  /// constructed via w_transport.
+  ///
+  /// These streams may be useful for reporting analytics/metrics.
+  static GlobalWebSocketMonitor getGlobalEventMonitor() =>
+      newGlobalWebSocketMonitor();
 
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.

@@ -131,6 +131,8 @@ export 'package:w_transport/src/web_socket/w_socket_exception.dart'
 export 'package:w_transport/src/web_socket/web_socket_exception.dart'
     show WebSocketException;
 export 'package:w_transport/src/web_socket/web_socket.dart' show WebSocket;
+export 'package:w_transport/src/web_socket/global_web_socket_monitor.dart'
+    show GlobalWebSocketMonitor, WebSocketConnectEvent;
 
 // Third-party
 export 'package:http_parser/http_parser.dart' show MediaType;

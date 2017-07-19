@@ -1,5 +1,5 @@
 name: w_transport
-version: 2.9.9
+version: 2.10.0
 description: >
   Platform-agnostic transport library for sending and receiving data over HTTP
   and WebSocket. HTTP support includes plain-text, JSON, form-data, and

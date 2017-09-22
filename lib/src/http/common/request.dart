@@ -741,21 +741,21 @@ abstract class CommonRequest extends Object
       checkForTimeout();
     }
 
-    // No further changes should be made to the request at this point.
-    final finalizedRequest = await finalizeRequest(body);
-    checkForCancellation();
-    checkForTimeout();
-
     // If this is a mock-aware request without an expectation or handler setup
     // to process it, switch to a real request.
     if (isMockAware &&
         MockTransportsInternal.fallThrough &&
-        !MockHttpInternal.hasHandlerForRequest(finalizedRequest.method,
-            finalizedRequest.uri, finalizedRequest.headers)) {
+        !MockHttpInternal.hasHandlerForRequest(
+            this.method, this.uri, this.headers)) {
       return switchToRealRequest(streamResponse: streamResponse);
     }
 
     // Otherwise, carry on with the send logic and the mocks will do the rest.
+
+    // No further changes should be made to the request at this point.
+    final finalizedRequest = await finalizeRequest(body);
+    checkForCancellation();
+    checkForTimeout();
 
     BaseResponse response;
     bool responseInterceptorThrew = false;

@@ -14,6 +14,7 @@
 
 @TestOn('browser')
 import 'dart:async';
+import 'dart:html' as html;
 
 import 'package:test/test.dart';
 import 'package:w_transport/browser.dart';
@@ -665,7 +666,8 @@ void main() {
 
           final multipartRequest = new transport.MultipartRequest(
               transportPlatform: browserTransportPlatform)
-            ..fields['foo'] = 'bar';
+            ..fields['foo'] = 'bar'
+            ..files['blob'] = new html.Blob([]);
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final request = new transport.Request(
@@ -691,7 +693,8 @@ void main() {
           await clientJsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final clientMultipartRequest = httpClient.newMultipartRequest()
-            ..fields['foo'] = 'bar';
+            ..fields['foo'] = 'bar'
+            ..files['blob'] = new html.Blob([]);
           await clientMultipartRequest.get(
               uri: IntegrationPaths.pingEndpointUri);
 

@@ -30,14 +30,12 @@ dependencies:
       ref: 0.3.2
 
 dev_dependencies:
-  ansicolor: ^0.0.9
   browser: ^0.10.0+2
   coverage: ^0.7.9
   dart_dev: ^1.7.7
   dart_style: ^1.0.6
   http_server: ^0.9.6
   mockito: ^2.0.2
-  path: ^1.4.2
   react: ^0.6.1
   test: ^0.12.23+1
   uuid: ^0.5.3

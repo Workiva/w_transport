@@ -35,6 +35,7 @@ script:
   - pub get --packages-dir
   - pub run dart_dev format --check
   - pub run dart_dev analyze
+  - pub run dependency_validator -i browser,coverage,dart_style
   - pub run dart_dev test --integration
   - pub run dart_dev coverage --integration --no-html
   - bash <(curl -s https://codecov.io/bash) -f coverage/coverage.lcov

@@ -34,6 +34,7 @@ dev_dependencies:
   coverage: ^0.7.9
   dart_dev: ^1.7.7
   dart_style: ^1.0.6
+  dependency_validator: ^1.0.0
   http_server: ^0.9.6
   mockito: ^2.0.2
   react: ^0.6.1

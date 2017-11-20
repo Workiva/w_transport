@@ -24,10 +24,14 @@ dependencies:
   http_parser: '>=2.2.0 <4.0.0'
   meta: ^1.1.0
   mime: ^0.9.3
-  sockjs_client:
+  sockjs_client_wrapper:
     git:
-      url: https://github.com/Workiva/sockjs-dart-client.git
-      ref: 0.3.2
+      url: git@github.com:Workiva/sockjs_client_wrapper.git
+      ref: initial_implementation
+  # sockjs_client:
+  #   git:
+  #     url: https://github.com/Workiva/sockjs-dart-client.git
+  #     ref: 0.3.2
 
 dev_dependencies:
   browser: ^0.10.0+2

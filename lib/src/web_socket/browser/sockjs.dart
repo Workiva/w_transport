@@ -14,7 +14,7 @@
 
 import 'dart:async';
 
-import 'package:sockjs_client/sockjs_client.dart' as sockjs;
+import 'package:sockjs_client_wrapper/sockjs_client_wrapper.dart';
 
 import 'package:w_transport/src/web_socket/common/web_socket.dart';
 import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
@@ -29,7 +29,7 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
   /// The "WebSocket" - in this case, it's a SockJS Client that has an API
   /// similar to that of a WebSocket, regardless of what protocol is actually
   /// used.
-  sockjs.Client _webSocket;
+  SockJSClient _webSocket;
 
   SockJSWebSocket._(this._webSocket, Future webSocketClosed) : super() {
     webSocketClosed.then((closeEvent) {
@@ -64,30 +64,27 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
       sockjsUri = uri.replace(scheme: 'https');
     }
 
-    final client = new sockjs.Client(sockjsUri.toString(),
-        debug: debug == true,
-        noCredentials: noCredentials == true,
-        protocolsWhitelist: protocolsWhitelist,
-        timeout: timeout?.inMilliseconds);
+    final client = new SockJSClient(sockjsUri,
+        options: new SockJSOptions(transports: protocolsWhitelist));
 
     // Listen for and store the close event. This will determine whether or
     // not the socket connected successfully, and will also be used later
     // to handle the web socket closing.
     final closed = new Completer<Object /* CloseEvent */ >();
-    // ignore: unawaited_futures
-    client.onClose.first.then(closed.complete);
+    client.onClose.listen(closed.complete);
 
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
     final connected = new Completer<Null>();
+
     // ignore: unawaited_futures
-    client.onOpen.first.then((_) {
+    client.onOpen.listen((openEvent) {
       connected.complete();
       emitWebSocketConnectEvent(newWebSocketConnectEvent(
           url: uri.toString(),
           wasSuccessful: true,
           sockJsProtocolsWhitelist: protocolsWhitelist,
-          sockJsSelectedProtocol: client.protocol));
+          sockJsSelectedProtocol: openEvent.transport));
     });
     // ignore: unawaited_futures
     closed.future.then((_) {
@@ -97,8 +94,7 @@ class SockJSWebSocket extends CommonWebSocket implements WebSocket {
         emitWebSocketConnectEvent(newWebSocketConnectEvent(
             url: uri.toString(),
             wasSuccessful: false,
-            sockJsProtocolsWhitelist: protocolsWhitelist,
-            sockJsSelectedProtocol: client.protocol));
+            sockJsProtocolsWhitelist: protocolsWhitelist));
       }
     });
 

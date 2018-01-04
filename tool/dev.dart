@@ -40,6 +40,7 @@ Future<Null> main(List<String> args) async {
   config.copyLicense.directories = directories;
 
   config.coverage
+    ..pubServe = true
     ..reportOn = ['lib/']
     ..before = [_streamServer, _streamSockJSServer]
     ..after = [_stopServer, _stopSockJSServer];
@@ -63,6 +64,7 @@ Future<Null> main(List<String> args) async {
       'test/integration/vm_integration_test.dart'
     ]
     ..platforms = ['vm', 'content-shell']
+    ..pubServe = true
     ..before = [_streamServer, _streamSockJSServer]
     ..after = [_stopServer, _stopSockJSServer];
 

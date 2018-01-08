@@ -5,7 +5,12 @@ language: dart
 runner_image: drydock-prod.workiva.net/workiva/smithy-runner-generator:179735
 
 script:
-  - pub get
+  - npm install
+  - pub get --packages-dir
+  - pub run dart_dev format --check
+  - pub run dart_dev analyze
+  - pub run dependency_validator -i browser,coverage,dart_style
+  - xvfb-run -s '-screen 0 1024x768x24' pub run dart_dev test --integration
 
 artifacts:
   build:

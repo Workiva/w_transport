@@ -14,12 +14,12 @@
 
 /// Platforms.
 const String platformBrowser = 'browser';
-const String platformBrowserSockjsWS = 'browser (SockJS WS)';
-const String platformBrowserSockjsXhr = 'browser (SockJS XHR)';
-const String platformBrowserSockjsWSDeprecated =
-    'browser (SockJS WS) [DEPRECATED]';
-const String platformBrowserSockjsXhrDeprecated =
-    'browser (SockJS XHR) [DEPRECATED]';
+const String platformBrowserSockjsPort = 'browser (SockJS Port)';
+const String platformBrowserSockjsWrapper = 'browser (SockJS Wrapper)';
+const String platformBrowserSockjsPortDeprecated =
+    'browser (SockJS Port) [DEPRECATED]';
+const String platformBrowserSockjsWrapperDeprecated =
+    'browser (SockJS Wrapper) [DEPRECATED]';
 const String platformMock = 'mock';
 const String platformVM = 'vm';
 

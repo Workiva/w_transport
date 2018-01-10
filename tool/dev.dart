@@ -40,6 +40,7 @@ Future<Null> main(List<String> args) async {
   config.copyLicense.directories = directories;
 
   config.coverage
+    ..pubServe = true
     ..reportOn = ['lib/']
     ..before = [_streamServer, _streamSockJSServer]
     ..after = [_stopServer, _stopSockJSServer];
@@ -59,9 +60,11 @@ Future<Null> main(List<String> args) async {
     ..integrationTests = [
       'test/integration/browser_integration_test.dart',
       'test/integration/mock_integration_test.dart',
+      'test/integration/sockjs_wrapper_integration_test.dart',
       'test/integration/vm_integration_test.dart'
     ]
     ..platforms = ['vm', 'content-shell']
+    ..pubServe = true
     ..before = [_streamServer, _streamSockJSServer]
     ..after = [_stopServer, _stopSockJSServer];
 

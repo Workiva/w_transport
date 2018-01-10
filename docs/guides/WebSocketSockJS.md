@@ -1,8 +1,13 @@
 ### WebSocket: Using SockJS
 
 WebSockets can be configured to use SockJS under the hood instead of native
-WebSockets. There is a default Transport Platform instance that is configured to
-use SockJS that you can use.
+WebSockets. In order to leverage SockJS, however, you will first need to load
+the accompanying `sockjs.js` library (likely by including it in your
+application's HTML page).
+See https://github.com/workiva/sockjs_client_wrapper#usage for more information.
+
+There is a default Transport Platform instance that is configured to use SockJS
+that you can use.
 
 ```dart
 import 'package:w_transport/browser.dart'

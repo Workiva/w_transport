@@ -17,8 +17,8 @@ import 'package:test/test.dart';
 
 import 'global_web_socket_monitor/browser_test.dart'
     as global_web_socket_monitor_browser;
-import 'global_web_socket_monitor/sockjs_test.dart'
-    as global_web_socket_monitor_sockjs;
+import 'global_web_socket_monitor/sockjs_port_test.dart'
+    as global_web_socket_monitor_sockjs_port;
 
 import 'http/client/browser_test.dart' as http_client_browser;
 import 'http/common_request/browser_test.dart' as http_common_request_browser;
@@ -36,11 +36,11 @@ import 'platforms/browser_transport_platform_test.dart'
     as browser_transport_platform_test;
 
 import 'ws/browser_test.dart' as ws_browser;
-import 'ws/sockjs_test.dart' as ws_sockjs;
+import 'ws/sockjs_port_test.dart' as ws_sockjs_port;
 
 void main() {
   global_web_socket_monitor_browser.main();
-  global_web_socket_monitor_sockjs.main();
+  global_web_socket_monitor_sockjs_port.main();
 
   http_client_browser.main();
   http_common_request_browser.main();
@@ -54,5 +54,5 @@ void main() {
   browser_transport_platform_test.main();
 
   ws_browser.main();
-  ws_sockjs.main();
+  ws_sockjs_port.main();
 }

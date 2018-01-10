@@ -80,6 +80,9 @@ import 'package:w_transport/src/web_socket/w_socket.dart';
 ///     // registering an "onDone()" handler also works
 ///     webSocket.listen((_) {}, onDone: () { ... });
 ///
+/// **Note:** In order to leverage SockJS, you will need to load the `sockjs.js`
+/// library first. See https://github.com/workiva/sockjs_client_wrapper#usage
+///
 // ignore: deprecated_member_use
 abstract class WebSocket extends WSocket implements Stream, StreamSink {
   /// Create a new WebSocket connection. The given [uri] must use the scheme

@@ -1,17 +1,29 @@
-# Changelog
+## [3.2.1](https://github.com/Workiva/w_transport/compare/3.2.0...3.2.1)
+_January 29th, 2018_
+
+- **Bug Fix:** The `sockjs.js` detection now uses `context.hasProperty()`
+  instead of actually trying to access the `SockJS` object on the window. This
+  fixes an exception that was being thrown silently in certain situations.
 
 ## [3.2.0](https://github.com/Workiva/w_transport/compare/3.1.2...3.2.0)
-_January 4th, 2017_
+_January 4th, 2018_
 
-- **Improvement:** Added support for the [`sockjs_client_wrapper` package](https://github.com/Workiva/sockjs_client_wrapper). This will eventually replace our usage of the [`sockjs_client` Dart port](https://github.com/Workiva/sockjs-dart-client) because the wrapper uses the actual JS library which is fully-featured and community supported.
+- **Improvement:** Added support for the [`sockjs_client_wrapper` package](https://github.com/Workiva/sockjs_client_wrapper). This will eventually replace our usage of the [`sockjs_client` Dart port](https://github.com/Workiva/sockjs-dart-client)
+  because the wrapper uses the actual JS library which is fully-featured and community supported.
 
-    The SockJS wrapper requires that the JS library be included in the HTML page. To avoid a breaking change, it will only be used if the JS library is detected on the window.
+  The SockJS wrapper requires that the JS library be included in the HTML page.
+  To avoid a breaking change, it will only be used if the JS library is detected
+  on the window.
 
-    If you are using the SockJS configuration for `WebSocket` and wish to leverage this more fully-featured SockJS (which provides all of the SockJS protocols e.g. `xhr-polling`), all you need to do is add the JS script to your application page:
+  If you are using the SockJS configuration for `WebSocket` and wish to leverage
+  this more fully-featured SockJS (which provides all of the SockJS protocols
+  e.g. `xhr-polling`), all you need to do is add the JS script to your
+  application page:
 
-    https://github.com/workiva/sockjs_client_wrapper#usage
+  https://github.com/workiva/sockjs_client_wrapper#usage
 
-    If you don't change anything, the SockJS configuration for `WebSocket` will still behave exactly the same and you should see no difference.
+  If you don't change anything, the SockJS configuration for `WebSocket` will
+  still behave exactly the same and you should see no difference.
 
 ## [3.0.3](https://github.com/Workiva/w_transport/compare/3.0.2...3.0.3)
 _March 15th, 2017_

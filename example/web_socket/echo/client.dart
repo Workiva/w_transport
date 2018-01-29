@@ -36,7 +36,9 @@ TextInputElement _prompt = querySelector('#prompt');
 PreElement _logs = querySelector('#logs');
 NumberInputElement _sockJSTimeout = querySelector('#sockjs-timeout');
 CheckboxInputElement _sockJSWebSocket = querySelector('#sockjs-ws');
-CheckboxInputElement _sockJSXhr = querySelector('#sockjs-xhr');
+CheckboxInputElement _sockJSXhrStreaming =
+    querySelector('#sockjs-xhr-streaming');
+CheckboxInputElement _sockJSXhrPolling = querySelector('#sockjs-xhr-polling');
 CheckboxInputElement _useSockJS = querySelector('#sockjs');
 
 Future<Null> main() async {
@@ -60,8 +62,11 @@ Future<Null> main() async {
     if (_sockJSWebSocket.checked) {
       protocols.add('websocket');
     }
-    if (_sockJSXhr.checked) {
+    if (_sockJSXhrStreaming.checked) {
       protocols.add('xhr-streaming');
+    }
+    if (_sockJSXhrPolling.checked) {
+      protocols.add('xhr-polling');
     }
     final uri = sockjs ? _sockJSServer : _wsServer;
 

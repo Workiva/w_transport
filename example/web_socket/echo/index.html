@@ -43,9 +43,16 @@ limitations under the License.
 
         <br>
 
-        <label for="sockjs-xhr">
-            <input type="checkbox" id="sockjs-xhr">
+        <label for="sockjs-xhr-streaming">
+            <input type="checkbox" id="sockjs-xhr-streaming">
             SockJS xhr-streaming
+        </label>
+
+        <br>
+
+        <label for="sockjs-xhr-polling">
+            <input type="checkbox" id="sockjs-xhr-polling">
+            SockJS xhr-polling
         </label>
 
         <br>
@@ -67,6 +74,8 @@ limitations under the License.
     <pre id="logs"></pre>
 </div>
 
+<!--<script src="packages/sockjs_client_wrapper/sockjs.js"></script>-->
+<!--<script src="packages/sockjs_client_wrapper/sockjs_prod.js"></script>-->
 <script src="packages/react/react.js"></script>
 <script type="application/dart" src="client.dart"></script>
 <script src="packages/browser/dart.js"></script>

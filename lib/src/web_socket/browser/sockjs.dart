@@ -34,7 +34,7 @@ abstract class SockJSWebSocket extends CommonWebSocket implements WebSocket {
     // which is community-supported and fully-featured. But, it requires that
     // the sockjs.js file is included. We can check for that by checking for the
     // existence of a `SockJS` object on the window.
-    if (js.context['SockJS'] != null && js.context['SockJS'] is js.JsFunction) {
+    if (js.context.hasProperty('SockJS')) {
       return SockJSWrapperWebSocket.connect(uri,
           debug: debug,
           noCredentials: noCredentials,

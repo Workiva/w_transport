@@ -1,6 +1,6 @@
 ## HTTP: Request Types
 
-The [basic guide to sending requests](/docs/guides/HttpSendRequestReceiveResponseHandleFailure.md)
+The [basic guide to sending requests](https://github.com/Workiva/w_transport/blob/master/docs/guides/HttpSendRequestReceiveResponseHandleFailure.md)
 introduced the API common to all request classes. Each class, however, is
 designed to transport a specific type of data.
 

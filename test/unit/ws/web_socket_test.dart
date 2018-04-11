@@ -225,6 +225,7 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     await webSocket.addStream(controller.stream);
     expect(webSocket.done, throwsException);
+    await new Future(() {});
     await webSocket.close().catchError((_) {});
   });
 
@@ -413,7 +414,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
       final c = new Completer<String>();
       // ignore: deprecated_member_use
-      mockWebSocket.onOutgoing(c.complete);
+      mockWebSocket.onOutgoing((data) => c.complete(data));
 
       webSocket.add('message');
 

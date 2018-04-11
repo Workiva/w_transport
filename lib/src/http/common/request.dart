@@ -15,6 +15,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:fluri/fluri.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -44,9 +45,8 @@ abstract class CommonRequest extends Object
   }
 
   // ignore: deprecated_member_use
-  CommonRequest.fromClient(Client wTransportClient, client)
-      : this._wTransportClient = wTransportClient,
-        this.client = client {
+  CommonRequest.fromClient(Client wTransportClient, this.client)
+      : this._wTransportClient = wTransportClient {
     autoRetry = new RequestAutoRetry(this);
   }
 
@@ -131,7 +131,7 @@ abstract class CommonRequest extends Object
   Completer<Null> _done = new Completer<Null>();
 
   /// Request body encoding.
-  Encoding _encoding = UTF8;
+  Encoding _encoding = convert.utf8;
 
   /// Request headers. Stored in a case-insensitive map since HTTP headers are
   /// case-insensitive.
@@ -350,7 +350,7 @@ abstract class CommonRequest extends Object
     if (isCanceled) {
       final error = new RequestException(
           method,
-          this.uri,
+          uri,
           this,
           response,
           _cancellationError != null
@@ -364,7 +364,7 @@ abstract class CommonRequest extends Object
   /// Check if this request has exceeded the timeout threshold.
   void checkForTimeout() {
     if (isTimedOut) {
-      throw new RequestException(method, this.uri, this, null, _timeoutError);
+      throw new RequestException(method, uri, this, null, _timeoutError);
     }
   }
 
@@ -451,7 +451,7 @@ abstract class CommonRequest extends Object
 
     if (isSent)
       throw new StateError(
-          'Request (${this.toString()}) has already been sent - it cannot be sent again.');
+          'Request ($this) has already been sent - it cannot be sent again.');
     isSent = true;
 
     return finalizedRequest;
@@ -475,7 +475,7 @@ abstract class CommonRequest extends Object
   void verifyUnsent() {
     if (isSent)
       throw new StateError(
-          'Request (${this.toString()}) has already been sent and can no longer be modified.');
+          'Request ($this) has already been sent and can no longer be modified.');
   }
 
   @override

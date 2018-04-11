@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
@@ -106,7 +106,7 @@ void main() {
             final request = new transport.Request();
             final interval = new Duration(milliseconds: 5);
             final maxInterval = new Duration(milliseconds: 20);
-            final withJitter = false;
+            const withJitter = false;
             request.autoRetry.backOff = new transport.RetryBackOff.exponential(
                 interval,
                 withJitter: withJitter,
@@ -142,7 +142,7 @@ void main() {
             final request = new transport.Request();
             final interval = new Duration(milliseconds: 5);
             final maxInterval = new Duration(milliseconds: 20);
-            final withJitter = true;
+            const withJitter = true;
             request.autoRetry.backOff = new transport.RetryBackOff.exponential(
                 interval,
                 withJitter: withJitter,
@@ -180,7 +180,7 @@ void main() {
           test('no jitter', () async {
             final request = new transport.Request();
             final interval = new Duration(milliseconds: 5);
-            final withJitter = false;
+            const withJitter = false;
             request.autoRetry.backOff = new transport.RetryBackOff.fixed(
                 interval,
                 withJitter: withJitter);
@@ -201,7 +201,7 @@ void main() {
           test('with jitter', () async {
             final request = new transport.Request();
             final interval = new Duration(milliseconds: 5);
-            final withJitter = true;
+            const withJitter = true;
             request.autoRetry.backOff = new transport.RetryBackOff.fixed(
                 interval,
                 withJitter: withJitter);
@@ -251,7 +251,8 @@ void main() {
           'sentence=words+with+spaces',
           'chars=%E7%25%2F%5C%7B%5D.%2B%22%27'
         ].join('&');
-        expect(http_utils.mapToQuery(map, encoding: LATIN1), equals(expected));
+        expect(http_utils.mapToQuery(map, encoding: convert.latin1),
+            equals(expected));
       });
 
       test('queryToMap() with default encoding (UTF8)', () {
@@ -283,8 +284,8 @@ void main() {
           'sentence': 'words with spaces',
           'chars': 'ç%/\\{].+"\''
         };
-        expect(
-            http_utils.queryToMap(query, encoding: LATIN1), equals(expected));
+        expect(http_utils.queryToMap(query, encoding: convert.latin1),
+            equals(expected));
       });
 
       test('parseContentTypeFromHeaders()', () {
@@ -321,36 +322,45 @@ void main() {
 
       test('parseEncodingFromContentType()', () {
         MediaType ct;
-        ct = new MediaType('text', 'plain', {'charset': UTF8.name});
-        expect(http_utils.parseEncodingFromContentType(ct), equals(UTF8));
-        ct = new MediaType('text', 'plain', {'charset': LATIN1.name});
-        expect(http_utils.parseEncodingFromContentType(ct), equals(LATIN1));
+        ct = new MediaType('text', 'plain', {'charset': convert.utf8.name});
+        expect(
+            http_utils.parseEncodingFromContentType(ct), equals(convert.utf8));
+        ct = new MediaType('text', 'plain', {'charset': convert.latin1.name});
+        expect(http_utils.parseEncodingFromContentType(ct),
+            equals(convert.latin1));
       });
 
       test('parseEncodingFromContentType() no charset', () {
         final ct = new MediaType('text', 'plain');
-        expect(http_utils.parseEncodingFromContentType(ct, fallback: ASCII),
-            equals(ASCII));
+        expect(
+            http_utils.parseEncodingFromContentType(ct,
+                fallback: convert.ascii),
+            equals(convert.ascii));
       });
 
       test('parseEncodingFromContentType() null content-type', () {
-        expect(http_utils.parseEncodingFromContentType(null, fallback: ASCII),
-            equals(ASCII));
+        expect(
+            http_utils.parseEncodingFromContentType(null,
+                fallback: convert.ascii),
+            equals(convert.ascii));
       });
 
       test('parseEncodingFromContentType() unrecognized charset', () {
         final ct = new MediaType('text', 'plain', {'charset': 'unknown'});
-        expect(http_utils.parseEncodingFromContentType(ct, fallback: ASCII),
-            equals(ASCII));
+        expect(
+            http_utils.parseEncodingFromContentType(ct,
+                fallback: convert.ascii),
+            equals(convert.ascii));
       });
 
       test('parseEncodingFromContentTypeOrFail()', () {
         MediaType ct;
-        ct = new MediaType('text', 'plain', {'charset': UTF8.name});
-        expect(http_utils.parseEncodingFromContentTypeOrFail(ct), equals(UTF8));
-        ct = new MediaType('text', 'plain', {'charset': LATIN1.name});
-        expect(
-            http_utils.parseEncodingFromContentTypeOrFail(ct), equals(LATIN1));
+        ct = new MediaType('text', 'plain', {'charset': convert.utf8.name});
+        expect(http_utils.parseEncodingFromContentTypeOrFail(ct),
+            equals(convert.utf8));
+        ct = new MediaType('text', 'plain', {'charset': convert.latin1.name});
+        expect(http_utils.parseEncodingFromContentTypeOrFail(ct),
+            equals(convert.latin1));
       });
 
       test('parseEncodingFromContentTypeOrFail() no charset', () {
@@ -376,36 +386,45 @@ void main() {
       test('parseEncodingFromHeaders()', () {
         Map<String, String> headers;
         headers = {'content-type': 'text/plain; charset=utf-8'};
-        expect(http_utils.parseEncodingFromHeaders(headers), equals(UTF8));
+        expect(
+            http_utils.parseEncodingFromHeaders(headers), equals(convert.utf8));
         headers = {'content-type': 'text/plain; charset=iso-8859-1'};
-        expect(http_utils.parseEncodingFromHeaders(headers), equals(LATIN1));
+        expect(http_utils.parseEncodingFromHeaders(headers),
+            equals(convert.latin1));
       });
 
       test('parseEncodingFromHeaders() case mismatch', () {
         final headers = <String, String>{
           'cOnteNt-tYPe': 'text/plain; charset=utf-8'
         };
-        expect(http_utils.parseEncodingFromHeaders(headers), equals(UTF8));
+        expect(
+            http_utils.parseEncodingFromHeaders(headers), equals(convert.utf8));
       });
 
       test('parseEncodingFromHeaders() no charset', () {
         final headers = <String, String>{'content-type': 'text/plain'};
-        expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII),
-            equals(ASCII));
+        expect(
+            http_utils.parseEncodingFromHeaders(headers,
+                fallback: convert.ascii),
+            equals(convert.ascii));
       });
 
       test('parseEncodingFromHeaders() no content-type', () {
         final headers = <String, String>{};
-        expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII),
-            equals(ASCII));
+        expect(
+            http_utils.parseEncodingFromHeaders(headers,
+                fallback: convert.ascii),
+            equals(convert.ascii));
       });
 
       test('parseEncodingFromHeaders() unrecognized charset', () {
         final headers = <String, String>{
           'content-type': 'text/plain; charset=unknown'
         };
-        expect(http_utils.parseEncodingFromHeaders(headers, fallback: ASCII),
-            equals(ASCII));
+        expect(
+            http_utils.parseEncodingFromHeaders(headers,
+                fallback: convert.ascii),
+            equals(convert.ascii));
       });
 
       test('reduceByteStream()', () async {

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart' show MediaType;
 
 import 'package:w_transport/src/http/client.dart';
@@ -38,16 +38,16 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
   dynamic get body => _source;
 
   @override
-  set body(dynamic json) {
+  set body(dynamic jsonBody) {
     verifyUnsent();
     // Store the source so it can be returned from the getter without having to
     // decode it again.
-    _source = json;
+    _source = jsonBody;
 
     // Encode immediately so that we can attempt decoding it such that invalid
     // JSON will result in an exception now rather than later.
-    _encodedJson = JSON.encode(json);
-    JSON.decode(_encodedJson);
+    _encodedJson = convert.json.encode(jsonBody);
+    convert.json.decode(_encodedJson);
   }
 
   @override

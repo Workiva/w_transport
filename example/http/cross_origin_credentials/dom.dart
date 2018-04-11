@@ -45,7 +45,7 @@ void updateToggleAuthButton() {
 }
 
 /// Display a message in the DOM.
-void display(String message, bool isSuccessful) {
+void display(String message, {bool isSuccessful}) {
   final className = isSuccessful ? 'success' : 'warning';
   final Element elem = querySelector('#response');
   elem.innerHtml = '<p class="$className">$message</p>\n' + elem.innerHtml;
@@ -61,12 +61,12 @@ Future<Null> setupControlBindings() async {
           status.authenticated = true;
           updateAuthenticationStatus();
           updateToggleAuthButton();
-          display('Logged in.', true);
+          display('Logged in.', isSuccessful: true);
         } else {
-          display('Failed to login.', false);
+          display('Failed to login.', isSuccessful: false);
         }
       } catch (error) {
-        display('Failed to login: $error', false);
+        display('Failed to login: $error', isSuccessful: false);
       }
     } else {
       try {
@@ -74,12 +74,12 @@ Future<Null> setupControlBindings() async {
           status.authenticated = false;
           updateAuthenticationStatus();
           updateToggleAuthButton();
-          display('Logged out.', true);
+          display('Logged out.', isSuccessful: true);
         } else {
-          display('Failed to logout.', false);
+          display('Failed to logout.', isSuccessful: false);
         }
       } catch (error) {
-        display('Failed to logout: $error', false);
+        display('Failed to logout: $error', isSuccessful: false);
       }
     }
   });
@@ -88,9 +88,9 @@ Future<Null> setupControlBindings() async {
   querySelector('#make-credentialed-request').onClick.listen((_) async {
     try {
       final response = await service.makeCredentialedRequest();
-      display(response, true);
+      display(response, isSuccessful: true);
     } catch (e) {
-      display(e.toString(), false);
+      display(e.toString(), isSuccessful: false);
     }
   });
 
@@ -98,9 +98,9 @@ Future<Null> setupControlBindings() async {
   querySelector('#make-uncredentialed-request').onClick.listen((_) async {
     try {
       final response = await service.makeUncredentialedRequest();
-      display(response, true);
+      display(response, isSuccessful: true);
     } catch (e) {
-      display(e.toString(), false);
+      display(e.toString(), isSuccessful: false);
     }
   });
 }

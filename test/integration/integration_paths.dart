@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ignore: avoid_classes_with_only_static_members
 class IntegrationPaths {
   static final Uri hostUri = Uri.parse('http://localhost:8024');
   static final Uri wsHostUri = hostUri.replace(scheme: 'ws');

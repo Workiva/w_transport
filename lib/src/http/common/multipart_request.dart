@@ -16,6 +16,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart' show MediaType;
 
 import 'package:w_transport/src/http/client.dart';
@@ -68,7 +69,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       : super.fromClient(wTransportClient, client);
 
   static String _generateBoundaryString() {
-    final senderPrefix = 'dart-w-transport-boundary-';
+    const senderPrefix = 'dart-w-transport-boundary-';
     final boundaryChars =
         new List<int>.generate(_boundaryLength - senderPrefix.length, (_) {
       return _boundaryChars[_random.nextInt(_boundaryChars.length)];
@@ -87,8 +88,8 @@ abstract class CommonMultipartRequest extends CommonRequest
 
     fields.forEach((name, value) {
       length += _boundaryDelimiterLength;
-      length += UTF8.encode(_multipartFieldHeaders(name, value)).length;
-      length += UTF8.encode(value).length;
+      length += convert.utf8.encode(_multipartFieldHeaders(name, value)).length;
+      length += convert.utf8.encode(value).length;
       length += _crlf.length;
     });
 
@@ -96,7 +97,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       if (file is! MultipartFile)
         throw new UnsupportedError('Illegal multipart file type: $file');
       length += _boundaryDelimiterLength;
-      length += UTF8.encode(_multipartFileHeaders(name, file)).length;
+      length += convert.utf8.encode(_multipartFileHeaders(name, file)).length;
       length += file.length;
       length += _crlf.length;
     });
@@ -178,7 +179,7 @@ abstract class CommonMultipartRequest extends CommonRequest
 
     final controller = new StreamController<List<int>>();
     void write(String content) {
-      controller.add(UTF8.encode(content));
+      controller.add(convert.utf8.encode(content));
     }
 
     Future<Null> writeByteStream(Stream<List<int>> byteStream) {

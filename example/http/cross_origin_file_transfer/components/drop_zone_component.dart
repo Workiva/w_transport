@@ -66,8 +66,8 @@ class DropZoneComponent extends react.Component {
   void showDropTarget(Event e) {
     e.preventDefault();
     _hideDropTargetTimer?.cancel();
-    this.props['onDragStart']();
-    this.setState({'overDropZone': true});
+    props['onDragStart']();
+    setState({'overDropZone': true});
   }
 
   void hideDropTarget(Event e) {
@@ -75,8 +75,8 @@ class DropZoneComponent extends react.Component {
     // This helps prevent a flicker when moving from the drop zone
     // to the drop target.
     _hideDropTargetTimer = new Timer(new Duration(milliseconds: 100), () {
-      this.props['onDragEnd']();
-      this.setState({'overDropZone': false});
+      props['onDragEnd']();
+      setState({'overDropZone': false});
     });
   }
 
@@ -88,11 +88,11 @@ class DropZoneComponent extends react.Component {
   void enlargeDropTarget(react.SyntheticMouseEvent e) {
     // Prevent default to allow the drop
     e.preventDefault();
-    this.setState({'overDropTarget': true, 'overDropZone': true});
+    setState({'overDropTarget': true, 'overDropZone': true});
   }
 
   void shrinkDropTarget(react.SyntheticMouseEvent e) {
-    this.setState({'overDropTarget': false, 'overDropZone': true});
+    setState({'overDropTarget': false, 'overDropZone': true});
   }
 
   void uploadFiles(react.SyntheticMouseEvent e) {
@@ -101,15 +101,15 @@ class DropZoneComponent extends react.Component {
     e.preventDefault();
 
     // Start an upload for each dropped file
-    List<Upload> newUploads = e.dataTransfer.files.map((File file) {
+    List<Upload> newUploads = e.dataTransfer.files.map((file) {
       return Upload.start(file);
     }).toList();
 
     // Notify parent of new uploads
-    this.props['onNewUploads'](newUploads);
-    this.props['onDragEnd']();
+    props['onNewUploads'](newUploads);
+    props['onDragEnd']();
 
-    this.setState({'overDropZone': false, 'overDropTarget': false});
+    setState({'overDropZone': false, 'overDropTarget': false});
   }
 
   @override
@@ -117,11 +117,11 @@ class DropZoneComponent extends react.Component {
     String dropZoneClass = 'drop-zone';
     String dropTargetClass = 'drop-target';
 
-    if (this.state['overDropZone'] || this.state['overDropTarget']) {
+    if (state['overDropZone'] || state['overDropTarget']) {
       dropZoneClass += ' active';
       dropTargetClass += ' show';
     }
-    if (this.state['overDropTarget']) {
+    if (state['overDropTarget']) {
       dropTargetClass += ' over';
     }
 

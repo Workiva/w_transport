@@ -80,8 +80,7 @@ class RemoteFiles {
       // Parse the file list from the response
       List results = response.body.asJson()['results'];
       List<RemoteFileDescription> files = results
-          .map((Map file) =>
-              new RemoteFileDescription(file['name'], file['size']))
+          .map((file) => new RemoteFileDescription(file['name'], file['size']))
           .toList();
 
       // Send the updated file list to listeners

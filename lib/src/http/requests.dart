@@ -69,7 +69,7 @@ abstract class FormRequest extends BaseRequest {
   /// Prior to sending, this request body will be translated to the equivalent
   /// query string. Depending on the platform, this may then be encoded to
   /// bytes. Be sure to set [encoding] if this request body should be encoded
-  /// with something other than the default UTF8.
+  /// with something other than the default utf-8.
   Map<String, dynamic> get fields;
 
   /// Sets this request's form fields. The given `Map` should represent the form
@@ -78,7 +78,7 @@ abstract class FormRequest extends BaseRequest {
   /// Prior to sending, this request body will be translated to the equivalent
   /// query string. Depending on the platform, this may then be encoded to
   /// bytes. Be sure to set [encoding] if this request body should be encoded
-  /// with something other than the default UTF8.
+  /// with something other than the default utf-8.
   set fields(Map<String, dynamic> fields);
 
   /// Returns an clone of this request.
@@ -126,7 +126,7 @@ abstract class JsonRequest extends BaseRequest {
   /// Prior to sending, this request body will be translated to the equivalent
   /// query string. Depending on the platform, this may then be encoded to
   /// bytes. Be sure to set [encoding] if this request body should be encoded
-  /// with something other than the default UTF8.
+  /// with something other than the default utf-8.
   dynamic get body;
 
   /// Sets this request's form body. The given `Map` should represent the form
@@ -135,7 +135,7 @@ abstract class JsonRequest extends BaseRequest {
   /// Prior to sending, this request body will be translated to the equivalent
   /// query string. Depending on the platform, this may then be encoded to
   /// bytes. Be sure to set [encoding] if this request body should be encoded
-  /// with something other than the default UTF8.
+  /// with something other than the default utf-8.
   set body(dynamic body);
 
   /// Returns an clone of this request.
@@ -226,7 +226,7 @@ abstract class Request extends BaseRequest {
   ///
   /// Depending on the platform, this may be encoded to bytes prior to sending.
   /// Be sure to set [encoding] if this request body should be encoded with
-  /// something other than the default UTF8.
+  /// something other than the default utf-8.
   set body(String body);
 
   /// Gets this request's body as bytes (encoded version of [body]).
@@ -236,7 +236,7 @@ abstract class Request extends BaseRequest {
   ///
   /// Depending on the platform, this may be decoded to text prior to sending.
   /// Be sure to set [encoding] if this request body should be decoded with
-  /// something other than the default UTF8.
+  /// something other than the default utf-8.
   set bodyBytes(List<int> bytes);
 
   /// Returns an clone of this request.
@@ -276,7 +276,7 @@ abstract class StreamedRequest extends BaseRequest {
   /// be sent asynchronously by listening to this stream.
   ///
   /// Be sure to set [encoding] if the byte stream should be decoded with
-  /// something other than the default UTF8.
+  /// something other than the default utf-8.
   set body(Stream<List<int>> byteStream);
 
   /// Cloning a StreamedRequest is not supported. This will throw an

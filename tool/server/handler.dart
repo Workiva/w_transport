@@ -95,15 +95,15 @@ abstract class Handler {
     // Allow all headers (by using the requested headers)
     final requestHeaders = request.headers['Access-Control-Request-Headers'];
     if (requestHeaders != null) {
-      requestHeaders.forEach((h) {
+      for (final h in requestHeaders) {
         request.response.headers.add('Access-Control-Allow-Headers', h);
-      });
+      }
     }
 
     // Use given allow methods, but default to allowing all methods
-    _allowedMethods.forEach((m) {
+    for (final m in _allowedMethods) {
       request.response.headers.add('Access-Control-Allow-Methods', m);
-    });
+    }
 
     // Optionally allow credentials
     if (_credentialsAllowed) {

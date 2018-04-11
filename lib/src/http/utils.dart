@@ -17,6 +17,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 
 import 'package:w_transport/src/http/auto_retry.dart';
@@ -87,8 +88,8 @@ String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
     final valueList = value is List ? value : [value];
     for (final v in valueList) {
       final encoded = <String>[
-        Uri.encodeQueryComponent(key, encoding: encoding ?? UTF8),
-        Uri.encodeQueryComponent(v, encoding: encoding ?? UTF8),
+        Uri.encodeQueryComponent(key, encoding: encoding ?? convert.utf8),
+        Uri.encodeQueryComponent(v, encoding: encoding ?? convert.utf8),
       ];
       params.add(encoded.join('='));
     }
@@ -165,8 +166,8 @@ Map<String, Object> queryToMap(String query, {Encoding encoding}) {
     String key = pieces.first;
     String value = pieces.length > 1 ? pieces.sublist(1).join('') : '';
 
-    key = Uri.decodeQueryComponent(key, encoding: encoding ?? UTF8);
-    value = Uri.decodeQueryComponent(value, encoding: encoding ?? UTF8);
+    key = Uri.decodeQueryComponent(key, encoding: encoding ?? convert.utf8);
+    value = Uri.decodeQueryComponent(value, encoding: encoding ?? convert.utf8);
 
     if (fields.containsKey(key)) {
       if (fields[key] is! List) {

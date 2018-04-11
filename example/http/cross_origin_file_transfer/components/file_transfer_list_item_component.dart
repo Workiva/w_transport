@@ -46,9 +46,9 @@ class FileTransferListItemComponent extends react.Component {
 
   @override
   void componentWillMount() {
-    FileTransfer transfer = this.props['transfer'];
+    FileTransfer transfer = props['transfer'];
     if (transfer != null) {
-      transfer.progressStream.listen((_) => this.redraw());
+      transfer.progressStream.listen((_) => redraw());
       transfer.done
           .then((_) => _transferSucceeded())
           .catchError((error, sT) => _transferFailed(error, sT));
@@ -58,13 +58,13 @@ class FileTransferListItemComponent extends react.Component {
   /// Abort the file transfer (if it's still in progress)
   void _cancelTransfer(e) {
     e.preventDefault();
-    if (this.props['transfer'] == null || this.state['done']) return;
-    this.props['transfer'].cancel('User canceled the file transfer.');
-    this.setState({'done': true, 'success': false});
+    if (props['transfer'] == null || state['done']) return;
+    props['transfer'].cancel('User canceled the file transfer.');
+    setState({'done': true, 'success': false});
   }
 
   void _transferSucceeded() {
-    this.setState({'done': true, 'success': true});
+    setState({'done': true, 'success': true});
     _fadeTransferOut().then((_) => _removeTransfer());
   }
 
@@ -73,7 +73,7 @@ class FileTransferListItemComponent extends react.Component {
     if (sT != null) {
       print('$sT');
     }
-    this.setState({'done': true, 'success': false});
+    setState({'done': true, 'success': false});
     _fadeTransferOut().then((_) => _removeTransfer());
   }
 
@@ -81,31 +81,31 @@ class FileTransferListItemComponent extends react.Component {
     // wait a few seconds before beginning to fade the item out
     await new Future.delayed(
         new Duration(seconds: _transferCompleteLingerDuration));
-    this.setState({'will-remove': true});
+    setState({'will-remove': true});
     // wait for the css transition to complete
     await new Future.delayed(
         new Duration(seconds: _transferCompleteFadeoutDuration));
   }
 
   void _removeTransfer() {
-    this.props['onTransferDone'](this.props['transfer']);
+    props['onTransferDone'](props['transfer']);
   }
 
   @override
   dynamic render() {
-    FileTransfer transfer = this.props['transfer'];
+    FileTransfer transfer = props['transfer'];
     if (transfer == null) return react.div({});
     String transferClass = '';
-    if (this.state['done']) {
-      transferClass = this.state['success'] ? 'success' : 'error';
+    if (state['done']) {
+      transferClass = state['success'] ? 'success' : 'error';
       transferClass += ' done';
     }
-    if (this.state['will-remove']) {
+    if (state['will-remove']) {
       transferClass += ' hide';
     }
 
     final label = <dynamic>[transfer.name];
-    if (!this.state['done']) {
+    if (!state['done']) {
       label.addAll([
         ' (',
         react.a({'href': '#', 'onClick': _cancelTransfer}, 'cancel'),

@@ -18,7 +18,7 @@ import 'package:w_transport/w_transport.dart';
 
 /// URLs for this cross origin credentials example.
 final _authenticationServerUrl = Uri.parse('http://localhost:8024');
-final _pathPrefix = '/example/http/cross_origin_credentials';
+const _pathPrefix = '/example/http/cross_origin_credentials';
 final _sessionUrl =
     _authenticationServerUrl.replace(path: '$_pathPrefix/session');
 final _credentialedEndpointUrl =

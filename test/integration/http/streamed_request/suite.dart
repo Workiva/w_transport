@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -37,14 +37,14 @@ void runStreamedRequestSuite([transport.TransportPlatform transportPlatform]) {
               'Empty streamed plain-text request\'s content-length should be 0.');
 
       final chunks = <List<int>>[
-        UTF8.encode('chunk1'),
-        UTF8.encode('chunk2'),
-        UTF8.encode('chunk3')
+        convert.utf8.encode('chunk1'),
+        convert.utf8.encode('chunk2'),
+        convert.utf8.encode('chunk3')
       ];
       int size = 0;
-      chunks.forEach((chunk) {
+      for (final chunk in chunks) {
         size += chunk.length;
-      });
+      }
       final nonEmptyRequest =
           new transport.StreamedRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
@@ -88,21 +88,21 @@ void runStreamedRequestSuite([transport.TransportPlatform transportPlatform]) {
       final request =
           new transport.StreamedRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = UTF8
-            ..body = new Stream.fromIterable([UTF8.encode('dataç®å')]);
+            ..encoding = convert.utf8
+            ..body = new Stream.fromIterable([convert.utf8.encode('dataç®å')]);
       final response = await request.post();
-      expect(response.encoding.name, equals(UTF8.name));
+      expect(response.encoding.name, equals(convert.utf8.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
     test('LATIN1', () async {
-      final request =
-          new transport.StreamedRequest(transportPlatform: transportPlatform)
-            ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = LATIN1
-            ..body = new Stream.fromIterable([LATIN1.encode('dataç®å')]);
+      final request = new transport.StreamedRequest(
+          transportPlatform: transportPlatform)
+        ..uri = IntegrationPaths.echoEndpointUri
+        ..encoding = convert.latin1
+        ..body = new Stream.fromIterable([convert.latin1.encode('dataç®å')]);
       final response = await request.post();
-      expect(response.encoding.name, equals(LATIN1.name));
+      expect(response.encoding.name, equals(convert.latin1.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
@@ -110,10 +110,10 @@ void runStreamedRequestSuite([transport.TransportPlatform transportPlatform]) {
       final request =
           new transport.StreamedRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = ASCII
-            ..body = new Stream.fromIterable([ASCII.encode('data')]);
+            ..encoding = convert.ascii
+            ..body = new Stream.fromIterable([convert.ascii.encode('data')]);
       final response = await request.post();
-      expect(response.encoding.name, equals(ASCII.name));
+      expect(response.encoding.name, equals(convert.ascii.name));
       expect(response.body.asString(), equals('data'));
     });
   });

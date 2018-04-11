@@ -54,16 +54,17 @@ Future<Null> main(List<String> args) async {
 
   config.test
     ..unitTests = [
-      'test/unit/browser_unit_test.dart',
-      'test/unit/platform_independent_unit_test.dart'
+      'test/unit/http',
+      'test/unit/mocks',
+      'test/unit/ws',
     ]
     ..integrationTests = [
-      'test/integration/browser_integration_test.dart',
-      'test/integration/mock_integration_test.dart',
-      'test/integration/sockjs_wrapper_integration_test.dart',
-      'test/integration/vm_integration_test.dart'
+      'test/integration/global_web_socket_monitor',
+      'test/integration/http',
+      'test/integration/platforms',
+      'test/integration/ws'
     ]
-    ..platforms = ['vm', 'content-shell']
+    ..platforms = ['vm', 'chrome']
     ..pubServe = true
     ..before = [_streamServer, _streamSockJSServer]
     ..after = [_stopServer, _stopSockJSServer];

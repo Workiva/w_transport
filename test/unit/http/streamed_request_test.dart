@@ -14,8 +14,8 @@
 
 @TestOn('browser || vm')
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
@@ -62,13 +62,14 @@ void main() {
         final c = new Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
           transport.StreamedHttpBody body = request.body;
-          c.complete(UTF8.decode(await body.toBytes()));
+          c.complete(convert.utf8.decode(await body.toBytes()));
           return new MockResponse.ok();
         });
 
         final request = new transport.StreamedRequest();
         await request.post(
-            uri: uri, body: new Stream.fromIterable([UTF8.encode('body')]));
+            uri: uri,
+            body: new Stream.fromIterable([convert.utf8.encode('body')]));
         expect(await c.future, equals('body'));
       });
 
@@ -117,30 +118,36 @@ void main() {
 
       test('setting encoding should update content-type', () {
         final request = new transport.StreamedRequest();
-        expect(request.contentType.parameters['charset'], equals(UTF8.name));
+        expect(request.contentType.parameters['charset'],
+            equals(convert.utf8.name));
 
-        request.encoding = LATIN1;
-        expect(request.contentType.parameters['charset'], equals(LATIN1.name));
+        request.encoding = convert.latin1;
+        expect(request.contentType.parameters['charset'],
+            equals(convert.latin1.name));
 
-        request.encoding = ASCII;
-        expect(request.contentType.parameters['charset'], equals(ASCII.name));
+        request.encoding = convert.ascii;
+        expect(request.contentType.parameters['charset'],
+            equals(convert.ascii.name));
       });
 
       test(
           'setting encoding should not update content-type if content-type has been set manually',
           () {
         final request = new transport.StreamedRequest();
-        expect(request.contentType.parameters['charset'], equals(UTF8.name));
+        expect(request.contentType.parameters['charset'],
+            equals(convert.utf8.name));
 
         // Manually override content-type.
-        request.contentType =
-            new MediaType('application', 'x-custom', {'charset': LATIN1.name});
+        request.contentType = new MediaType(
+            'application', 'x-custom', {'charset': convert.latin1.name});
         expect(request.contentType.mimeType, equals('application/x-custom'));
-        expect(request.contentType.parameters['charset'], equals(LATIN1.name));
+        expect(request.contentType.parameters['charset'],
+            equals(convert.latin1.name));
 
         // Changes to encoding should no longer update the content-type.
-        request.encoding = ASCII;
-        expect(request.contentType.parameters['charset'], equals(LATIN1.name));
+        request.encoding = convert.ascii;
+        expect(request.contentType.parameters['charset'],
+            equals(convert.latin1.name));
       });
 
       test('setting content-type should not be allowed once sent', () async {
@@ -159,7 +166,7 @@ void main() {
         final request = new transport.StreamedRequest();
         await request.get(uri: uri);
         expect(() {
-          request.encoding = LATIN1;
+          request.encoding = convert.latin1;
         }, throwsStateError);
       });
 

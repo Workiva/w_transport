@@ -92,7 +92,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
       if (body is String) {
         this.body = body;
       } else if (body is List<int>) {
-        this.bodyBytes = body;
+        bodyBytes = body;
       } else {
         throw new ArgumentError(
             'Plain-text request body must be either a String or List<int>.');

@@ -34,19 +34,19 @@ class FileUploadListComponent extends react.Component {
 
   @override
   dynamic render() {
-    if (this.props['transfers'].length <= 0) {
-      return react.p({'className': 'muted'}, this.props['noTransfersMessage']);
+    if (props['transfers'].length <= 0) {
+      return react.p({'className': 'muted'}, props['noTransfersMessage']);
     }
 
-    Iterable transfers = this.props['transfers'].map((FileTransfer transfer) {
+    Iterable transfers = props['transfers'].map((FileTransfer transfer) {
       return fileTransferListItemComponent({
         'key': transfer.id,
         'transfer': transfer,
-        'onTransferDone': this.props['onTransferDone'],
+        'onTransferDone': props['onTransferDone'],
       });
     });
     String fileListClass = 'transfers';
-    if (this.props['hideChildrenFromPointerEvents']) {
+    if (props['hideChildrenFromPointerEvents']) {
       fileListClass += ' no-pointer-events';
     }
     return react.ul({'className': fileListClass}, transfers);

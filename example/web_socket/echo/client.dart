@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:html';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:react/react_client.dart' as react_client;
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
@@ -27,8 +27,8 @@ final _wsServer = Uri.parse('ws://localhost:8024/example/ws/echo');
 final _sockJSServer = Uri.parse('ws://localhost:8026/example/ws/echo');
 
 String _echo(String message) =>
-    JSON.encode({'action': 'echo', 'message': message});
-String _unecho(String response) => JSON.decode(response)['message'];
+    convert.json.encode({'action': 'echo', 'message': message});
+String _unecho(String response) => convert.json.decode(response)['message'];
 
 ButtonElement _connect = querySelector('#connect');
 FormElement _form = querySelector('#prompt-form');
@@ -45,7 +45,7 @@ Future<Null> main() async {
   react_client.setClientConfiguration();
   configureWTransportForBrowser();
 
-  renderGlobalExampleMenu(serverStatus: true);
+  renderGlobalExampleMenu(includeServerStatus: true);
 
   // ignore: close_sinks,deprecated_member_use
   WSocket webSocket;

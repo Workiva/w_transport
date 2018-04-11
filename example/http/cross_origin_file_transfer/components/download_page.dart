@@ -33,7 +33,7 @@ class DownloadPage extends react.Component {
   StreamSubscription fileStreamErrorSubscription;
 
   Iterable<Download> get currentDownloads =>
-      new List<Download>.from(this.state['downloads']);
+      new List<Download>.from(state['downloads']);
 
   @override
   Map getDefaultProps() {
@@ -59,13 +59,13 @@ class DownloadPage extends react.Component {
     remoteFiles = RemoteFiles.connect();
     fileStreamSubscription = remoteFiles.stream
         .listen((List<RemoteFileDescription> fileDescriptions) {
-      this.setState({
+      setState({
         'fileDescriptions': fileDescriptions,
         'error': null,
       });
     });
     fileStreamErrorSubscription = remoteFiles.errorStream.listen((error) {
-      this.setState({'error': error});
+      setState({'error': error});
     });
   }
 
@@ -89,9 +89,9 @@ class DownloadPage extends react.Component {
   }
 
   void _downloadFile(RemoteFileDescription rfd) {
-    final downloads = new List<Download>.from(this.state['downloads']);
+    final downloads = new List<Download>.from(state['downloads']);
     downloads.add(Download.start(rfd));
-    this.setState({'downloads': downloads});
+    setState({'downloads': downloads});
   }
 
   String _humanizeFileSize(int bytes) {
@@ -126,19 +126,19 @@ class DownloadPage extends react.Component {
     final downloads = <Download>[];
     downloads.addAll(currentDownloads);
     downloads.remove(download);
-    this.setState({'downloads': downloads});
+    setState({'downloads': downloads});
   }
 
   @override
   dynamic render() {
     dynamic error = '';
-    if (this.state['error'] != null) {
+    if (state['error'] != null) {
       error = react.p({'className': 'error'},
           'Could not retrieve the remote file list from the server.');
     }
 
     final fileDescriptions = <dynamic>[];
-    this.state['fileDescriptions'].forEach((RemoteFileDescription rfd) {
+    state['fileDescriptions'].forEach((RemoteFileDescription rfd) {
       fileDescriptions.add(react.a({
         'className': 'file',
         'href': '#',
@@ -153,16 +153,14 @@ class DownloadPage extends react.Component {
     });
 
     return react.div({
-      'className': this.props['active'] ? '' : 'hidden'
+      'className': props['active'] ? '' : 'hidden'
     }, [
       react.h2({}, 'File Downloads'),
       react.p({
         'className': 'note'
       }, 'Note: Loading large files into memory will crash the browser tab. For this reason, downloads will be canceled automatically if a concurrent file transfer size of 75 MB is exceeded.'),
-      fileTransferListComponent({
-        'transfers': this.state['downloads'],
-        'onTransferDone': _removeDownload
-      }),
+      fileTransferListComponent(
+          {'transfers': state['downloads'], 'onTransferDone': _removeDownload}),
       react.h2({}, 'Remote Files'),
       react.p({}, [
         react.div({'className': 'muted'}, 'Click a file to download it. '),

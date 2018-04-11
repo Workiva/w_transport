@@ -40,7 +40,7 @@ class CloseHandler extends WebSocketHandler {
         webSocket.close(closeCode, closeReason);
         _logger.withTime(' \t WS \tConnection closed by request.');
       } else {
-        _logger.withTime(' \t WS \tInvalid close request.', true);
+        _logger.withTime(' \t WS \tInvalid close request.', isError: true);
       }
     });
   }

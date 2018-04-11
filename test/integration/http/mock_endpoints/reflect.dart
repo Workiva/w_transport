@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:convert';
-
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:w_transport/mock.dart';
 
 void mockReflectEndpoint(Uri uri) {
@@ -23,6 +22,6 @@ void mockReflectEndpoint(Uri uri) {
       'path': request.uri.path,
       'headers': request.headers,
     };
-    return new MockResponse.ok(body: JSON.encode(reflection));
+    return new MockResponse.ok(body: convert.json.encode(reflection));
   });
 }

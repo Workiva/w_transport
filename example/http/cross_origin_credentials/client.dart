@@ -27,7 +27,7 @@ import './status.dart' as status;
 Future<Null> main() async {
   react_client.setClientConfiguration();
   configureWTransportForBrowser();
-  renderGlobalExampleMenu(serverStatus: true);
+  renderGlobalExampleMenu(includeServerStatus: true);
   await dom.setupControlBindings();
   removeLoadingOverlay();
 
@@ -36,6 +36,6 @@ Future<Null> main() async {
   if (status.authenticated) {
     dom.updateAuthenticationStatus();
     dom.updateToggleAuthButton();
-    dom.display('Logged in.', true);
+    dom.display('Logged in.', isSuccessful: true);
   }
 }

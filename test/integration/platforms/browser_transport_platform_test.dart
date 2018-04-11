@@ -23,7 +23,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 
 import 'package:w_transport/src/http/browser/http_client.dart';
 import 'package:w_transport/src/http/browser/requests.dart';
-import 'package:w_transport/src/web_socket/browser/sockjs_port.dart';
+import 'package:w_transport/src/web_socket/browser/sockjs_wrapper.dart';
 import 'package:w_transport/src/web_socket/browser/web_socket.dart';
 
 import '../../naming.dart';
@@ -86,11 +86,11 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, new isInstanceOf<SockJSPortWebSocket>());
+      expect(webSocket, new isInstanceOf<SockJSWrapperWebSocket>());
       await webSocket.close();
       // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, new isInstanceOf<SockJSPortWebSocket>());
+      expect(wSocket, new isInstanceOf<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
@@ -115,11 +115,11 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, new isInstanceOf<SockJSPortWebSocket>());
+      expect(webSocket, new isInstanceOf<SockJSWrapperWebSocket>());
       await webSocket.close();
       // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, new isInstanceOf<SockJSPortWebSocket>());
+      expect(wSocket, new isInstanceOf<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
@@ -186,11 +186,11 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, new isInstanceOf<SockJSPortWebSocket>());
+      expect(webSocket, new isInstanceOf<SockJSWrapperWebSocket>());
       await webSocket.close();
       // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, new isInstanceOf<SockJSPortWebSocket>());
+      expect(wSocket, new isInstanceOf<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
@@ -217,11 +217,11 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, new isInstanceOf<SockJSPortWebSocket>());
+      expect(webSocket, new isInstanceOf<SockJSWrapperWebSocket>());
       await webSocket.close();
       // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, new isInstanceOf<SockJSPortWebSocket>());
+      expect(wSocket, new isInstanceOf<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
@@ -722,7 +722,7 @@ void main() {
           final pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
           final sockJS = await transport.WebSocket.connect(pingUri,
               transportPlatform: browserTransportPlatformWithSockJS);
-          expect(sockJS, new isInstanceOf<SockJSPortWebSocket>());
+          expect(sockJS, new isInstanceOf<SockJSWrapperWebSocket>());
           await sockJS.close();
 
           // This verifies the ability to override the transport platform's
@@ -731,7 +731,7 @@ void main() {
               transportPlatform: browserTransportPlatform,
               // ignore: deprecated_member_use
               useSockJS: true);
-          expect(singleSockJS, new isInstanceOf<SockJSPortWebSocket>());
+          expect(singleSockJS, new isInstanceOf<SockJSWrapperWebSocket>());
           await singleSockJS.close();
         });
       });

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_server/http_server.dart';
 import 'package:mime/mime.dart';
 
@@ -170,16 +170,16 @@ class FilesHandler extends Handler {
         .toList();
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
-    request.response.write(JSON.encode({'results': filesPayload}));
+    request.response.write(convert.json.encode({'results': filesPayload}));
   }
 
   @override
   Future<Null> delete(HttpRequest request) async {
     Iterable<File> files =
         fw.files.where((FileSystemEntity entity) => entity is File);
-    files.forEach((File entity) {
+    for (final entity in files) {
       entity.deleteSync();
-    });
+    }
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
   }

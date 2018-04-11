@@ -1,0 +1,54 @@
+# In order to ensure our code is compatible with the Dart Dev Compiler, all
+# tests expect to be run against a pub serve instance:
+#
+#     $ pub serve test --web-compiler=dartdevc --port=8081
+#
+# By default, all unit tests will be run in Chrome and the VM:
+#
+#     $ pub run test
+#
+# To run integration tests, start the Dart and SockJS servers in separate
+# terminals:
+#
+#     $ dart tool/server/server.dart
+#     $ node tool/server/sockjs.js
+#
+# Then, run tests with the `integration` preset:
+#
+#     $ pub run test -P integration
+#
+# If you have Dart 2.x installed, include the `dart2` preset to exclude tests
+# that do not work with Dart 2.x (the feature that is incompatible with Dart 2
+# will be removed soon):
+#
+#     $ pub run test -P dart2
+#
+# Once Dart 2 is officially released and we start requiring it, we will switch
+# to using `build_runner` to run tests (it is more performant and supports
+# running a test watcher).
+platforms:
+- chrome
+- vm
+
+paths:
+- test/unit/http
+- test/unit/mocks
+- test/unit/ws
+
+presets:
+  dart2:
+    exclude_tags: "no-dart2"
+  
+  integration:
+    concurrency: 1
+    paths:
+      - test/integration/global_web_socket_monitor
+      - test/integration/http
+      - test/integration/platforms
+      - test/integration/ws
+  
+  travis:
+    reporter: expanded
+    # The SockJS integration test server sometimes gets overloaded and rejects
+    # connections. Retries are enabled during CI to mitigate these failures.
+    retry: 3

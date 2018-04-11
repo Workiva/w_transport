@@ -28,15 +28,15 @@ dependencies:
   sockjs_client:
     git:
       url: git://github.com/Workiva/sockjs-dart-client.git
-      ref: 0.3.2
+      ref: 0.3.3
   sockjs_client_wrapper: ^1.0.3
 
 dev_dependencies:
   browser: ^0.10.0+2
   # TODO: use these once we move to Dart 2
-  # build_runner: ^0.8.2
-  # build_test: ^0.10.1
-  # build_web_compilers: ^0.3.6
+#  build_runner: ^0.8.2
+#  build_test: ^0.10.1
+#  build_web_compilers: ^0.3.6
   coverage: ^0.10.0
   dart_dev: ^1.7.7
   dart_style: ^1.0.6

@@ -1,42 +1,49 @@
 language: dart
-dist: precise
-dart:
-  - 1.24.2
+
+# Workaround for issue with sandboxed Chrome in containerized Travis builds.
+sudo: required
 addons:
-  apt:
-    packages:
-    - ttf-kochi-mincho
-    - ttf-kochi-gothic
-    - ttf-dejavu
-    - ttf-indic-fonts
-    - fonts-tlwg-garuda
-before_install:
-  # Content shell needs this font. Since it has a EULA, we need to manually
-  # install it.
-  #
-  # TODO: remove this and use "sudo: false" when travis-ci/travis-ci#4714 is
-  # fixed.
-  - sudo apt-get update -yq
-  - sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
-  - sudo apt-get install msttcorefonts -qq
+  chrome: stable
 
-  - mkdir -p bin
-  - export PATH="$PATH:`pwd`/bin/"
-  - ln -s `which chromium-browser` bin/google-chrome
+# Re-use downloaded pub packages everywhere.
+cache:
+  directories:
+    - $HOME/.pub-cache
 
-  - wget "http://gsdview.appspot.com/dart-archive/channels/stable/release/latest/dartium/content_shell-linux-x64-release.zip"
-  - unzip content_shell-linux-x64-release.zip
-  - ln -s `pwd`/`echo drt-linux-*`/content_shell bin/content_shell
+stages:
+  - quality
+  - test
 
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  - sleep 3 # give xvfb some time to start
-script:
-  - npm install
-  - pub get --packages-dir
-  - pub run dart_dev format --check
-  - pub run dart_dev analyze
-  - pub run dependency_validator -i browser,coverage,dart_style
-  - pub run dart_dev test --integration
-  - pub run dart_dev coverage --integration --no-html
-  - bash <(curl -s https://codecov.io/bash) -f coverage/coverage.lcov
+jobs:
+  include:
+    - stage: quality
+      dart: stable
+      script:
+        - pub run dart_dev format --check
+        - pub run dart_dev analyze
+        - pub run dependency_validator -i browser,coverage,dart_style
+
+    - stage: quality
+      dart: dev
+      script:
+        - pub run dart_dev format --check
+        - pub run dart_dev analyze
+        - pub run dependency_validator -i browser,coverage,dart_style
+
+    - stage: test
+      dart: stable
+      script: ./tool/travis.sh test:unit
+
+    - stage: test
+      dart: dev
+      script: ./tool/travis.sh test:unit
+
+    - stage: test
+      dart: stable
+      before_script: npm install
+      script: ./tool/travis.sh test:integration
+
+    - stage: test
+      dart: dev
+      before_script: npm install
+      script: ./tool/travis.sh test:integration

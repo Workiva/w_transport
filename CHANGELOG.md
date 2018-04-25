@@ -1,3 +1,13 @@
+## [3.2.3](https://github.com/Workiva/w_transport/compare/3.2.2...3.2.3)
+_April 25th, 2018_
+
+- **Improvement:** Now compatible with Dart 2 and the Dart Dev Compiler.
+
+## [3.2.2](https://github.com/Workiva/w_transport/compare/3.2.1...3.2.2)
+_April 20th, 2018_
+
+- **Documentation:** Fixed some broken links.
+
 ## [3.2.1](https://github.com/Workiva/w_transport/compare/3.2.0...3.2.1)
 _January 29th, 2018_
 

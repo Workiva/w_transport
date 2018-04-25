@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@TestOn('browser')
 import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
@@ -86,7 +85,7 @@ void _sockJSSuite(List<String> protocolsToTest,
       });
 
       test('should support String', () async {
-        final data = 'data';
+        const data = 'data';
         final socket = await connect(echoUri, protocol);
         socket.add(data);
         await socket.close();

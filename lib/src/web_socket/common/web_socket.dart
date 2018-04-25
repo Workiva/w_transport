@@ -50,6 +50,8 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// Any error that may be caught during the life of the underlying WebSocket.
   Object _error;
 
+  Future _inProgressAddStream;
+
   /// A `StreamController` used to expose the incoming stream of events from the
   /// underlying WebSocket.
   StreamController<dynamic> _incoming;
@@ -138,7 +140,9 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// result in a [StateError].
   @override
   Future<Null> addStream(Stream stream) async {
-    return _outgoing.addStream(stream);
+    _inProgressAddStream = _outgoing.addStream(stream);
+    await _inProgressAddStream;
+    _inProgressAddStream = null;
   }
 
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
@@ -229,9 +233,14 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
     _error = error;
     _stackTrace = stackTrace;
 
-    // Close both incoming and outgoing communication.
-    _outgoing.close();
-    closeWebSocket(code, reason);
+    // Calling close() during a in-progress call to addStream() will result in a
+    // StateError being thrown. Avoid this by waiting for the in-progress
+    // addStream() call to complete first, if applicable.
+    (_inProgressAddStream ?? new Future(() {})).catchError((_) {}).then((_) {
+      // Close both incoming and outgoing communication.
+      _outgoing.close();
+      closeWebSocket(code ?? 1000, reason);
+    });
   }
 
   /// Closes the underlying WebSocket connection with the given [code] and

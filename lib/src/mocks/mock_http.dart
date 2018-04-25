@@ -135,6 +135,7 @@ class MockHttpHandler {
   }
 }
 
+// ignore: avoid_classes_with_only_static_members
 class MockHttpInternal {
   static List<_RequestExpectation> _expectations = [];
   static Map<Uri, Map<String /* method */, RequestHandler>> _requestHandlers =

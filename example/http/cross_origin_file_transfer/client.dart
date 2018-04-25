@@ -26,7 +26,7 @@ void main() {
   // Setup and bootstrap the react app
   react_client.setClientConfiguration();
   configureWTransportForBrowser();
-  renderGlobalExampleMenu(serverStatus: true);
+  renderGlobalExampleMenu(includeServerStatus: true);
   Element container = querySelector('#app');
   react.render(appComponent({}), container);
   removeLoadingOverlay();

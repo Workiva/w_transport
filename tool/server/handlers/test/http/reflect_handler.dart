@@ -16,6 +16,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart' show MediaType;
 
 import 'package:w_transport/src/http/utils.dart' as http_utils;
@@ -39,14 +40,14 @@ class ReflectHandler extends Handler {
 
     Encoding encoding;
     if (request.headers.contentType == null) {
-      encoding = LATIN1;
+      encoding = convert.latin1;
     } else {
       final contentType = new MediaType(
           request.headers.contentType.primaryType,
           request.headers.contentType.subType,
           request.headers.contentType.parameters);
       encoding = http_utils.parseEncodingFromContentType(contentType,
-          fallback: LATIN1);
+          fallback: convert.latin1);
     }
 
     final reflection = <String, Object>{
@@ -60,7 +61,7 @@ class ReflectHandler extends Handler {
     request.response.headers
         .set('content-type', 'application/json; charset=utf-8');
     setCorsHeaders(request);
-    request.response.write(JSON.encode(reflection));
+    request.response.write(convert.json.encode(reflection));
   }
 
   @override

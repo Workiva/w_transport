@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:convert';
-
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -77,11 +76,11 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
       final request =
           new transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = UTF8
+            ..encoding = convert.utf8
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'ç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(UTF8.name));
+      expect(response.encoding.name, equals(convert.utf8.name));
       final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
@@ -92,11 +91,11 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
       final request =
           new transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = LATIN1
+            ..encoding = convert.latin1
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'ç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(LATIN1.name));
+      expect(response.encoding.name, equals(convert.latin1.name));
       final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
@@ -107,11 +106,11 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
       final request =
           new transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = ASCII
+            ..encoding = convert.ascii
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'value2';
       final response = await request.post();
-      expect(response.encoding.name, equals(ASCII.name));
+      expect(response.encoding.name, equals(convert.ascii.name));
       final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));

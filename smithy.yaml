@@ -10,3 +10,4 @@ script:
 artifacts:
   build:
     - ./pubspec.lock
+

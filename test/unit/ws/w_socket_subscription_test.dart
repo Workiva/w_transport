@@ -85,7 +85,7 @@ void main() {
         final errorHandler = (_) {};
 
         wsub.onError(errorHandler);
-        verify(sub.onError(errorHandler));
+        expect(identical(sub.onErrorHandler, errorHandler), isTrue);
 
         await wsub.cancel();
         await sub.cancel();
@@ -98,7 +98,7 @@ void main() {
         final dataHandler = (_) {};
 
         wsub.onData(dataHandler);
-        verify(sub.onData(dataHandler));
+        expect(identical(sub.onDataHandler, dataHandler), isTrue);
 
         await wsub.cancel();
         await sub.cancel();
@@ -107,4 +107,23 @@ void main() {
   });
 }
 
-class MockStreamSubscription<T> extends Mock implements StreamSubscription<T> {}
+class MockStreamSubscription<T> extends Mock implements StreamSubscription<T> {
+  Function onDataHandler;
+  Function onDoneHandler;
+  Function onErrorHandler;
+
+  @override
+  void onData(void handleData(T data)) {
+    onDataHandler = handleData;
+  }
+
+  @override
+  void onDone(void handleDone()) {
+    onDoneHandler = handleDone;
+  }
+
+  @override
+  void onError(Function handleError) {
+    onErrorHandler = handleError;
+  }
+}

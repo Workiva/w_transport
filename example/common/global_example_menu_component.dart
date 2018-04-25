@@ -18,15 +18,16 @@ import 'dart:html';
 import 'package:react/react.dart' as react;
 import 'package:w_transport/w_transport.dart';
 
-void renderGlobalExampleMenu({bool nav: true, bool serverStatus: false}) {
+void renderGlobalExampleMenu(
+    {bool nav: true, bool includeServerStatus: false}) {
   // Insert a container div within which we will mount the global example menu.
   final container = document.createElement('div');
   container.id = 'global-example-menu';
   document.body.insertBefore(container, document.body.firstChild);
 
   // Use react to render the menu.
-  final menu =
-      globalExampleMenuComponent({'nav': nav, 'serverStatus': serverStatus});
+  final menu = globalExampleMenuComponent(
+      {'nav': nav, 'includeServerStatus': includeServerStatus});
   react.render(menu, container);
 }
 
@@ -48,9 +49,12 @@ dynamic globalExampleMenuComponent =
 class GlobalExampleMenuComponent extends react.Component {
   Timer serverPolling;
 
+  bool get includeServerStatus => props['includeServerStatus'];
+  bool get serverOnline => state['serverOnline'];
+
   @override
   Map getDefaultProps() {
-    return {'nav': true, 'serverStatus': false};
+    return {'nav': true, 'includeServerStatus': false};
   }
 
   @override
@@ -60,14 +64,14 @@ class GlobalExampleMenuComponent extends react.Component {
 
   @override
   void componentWillMount() {
-    if (this.props['serverStatus']) {
+    if (includeServerStatus) {
       _pingServer().then((status) {
-        this.setState({'serverOnline': status});
+        setState({'serverOnline': status});
       });
       serverPolling =
           new Timer.periodic(new Duration(seconds: 4), (Timer timer) async {
         final status = await _pingServer();
-        this.setState({'serverOnline': status});
+        setState({'serverOnline': status});
       });
     }
   }
@@ -96,19 +100,17 @@ class GlobalExampleMenuComponent extends react.Component {
   @override
   dynamic render() {
     dynamic nav;
-    if (this.props['nav']) {
+    if (props['nav']) {
       nav = react.a({'href': '/'}, '\u2190 All Examples');
     }
 
     dynamic serverStatus;
-    if (this.props['serverStatus']) {
-      serverStatus =
-          _buildServerStatusComponent('Server', this.state['serverOnline']);
+    if (includeServerStatus) {
+      serverStatus = _buildServerStatusComponent('Server', serverOnline);
     }
 
     dynamic serverTip;
-    final serverTipNeeded =
-        this.props['serverStatus'] && !this.state['serverOnline'];
+    final serverTipNeeded = includeServerStatus && !state['serverOnline'];
     if (serverTipNeeded) {
       serverTip = react.div({
         'className': 'server-status-tip muted'

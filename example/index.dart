@@ -21,6 +21,6 @@ import './common/loading_component.dart';
 void main() {
   react_client.setClientConfiguration();
   configureWTransportForBrowser();
-  renderGlobalExampleMenu(nav: false, serverStatus: true);
+  renderGlobalExampleMenu(nav: false, includeServerStatus: true);
   removeLoadingOverlay();
 }

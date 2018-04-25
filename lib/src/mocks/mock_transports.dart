@@ -73,6 +73,7 @@ class MockTransports {
   }
 }
 
+// ignore: avoid_classes_with_only_static_members
 class MockTransportsInternal {
   static bool fallThrough = true;
   static bool isInstalled = false;

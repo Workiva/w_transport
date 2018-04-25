@@ -70,7 +70,7 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
   Future<HttpBody> finalizeBody([dynamic body]) async {
     if (body != null) {
       if (body is Map<String, dynamic>) {
-        this.fields = body;
+        fields = body;
       } else {
         throw new ArgumentError.value(
             body, 'body', 'Body must be of type Map<String, dynamic>');

@@ -14,8 +14,8 @@
 
 @TestOn('vm || browser')
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -63,8 +63,8 @@ void main() {
     transport.StreamedRequest streamedReqFactory({bool withBody: false}) {
       if (!withBody) return new transport.StreamedRequest();
       return new transport.StreamedRequest()
-        ..body = new Stream.fromIterable([UTF8.encode('bytes')])
-        ..contentLength = UTF8.encode('bytes').length;
+        ..body = new Stream.fromIterable([convert.utf8.encode('bytes')])
+        ..contentLength = convert.utf8.encode('bytes').length;
     }
 
     _runCommonRequestSuiteFor('FormRequest', formReqFactory);
@@ -271,7 +271,7 @@ void _runCommonRequestSuiteFor(
           dataCompleter.complete(body.asString());
         } else {
           transport.StreamedHttpBody body = request.body;
-          dataCompleter.complete(UTF8.decode(await body.toBytes()));
+          dataCompleter.complete(convert.utf8.decode(await body.toBytes()));
         }
 
         return new MockResponse.ok();
@@ -673,7 +673,7 @@ void _runAutoRetryTestSuiteFor(
 
       final headers = <String, String>{'x-custom': 'header'};
       const tt = const Duration(seconds: 10);
-      final encoding = LATIN1;
+      final encoding = convert.latin1;
 
       final orig = requestFactory()
         ..autoRetry.enabled = true

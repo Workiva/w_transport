@@ -13,8 +13,7 @@
 // limitations under the License.
 
 @TestOn('browser || vm')
-import 'dart:convert';
-
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -95,7 +94,7 @@ void main() {
       test('setting encoding should be unsupported', () {
         final request = new transport.MultipartRequest();
         expect(() {
-          request.encoding = UTF8;
+          request.encoding = convert.utf8;
         }, throwsUnsupportedError);
       });
 

@@ -15,6 +15,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:fluri/fluri.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -52,7 +53,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
 
   /// Content-type of this request.
   ///
-  /// By default, the mime-type is "text/plain" and the charset is "UTF8".
+  /// By default, the mime-type is "text/plain" and the charset is "utf-8".
   /// When the request body or the encoding is set or updated, the content-type
   /// will be updated accordingly.
   MediaType contentType;
@@ -67,8 +68,8 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// Encoding to use when encoding or decoding the request body. Setting this
   /// will also update the [contentType]'s charset.
   ///
-  /// Defaults to UTF8.
-  Encoding encoding = UTF8;
+  /// Defaults to utf-8.
+  Encoding encoding = convert.utf8;
 
   /// Headers to send with the HTTP request. Headers are case-insensitive.
   ///

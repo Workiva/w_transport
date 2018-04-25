@@ -58,8 +58,8 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   }
 
   @override
-  Future/*<E>*/ asFuture/*<E>*/([var/*=E*/ futureValue]) {
-    final c = new Completer/*<E>*/();
+  Future<E> asFuture<E>([E futureValue]) {
+    final c = new Completer<E>();
     _doneHandler = () {
       c.complete(futureValue);
     };

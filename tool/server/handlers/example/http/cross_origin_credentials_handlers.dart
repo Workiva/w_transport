@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:uuid/uuid.dart';
 
 import '../../../handler.dart';
@@ -38,13 +38,13 @@ bool isValidSession(HttpRequest request) {
     return false;
   }
   bool validSession = false;
-  request.cookies.forEach((Cookie cookie) {
+  for (final cookie in request.cookies) {
     if (cookie.name == 'session') {
       if (cookie.value == session) {
         validSession = true;
       }
     }
-  });
+  }
   return validSession;
 }
 
@@ -65,7 +65,7 @@ class SessionHandler extends Handler {
     request.response.statusCode = HttpStatus.OK;
     setCorsHeaders(request);
     request.response
-        .write(JSON.encode({'authenticated': isValidSession(request)}));
+        .write(convert.json.encode({'authenticated': isValidSession(request)}));
   }
 
   @override
@@ -76,7 +76,7 @@ class SessionHandler extends Handler {
     headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
-    request.response.write(JSON.encode({'authenticated': true}));
+    request.response.write(convert.json.encode({'authenticated': true}));
   }
 
   @override
@@ -88,7 +88,7 @@ class SessionHandler extends Handler {
     headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
-    request.response.write(JSON.encode({'authenticated': false}));
+    request.response.write(convert.json.encode({'authenticated': false}));
   }
 }
 

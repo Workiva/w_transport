@@ -30,7 +30,8 @@ export 'package:w_transport/src/http/finalized_request.dart'
     show FinalizedRequest;
 export 'package:w_transport/src/http/mock/base_request.dart'
     show MockBaseRequest; // ignore: deprecated_member_use
-export 'package:w_transport/src/http/mock/client.dart' show MockClient;
+export 'package:w_transport/src/http/mock/client.dart'
+    show MockClient; // ignore: deprecated_member_use
 export 'package:w_transport/src/http/mock/requests.dart'
     show
         MockFormRequest, // ignore: deprecated_member_use

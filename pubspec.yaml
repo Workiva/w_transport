@@ -20,19 +20,24 @@ environment:
   sdk: ">=1.14.0 <2.0.0"
 
 dependencies:
+  dart2_constant: ^1.0.1
   fluri: ^1.2.2
   http_parser: '>=2.2.0 <4.0.0'
   meta: ^1.1.0
   mime: ^0.9.3
   sockjs_client:
     git:
-      url: https://github.com/Workiva/sockjs-dart-client.git
-      ref: 0.3.2
+      url: git://github.com/Workiva/sockjs-dart-client.git
+      ref: 0.3.3
   sockjs_client_wrapper: ^1.0.3
 
 dev_dependencies:
   browser: ^0.10.0+2
-  coverage: ^0.7.9
+  # TODO: use these once we move to Dart 2
+#  build_runner: ^0.8.2
+#  build_test: ^0.10.1
+#  build_web_compilers: ^0.3.6
+  coverage: ^0.10.0
   dart_dev: ^1.7.7
   dart_style: ^1.0.6
   dependency_validator: ^1.0.0

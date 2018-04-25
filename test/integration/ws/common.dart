@@ -142,10 +142,11 @@ void runCommonWebSocketIntegrationTests(
     final controller = new StreamController<dynamic>();
     controller.add('message1');
     controller.addError(new Exception('addStream error, should close socket'));
+    // ignore: unawaited_futures
+    controller.close();
     await webSocket.addStream(controller.stream);
     expect(webSocket.done, throwsException);
     await webSocket.close().catchError((_) {});
-    await controller.close().catchError((_) {});
   });
 
   test('should support listening to incoming messages', () async {

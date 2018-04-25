@@ -16,6 +16,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart' show MediaType;
 
 import 'package:w_transport/src/http/response_format_exception.dart';
@@ -61,15 +62,15 @@ class HttpBody extends BaseHttpBody {
   /// If a `charset` parameter is not available or the value is unrecognized,
   /// [fallbackEncoding] will be used.
   ///
-  /// If [fallbackEncoding] is `null`, UTF8 will be the default encoding.
+  /// If [fallbackEncoding] is `null`, utf-8 will be the default encoding.
   ///
   /// If an encoding cannot be parsed from the content-type header (via the
-  /// `charset` param), then [fallbackEncoding] will be used (UTF8 by default).
+  /// `charset` param), then [fallbackEncoding] will be used (utf-8 by default).
   HttpBody.fromBytes(this.contentType, List<int> bytes,
       {Encoding encoding, Encoding fallbackEncoding}) {
     _encoding = encoding ??
         http_utils.parseEncodingFromContentType(contentType,
-            fallback: fallbackEncoding ?? UTF8);
+            fallback: fallbackEncoding ?? convert.utf8);
     _bytes = new Uint8List.fromList(bytes ?? []);
   }
 
@@ -83,15 +84,15 @@ class HttpBody extends BaseHttpBody {
   /// If a `charset` parameter is not available or the value is unrecognized,
   /// [fallbackEncoding] will be used.
   ///
-  /// If [fallbackEncoding] is `null`, UTF8 will be the default encoding.
+  /// If [fallbackEncoding] is `null`, utf-8 will be the default encoding.
   ///
   /// If an encoding cannot be parsed from the content-type header (via the
-  /// `charset` param), then [fallbackEncoding] will be used (UTF8 by default).
+  /// `charset` param), then [fallbackEncoding] will be used (utf-8 by default).
   HttpBody.fromString(this.contentType, String body,
       {Encoding encoding, Encoding fallbackEncoding}) {
     _encoding = encoding ??
         http_utils.parseEncodingFromContentType(contentType,
-            fallback: fallbackEncoding ?? UTF8);
+            fallback: fallbackEncoding ?? convert.utf8);
     _body = body ?? '';
   }
 
@@ -135,7 +136,7 @@ class HttpBody extends BaseHttpBody {
   /// This attempts to read this request/response body as a `String` and decode
   /// it to a JSON object. Throws a [FormatException] if this request/response
   /// body cannot be decoded to text or if the text is not valid JSON.
-  dynamic asJson() => JSON.decode(asString());
+  dynamic asJson() => convert.json.decode(asString());
 }
 
 /// Representation of an HTTP request body or an HTTP response body where the
@@ -160,8 +161,7 @@ class StreamedHttpBody extends BaseHttpBody {
   /// of chunks of bytes. The given [byteStream] should be a single-
   /// subscription stream.
   StreamedHttpBody.fromByteStream(this.contentType, this.byteStream,
-      {int contentLength, Encoding fallbackEncoding})
-      : this.contentLength = contentLength {
+      {this.contentLength, Encoding fallbackEncoding}) {
     if (byteStream == null) throw new ArgumentError.notNull('byteStream');
     _encoding = http_utils.parseEncodingFromContentType(contentType,
         fallback: fallbackEncoding);

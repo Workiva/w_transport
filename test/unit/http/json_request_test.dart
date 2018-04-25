@@ -16,6 +16,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
@@ -81,7 +82,7 @@ void main() {
         final request = new transport.JsonRequest();
         final json = <String, String>{'field': 'value'};
         await request.post(uri: uri, body: json);
-        expect(await c.future, equals(JSON.encode(json)));
+        expect(await c.future, equals(convert.json.encode(json)));
       });
 
       test('setting body in request dispatcher is supported (List)', () async {
@@ -99,7 +100,7 @@ void main() {
           {'field': 'value'}
         ];
         await request.post(uri: uri, body: json);
-        expect(await c.future, equals(JSON.encode(json)));
+        expect(await c.future, equals(convert.json.encode(json)));
       });
 
       test('setting body in request dispatcher should throw if invalid',
@@ -107,7 +108,7 @@ void main() {
         final uri = Uri.parse('/test');
 
         final request = new transport.JsonRequest();
-        expect(request.post(uri: uri, body: UTF8),
+        expect(request.post(uri: uri, body: convert.utf8),
             throwsA(new isInstanceOf<JsonUnsupportedObjectError>()));
       });
 
@@ -137,30 +138,36 @@ void main() {
 
       test('setting encoding should update content-type', () {
         final request = new transport.JsonRequest();
-        expect(request.contentType.parameters['charset'], equals(UTF8.name));
+        expect(request.contentType.parameters['charset'],
+            equals(convert.utf8.name));
 
-        request.encoding = LATIN1;
-        expect(request.contentType.parameters['charset'], equals(LATIN1.name));
+        request.encoding = convert.latin1;
+        expect(request.contentType.parameters['charset'],
+            equals(convert.latin1.name));
 
-        request.encoding = ASCII;
-        expect(request.contentType.parameters['charset'], equals(ASCII.name));
+        request.encoding = convert.ascii;
+        expect(request.contentType.parameters['charset'],
+            equals(convert.ascii.name));
       });
 
       test(
           'setting encoding should not update content-type if content-type has been set manually',
           () {
         final request = new transport.JsonRequest();
-        expect(request.contentType.parameters['charset'], equals(UTF8.name));
+        expect(request.contentType.parameters['charset'],
+            equals(convert.utf8.name));
 
         // Manually override content-type.
-        request.contentType =
-            new MediaType('application', 'x-custom', {'charset': LATIN1.name});
+        request.contentType = new MediaType(
+            'application', 'x-custom', {'charset': convert.latin1.name});
         expect(request.contentType.mimeType, equals('application/x-custom'));
-        expect(request.contentType.parameters['charset'], equals(LATIN1.name));
+        expect(request.contentType.parameters['charset'],
+            equals(convert.latin1.name));
 
         // Changes to encoding should no longer update the content-type.
-        request.encoding = ASCII;
-        expect(request.contentType.parameters['charset'], equals(LATIN1.name));
+        request.encoding = convert.ascii;
+        expect(request.contentType.parameters['charset'],
+            equals(convert.latin1.name));
       });
 
       test('setting content-type should not be allowed once sent', () async {
@@ -179,7 +186,7 @@ void main() {
         final request = new transport.JsonRequest();
         await request.get(uri: uri);
         expect(() {
-          request.encoding = LATIN1;
+          request.encoding = convert.latin1;
         }, throwsStateError);
       });
 

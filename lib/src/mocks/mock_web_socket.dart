@@ -90,6 +90,7 @@ class MockWebSocketHandler {
   }
 }
 
+// ignore: avoid_classes_with_only_static_members
 class MockWebSocketInternal {
   static List<_WebSocketConnectExpectation> _expectations = [];
   static Map<String, WebSocketConnectHandler> _handlers = {};
@@ -245,7 +246,7 @@ class _WebSocketConnectExpectation {
 }
 
 class _WebSocketHandlerMatch {
-  final Object handler;
+  final Function handler;
   final Match match;
 
   _WebSocketHandlerMatch(this.handler, {this.match});

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:html' hide Client;
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart'
     show CaseInsensitiveMap, MediaType;
 
@@ -39,7 +39,7 @@ class BrowserMultipartRequest extends CommonRequest
 
   Map<String, String> _fields = {};
 
-  Map<String, Blob> _files = {};
+  Map<String, dynamic> _files = {};
 
   @override
   int get contentLength {
@@ -71,7 +71,7 @@ class BrowserMultipartRequest extends CommonRequest
 
   @override
   Map<String, dynamic> get files {
-    if (isSent) return new Map<String, Blob>.unmodifiable(_files);
+    if (isSent) return new Map<String, dynamic>.unmodifiable(_files);
     return _files;
   }
 
@@ -115,8 +115,9 @@ class BrowserMultipartRequest extends CommonRequest
         formData.append(name, value);
       } else {
         final contentType =
-            new MediaType('text', 'plain', {'charset': UTF8.name});
-        final blob = new Blob([UTF8.encode(value)], contentType.toString());
+            new MediaType('text', 'plain', {'charset': convert.utf8.name});
+        final blob =
+            new Blob([convert.utf8.encode(value)], contentType.toString());
         formData.appendBlob(name, blob);
       }
     });

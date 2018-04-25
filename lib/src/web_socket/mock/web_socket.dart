@@ -129,7 +129,9 @@ class _MockWebSocket extends CommonWebSocket
 
   @override
   void onOutgoingData(dynamic data) {
-    _callbacks.forEach((f) => f(data));
+    for (final callback in _callbacks) {
+      callback(data);
+    }
   }
 
   @override

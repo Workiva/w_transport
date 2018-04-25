@@ -59,9 +59,9 @@ void main() {
   renderGlobalExampleMenu();
 
   // Wire all anchors up to the file click handler
-  querySelectorAll('a.file').forEach((Element elem) {
+  for (Element elem in querySelectorAll('a.file')) {
     elem.onClick.listen(handleFileClick);
-  });
+  }
 
   // Remove the loading overlay
   removeLoadingOverlay();

@@ -39,7 +39,7 @@ void main() {
     });
 
     test('should support String', () async {
-      final data = 'data';
+      const data = 'data';
       final socket = await transport.WebSocket.connect(IntegrationPaths.echoUri,
           transportPlatform: vmTransportPlatform);
       socket.add(data);

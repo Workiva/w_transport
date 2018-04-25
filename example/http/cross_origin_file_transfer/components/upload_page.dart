@@ -22,7 +22,7 @@ dynamic uploadPage = react.registerComponent(() => new UploadPage());
 
 class UploadPage extends react.Component {
   Iterable<Upload> get currentUploads =>
-      new List<Upload>.from(this.state['uploads']);
+      new List<Upload>.from(state['uploads']);
 
   @override
   Map getDefaultProps() {
@@ -47,7 +47,7 @@ class UploadPage extends react.Component {
     final uploads = <Upload>[];
     uploads.addAll(currentUploads);
     uploads.addAll(newUploads);
-    this.setState({'uploads': uploads});
+    setState({'uploads': uploads});
   }
 
   /// Called when the file transfer list component is done with the transfer
@@ -57,21 +57,21 @@ class UploadPage extends react.Component {
     final uploads = <Upload>[];
     uploads.addAll(currentUploads);
     uploads.remove(upload);
-    this.setState({'uploads': uploads});
+    setState({'uploads': uploads});
   }
 
   void _dragStart() {
-    this.setState({'dragging': true});
+    setState({'dragging': true});
   }
 
   void _dragEnd() {
-    this.setState({'dragging': false});
+    setState({'dragging': false});
   }
 
   @override
   dynamic render() {
     return react.div({
-      'className': this.props['active'] ? '' : 'hidden'
+      'className': props['active'] ? '' : 'hidden'
     }, [
       react.h2({}, 'Uploads'),
       dropZoneComponent({
@@ -80,11 +80,11 @@ class UploadPage extends react.Component {
         'onDragEnd': _dragEnd,
       }),
       fileTransferListComponent({
-        'hideChildrenFromPointerEvents': this.state['dragging'],
+        'hideChildrenFromPointerEvents': state['dragging'],
         'noTransfersMessage':
             'There are no pending uploads. Drag and drop some files to upload them.',
         'onTransferDone': _removeUpload,
-        'transfers': this.state['uploads'],
+        'transfers': state['uploads'],
       }),
     ]);
   }

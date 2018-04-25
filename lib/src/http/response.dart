@@ -15,6 +15,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart'
     show CaseInsensitiveMap, MediaType;
 
@@ -37,7 +38,8 @@ abstract class BaseResponse {
   BaseResponse(this.status, this.statusText, Map<String, String> headers) {
     _headers = new Map<String, String>.unmodifiable(
         new CaseInsensitiveMap<String>.from(headers));
-    _encoding = http_utils.parseEncodingFromHeaders(_headers, fallback: LATIN1);
+    _encoding =
+        http_utils.parseEncodingFromHeaders(_headers, fallback: convert.latin1);
     _contentType = http_utils.parseContentTypeFromHeaders(_headers);
   }
 
@@ -47,15 +49,15 @@ abstract class BaseResponse {
 
   /// Content-type of this request.
   ///
-  /// By default, the mime-type is "text/plain" and the charset is "UTF8".
+  /// By default, the mime-type is "text/plain" and the charset is "utf-8".
   /// When the request body or the encoding is set or updated, the
   /// content-type will be updated accordingly.
   MediaType get contentType => _contentType;
 
   /// Encoding that will be used to decode the response body. This encoding is
   /// selected based on [contentType]'s `charset` parameter. If `charset` is not
-  /// given or the encoding name is unrecognized, [LATIN1] is used by default
-  /// ([RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html)).
+  /// given or the encoding name is unrecognized, [convert.latin1] is used by
+  /// default ([RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html)).
   Encoding get encoding => _encoding;
 
   /// Headers sent with the response to the HTTP request.

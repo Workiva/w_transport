@@ -13,7 +13,10 @@
 // limitations under the License.
 
 @TestOn('browser')
+import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:html' hide Client;
 
 import 'package:test/test.dart';
 import 'package:w_transport/browser.dart' show browserTransportPlatform;
@@ -31,7 +34,7 @@ void main() {
   group(naming.toString(), () {
     group('BrowserMultipartRequest', () {
       group('finalizeBody', () {
-        test('does not include duplicate fields', () async {
+        test('does not include duplicate ascii fields', () async {
           final key = 'ascii';
           final value = ASCII.decode(ASCII.encode("This is ASCII!"));
 
@@ -39,11 +42,27 @@ void main() {
               new transport.MultipartRequest(
                   transportPlatform: browserTransportPlatform)
                 ..fields = {
-                  'ascii': ASCII.decode(ASCII.encode("This is ASCII!")),
+                  key: value,
                 };
 
           final FormDataBody body = await request.finalizeBody();
-          expect(body.formData.getAll('ascii'), equals([value]));
+          expect(body.formData.getAll(key), equals([value]));
+        });
+
+        test('does not include duplicate unicode fields', () async {
+          final key = 'unicode';
+          final value = '藤原とうふ店（自家用）';
+
+          final BrowserMultipartRequest request =
+              new transport.MultipartRequest(
+                  transportPlatform: browserTransportPlatform)
+                ..fields = {
+                  key: value,
+                };
+
+          final FormDataBody body = await request.finalizeBody();
+          final List<Blob> blobs = body.formData.getAll(key);
+          expect(blobs.length, equals(1));
         });
       });
     });

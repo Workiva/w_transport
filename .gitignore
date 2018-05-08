@@ -4,6 +4,10 @@
 packages
 pubspec.lock
 
+# javascript
+node_modules/
+package-lock.json
+
 # Coverage
 /coverage/
 

@@ -13,24 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:html';
 
-import 'package:react/react.dart' as react;
-import 'package:react/react_dom.dart' as react_dom;
+import 'package:over_react/over_react.dart';
 import 'package:w_transport/w_transport.dart';
-
-void renderGlobalExampleMenu(
-    {bool nav: true, bool includeServerStatus: false}) {
-  // Insert a container div within which we will mount the global example menu.
-  final container = document.createElement('div');
-  container.id = 'global-example-menu';
-  document.body.insertBefore(container, document.body.firstChild);
-
-  // Use react to render the menu.
-  final menu = globalExampleMenuComponent(
-      {'nav': nav, 'includeServerStatus': includeServerStatus});
-  react_dom.render(menu, container);
-}
 
 Future<bool> _ping(Uri uri) async {
   try {
@@ -44,85 +29,116 @@ Future<bool> _ping(Uri uri) async {
 Future<bool> _pingServer() async =>
     _ping(Uri.parse('http://localhost:8024/ping'));
 
-dynamic globalExampleMenuComponent =
-    react.registerComponent(() => new GlobalExampleMenuComponent());
 
-class GlobalExampleMenuComponent extends react.Component {
+@Factory()
+UiFactory<GlobalExampleMenuProps> GlobalExampleMenu;
+
+@Props()
+class GlobalExampleMenuProps extends UiProps {
+  bool nav;
+  bool includeServerStatus;
+}
+
+@State()
+class GlobalExampleMenuState extends UiState {
+  bool serverOnline;
+}
+
+@Component()
+class GlobalExampleMenuComponent extends UiStatefulComponent<GlobalExampleMenuProps, GlobalExampleMenuState> {
   Timer serverPolling;
 
-  bool get includeServerStatus => props['includeServerStatus'];
-  bool get serverOnline => state['serverOnline'];
+  @override
+  Map getDefaultProps() => newProps()
+    ..nav = true
+    ..includeServerStatus = false;
 
   @override
-  Map getDefaultProps() {
-    return {'nav': true, 'includeServerStatus': false};
-  }
-
-  @override
-  Map getInitialState() {
-    return {'serverOnline': false};
-  }
+  Map getInitialState() => newState()..serverOnline = false;
 
   @override
   void componentWillMount() {
-    if (includeServerStatus) {
-      _pingServer().then((status) {
-        setState({'serverOnline': status});
-      });
+    super.componentWillMount();
+
+    if (props.includeServerStatus) {
+      _pingServer().then(_updateOnlineStatus);
       serverPolling =
-          new Timer.periodic(new Duration(seconds: 4), (Timer timer) async {
-        final status = await _pingServer();
-        setState({'serverOnline': status});
+          new Timer.periodic(const Duration(seconds: 4), (Timer timer) async {
+        final isOnline = await _pingServer();
+
+        _updateOnlineStatus(isOnline);
       });
     }
   }
 
   @override
   void componentWillUnmount() {
+    super.componentWillUnmount();
+
     serverPolling?.cancel();
   }
 
-  Object _buildServerStatusComponent(String name, bool online) {
-    String statusClass = 'server-status';
-    String statusDesc = '$name offline';
-    if (online) {
-      statusClass += ' online';
-      statusDesc = '$name online';
+  void _updateOnlineStatus(bool isOnline) {
+    if (isOnline != state.serverOnline) {
+      setState(newState()..serverOnline = isOnline);
     }
+  }
 
-    return react.div({
-      'className': statusClass
-    }, [
-      react.div({'className': 'server-status-light'}, '\u2022'),
-      react.div({'className': 'server-status-desc'}, statusDesc),
-    ]);
+  ReactElement _renderServerStatusBanner() {
+    if (!props.includeServerStatus) return null;
+
+    var classes = new ClassNameBuilder()
+      ..add('server-status')
+      ..add('online', state.serverOnline);
+
+    var statusDesc = state.serverOnline ? 'online' : 'offline';
+
+    return (Dom.div()
+      ..className = classes.toClassName()
+    )(
+      (Dom.div()..className = 'server-status-light')(
+        '\u2022',
+      ),
+      (Dom.div()..className = 'server-status-desc')(
+        'Server $statusDesc',
+      ),
+    );
+  }
+
+  ReactElement _renderNav() {
+    if (!props.nav) return null;
+
+    return (Dom.a()..href = '/')(
+      '\u2190 All Examples',
+    );
+  }
+
+  ReactElement _renderServerTip() {
+    if (!props.includeServerStatus || state.serverOnline) return null;
+
+    return (Dom.div()
+      ..className = 'server-status-tip muted'
+    )(
+      Dom.span()('Run '),
+      Dom.code()('pub run dart_dev examples'),
+      Dom.span()(' to serve examples with the server.')
+    );
   }
 
   @override
   dynamic render() {
-    dynamic nav;
-    if (props['nav']) {
-      nav = react.a({'href': '/'}, '\u2190 All Examples');
-    }
+    var classes = forwardingClassNameBuilder()
+      ..add('global-example-menu');
 
-    dynamic serverStatus;
-    if (includeServerStatus) {
-      serverStatus = _buildServerStatusComponent('Server', serverOnline);
-    }
-
-    dynamic serverTip;
-    final serverTipNeeded = includeServerStatus && !state['serverOnline'];
-    if (serverTipNeeded) {
-      serverTip = react.div({
-        'className': 'server-status-tip muted'
-      }, [
-        react.span({}, 'Run `'),
-        react.code({}, 'pub run dart_dev examples'),
-        react.span({}, '` to serve examples with the server.'),
-      ]);
-    }
-
-    return react.div({'className': 'global-example-menu'},
-        react.div({'className': 'container'}, [nav, serverStatus, serverTip]));
+    return (Dom.div()
+      ..addProps(copyUnconsumedDomProps())
+      ..className = classes.toClassName()
+    )(
+      (Dom.div()..className = 'container')(
+        _renderNav(),
+        _renderServerStatusBanner(),
+        _renderServerTip(),
+      ),
+    );
   }
 }

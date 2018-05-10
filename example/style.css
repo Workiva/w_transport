@@ -29,6 +29,8 @@ body {
     padding: 40px 0 0;
 }
 
+.d-block { display: block; }
+
 p {
     font-size: 18px;
     font-weight: 300;

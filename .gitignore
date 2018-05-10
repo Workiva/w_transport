@@ -3,6 +3,8 @@
 .pub
 packages
 pubspec.lock
+.dart_tool
+node_modules
 
 # Coverage
 /coverage/

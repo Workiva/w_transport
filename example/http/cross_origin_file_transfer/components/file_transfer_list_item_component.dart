@@ -14,57 +14,69 @@
 
 import 'dart:async';
 
-import 'package:react/react.dart' as react;
+import 'package:over_react/over_react.dart';
 
+import '../../../common/typedefs.dart';
 import '../services/file_transfer.dart';
 
-const int _transferCompleteLingerDuration = 4; // 4 seconds
-const int _transferCompleteFadeoutDuration = 2; // 2 seconds
+const Duration _transferCompleteLingerDuration = const Duration(seconds: 4);
+const Duration _transferCompleteFadeoutDuration = const Duration(seconds: 2);
 
-/// A single file upload or download. Contains the file name, a progressbar,
-/// and a control that allows cancellation of the upload or download.
-dynamic fileTransferListItemComponent =
-    react.registerComponent(() => new FileTransferListItemComponent());
+/// A single file upload or download.
+///
+/// Contains the file name, a progressbar, and a control
+/// that allows cancellation of the upload or download.
+@Factory()
+UiFactory<FileTransferListItemProps> FileTransferListItem;
 
-class FileTransferListItemComponent extends react.Component {
+@Props()
+class FileTransferListItemProps extends UiProps {
+  FileTransfer transfer;
+  @requiredProp
+  TransferDoneCallback onTransferDone;
+}
+
+@State()
+class FileTransferListItemState extends UiState {
+  FileTransferItemStatus status;
+}
+
+@Component()
+class FileTransferListItemComponent extends UiStatefulComponent<FileTransferListItemProps, FileTransferListItemState> {
+  bool get fileTransferIsDone => state.status == FileTransferItemStatus.doneSuccess ||
+      state.status == FileTransferItemStatus.doneFailure;
+
   @override
-  Map getInitialState() {
-    return {
-      'done': false,
-      'success': false,
-      'will-remove': false,
-    };
-  }
-
-  @override
-  Map getDefaultProps() {
-    return {
-      'transfer': null,
-      'onTransferDone': (_) {},
-    };
-  }
+  Map getInitialState() => newState()..status = FileTransferItemStatus.idle;
 
   @override
   void componentWillMount() {
-    FileTransfer transfer = props['transfer'];
-    if (transfer != null) {
-      transfer.progressStream.listen((_) => redraw());
-      transfer.done
+    super.componentWillMount();
+
+    if (props.transfer != null) {
+      props.transfer.progressStream.listen((_) => redraw());
+      props.transfer.done
           .then((_) => _transferSucceeded())
           .catchError((error, sT) => _transferFailed(error, sT));
     }
   }
 
   /// Abort the file transfer (if it's still in progress)
-  void _cancelTransfer(e) {
-    e.preventDefault();
-    if (props['transfer'] == null || state['done']) return;
-    props['transfer'].cancel('User canceled the file transfer.');
-    setState({'done': true, 'success': false});
+  void _cancelTransfer(SyntheticMouseEvent event) {
+    event.preventDefault();
+
+    if (props.transfer == null || fileTransferIsDone) return;
+
+    props.transfer.cancel('User canceled the file transfer.');
+
+    setState(newState()..status = FileTransferItemStatus.doneFailure);
   }
 
   void _transferSucceeded() {
-    setState({'done': true, 'success': true});
+    if (state.status != FileTransferItemStatus.doneSuccess) {
+      setState(newState()..status = FileTransferItemStatus.doneSuccess);
+    }
+
     _fadeTransferOut().then((_) => _removeTransfer());
   }
 
@@ -73,56 +85,79 @@ class FileTransferListItemComponent extends react.Component {
     if (sT != null) {
       print('$sT');
     }
-    setState({'done': true, 'success': false});
+
+    if (state.status != FileTransferItemStatus.doneFailure) {
+      setState(newState()..status = FileTransferItemStatus.doneFailure);
+    }
+
     _fadeTransferOut().then((_) => _removeTransfer());
   }
 
   Future<Null> _fadeTransferOut() async {
     // wait a few seconds before beginning to fade the item out
-    await new Future.delayed(
-        new Duration(seconds: _transferCompleteLingerDuration));
-    setState({'will-remove': true});
+    await new Future.delayed(_transferCompleteLingerDuration);
+
+    setState(newState()..status = FileTransferItemStatus.willRemove);
+
     // wait for the css transition to complete
-    await new Future.delayed(
-        new Duration(seconds: _transferCompleteFadeoutDuration));
+    await new Future.delayed(_transferCompleteFadeoutDuration);
   }
 
   void _removeTransfer() {
-    props['onTransferDone'](props['transfer']);
+    props.onTransferDone(props.transfer);
   }
 
   @override
   dynamic render() {
-    FileTransfer transfer = props['transfer'];
-    if (transfer == null) return react.div({});
-    String transferClass = '';
-    if (state['done']) {
-      transferClass = state['success'] ? 'success' : 'error';
-      transferClass += ' done';
-    }
-    if (state['will-remove']) {
-      transferClass += ' hide';
-    }
+    if (props.transfer == null) return false;
 
-    final label = <dynamic>[transfer.name];
-    if (!state['done']) {
+    var classes = forwardingClassNameBuilder()
+      ..add('success done', state.status == FileTransferItemStatus.doneSuccess)
+      ..add('error done', state.status == FileTransferItemStatus.doneFailure)
+      ..add('hide', state.status == FileTransferItemStatus.willRemove);
+
+    return (Dom.li()
+      ..addProps(copyUnconsumedDomProps())
+      ..className = classes.toClassName()
+    )(
+      (Dom.div()..className = 'name')(
+        _renderTransferItemLabel(),
+      ),
+      (Dom.div()..className = 'progress')(
+        (Dom.div()
+          ..role = 'progress'
+          ..className = 'progress-bar'
+          ..style = {'width': '${props.transfer.percentComplete}%'}
+          ..aria.valuemin = 0
+          ..aria.valuemax = 100
+          ..aria.valuenow = props.transfer.percentComplete
+        )()
+      ),
+    );
+  }
+
+  List<ReactElement> _renderTransferItemLabel() {
+    final label = <dynamic>[props.transfer.name];
+    if (!fileTransferIsDone) {
       label.addAll([
         ' (',
-        react.a({'href': '#', 'onClick': _cancelTransfer}, 'cancel'),
+        (Dom.a()
+          ..key = 'cancel-transfer-link'
+          ..href = '#'
+          ..onClick = _cancelTransfer
+        )('cancel'),
         ')',
       ]);
     }
 
-    return react.li({
-      'className': transferClass
-    }, [
-      react.div({'className': 'name'}, label),
-      react.div(
-          {'className': 'progress'},
-          react.div({
-            'className': 'progress-bar',
-            'style': {'width': '${transfer.percentComplete}%'}
-          })),
-    ]);
+    return label;
   }
+}
+
+/// The possible values for [FileTransferListItemState.status].
+enum FileTransferItemStatus {
+  idle,
+  doneSuccess,
+  doneFailure,
+  willRemove,
 }

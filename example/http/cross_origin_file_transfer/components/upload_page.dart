@@ -12,42 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:react/react.dart' as react;
+import 'package:over_react/over_react.dart';
 
 import '../services/file_transfer.dart';
 import 'drop_zone_component.dart';
 import 'file_transfer_list_component.dart';
 
-dynamic uploadPage = react.registerComponent(() => new UploadPage());
+@Factory()
+UiFactory<UploadPageProps> UploadPage;
 
-class UploadPage extends react.Component {
-  Iterable<Upload> get currentUploads =>
-      new List<Upload>.from(state['uploads']);
+@Props()
+class UploadPageProps extends UiProps {
+  bool isActive;
+}
+
+@State()
+class UploadPageState extends UiState {
+  bool isDragging;
+  List<Upload> uploads;
+}
+
+@Component()
+class UploadPageComponent extends UiStatefulComponent<UploadPageProps, UploadPageState> {
+  @override
+  Map getDefaultProps() => newProps()..isActive = true;
 
   @override
-  Map getDefaultProps() {
-    return {
-      'active': true,
-    };
-  }
-
-  @override
-  Map getInitialState() {
-    return {
-      // Whether or not the user is currently dragging something.
-      // Used to fix a bug with dragover/dragleave events.
-      'dragging': false,
-      // List of in-progress or completed file transfers
-      'uploads': [],
-    };
-  }
+  Map getInitialState() => newState()
+    ..isDragging = false
+    ..uploads = const <Upload>[];
 
   /// Listen for new file uploads and forward them to the file transfer list component.
   void _newUploads(List<Upload> newUploads) {
     final uploads = <Upload>[];
-    uploads.addAll(currentUploads);
+    uploads.addAll(state.uploads);
     uploads.addAll(newUploads);
-    setState({'uploads': uploads});
+    setState(newState()..uploads = uploads);
   }
 
   /// Called when the file transfer list component is done with the transfer
@@ -55,37 +55,45 @@ class UploadPage extends react.Component {
   /// from memory.
   void _removeUpload(Upload upload) {
     final uploads = <Upload>[];
-    uploads.addAll(currentUploads);
+    uploads.addAll(state.uploads);
     uploads.remove(upload);
-    setState({'uploads': uploads});
+    setState(newState()..uploads = uploads);
   }
 
-  void _dragStart() {
-    setState({'dragging': true});
+  void _dragStart(_) {
+    if (state.isDragging) return;
+
+    setState(newState()..isDragging = true);
   }
 
-  void _dragEnd() {
-    setState({'dragging': false});
+  void _dragEnd(_) {
+    if (!state.isDragging) return;
+
+    setState(newState()..isDragging = false);
   }
 
   @override
   dynamic render() {
-    return react.div({
-      'className': props['active'] ? '' : 'hidden'
-    }, [
-      react.h2({}, 'Uploads'),
-      dropZoneComponent({
-        'onNewUploads': _newUploads,
-        'onDragStart': _dragStart,
-        'onDragEnd': _dragEnd,
-      }),
-      fileTransferListComponent({
-        'hideChildrenFromPointerEvents': state['dragging'],
-        'noTransfersMessage':
-            'There are no pending uploads. Drag and drop some files to upload them.',
-        'onTransferDone': _removeUpload,
-        'transfers': state['uploads'],
-      }),
-    ]);
+    var classes = forwardingClassNameBuilder()
+      ..add('hidden', !props.isActive);
+
+    return (Dom.div()
+      ..addProps(copyUnconsumedDomProps())
+      ..className = classes.toClassName()
+      ..aria.hidden = !props.isActive
+    )(
+      Dom.h2()('File Uploads'),
+      (DropZone()
+        ..onNewUploads = _newUploads
+        ..onNativeDragStart = _dragStart
+        ..onNativeDragEnd = _dragEnd
+      )(),
+      (FileTransferList()
+        ..transfers = state.uploads
+        ..onTransferDone = _removeUpload
+        ..hideChildrenFromPointerEvents = state.isDragging
+        ..noTransfersMessage = 'There are no pending uploads. Drag and drop some files to upload them.'
+      )(),
+    );
   }
 }

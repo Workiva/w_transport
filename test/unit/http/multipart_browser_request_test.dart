@@ -24,7 +24,7 @@ import 'package:w_transport/src/http/browser/form_data_body.dart';
 import 'package:w_transport/src/http/browser/multipart_request.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
-import '../../../naming.dart';
+import '../../naming.dart';
 
 void main() {
   final naming = new Naming()

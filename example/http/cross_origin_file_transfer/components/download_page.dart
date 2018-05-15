@@ -73,7 +73,8 @@ class DownloadPageState extends UiState {
 }
 
 @Component()
-class DownloadPageComponent extends UiStatefulComponent<DownloadPageProps, DownloadPageState> {
+class DownloadPageComponent
+    extends UiStatefulComponent<DownloadPageProps, DownloadPageState> {
   RemoteFiles remoteFiles;
   StreamSubscription fileStreamSubscription;
   StreamSubscription fileStreamErrorSubscription;
@@ -95,7 +96,8 @@ class DownloadPageComponent extends UiStatefulComponent<DownloadPageProps, Downl
         .listen((List<RemoteFileDescription> fileDescriptions) {
       var stateToSet = newState();
 
-      if (! const ListEquality().equals(fileDescriptions, state.fileDescriptions)) {
+      if (!const ListEquality()
+          .equals(fileDescriptions, state.fileDescriptions)) {
         stateToSet.fileDescriptions = fileDescriptions;
       }
 
@@ -153,26 +155,21 @@ class DownloadPageComponent extends UiStatefulComponent<DownloadPageProps, Downl
 
   @override
   dynamic render() {
-    var classes = forwardingClassNameBuilder()
-      ..add('hidden', !props.isActive);
+    var classes = forwardingClassNameBuilder()..add('hidden', !props.isActive);
 
     return (Dom.div()
       ..addProps(copyUnconsumedDomProps())
       ..className = classes.toClassName()
-      ..aria.hidden = !props.isActive
-    )(
+      ..aria.hidden = !props.isActive)(
       Dom.h2()('File Downloads'),
-      (Dom.p()..className = 'note')(
-        '''
+      (Dom.p()..className = 'note')('''
         Note: Loading large files into memory will crash the browser tab. 
         For this reason, downloads will be canceled automatically if a 
         concurrent file transfer size of 75 MB is exceeded.
-        '''
-      ),
+        '''),
       (FileTransferList()
         ..transfers = state.downloads
-        ..onTransferDone = _removeDownload
-      )(),
+        ..onTransferDone = _removeDownload)(),
       Dom.h3()('Remote Files'),
       Dom.p()(
         (Dom.span()..className = 'muted d-block')(
@@ -180,8 +177,7 @@ class DownloadPageComponent extends UiStatefulComponent<DownloadPageProps, Downl
         ),
         (Dom.a()
           ..href = '#'
-          ..onClick = _deleteAllRemoteFiles
-        )(
+          ..onClick = _deleteAllRemoteFiles)(
           'Click here to delete all remote files.',
         ),
       ),
@@ -205,21 +201,18 @@ class DownloadPageComponent extends UiStatefulComponent<DownloadPageProps, Downl
 
     final fileDescriptionLinks = <ReactElement>[];
     for (var fileDescription in state.fileDescriptions) {
-      fileDescriptionLinks.add(
-          (Dom.a()
-            ..key = fileDescription.name
-            ..className = 'file'
-            ..href = '#'
-            ..onClick = _createDownloadFileCallback(fileDescription)
-          )(
-            (Dom.div()..className = 'file-name')(
-              fileDescription.name,
-            ),
-            (Dom.div()..className = 'file-size')(
-              _humanizeFileSize(fileDescription.size),
-            ),
-          )
-      );
+      fileDescriptionLinks.add((Dom.a()
+        ..key = fileDescription.name
+        ..className = 'file'
+        ..href = '#'
+        ..onClick = _createDownloadFileCallback(fileDescription))(
+        (Dom.div()..className = 'file-name')(
+          fileDescription.name,
+        ),
+        (Dom.div()..className = 'file-size')(
+          _humanizeFileSize(fileDescription.size),
+        ),
+      ));
     }
 
     return fileDescriptionLinks;

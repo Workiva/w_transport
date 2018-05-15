@@ -29,7 +29,6 @@ Future<bool> _ping(Uri uri) async {
 Future<bool> _pingServer() async =>
     _ping(Uri.parse('http://localhost:8024/ping'));
 
-
 @Factory()
 UiFactory<GlobalExampleMenuProps> GlobalExampleMenu;
 
@@ -45,7 +44,8 @@ class GlobalExampleMenuState extends UiState {
 }
 
 @Component()
-class GlobalExampleMenuComponent extends UiStatefulComponent<GlobalExampleMenuProps, GlobalExampleMenuState> {
+class GlobalExampleMenuComponent extends UiStatefulComponent<
+    GlobalExampleMenuProps, GlobalExampleMenuState> {
   Timer serverPolling;
 
   @override
@@ -93,9 +93,7 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<GlobalExampleMenuPr
 
     var statusDesc = state.serverOnline ? 'online' : 'offline';
 
-    return (Dom.div()
-      ..className = classes.toClassName()
-    )(
+    return (Dom.div()..className = classes.toClassName())(
       (Dom.div()..className = 'server-status-light')(
         '\u2022',
       ),
@@ -116,24 +114,19 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<GlobalExampleMenuPr
   ReactElement _renderServerTip() {
     if (!props.includeServerStatus || state.serverOnline) return null;
 
-    return (Dom.div()
-      ..className = 'server-status-tip muted'
-    )(
-      Dom.span()('Run '),
-      Dom.code()('pub run dart_dev examples'),
-      Dom.span()(' to serve examples with the server.')
-    );
+    return (Dom.div()..className = 'server-status-tip muted')(
+        Dom.span()('Run '),
+        Dom.code()('pub run dart_dev examples'),
+        Dom.span()(' to serve examples with the server.'));
   }
 
   @override
   dynamic render() {
-    var classes = forwardingClassNameBuilder()
-      ..add('global-example-menu');
+    var classes = forwardingClassNameBuilder()..add('global-example-menu');
 
     return (Dom.div()
       ..addProps(copyUnconsumedDomProps())
-      ..className = classes.toClassName()
-    )(
+      ..className = classes.toClassName())(
       (Dom.div()..className = 'container')(
         _renderNav(),
         _renderServerStatusBanner(),

@@ -51,8 +51,7 @@ class FileTransferListComponent extends UiComponent<FileTransferListProps> {
 
     return (Dom.ul()
       ..addProps(copyUnconsumedDomProps())
-      ..className = classes.toClassName()
-    )(
+      ..className = classes.toClassName())(
       _renderFileTransferItems(),
     );
   }
@@ -62,8 +61,7 @@ class FileTransferListComponent extends UiComponent<FileTransferListProps> {
       return (FileTransferListItem()
         ..key = transfer.id
         ..transfer = transfer
-        ..onTransferDone = props.onTransferDone
-      )();
+        ..onTransferDone = props.onTransferDone)();
     }).toList();
   }
 }

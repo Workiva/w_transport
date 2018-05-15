@@ -43,12 +43,14 @@ class DropZoneProps extends UiProps {
 class DropZoneState extends UiState {
   /// True when user is dragging something over the drop zone
   bool overDropZone;
+
   /// True when user is dragging something onto the drop target
   bool overDropTarget;
 }
 
 @Component()
-class DropZoneComponent extends UiStatefulComponent<DropZoneProps, DropZoneState> {
+class DropZoneComponent
+    extends UiStatefulComponent<DropZoneProps, DropZoneState> {
   Timer _hideDropTargetTimer;
 
   @override
@@ -181,14 +183,10 @@ class DropZoneComponent extends UiStatefulComponent<DropZoneProps, DropZoneState
 
     return (Dom.div()
       ..addProps(copyUnconsumedDomProps())
-      ..className = dropZoneClasses.toClassName()
-    )(
-      (Dom.div()
-        ..className = dropTargetClasses.toClassName()
-        ..onDragOver = enlargeDropTarget
-        ..onDragLeave = shrinkDropTarget
-        ..onDrop = uploadFiles
-      )('Drop Here to Upload')
-    );
+      ..className = dropZoneClasses.toClassName())((Dom.div()
+      ..className = dropTargetClasses.toClassName()
+      ..onDragOver = enlargeDropTarget
+      ..onDragLeave = shrinkDropTarget
+      ..onDrop = uploadFiles)('Drop Here to Upload'));
   }
 }

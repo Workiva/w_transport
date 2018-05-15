@@ -33,7 +33,8 @@ class UploadPageState extends UiState {
 }
 
 @Component()
-class UploadPageComponent extends UiStatefulComponent<UploadPageProps, UploadPageState> {
+class UploadPageComponent
+    extends UiStatefulComponent<UploadPageProps, UploadPageState> {
   @override
   Map getDefaultProps() => newProps()..isActive = true;
 
@@ -74,26 +75,23 @@ class UploadPageComponent extends UiStatefulComponent<UploadPageProps, UploadPag
 
   @override
   dynamic render() {
-    var classes = forwardingClassNameBuilder()
-      ..add('hidden', !props.isActive);
+    var classes = forwardingClassNameBuilder()..add('hidden', !props.isActive);
 
     return (Dom.div()
       ..addProps(copyUnconsumedDomProps())
       ..className = classes.toClassName()
-      ..aria.hidden = !props.isActive
-    )(
+      ..aria.hidden = !props.isActive)(
       Dom.h2()('File Uploads'),
       (DropZone()
         ..onNewUploads = _newUploads
         ..onNativeDragStart = _dragStart
-        ..onNativeDragEnd = _dragEnd
-      )(),
+        ..onNativeDragEnd = _dragEnd)(),
       (FileTransferList()
         ..transfers = state.uploads
         ..onTransferDone = _removeUpload
         ..hideChildrenFromPointerEvents = state.isDragging
-        ..noTransfersMessage = 'There are no pending uploads. Drag and drop some files to upload them.'
-      )(),
+        ..noTransfersMessage =
+            'There are no pending uploads. Drag and drop some files to upload them.')(),
     );
   }
 }

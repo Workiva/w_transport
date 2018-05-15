@@ -68,35 +68,28 @@ class AppComponent extends UiStatefulComponent<AppProps, AppState> {
 
   @override
   dynamic render() {
-    return (Dom.div()
-      ..addProps(copyUnconsumedDomProps())
-    )(
+    return (Dom.div()..addProps(copyUnconsumedDomProps()))(
       Dom.p()(
         (Dom.label()..htmlFor = 'proxy')(
           (Dom.input()
             ..id = 'proxy'
             ..type = 'checkbox'
             ..checked = state.isProxyEnabled
-            ..onChange = _toggleProxy
-          )(),
+            ..onChange = _toggleProxy)(),
           ' Use Proxy Server',
         ),
       ),
-      (Dom.div()
-        ..className = 'app-nav'
-      )(
+      (Dom.div()..className = 'app-nav')(
         (Dom.a()
           ..href = '#'
           ..className = state.page == AppPage.upload ? 'active' : null
-          ..onClick = _goToUploadPage
-        )(
+          ..onClick = _goToUploadPage)(
           'Upload',
         ),
         (Dom.a()
           ..href = '#'
           ..className = state.page == AppPage.download ? 'active' : null
-          ..onClick = _goToDownloadPage
-        )(
+          ..onClick = _goToDownloadPage)(
           'Download',
         ),
       ),

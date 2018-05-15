@@ -14,7 +14,6 @@ void renderGlobalExampleMenu(
   // Use react to render the menu.
   final menu = (GlobalExampleMenu()
     ..nav = nav
-    ..includeServerStatus = includeServerStatus
-  )();
+    ..includeServerStatus = includeServerStatus)();
   react_dom.render(menu, container);
 }

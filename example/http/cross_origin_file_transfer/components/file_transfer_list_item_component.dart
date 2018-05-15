@@ -42,8 +42,10 @@ class FileTransferListItemState extends UiState {
 }
 
 @Component()
-class FileTransferListItemComponent extends UiStatefulComponent<FileTransferListItemProps, FileTransferListItemState> {
-  bool get fileTransferIsDone => state.status == FileTransferItemStatus.doneSuccess ||
+class FileTransferListItemComponent extends UiStatefulComponent<
+    FileTransferListItemProps, FileTransferListItemState> {
+  bool get fileTransferIsDone =>
+      state.status == FileTransferItemStatus.doneSuccess ||
       state.status == FileTransferItemStatus.doneFailure;
 
   @override
@@ -118,21 +120,17 @@ class FileTransferListItemComponent extends UiStatefulComponent<FileTransferList
 
     return (Dom.li()
       ..addProps(copyUnconsumedDomProps())
-      ..className = classes.toClassName()
-    )(
+      ..className = classes.toClassName())(
       (Dom.div()..className = 'name')(
         _renderTransferItemLabel(),
       ),
-      (Dom.div()..className = 'progress')(
-        (Dom.div()
-          ..role = 'progress'
-          ..className = 'progress-bar'
-          ..style = {'width': '${props.transfer.percentComplete}%'}
-          ..aria.valuemin = 0
-          ..aria.valuemax = 100
-          ..aria.valuenow = props.transfer.percentComplete
-        )()
-      ),
+      (Dom.div()..className = 'progress')((Dom.div()
+        ..role = 'progress'
+        ..className = 'progress-bar'
+        ..style = {'width': '${props.transfer.percentComplete}%'}
+        ..aria.valuemin = 0
+        ..aria.valuemax = 100
+        ..aria.valuenow = props.transfer.percentComplete)()),
     );
   }
 
@@ -144,8 +142,7 @@ class FileTransferListItemComponent extends UiStatefulComponent<FileTransferList
         (Dom.a()
           ..key = 'cancel-transfer-link'
           ..href = '#'
-          ..onClick = _cancelTransfer
-        )('cancel'),
+          ..onClick = _cancelTransfer)('cancel'),
         ')',
       ]);
     }

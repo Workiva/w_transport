@@ -12,43 +12,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:react/react.dart' as react;
+import 'package:over_react/over_react.dart';
 
+import '../../../common/typedefs.dart';
 import '../services/file_transfer.dart';
 import 'file_transfer_list_item_component.dart';
 
 /// List of all file uploads.
-dynamic fileTransferListComponent =
-    react.registerComponent(() => new FileUploadListComponent());
+@Factory()
+UiFactory<FileTransferListProps> FileTransferList;
 
-class FileUploadListComponent extends react.Component {
+@Props()
+class FileTransferListProps extends UiProps {
+  List<FileTransfer> transfers;
+  String noTransfersMessage;
+  bool hideChildrenFromPointerEvents;
+  @requiredProp
+  TransferDoneCallback onTransferDone;
+}
+
+@Component()
+class FileTransferListComponent extends UiComponent<FileTransferListProps> {
   @override
-  Map getDefaultProps() {
-    return {
-      'noTransfersMessage': 'There are no pending transfers.',
-      'transfers': [],
-      'onTransferDone': () {},
-      'hideChildrenFromPointerEvents': false,
-    };
-  }
+  Map getDefaultProps() => newProps()
+    ..transfers = const <FileTransfer>[]
+    ..noTransfersMessage = 'There are no pending transfers.'
+    ..hideChildrenFromPointerEvents = false;
 
   @override
   dynamic render() {
-    if (props['transfers'].length <= 0) {
-      return react.p({'className': 'muted'}, props['noTransfersMessage']);
+    if (props.transfers.isEmpty) {
+      return (Dom.p()..className = 'muted')(props.noTransfersMessage);
     }
 
-    Iterable transfers = props['transfers'].map((FileTransfer transfer) {
-      return fileTransferListItemComponent({
-        'key': transfer.id,
-        'transfer': transfer,
-        'onTransferDone': props['onTransferDone'],
-      });
-    });
-    String fileListClass = 'transfers';
-    if (props['hideChildrenFromPointerEvents']) {
-      fileListClass += ' no-pointer-events';
-    }
-    return react.ul({'className': fileListClass}, transfers);
+    var classes = forwardingClassNameBuilder()
+      ..add('transfers')
+      ..add('no-pointer-events', props.hideChildrenFromPointerEvents);
+
+    return (Dom.ul()
+      ..addProps(copyUnconsumedDomProps())
+      ..className = classes.toClassName())(
+      _renderFileTransferItems(),
+    );
+  }
+
+  List<ReactElement> _renderFileTransferItems() {
+    return props.transfers.map((transfer) {
+      return (FileTransferListItem()
+        ..key = transfer.id
+        ..transfer = transfer
+        ..onTransferDone = props.onTransferDone)();
+    }).toList();
   }
 }

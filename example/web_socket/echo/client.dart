@@ -16,11 +16,11 @@ import 'dart:async';
 import 'dart:html';
 
 import 'package:dart2_constant/convert.dart' as convert;
-import 'package:react/react_client.dart' as react_client;
+import 'package:over_react/over_react.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
-import '../../common/global_example_menu_component.dart';
+import '../../common/global_example_menu.dart';
 import '../../common/loading_component.dart';
 
 final _wsServer = Uri.parse('ws://localhost:8024/example/ws/echo');
@@ -42,7 +42,7 @@ CheckboxInputElement _sockJSXhrPolling = querySelector('#sockjs-xhr-polling');
 CheckboxInputElement _useSockJS = querySelector('#sockjs');
 
 Future<Null> main() async {
-  react_client.setClientConfiguration();
+  setClientConfiguration();
   configureWTransportForBrowser();
 
   renderGlobalExampleMenu(includeServerStatus: true);

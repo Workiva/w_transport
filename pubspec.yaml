@@ -37,16 +37,22 @@ dev_dependencies:
 #  build_runner: ^0.8.2
 #  build_test: ^0.10.1
 #  build_web_compilers: ^0.3.6
+  collection: ^1.14.6
   coverage: ^0.10.0
   dart_dev: ^1.7.7
   dart_style: ^1.0.6
   dependency_validator: ^1.0.0
   http_server: ^0.9.6
   mockito: ^2.0.2
-  react: ^0.6.1
-  test: ^0.12.23+1
+  over_react: ^1.24.0
+  test: ^0.12.32+1
   uuid: ^0.5.3
 
 transformers:
+- over_react
 - test/pub_serve:
     $include: test/**_test.dart
+
+web:
+  compiler:
+    debug: dartdevc

@@ -15,11 +15,11 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:react/react_client.dart' as react_client;
+import 'package:over_react/over_react.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
-import '../../common/global_example_menu_component.dart';
+import '../../common/global_example_menu.dart';
 import '../../common/loading_component.dart';
 
 /// Handle clicks on file names.
@@ -53,7 +53,7 @@ void showFileContents(String contents) {
 }
 
 void main() {
-  react_client.setClientConfiguration();
+  setClientConfiguration();
   configureWTransportForBrowser();
 
   renderGlobalExampleMenu();

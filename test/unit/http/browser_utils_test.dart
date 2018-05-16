@@ -107,5 +107,6 @@ class MockProgressEvent implements ProgressEvent {
 
   // Silence dart analyzer warnings.
   @override
-  dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
+  dynamic noSuchMethod(Invocation i) =>
+      super.noSuchMethod(i); // ignore: unnecessary_overrides
 }

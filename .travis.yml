@@ -24,7 +24,7 @@ jobs:
         - pub run dependency_validator -i browser,coverage,dart_style
 
     - stage: quality
-      dart: dev
+      dart: "2.0.0-dev.49.0"
       script:
         - pub run dart_dev format --check
         - pub run dart_dev analyze
@@ -35,7 +35,7 @@ jobs:
       script: ./tool/travis.sh test:unit
 
     - stage: test
-      dart: dev
+      dart: "2.0.0-dev.49.0"
       script: ./tool/travis.sh test:unit
 
     - stage: test
@@ -44,6 +44,6 @@ jobs:
       script: ./tool/travis.sh test:integration
 
     - stage: test
-      dart: dev
+      dart: "2.0.0-dev.49.0"
       before_script: npm install
       script: ./tool/travis.sh test:integration

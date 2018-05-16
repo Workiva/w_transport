@@ -61,8 +61,7 @@ void main() {
                 };
 
           final FormDataBody body = await request.finalizeBody();
-          final List<Blob> blobs = body.formData.getAll(key);
-          expect(blobs.length, equals(1));
+          expect(body.formData.getAll(key).length, equals(1));
         });
       });
     });

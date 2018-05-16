@@ -6,6 +6,10 @@ pubspec.lock
 .dart_tool
 node_modules
 
+# javascript
+node_modules/
+package-lock.json
+
 # Coverage
 /coverage/
 

@@ -121,7 +121,6 @@ class BrowserMultipartRequest extends CommonRequest
         formData.appendBlob(name, blob);
       }
     });
-    fields.forEach(formData.append);
 
     // Add each blob/file.
     final additions = <Future>[];

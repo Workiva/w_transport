@@ -15,40 +15,53 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:react/react.dart' as react;
+import 'package:over_react/over_react.dart';
 
 import '../services/file_transfer.dart';
 
-/// File drop zone. Listens to drag and drop events and accepts
-/// one or many dropped files. Uploads each dropped file to a
-/// server via a POST request with a FormData payload.
-dynamic dropZoneComponent =
-    react.registerComponent(() => new DropZoneComponent());
+typedef dynamic NewUploadsCallback(List<Upload> uploads);
+typedef dynamic DragEventCallback(Event event);
 
-class DropZoneComponent extends react.Component {
+/// File drop zone.
+///
+/// * Listens to drag and drop events and accepts one or many dropped files.
+/// * Uploads each dropped file to a server via a POST request with a FormData payload.
+@Factory()
+UiFactory<DropZoneProps> DropZone;
+
+@Props()
+class DropZoneProps extends UiProps {
+  @requiredProp
+  NewUploadsCallback onNewUploads;
+  @requiredProp
+  DragEventCallback onNativeDragStart;
+  @requiredProp
+  DragEventCallback onNativeDragEnd;
+}
+
+@State()
+class DropZoneState extends UiState {
+  /// True when user is dragging something over the drop zone
+  bool overDropZone;
+
+  /// True when user is dragging something onto the drop target
+  bool overDropTarget;
+}
+
+@Component()
+class DropZoneComponent
+    extends UiStatefulComponent<DropZoneProps, DropZoneState> {
   Timer _hideDropTargetTimer;
 
   @override
-  Map getInitialState() {
-    return {
-      // True when user is dragging something over the drop zone
-      'overDropZone': false,
-      // True when user is dragging something onto the drop target
-      'overDropTarget': false,
-    };
-  }
-
-  @override
-  Map getDefaultProps() {
-    return {
-      'onNewUploads': (_) {},
-      'onDragStart': () {},
-      'onDragEnd': () {},
-    };
-  }
+  Map getInitialState() => newState()
+    ..overDropZone = false
+    ..overDropTarget = false;
 
   @override
   void componentWillMount() {
+    super.componentWillMount();
+
     // Show the drop zone and drop target whenever a user
     // drags something onto the document.
     document.addEventListener('dragover', showDropTarget);
@@ -58,6 +71,8 @@ class DropZoneComponent extends react.Component {
 
   @override
   void componentWillUnmount() {
+    super.componentWillUnmount();
+
     document.removeEventListener('dragover', showDropTarget);
     document.removeEventListener('dragleave', hideDropTarget);
     document.removeEventListener('drop', preventNavigateOnDrop);
@@ -66,17 +81,23 @@ class DropZoneComponent extends react.Component {
   void showDropTarget(Event e) {
     e.preventDefault();
     _hideDropTargetTimer?.cancel();
-    props['onDragStart']();
-    setState({'overDropZone': true});
+    props.onNativeDragStart(e);
+
+    if (!state.overDropZone) {
+      setState(newState()..overDropZone = true);
+    }
   }
 
   void hideDropTarget(Event e) {
     // Delay this action slightly to allow it to be canceled.
     // This helps prevent a flicker when moving from the drop zone
     // to the drop target.
-    _hideDropTargetTimer = new Timer(new Duration(milliseconds: 100), () {
-      props['onDragEnd']();
-      setState({'overDropZone': false});
+    _hideDropTargetTimer = new Timer(const Duration(milliseconds: 100), () {
+      props.onNativeDragEnd(e);
+
+      if (state.overDropZone) {
+        setState(newState()..overDropZone = false);
+      }
     });
   }
 
@@ -85,17 +106,42 @@ class DropZoneComponent extends react.Component {
     hideDropTarget(e);
   }
 
-  void enlargeDropTarget(react.SyntheticMouseEvent e) {
+  void enlargeDropTarget(SyntheticMouseEvent e) {
     // Prevent default to allow the drop
     e.preventDefault();
-    setState({'overDropTarget': true, 'overDropZone': true});
+
+    var stateToSet = newState();
+
+    if (!state.overDropTarget) {
+      stateToSet.overDropTarget = true;
+    }
+
+    if (!state.overDropZone) {
+      stateToSet.overDropZone = true;
+    }
+
+    if (stateToSet != null) {
+      setState(stateToSet);
+    }
   }
 
-  void shrinkDropTarget(react.SyntheticMouseEvent e) {
-    setState({'overDropTarget': false, 'overDropZone': true});
+  void shrinkDropTarget(_) {
+    var stateToSet = newState();
+
+    if (state.overDropTarget) {
+      stateToSet.overDropTarget = false;
+    }
+
+    if (!state.overDropZone) {
+      stateToSet.overDropZone = true;
+    }
+
+    if (stateToSet != null) {
+      setState(stateToSet);
+    }
   }
 
-  void uploadFiles(react.SyntheticMouseEvent e) {
+  void uploadFiles(SyntheticMouseEvent e) {
     // Prevent drop from propagating to the browser,
     // which would normally navigate to the dropped file.
     e.preventDefault();
@@ -106,34 +152,41 @@ class DropZoneComponent extends react.Component {
     }).toList();
 
     // Notify parent of new uploads
-    props['onNewUploads'](newUploads);
-    props['onDragEnd']();
+    props.onNewUploads(newUploads);
+    props.onNativeDragEnd(null);
 
-    setState({'overDropZone': false, 'overDropTarget': false});
+    var stateToSet = newState();
+
+    if (state.overDropTarget) {
+      stateToSet.overDropTarget = false;
+    }
+
+    if (state.overDropZone) {
+      stateToSet.overDropZone = false;
+    }
+
+    if (stateToSet != null) {
+      setState(stateToSet);
+    }
   }
 
   @override
   dynamic render() {
-    String dropZoneClass = 'drop-zone';
-    String dropTargetClass = 'drop-target';
+    var dropZoneClasses = forwardingClassNameBuilder()
+      ..add('drop-zone')
+      ..add('active', state.overDropZone || state.overDropTarget);
 
-    if (state['overDropZone'] || state['overDropTarget']) {
-      dropZoneClass += ' active';
-      dropTargetClass += ' show';
-    }
-    if (state['overDropTarget']) {
-      dropTargetClass += ' over';
-    }
+    var dropTargetClasses = new ClassNameBuilder()
+      ..add('drop-target')
+      ..add('show', state.overDropZone || state.overDropTarget)
+      ..add('over', state.overDropTarget);
 
-    final dropZoneProps = <String, String>{'className': dropZoneClass};
-    final dropTargetProps = <String, Object>{
-      'className': dropTargetClass,
-      'onDragOver': enlargeDropTarget,
-      'onDragLeave': shrinkDropTarget,
-      'onDrop': uploadFiles,
-    };
-
-    return react.div(
-        dropZoneProps, react.div(dropTargetProps, 'Drop Here to Upload'));
+    return (Dom.div()
+      ..addProps(copyUnconsumedDomProps())
+      ..className = dropZoneClasses.toClassName())((Dom.div()
+      ..className = dropTargetClasses.toClassName()
+      ..onDragOver = enlargeDropTarget
+      ..onDragLeave = shrinkDropTarget
+      ..onDrop = uploadFiles)('Drop Here to Upload'));
   }
 }

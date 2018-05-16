@@ -12,68 +12,95 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:react/react.dart' as react;
+import 'dart:html';
+
+import 'package:over_react/over_react.dart';
 
 import '../services/proxy.dart' as proxy;
 import 'download_page.dart';
 import 'upload_page.dart';
 
 /// Main application component.
+///
 /// Sets up the file drop zone, file upload, and file download components.
-dynamic appComponent = react.registerComponent(() => new AppComponent());
+@Factory()
+UiFactory<AppProps> App;
 
-class AppComponent extends react.Component {
+@Props()
+class AppProps extends UiProps {}
+
+@State()
+class AppState extends UiState {
+  AppPage page;
+  bool isProxyEnabled;
+}
+
+@Component()
+class AppComponent extends UiStatefulComponent<AppProps, AppState> {
   @override
-  Map getInitialState() {
-    return {
-      'page': 'upload',
-    };
+  Map getInitialState() => newState()
+    ..page = AppPage.upload
+    ..isProxyEnabled = proxy.proxyEnabled;
+
+  void _goToUploadPage(SyntheticMouseEvent event) {
+    event.preventDefault();
+
+    if (state.page != AppPage.upload) {
+      setState(newState()..page = AppPage.upload);
+    }
   }
 
-  void _goToUploadPage(e) {
-    e.preventDefault();
-    setState({'page': 'upload'});
+  void _goToDownloadPage(SyntheticMouseEvent event) {
+    event.preventDefault();
+
+    if (state.page != AppPage.download) {
+      setState(newState()..page = AppPage.download);
+    }
   }
 
-  void _goToDownloadPage(e) {
-    e.preventDefault();
-    setState({'page': 'download'});
-  }
+  void _toggleProxy(SyntheticFormEvent event) {
+    CheckboxInputElement target = event.target;
 
-  void _toggleProxy(e) {
-    proxy.toggleProxy(enabled: e.target.checked);
+    setState(newState()..isProxyEnabled = target.checked, () {
+      proxy.toggleProxy(enabled: target.checked);
+    });
   }
 
   @override
   dynamic render() {
-    String page = state['page'];
-
-    return react.div({}, [
-      react.p(
-          {},
-          react.label({
-            'htmlFor': 'proxy'
-          }, [
-            react.input(
-                {'type': 'checkbox', 'id': 'proxy', 'onChange': _toggleProxy}),
-            ' Use Proxy Server',
-          ])),
-      react.div({
-        'className': 'app-nav'
-      }, [
-        react.a({
-          'href': '#',
-          'className': page == 'upload' ? 'active' : '',
-          'onClick': _goToUploadPage
-        }, 'Upload'),
-        react.a({
-          'href': '#',
-          'className': page == 'download' ? 'active' : '',
-          'onClick': _goToDownloadPage
-        }, 'Download'),
-      ]),
-      uploadPage({'active': page == 'upload'}),
-      downloadPage({'active': page == 'download'}),
-    ]);
+    return (Dom.div()..addProps(copyUnconsumedDomProps()))(
+      Dom.p()(
+        (Dom.label()..htmlFor = 'proxy')(
+          (Dom.input()
+            ..id = 'proxy'
+            ..type = 'checkbox'
+            ..checked = state.isProxyEnabled
+            ..onChange = _toggleProxy)(),
+          ' Use Proxy Server',
+        ),
+      ),
+      (Dom.div()..className = 'app-nav')(
+        (Dom.a()
+          ..href = '#'
+          ..className = state.page == AppPage.upload ? 'active' : null
+          ..onClick = _goToUploadPage)(
+          'Upload',
+        ),
+        (Dom.a()
+          ..href = '#'
+          ..className = state.page == AppPage.download ? 'active' : null
+          ..onClick = _goToDownloadPage)(
+          'Download',
+        ),
+      ),
+      (UploadPage()..isActive = state.page == AppPage.upload)(),
+      (DownloadPage()..isActive = state.page == AppPage.download)(),
+    );
   }
+}
+
+/// The possible values for [AppState.page].
+enum AppPage {
+  upload,
+  download,
 }

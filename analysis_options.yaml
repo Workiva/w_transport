@@ -1,9 +1,9 @@
-# analysis_options.yaml docs: https://www.dartlang.org/guides/language/analysis-options 
+# analysis_options.yaml docs: https://www.dartlang.org/guides/language/analysis-options
 analyzer:
   # Strong mode is required. Applies to the current project.
   strong-mode:
-    # When compiling to JS, both implicit options apply to the current 
-    # project and all dependencies. They are useful to find possible 
+    # When compiling to JS, both implicit options apply to the current
+    # project and all dependencies. They are useful to find possible
     # Type fixes or areas for explicit typing.
     implicit-casts: true
     implicit-dynamic: true
@@ -286,8 +286,8 @@ linter:
 
     # Name non-constant identifiers using lowerCamelCase.
     # recommendation: recommended
-    # 0 issues
-    - non_constant_identifier_names
+    # Not friendly with over_react UI components in the examples
+    # - non_constant_identifier_names
 
     # Omit type annotations for local variables.
     # recommendation: avoid

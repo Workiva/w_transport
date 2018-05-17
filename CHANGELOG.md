@@ -1,3 +1,20 @@
+## [3.2.5](https://github.com/Workiva/w_transport/compare/3.2.4...3.2.5)
+_May 17th, 2018_
+
+- **Bug Fix:** The previous version introduced a new transformer for the
+  w_transport examples, but did not properly scope it to the `examples/`
+  directory. This led to the following error during a `pub get` for
+  some consumers:
+
+    ```
+    Precompiling dependencies...
+    Loading source assets...
+    Error on line 1, column 1 of https://pub.dartlang.org/api/packages/w_transport: Error loading transformer "over_react": package "over_react" is not a dependency.
+    ```
+
+    This has been fixed. If you're still seeing this error, run
+    `pub upgrade w_transport` to make sure you have the latest.
+
 ## [3.2.4](https://github.com/Workiva/w_transport/compare/3.2.3...3.2.4)
 _May 16th, 2018_
 

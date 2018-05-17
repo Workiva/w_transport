@@ -49,7 +49,8 @@ dev_dependencies:
   uuid: ^0.5.3
 
 transformers:
-- over_react
+- over_react:
+    $include: example/**.dart
 - test/pub_serve:
     $include: test/**_test.dart
 

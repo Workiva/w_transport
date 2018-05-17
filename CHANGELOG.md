@@ -1,3 +1,9 @@
+## [3.2.4](https://github.com/Workiva/w_transport/compare/3.2.3...3.2.4)
+_May 16th, 2018_
+
+- **Bug Fix:** The browser implementation of `MultipartRequest` was previously
+  adding every field to the `FormData` twice - this has been fixed.
+
 ## [3.2.3](https://github.com/Workiva/w_transport/compare/3.2.2...3.2.3)
 _April 25th, 2018_
 

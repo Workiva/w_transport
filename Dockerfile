@@ -14,6 +14,9 @@ WORKDIR /build/
 ADD . /build/
 RUN echo "Starting the script sections" && \
 		pub get && \
+		pub run abide && \
+		pub run dependency_validator -i abide,browser,coverage,dart_style,semver_audit && \
+		pub run semver_audit report --repo Workiva/w_transport && \
 		echo "Script sections completed"
 ARG BUILD_ARTIFACTS_BUILD=/build/pubspec.lock
 

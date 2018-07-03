@@ -1,3 +1,9 @@
+## [3.2.6](https://github.com/Workiva/w_transport/compare/3.2.5...3.2.6)
+_July 3rd, 2018_
+
+- **Dependency:** Upgraded minimum `sockjs_client_wrapper` version to 1.0.4 in
+  order to pull in SockJS v1.1.5.
+
 ## [3.2.5](https://github.com/Workiva/w_transport/compare/3.2.4...3.2.5)
 _May 17th, 2018_
 

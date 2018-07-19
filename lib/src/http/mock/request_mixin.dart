@@ -69,7 +69,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   }
 
   @override
-  Future<BaseResponse> switchToRealRequest({bool streamResponse}) {
+  CommonRequest switchToRealRequest({bool streamResponse}) {
     // There is not a mock expectation or handler set up to handle this request,
     // so we fallback to the real TransportPlatform implementation.
     final realRequest = createRealRequest()
@@ -81,14 +81,22 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
       ..uri = uri
       ..withCredentials = withCredentials;
 
-    // Encoding cannot be set on MultipartRequests
+    // Content-length can be explicitly set on StreamedRequests.
+    if (this is StreamedRequest && contentLength != null) {
+      realRequest.contentLength = contentLength;
+    }
+
+    // If the content-type was explicitly set, copy that value over.
+    if (wasContentTypeSetManually) {
+      realRequest.contentType = contentType;
+    }
+
+    // Encoding cannot be set on MultipartRequests.
     if (this is! MultipartRequest) {
       realRequest.encoding = encoding;
     }
 
-    return streamResponse
-        ? realRequest.streamSend(method)
-        : realRequest.send(method);
+    return realRequest;
   }
 
   @override

@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@TestOn('browser || vm')
+@TestOn('vm')
+import 'dart:async';
+
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
+import 'package:w_transport/vm.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
 import 'package:w_transport/src/http/mock/http_client.dart';
+import 'package:w_transport/src/http/mock/request_mixin.dart';
 import 'package:w_transport/src/http/mock/requests.dart';
 import 'package:w_transport/src/web_socket/mock/web_socket.dart';
 
@@ -176,6 +180,50 @@ void main() {
           throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
 
       await MockTransports.uninstall();
+    });
+
+    test('switching to a real request should copy over all properties', () {
+      MockTransports.install(fallThrough: true);
+
+      Future<Null> requestInterceptor(transport.BaseRequest request) async =>
+          null;
+      Future<transport.BaseResponse> responseInterceptor(
+              FinalizedRequest request, transport.BaseResponse response,
+              [transport.RequestException error]) async =>
+          null;
+      final request =
+          new transport.Request(transportPlatform: vmTransportPlatform)
+            ..autoRetry.enabled = true
+            ..contentType = new transport.MediaType('application', 'json')
+            ..headers['x-custom'] = 'test'
+            ..requestInterceptor = requestInterceptor
+            ..responseInterceptor = responseInterceptor
+            ..timeoutThreshold = const Duration(seconds: 5)
+            ..uri = IntegrationPaths.reflectEndpointUri
+            ..withCredentials = true;
+
+      // ignore: avoid_as
+      final realRequest = (request as MockRequestMixin).switchToRealRequest();
+
+      expect(realRequest.autoRetry.enabled, isTrue);
+      expect(realRequest.contentType.mimeType, equals('application/json'));
+      expect(realRequest.headers, containsPair('x-custom', 'test'));
+      expect(identical(realRequest.requestInterceptor, requestInterceptor),
+          isTrue);
+      expect(identical(realRequest.responseInterceptor, responseInterceptor),
+          isTrue);
+      expect(realRequest.timeoutThreshold.inSeconds, equals(5));
+      expect(realRequest.uri, equals(IntegrationPaths.reflectEndpointUri));
+      expect(realRequest.withCredentials, isTrue);
+
+      // Content-length should be copied as well (only works with streamed).
+      final streamedRequest =
+          new transport.StreamedRequest(transportPlatform: vmTransportPlatform)
+            ..contentLength = 10;
+      // ignore: avoid_as
+      final realStreamedRequest =
+          (streamedRequest as MockRequestMixin).switchToRealRequest();
+      expect(realStreamedRequest.contentLength, equals(10));
     });
   });
 }

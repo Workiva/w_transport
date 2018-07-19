@@ -124,7 +124,7 @@ abstract class CommonRequest extends Object
   /// Whether or not the content-type was set manually. If `false`, the
   /// content-type will continue to be updated automatically when the [encoding]
   /// is set/changed. If `true`, the content-type will be left alone.
-  bool _contentTypeSetManually = false;
+  bool _wasContentTypeSetManually = false;
 
   /// Completer that should complete when the request has finished (successful
   /// or otherwise).
@@ -191,7 +191,7 @@ abstract class CommonRequest extends Object
   @override
   set contentType(MediaType contentType) {
     verifyUnsent();
-    _contentTypeSetManually = true;
+    _wasContentTypeSetManually = true;
     updateContentType(contentType);
   }
 
@@ -226,7 +226,7 @@ abstract class CommonRequest extends Object
     verifyUnsent();
     if (encoding == null) throw new ArgumentError.notNull('encoding');
     _encoding = encoding;
-    if (!_contentTypeSetManually) {
+    if (!_wasContentTypeSetManually) {
       updateContentType(
           contentType.change(parameters: {'charset': encoding.name}));
     }
@@ -287,6 +287,9 @@ abstract class CommonRequest extends Object
   /// [RequestProgress] stream for this HTTP request's upload.
   @override
   Stream<RequestProgress> get uploadProgress => uploadProgressController.stream;
+
+  /// Whether or not the content-type was set manually.
+  bool get wasContentTypeSetManually => _wasContentTypeSetManually;
 
   /// Whether or not to send the request with credentials.
   @override
@@ -462,7 +465,7 @@ abstract class CommonRequest extends Object
   /// a real request instance (created from a TransportPlatform instance).
   ///
   /// This is handled by the mock request mixin.
-  Future<BaseResponse> switchToRealRequest({bool streamResponse}) {
+  CommonRequest switchToRealRequest({bool streamResponse}) {
     throw new UnimplementedError();
   }
 
@@ -747,7 +750,10 @@ abstract class CommonRequest extends Object
         MockTransportsInternal.fallThrough &&
         !MockHttpInternal.hasHandlerForRequest(
             this.method, this.uri, this.headers)) {
-      return switchToRealRequest(streamResponse: streamResponse);
+      final realRequest = switchToRealRequest();
+      return streamResponse
+          ? realRequest.streamSend(method)
+          : realRequest.send(method);
     }
 
     // Otherwise, carry on with the send logic and the mocks will do the rest.

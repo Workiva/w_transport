@@ -1,5 +1,9 @@
 ## [3.2.6](https://github.com/Workiva/w_transport/compare/3.2.5...3.2.6)
-_July 3rd, 2018_
+_July 19th, 2018_
+
+- **Bug Fix:** When using `MockTransports` with `fallThrough: true`, requests that
+  fall through now properly copy over `contentLength` and `contentType` if
+  applicable.
 
 - **Dependency:** Upgraded minimum `sockjs_client_wrapper` version to 1.0.4 in
   order to pull in SockJS v1.1.5.

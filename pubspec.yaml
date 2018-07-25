@@ -32,6 +32,11 @@ dependencies:
   sockjs_client_wrapper: ^1.0.4
 
 dev_dependencies:
+  abide:
+    hosted:
+      name: abide
+      url: https://pub.workiva.org
+    version: ^1.4.1
   browser: ^0.10.0+2
   # TODO: use these once we move to Dart 2
 #  build_runner: ^0.8.2
@@ -45,6 +50,11 @@ dev_dependencies:
   http_server: ^0.9.6
   mockito: ^2.0.2
   over_react: ^1.24.0
+  semver_audit:
+    hosted:
+      name: semver_audit
+      url: https://pub.workiva.org
+    version: ^1.4.2
   test: ^0.12.32+1
   uuid: ^0.5.3
 

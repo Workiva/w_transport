@@ -13,11 +13,7 @@
 // limitations under the License.
 
 @TestOn('browser')
-import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
-import 'dart:html' hide Client;
-
+import 'package:dart2_constant/convert.dart' as convert;
 import 'package:test/test.dart';
 import 'package:w_transport/browser.dart' show browserTransportPlatform;
 import 'package:w_transport/src/http/browser/form_data_body.dart';
@@ -35,8 +31,9 @@ void main() {
     group('BrowserMultipartRequest', () {
       group('finalizeBody', () {
         test('does not include duplicate ascii fields', () async {
-          final key = 'ascii';
-          final value = ASCII.decode(ASCII.encode("This is ASCII!"));
+          const key = 'ascii';
+          final value =
+              convert.ascii.decode(convert.ascii.encode('This is ASCII!'));
 
           final BrowserMultipartRequest request =
               new transport.MultipartRequest(
@@ -50,8 +47,8 @@ void main() {
         });
 
         test('does not include duplicate unicode fields', () async {
-          final key = 'unicode';
-          final value = '藤原とうふ店（自家用）';
+          const key = 'unicode';
+          const value = '藤原とうふ店（自家用）';
 
           final BrowserMultipartRequest request =
               new transport.MultipartRequest(

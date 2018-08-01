@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:io' as io;
 
 import 'package:dart_dev/dart_dev.dart' show dev, config;
 import 'package:dart_dev/util.dart' show TaskProcess, reporter;
@@ -47,7 +48,7 @@ Future<Null> main(List<String> args) async {
 
   config.examples
     ..port = 9000
-    ..before = [_streamServer, _streamSockJSServer]
+    ..before = [_streamServer, _streamSockJSServer, _serveExamples]
     ..after = [_stopServer, _stopSockJSServer];
 
   config.format.paths = directories;
@@ -62,7 +63,7 @@ Future<Null> main(List<String> args) async {
       'test/integration/global_web_socket_monitor',
       'test/integration/http',
       'test/integration/platforms',
-      'test/integration/ws'
+      'test/integration/ws',
     ]
     ..platforms = ['vm', 'chrome']
     ..pubServe = true
@@ -83,6 +84,14 @@ List<String> _serverOutput;
 
 /// Output from the SockJS server.
 List<String> _sockJSServerOutput;
+
+Future<Null> _serveExamples() {
+  io.Process.runSync('pub', ['get'], workingDirectory: 'example');
+  io.Process
+      .start('pub', ['serve', '--port=9000'], workingDirectory: 'example');
+
+  return new Completer<Null>().future;
+}
 
 /// Start the server needed for integration tests and examples and stream the
 /// server output as it arrives. The output will be mixed in with output from

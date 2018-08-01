@@ -10,8 +10,10 @@ ARG GIT_COMMIT_RANGE
 ARG GIT_HEAD_URL
 ARG GIT_MERGE_HEAD
 ARG GIT_MERGE_BRANCH
+
 WORKDIR /build/
 ADD . /build/
+
 RUN echo "Starting the script sections" && \
 		pub get && \
 		echo "Script sections completed"

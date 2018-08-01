@@ -182,7 +182,8 @@ void main() {
       await MockTransports.uninstall();
     });
 
-    test('switching to a real request should copy over all properties', () {
+    test('switching to a real request should copy over all properties',
+        () async {
       MockTransports.install(fallThrough: true);
 
       Future<Null> requestInterceptor(transport.BaseRequest request) async =>
@@ -224,6 +225,8 @@ void main() {
       final realStreamedRequest =
           (streamedRequest as MockRequestMixin).switchToRealRequest();
       expect(realStreamedRequest.contentLength, equals(10));
+
+      await MockTransports.uninstall();
     });
   });
 }

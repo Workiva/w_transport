@@ -17,33 +17,34 @@ stages:
 jobs:
   include:
     - stage: quality
-      dart: stable
+      dart: 1.24.3
       script:
         - pub run dart_dev format --check
-        - pub run dart_dev analyze
-        - pub run dependency_validator -i browser,coverage,dart_style
+        - dartanalyzer lib test tool
+        - cd example && pub get && dartanalyzer .; cd ..
+        - pub run dependency_validator -i build_runner,build_test,build_web_compilers,browser,coverage,dart_style --exclude-dir=example
 
     - stage: quality
-      dart: "2.0.0-dev.49.0"
+      dart: dev
       script:
-        - pub run dart_dev format --check
-        - pub run dart_dev analyze
-        - pub run dependency_validator -i browser,coverage,dart_style
+        - dartanalyzer lib test tool
+        - cd example && pub get && dartanalyzer .; cd ..
+        - pub run dependency_validator -i build_runner,build_test,build_web_compilers,browser,coverage,dart_style --exclude-dir=example
 
     - stage: test
-      dart: stable
+      dart: 1.24.3
       script: ./tool/travis.sh test:unit
 
     - stage: test
-      dart: "2.0.0-dev.49.0"
+      dart: dev
       script: ./tool/travis.sh test:unit
 
     - stage: test
-      dart: stable
+      dart: 1.24.3
       before_script: npm install
       script: ./tool/travis.sh test:integration
 
     - stage: test
-      dart: "2.0.0-dev.49.0"
+      dart: dev
       before_script: npm install
       script: ./tool/travis.sh test:integration

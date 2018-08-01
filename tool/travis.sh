@@ -20,21 +20,19 @@ case $TASK in
   test:unit)
     echo -e '\033[1mTASK: Testing [test]\033[22m'
 
-    echo -e 'pub build test --mode=debug --web-compiler=dartdevc'
-    # Precompile tests to avoid timeouts/hung builds.
-    pub build test --mode=debug --web-compiler=dartdevc
-    # The --precompile option requires that it be given a merged output dir with
-    # both compiled JS files and the source .dart files.
-    # NOTE: Once we're on Dart 2 for good, we can switch to build_runner which
-    # does all of this for us.
-    cp -r test/ build/test/
-    cp .packages build/
-    sed 's/w_transport:lib/w_transport:..\/lib/' build/.packages > build/.packages.tmp && mv build/.packages.tmp build/.packages
-
     if [[ $DART_VERSION = $DART_2_PREFIX* ]]; then
-      echo -e 'pub run test -P travis -P dart2 --precompiled=build/'
-      pub run test -P travis -P dart2 --precompiled=build/
+      echo -e 'pub run build_runner test -- -P travis -P dart2'
+      pub run build_runner test -- -P travis -P dart2
     else
+      echo -e 'pub build test --mode=debug --web-compiler=dartdevc'
+      # Precompile tests to avoid timeouts/hung builds.
+      pub build test --mode=debug --web-compiler=dartdevc
+      # The --precompile option requires that it be given a merged output dir with
+      # both compiled JS files and the source .dart files.
+      cp -r test/ build/test/
+      cp .packages build/
+      sed 's/w_transport:lib/w_transport:..\/lib/' build/.packages > build/.packages.tmp && mv build/.packages.tmp build/.packages
+
       echo -e 'pub run test -P travis --precompiled=build/'
       pub run test -P travis --precompiled=build/
     fi
@@ -43,17 +41,6 @@ case $TASK in
 
   test:integration)
     echo -e '\033[1mTASK: Testing [test]\033[22m'
-
-    echo -e 'pub build test --mode=debug --web-compiler=dartdevc'
-    # Precompile tests to avoid timeouts/hung builds.
-    pub build test --mode=debug --web-compiler=dartdevc
-    # The --precompile option requires that it be given a merged output dir with
-    # both compiled JS files and the source .dart files.
-    # NOTE: Once we're on Dart 2 for good, we can switch to build_runner which
-    # does all of this for us.
-    cp -R test/** build/test/
-    cp .packages build/
-    sed 's/w_transport:lib/w_transport:..\/lib/' build/.packages > build/.packages.tmp && mv build/.packages.tmp build/.packages
 
     dart tool/server/server.dart &
     DART_SERVER=$!
@@ -64,9 +51,18 @@ case $TASK in
     sleep 2
 
     if [[ $DART_VERSION = $DART_2_PREFIX* ]]; then
-      echo -e 'pub run test -P travis -P integration -P dart2 --precompiled=build/'
-      pub run test -P travis -P integration -P dart2 --precompiled=build/
+      echo -e 'pub run build_runner test -- -P travis -P integration -P dart2'
+      pub run build_runner test -- -P travis -P dart2
     else
+      echo -e 'pub build test --mode=debug --web-compiler=dartdevc'
+      # Precompile tests to avoid timeouts/hung builds.
+      pub build test --mode=debug --web-compiler=dartdevc
+      # The --precompile option requires that it be given a merged output dir with
+      # both compiled JS files and the source .dart files.
+      cp -r test/ build/test/
+      cp .packages build/
+      sed 's/w_transport:lib/w_transport:..\/lib/' build/.packages > build/.packages.tmp && mv build/.packages.tmp build/.packages
+
       echo -e 'pub run test -P travis -P integration --precompiled=build/'
       pub run test -P travis -P integration --precompiled=build/
     fi

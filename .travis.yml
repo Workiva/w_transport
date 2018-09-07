@@ -17,7 +17,7 @@ stages:
 jobs:
   include:
     - stage: quality
-      dart: stable
+      dart: 1.24.3
       script:
         - pub run dart_dev format --check
         - pub run dart_dev analyze
@@ -31,7 +31,7 @@ jobs:
         - pub run dependency_validator -i browser,coverage,dart_style
 
     - stage: test
-      dart: stable
+      dart: 1.24.3
       script: ./tool/travis.sh test:unit
 
     - stage: test
@@ -39,7 +39,7 @@ jobs:
       script: ./tool/travis.sh test:unit
 
     - stage: test
-      dart: stable
+      dart: 1.24.3
       before_script: npm install
       script: ./tool/travis.sh test:integration
 

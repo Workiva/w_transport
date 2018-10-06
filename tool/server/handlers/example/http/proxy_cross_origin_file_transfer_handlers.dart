@@ -15,6 +15,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:w_transport/w_transport.dart' as transport;
 import 'package:w_transport/vm.dart' show vmTransportPlatform;
 
@@ -56,7 +57,7 @@ class FilesProxy extends Handler {
     final proxyRequest = getHttpClient().newRequest()..headers = headers;
 
     final proxyResponse = await proxyRequest.streamGet(uri: filesEndpoint);
-    request.response.statusCode = HttpStatus.OK;
+    request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
       request.response.headers.set(h, v);
@@ -73,7 +74,7 @@ class FilesProxy extends Handler {
     final proxyRequest = getHttpClient().newRequest()..headers = headers;
 
     final proxyResponse = await proxyRequest.streamDelete(uri: filesEndpoint);
-    request.response.statusCode = HttpStatus.OK;
+    request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
       request.response.headers.set(h, v);
@@ -108,7 +109,7 @@ class UploadProxy extends Handler {
     transport.StreamedResponse proxyResponse;
     try {
       proxyResponse = await proxyRequest.streamPost(uri: uploadEndpoint);
-      request.response.statusCode = HttpStatus.OK;
+      request.response.statusCode = io_constant.HttpStatus.ok;
       setCorsHeaders(request);
       proxyResponse.headers.forEach((h, v) {
         request.response.headers.set(h, v);
@@ -116,7 +117,7 @@ class UploadProxy extends Handler {
       await request.response.addStream(proxyResponse.body.byteStream);
     } on HttpException catch (e) {
       proxyRequest.abort(e);
-      request.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+      request.response.statusCode = io_constant.HttpStatus.internalServerError;
       setCorsHeaders(request);
     }
   }
@@ -146,7 +147,7 @@ class DownloadProxy extends Handler {
     transport.StreamedResponse proxyResponse;
     try {
       proxyResponse = await proxyRequest.streamGet();
-      request.response.statusCode = HttpStatus.OK;
+      request.response.statusCode = io_constant.HttpStatus.ok;
       setCorsHeaders(request);
       proxyResponse.headers.forEach((h, v) {
         request.response.headers.set(h, v);
@@ -154,7 +155,7 @@ class DownloadProxy extends Handler {
       await request.response.addStream(proxyResponse.body.byteStream);
     } on HttpException catch (e) {
       proxyRequest.abort(e);
-      request.response.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+      request.response.statusCode = io_constant.HttpStatus.internalServerError;
       setCorsHeaders(request);
     }
   }

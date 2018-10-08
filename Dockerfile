@@ -1,4 +1,4 @@
-FROM drydock-prod.workiva.net/workiva/smithy-runner-generator:355624 as build
+FROM google/dart:2.0.0 as build
 # Build Environment Vars
 ARG BUILD_ID
 ARG BUILD_NUMBER
@@ -15,8 +15,7 @@ WORKDIR /build/
 ADD . /build/
 
 RUN echo "Starting the script sections" && \
-		pub get && \
-		echo "Script sections completed"
+	pub get && \
+	echo "Script sections completed"
 ARG BUILD_ARTIFACTS_BUILD=/build/pubspec.lock
-
 FROM scratch

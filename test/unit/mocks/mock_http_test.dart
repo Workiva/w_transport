@@ -456,8 +456,8 @@ void main() {
           // ignore: unawaited_futures
           transport.Http.get(Uri.parse('/wrong')); // Wrong URI.
           await transport.Http.get(Uri.parse('https://google.com'));
-          await transport.Http
-              .get(Uri.parse('https://github.com/Workiva/w_transport'));
+          await transport.Http.get(
+              Uri.parse('https://github.com/Workiva/w_transport'));
           expect(MockTransports.http.numPendingRequests, equals(1));
 
           await MockTransports.reset();

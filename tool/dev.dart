@@ -26,10 +26,6 @@ Future<Null> main(List<String> args) async {
   final directories = <String>['example/', 'lib/', 'test/', 'tool/'];
 
   config.analyze.entryPoints = [
-    'example/',
-    'example/http/cross_origin_credentials/',
-    'example/http/cross_origin_file_transfer/',
-    'example/http/simple_client/',
     'lib/',
     'test/',
     'test/unit/',
@@ -44,11 +40,6 @@ Future<Null> main(List<String> args) async {
     ..pubServe = true
     ..reportOn = ['lib/']
     ..before = [_streamServer, _streamSockJSServer]
-    ..after = [_stopServer, _stopSockJSServer];
-
-  config.examples
-    ..port = 9000
-    ..before = [_streamServer, _streamSockJSServer, _serveExamples]
     ..after = [_stopServer, _stopSockJSServer];
 
   config.format.paths = directories;
@@ -87,8 +78,8 @@ List<String> _sockJSServerOutput;
 
 Future<Null> _serveExamples() {
   io.Process.runSync('pub', ['get'], workingDirectory: 'example');
-  io.Process
-      .start('pub', ['serve', '--port=9000'], workingDirectory: 'example');
+  io.Process.start('pub', ['serve', '--port=9000'],
+      workingDirectory: 'example');
 
   return new Completer<Null>().future;
 }

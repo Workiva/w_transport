@@ -3,13 +3,11 @@
 #
 # Run unit tests:
 #
-#     $ pub run test
+#     $ pub run dart_dev test -P dart1
 #
 # Run integration tests:
 #
-#     $ node tool/server/sockjs.js
-#     $ dart tool/server/server.dart
-#     $ pub run test -P integration
+#     $ pub run dart_dev test -P dart1 -P integration
 #
 #
 # Dart 2:
@@ -17,13 +15,11 @@
 #
 # Run unit tests:
 #
-#     $ pub run build_runner test
+#     $ pub run dart_dev test -P dart1
 #
 # Run integration tests:
 #
-#     $ node tool/server/sockjs.js
-#     $ dart tool/server/server.dart
-#     $ pub run build_runner test -- -P integration
+#     $ pub run dart_dev test -P dart2 -P integration
 platforms:
   - chrome
   - vm

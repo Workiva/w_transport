@@ -5,6 +5,7 @@ packages
 pubspec.lock
 .dart_tool
 node_modules
+/build/
 
 # javascript
 node_modules/

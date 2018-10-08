@@ -3,7 +3,6 @@ version: 0.0.0
 private: true
 
 dev_dependencies:
-  browser: ^0.10.0+2
   collection: ^1.14.6
   over_react: ^1.24.0
   w_transport:

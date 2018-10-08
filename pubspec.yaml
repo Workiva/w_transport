@@ -50,7 +50,5 @@ dev_dependencies:
 
 # Need to retain this transformers section until we drop Dart1 support completely.
 transformers:
-- over_react:
-    $include: example/**.dart
 - test/pub_serve:
     $include: test/**_test.dart

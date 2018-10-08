@@ -40,7 +40,7 @@ dev_dependencies:
   dart_dev:
     git:
       url: git://github.com/Workiva/dart_dev.git
-      ref: 24496ae534d4bfdcd5a224f9249bda263e08ace7 # dart2
+      ref: 1193d8e86f84bd7affaba201ff0cf8ef31a53731 # dart2
   dart_style: ^1.0.8
   dependency_validator: ^1.2.1
   http_server: ^0.9.6

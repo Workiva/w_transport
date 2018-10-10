@@ -5,6 +5,7 @@ packages
 pubspec.lock
 .dart_tool
 node_modules
+/build/
 
 # javascript
 node_modules/
@@ -17,4 +18,4 @@ package-lock.json
 /doc/api/
 
 # Examples
-/example/http/cross_origin_file_transfer/files/
+/example/web/http/cross_origin_file_transfer/files/

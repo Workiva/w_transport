@@ -41,8 +41,8 @@ class VMWebSocket extends CommonWebSocket implements WebSocket {
     io.WebSocket webSocket;
     bool wasSuccessful;
     try {
-      webSocket = await io.WebSocket
-          .connect(uri.toString(), headers: headers, protocols: protocols);
+      webSocket = await io.WebSocket.connect(uri.toString(),
+          headers: headers, protocols: protocols);
       wasSuccessful = true;
     } on io.SocketException catch (e) {
       wasSuccessful = false;

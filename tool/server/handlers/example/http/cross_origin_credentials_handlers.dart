@@ -15,7 +15,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/convert.dart' as convert;
+import 'package:dart2_constant/convert.dart' as convert_constant;
+import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:uuid/uuid.dart';
 
 import '../../../handler.dart';
@@ -62,33 +63,35 @@ class SessionHandler extends Handler {
 
   @override
   Future<Null> get(HttpRequest request) async {
-    request.response.statusCode = HttpStatus.OK;
+    request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
-    request.response
-        .write(convert.json.encode({'authenticated': isValidSession(request)}));
+    request.response.write(convert_constant.json
+        .encode({'authenticated': isValidSession(request)}));
   }
 
   @override
   Future<Null> post(HttpRequest request) async {
-    request.response.statusCode = HttpStatus.OK;
+    request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
     final headers = createSessionHeaders(generateSessionCookie());
     headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
-    request.response.write(convert.json.encode({'authenticated': true}));
+    request.response
+        .write(convert_constant.json.encode({'authenticated': true}));
   }
 
   @override
   Future<Null> delete(HttpRequest request) async {
     session = null;
-    request.response.statusCode = HttpStatus.OK;
+    request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
     final headers = createSessionHeaders('deleted');
     headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
-    request.response.write(convert.json.encode({'authenticated': false}));
+    request.response
+        .write(convert_constant.json.encode({'authenticated': false}));
   }
 }
 
@@ -101,12 +104,12 @@ class CredentialedRequestHandler extends Handler {
   Future<Null> get(HttpRequest request) async {
     // Verify the request has a valid session cookie
     if (isValidSession(request)) {
-      request.response.statusCode = HttpStatus.OK;
+      request.response.statusCode = io_constant.HttpStatus.ok;
       setCorsHeaders(request);
       request.response
           .write('Session verified, credentialed request successful!');
     } else {
-      request.response.statusCode = HttpStatus.UNAUTHORIZED;
+      request.response.statusCode = io_constant.HttpStatus.unauthorized;
       setCorsHeaders(request);
       request.response.write('Invalid session, credentialed request failed!');
     }

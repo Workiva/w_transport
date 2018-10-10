@@ -17,7 +17,7 @@ authors:
   - Trent Grover <trent.grover@workiva.com>
 
 environment:
-  sdk: ">=1.14.0 <2.0.0"
+  sdk: '>=1.24.3 <3.0.0'
 
 dependencies:
   dart2_constant: ^1.0.1
@@ -28,32 +28,23 @@ dependencies:
   sockjs_client:
     git:
       url: git://github.com/Workiva/sockjs-dart-client.git
-      ref: 0.3.3
-  sockjs_client_wrapper: ^1.0.4
+      ref: 0.3.5
+  sockjs_client_wrapper: ^1.0.5
 
 dev_dependencies:
-  browser: ^0.10.0+2
-  # TODO: use these once we move to Dart 2
-#  build_runner: ^0.8.2
-#  build_test: ^0.10.1
-#  build_web_compilers: ^0.3.6
-  collection: ^1.14.6
-  coverage: ^0.10.0
-  dart_dev: ^1.7.7
-  dart_style: ^1.0.6
-  dependency_validator: ^1.0.0
+  build_runner: ">=0.6.0 <2.0.0"
+  build_test: ">=0.9.0 <1.0.0"
+  build_web_compilers: ">=0.2.0 <1.0.0"
+  coverage: ">=0.10.0 <0.13.0"
+  dart_dev: ^2.0.0-beta
+  dart_style: ^1.0.8
+  dependency_validator: ^1.2.1
   http_server: ^0.9.6
-  mockito: ^2.0.2
-  over_react: ^1.24.0
-  test: ^0.12.32+1
-  uuid: ^0.5.3
+  mockito: ">=2.0.2 <4.0.0"
+  test: ">=0.12.30 <2.0.0"
+  uuid: ">=0.5.3 <2.0.0"
 
+# Need to retain this transformers section until we drop Dart1 support completely.
 transformers:
-- over_react:
-    $include: example/**.dart
 - test/pub_serve:
     $include: test/**_test.dart
-
-web:
-  compiler:
-    debug: dartdevc

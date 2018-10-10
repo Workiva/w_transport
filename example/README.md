@@ -15,10 +15,14 @@ Examples
 
 ---
 
-You can use dart_dev to serve the examples and run the required server with:
+To serve the examples:
 
+Dart 1:
 ```
-pub run dart_dev examples
+pub serve
 ```
 
-Then open [http://localhost:9000](http://localhost:9000) in Dartium or your browser of choice.
+Dart 2: TBD
+
+
+Then open [http://localhost:8080](http://localhost:8080) in Dartium or your browser of choice.

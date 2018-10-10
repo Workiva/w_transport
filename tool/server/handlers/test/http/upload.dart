@@ -15,6 +15,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:http_server/http_server.dart';
 import 'package:mime/mime.dart';
 
@@ -42,7 +43,7 @@ class UploadHandler extends Handler {
       }
     }
 
-    request.response.statusCode = HttpStatus.OK;
+    request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
   }
 

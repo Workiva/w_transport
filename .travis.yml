@@ -10,40 +10,17 @@ cache:
   directories:
     - $HOME/.pub-cache
 
-stages:
-  - quality
-  - test
+dart:
+  - 1.24.3
+  - stable
 
-jobs:
-  include:
-    - stage: quality
-      dart: 1.24.3
-      script:
-        - pub run dart_dev format --check
-        - pub run dart_dev analyze
-        - pub run dependency_validator -i browser,coverage,dart_style
+before_script:
+  - npm install
 
-    - stage: quality
-      dart: "2.0.0-dev.49.0"
-      script:
-        - pub run dart_dev format --check
-        - pub run dart_dev analyze
-        - pub run dependency_validator -i browser,coverage,dart_style
-
-    - stage: test
-      dart: 1.24.3
-      script: ./tool/travis.sh test:unit
-
-    - stage: test
-      dart: "2.0.0-dev.49.0"
-      script: ./tool/travis.sh test:unit
-
-    - stage: test
-      dart: 1.24.3
-      before_script: npm install
-      script: ./tool/travis.sh test:integration
-
-    - stage: test
-      dart: "2.0.0-dev.49.0"
-      before_script: npm install
-      script: ./tool/travis.sh test:integration
+script:
+  - pub run dart_dev analyze
+#  - cd example && pub get && dartanalyzer .; cd ..
+  - pub run dart_dev dart2-only -- format --check
+  - pub run dependency_validator -i build_runner,build_test,build_web_compilers,coverage,dart_style --exclude-dir=example
+  - pub run dart_dev dart1-only -- test -P integration -P travis
+  - pub run dart_dev dart2-only -- test -P integration -P travis -P dart2

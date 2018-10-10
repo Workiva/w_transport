@@ -1,3 +1,8 @@
+## [3.2.7](https://github.com/Workiva/w_transport/compare/3.2.6...3.2.7)
+_October 10th, 2018_
+
+- **Improvement:** Dart 2 compatible!
+
 ## [3.2.6](https://github.com/Workiva/w_transport/compare/3.2.5...3.2.6)
 _July 19th, 2018_
 

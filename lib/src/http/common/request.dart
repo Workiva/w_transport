@@ -780,8 +780,7 @@ abstract class CommonRequest extends Object
       // Attempt to fetch the response.
       // ignore: unawaited_futures
       sendRequestAndFetchResponse(finalizedRequest,
-              streamResponse: streamResponse)
-          .then((response) {
+          streamResponse: streamResponse).then((response) {
         if (!responseCompleter.isCompleted) {
           responseCompleter.complete(response);
         }

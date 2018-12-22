@@ -31,9 +31,8 @@ void main() {
 
   group(naming.toString(), () {
     // ignore: deprecated_member_use
-    Future<transport.WebSocket> connect(Uri uri) =>
-        transport.WebSocket.connect(uri,
-            transportPlatform: browserTransportPlatform);
+    Future<transport.WebSocket> connect(Uri uri) => transport.WebSocket
+        .connect(uri, transportPlatform: browserTransportPlatform);
 
     runCommonGlobalWebSocketMonitorIntegrationTests(connect);
 

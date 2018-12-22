@@ -20,17 +20,21 @@ import '../services/proxy.dart' as proxy;
 import 'download_page.dart';
 import 'upload_page.dart';
 
+// ignore: uri_has_not_been_generated
+part 'app_component.over_react.g.dart';
+
 /// Main application component.
 ///
 /// Sets up the file drop zone, file upload, and file download components.
 @Factory()
-UiFactory<AppProps> App;
+// ignore: undefined_identifier
+UiFactory<AppProps> App = $App;
 
 @Props()
-class AppProps extends UiProps {}
+class _$AppProps extends UiProps {}
 
 @State()
-class AppState extends UiState {
+class _$AppState extends UiState {
   AppPage page;
   bool isProxyEnabled;
 }
@@ -103,4 +107,18 @@ class AppComponent extends UiStatefulComponent<AppProps, AppState> {
 enum AppPage {
   upload,
   download,
+}
+
+// AF-3369 This will be removed once the transition to Dart 2 is complete.
+// ignore: mixin_of_non_class, undefined_class
+class AppProps extends _$AppProps with _$AppPropsAccessorsMixin {
+  // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
+  static const PropsMeta meta = $metaForAppProps;
+}
+
+// AF-3369 This will be removed once the transition to Dart 2 is complete.
+// ignore: mixin_of_non_class, undefined_class
+class AppState extends _$AppState with _$AppStateAccessorsMixin {
+  // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
+  static const StateMeta meta = $metaForAppState;
 }

@@ -18,12 +18,16 @@ import '../../../common/typedefs.dart';
 import '../services/file_transfer.dart';
 import 'file_transfer_list_item_component.dart';
 
+// ignore: uri_has_not_been_generated
+part 'file_transfer_list_component.over_react.g.dart';
+
 /// List of all file uploads.
 @Factory()
-UiFactory<FileTransferListProps> FileTransferList;
+// ignore: undefined_identifier
+UiFactory<FileTransferListProps> FileTransferList = $FileTransferList;
 
 @Props()
-class FileTransferListProps extends UiProps {
+class _$FileTransferListProps extends UiProps {
   List<FileTransfer> transfers;
   String noTransfersMessage;
   bool hideChildrenFromPointerEvents;
@@ -64,4 +68,12 @@ class FileTransferListComponent extends UiComponent<FileTransferListProps> {
         ..onTransferDone = props.onTransferDone)();
     }).toList();
   }
+}
+
+// AF-3369 This will be removed once the transition to Dart 2 is complete.
+// ignore: mixin_of_non_class, undefined_class
+class FileTransferListProps extends _$FileTransferListProps
+    with _$FileTransferListPropsAccessorsMixin {
+  // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
+  static const PropsMeta meta = $metaForFileTransferListProps;
 }

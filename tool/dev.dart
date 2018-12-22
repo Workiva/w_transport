@@ -78,8 +78,8 @@ List<String> _sockJSServerOutput;
 
 Future<Null> _serveExamples() {
   io.Process.runSync('pub', ['get'], workingDirectory: 'example');
-  io.Process.start('pub', ['serve', '--port=9000'],
-      workingDirectory: 'example');
+  io.Process
+      .start('pub', ['serve', '--port=9000'], workingDirectory: 'example');
 
   return new Completer<Null>().future;
 }

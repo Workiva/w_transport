@@ -405,8 +405,8 @@ void main() {
               equals(webSocket));
           expect(
               // ignore: deprecated_member_use
-              await transport.WSocket.connect(
-                  Uri.parse('ws://github.com/ws/listen')),
+              await transport.WSocket
+                  .connect(Uri.parse('ws://github.com/ws/listen')),
               equals(webSocket));
 
           // Non-matching connection fails.
@@ -432,8 +432,8 @@ void main() {
           MockTransports.webSocket.whenPattern(uriPattern, handler: handler);
 
           // ignore: deprecated_member_use
-          await transport.WSocket.connect(
-              Uri.parse('ws://github.com/ws/listen'));
+          await transport.WSocket
+              .connect(Uri.parse('ws://github.com/ws/listen'));
           expect(uriMatch.group(0), equals('ws://github.com/ws/listen'));
           expect(uriMatch.group(1), equals('github'));
         });

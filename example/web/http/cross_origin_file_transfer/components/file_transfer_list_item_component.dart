@@ -19,6 +19,9 @@ import 'package:over_react/over_react.dart';
 import '../../../common/typedefs.dart';
 import '../services/file_transfer.dart';
 
+// ignore: uri_has_not_been_generated
+part 'file_transfer_list_item_component.over_react.g.dart';
+
 const Duration _transferCompleteLingerDuration = const Duration(seconds: 4);
 const Duration _transferCompleteFadeoutDuration = const Duration(seconds: 2);
 
@@ -27,17 +30,19 @@ const Duration _transferCompleteFadeoutDuration = const Duration(seconds: 2);
 /// Contains the file name, a progressbar, and a control
 /// that allows cancellation of the upload or download.
 @Factory()
-UiFactory<FileTransferListItemProps> FileTransferListItem;
+// ignore: undefined_identifier
+UiFactory<FileTransferListItemProps> FileTransferListItem =
+    $FileTransferListItem;
 
 @Props()
-class FileTransferListItemProps extends UiProps {
+class _$FileTransferListItemProps extends UiProps {
   FileTransfer transfer;
   @requiredProp
   TransferDoneCallback onTransferDone;
 }
 
 @State()
-class FileTransferListItemState extends UiState {
+class _$FileTransferListItemState extends UiState {
   FileTransferItemStatus status;
 }
 
@@ -157,4 +162,20 @@ enum FileTransferItemStatus {
   doneSuccess,
   doneFailure,
   willRemove,
+}
+
+// AF-3369 This will be removed once the transition to Dart 2 is complete.
+// ignore: mixin_of_non_class, undefined_class
+class FileTransferListItemProps extends _$FileTransferListItemProps
+    with _$FileTransferListItemPropsAccessorsMixin {
+  // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
+  static const PropsMeta meta = $metaForFileTransferListItemProps;
+}
+
+// AF-3369 This will be removed once the transition to Dart 2 is complete.
+// ignore: mixin_of_non_class, undefined_class
+class FileTransferListItemState extends _$FileTransferListItemState
+    with _$FileTransferListItemStateAccessorsMixin {
+  // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
+  static const StateMeta meta = $metaForFileTransferListItemState;
 }

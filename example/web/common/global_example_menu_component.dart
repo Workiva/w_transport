@@ -17,6 +17,9 @@ import 'dart:async';
 import 'package:over_react/over_react.dart';
 import 'package:w_transport/w_transport.dart';
 
+// ignore: uri_has_not_been_generated
+part 'global_example_menu_component.over_react.g.dart';
+
 Future<bool> _ping(Uri uri) async {
   try {
     await Http.get(uri);
@@ -30,16 +33,17 @@ Future<bool> _pingServer() async =>
     _ping(Uri.parse('http://localhost:8024/ping'));
 
 @Factory()
-UiFactory<GlobalExampleMenuProps> GlobalExampleMenu;
+// ignore: undefined_identifier
+UiFactory<GlobalExampleMenuProps> GlobalExampleMenu = $GlobalExampleMenu;
 
 @Props()
-class GlobalExampleMenuProps extends UiProps {
+class _$GlobalExampleMenuProps extends UiProps {
   bool nav;
   bool includeServerStatus;
 }
 
 @State()
-class GlobalExampleMenuState extends UiState {
+class _$GlobalExampleMenuState extends UiState {
   bool serverOnline;
 }
 
@@ -134,4 +138,20 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<
       ),
     );
   }
+}
+
+// AF-3369 This will be removed once the transition to Dart 2 is complete.
+// ignore: mixin_of_non_class, undefined_class
+class GlobalExampleMenuProps extends _$GlobalExampleMenuProps
+    with _$GlobalExampleMenuPropsAccessorsMixin {
+  // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
+  static const PropsMeta meta = $metaForGlobalExampleMenuProps;
+}
+
+// AF-3369 This will be removed once the transition to Dart 2 is complete.
+// ignore: mixin_of_non_class, undefined_class
+class GlobalExampleMenuState extends _$GlobalExampleMenuState
+    with _$GlobalExampleMenuStateAccessorsMixin {
+  // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
+  static const StateMeta meta = $metaForGlobalExampleMenuState;
 }

@@ -19,6 +19,9 @@ import 'package:over_react/over_react.dart';
 
 import '../services/file_transfer.dart';
 
+// ignore: uri_has_not_been_generated
+part 'drop_zone_component.over_react.g.dart';
+
 typedef dynamic NewUploadsCallback(List<Upload> uploads);
 typedef dynamic DragEventCallback(Event event);
 
@@ -27,10 +30,11 @@ typedef dynamic DragEventCallback(Event event);
 /// * Listens to drag and drop events and accepts one or many dropped files.
 /// * Uploads each dropped file to a server via a POST request with a FormData payload.
 @Factory()
-UiFactory<DropZoneProps> DropZone;
+// ignore: undefined_identifier
+UiFactory<DropZoneProps> DropZone = $DropZone;
 
 @Props()
-class DropZoneProps extends UiProps {
+class _$DropZoneProps extends UiProps {
   @requiredProp
   NewUploadsCallback onNewUploads;
   @requiredProp
@@ -40,7 +44,7 @@ class DropZoneProps extends UiProps {
 }
 
 @State()
-class DropZoneState extends UiState {
+class _$DropZoneState extends UiState {
   /// True when user is dragging something over the drop zone
   bool overDropZone;
 
@@ -189,4 +193,18 @@ class DropZoneComponent
       ..onDragLeave = shrinkDropTarget
       ..onDrop = uploadFiles)('Drop Here to Upload'));
   }
+}
+
+// AF-3369 This will be removed once the transition to Dart 2 is complete.
+// ignore: mixin_of_non_class, undefined_class
+class DropZoneProps extends _$DropZoneProps with _$DropZonePropsAccessorsMixin {
+  // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
+  static const PropsMeta meta = $metaForDropZoneProps;
+}
+
+// AF-3369 This will be removed once the transition to Dart 2 is complete.
+// ignore: mixin_of_non_class, undefined_class
+class DropZoneState extends _$DropZoneState with _$DropZoneStateAccessorsMixin {
+  // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
+  static const StateMeta meta = $metaForDropZoneState;
 }

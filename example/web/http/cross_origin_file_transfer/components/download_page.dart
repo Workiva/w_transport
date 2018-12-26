@@ -23,6 +23,9 @@ import '../services/file_transfer.dart';
 import '../services/remote_files.dart';
 import 'file_transfer_list_component.dart';
 
+// ignore: uri_has_not_been_generated
+part 'download_page.over_react.g.dart';
+
 final _gb = math.pow(2, 30);
 final _mb = math.pow(2, 20);
 final _kb = math.pow(2, 10);
@@ -53,15 +56,16 @@ String _humanizeFileSize(int bytes) {
 }
 
 @Factory()
-UiFactory<DownloadPageProps> DownloadPage;
+// ignore: undefined_identifier
+UiFactory<DownloadPageProps> DownloadPage = $DownloadPage;
 
 @Props()
-class DownloadPageProps extends UiProps {
+class _$DownloadPageProps extends UiProps {
   bool isActive;
 }
 
 @State()
-class DownloadPageState extends UiState {
+class _$DownloadPageState extends UiState {
   /// List of in-progress or completed downloads.
   List<Download> downloads;
 
@@ -217,4 +221,20 @@ class DownloadPageComponent
 
     return fileDescriptionLinks;
   }
+}
+
+// AF-3369 This will be removed once the transition to Dart 2 is complete.
+// ignore: mixin_of_non_class, undefined_class
+class DownloadPageProps extends _$DownloadPageProps
+    with _$DownloadPagePropsAccessorsMixin {
+  // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
+  static const PropsMeta meta = $metaForDownloadPageProps;
+}
+
+// AF-3369 This will be removed once the transition to Dart 2 is complete.
+// ignore: mixin_of_non_class, undefined_class
+class DownloadPageState extends _$DownloadPageState
+    with _$DownloadPageStateAccessorsMixin {
+  // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
+  static const StateMeta meta = $metaForDownloadPageState;
 }

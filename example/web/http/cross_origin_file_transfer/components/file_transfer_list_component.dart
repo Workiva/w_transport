@@ -24,7 +24,9 @@ part 'file_transfer_list_component.over_react.g.dart';
 /// List of all file uploads.
 @Factory()
 // ignore: undefined_identifier
-UiFactory<FileTransferListProps> FileTransferList = $FileTransferList;
+UiFactory<FileTransferListProps> FileTransferList =
+    // ignore: undefined_identifier
+    _$FileTransferList;
 
 @Props()
 class _$FileTransferListProps extends UiProps {

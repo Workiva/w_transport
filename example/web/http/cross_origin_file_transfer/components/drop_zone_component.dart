@@ -31,7 +31,9 @@ typedef dynamic DragEventCallback(Event event);
 /// * Uploads each dropped file to a server via a POST request with a FormData payload.
 @Factory()
 // ignore: undefined_identifier
-UiFactory<DropZoneProps> DropZone = $DropZone;
+UiFactory<DropZoneProps> DropZone =
+    // ignore: undefined_identifier
+    _$DropZone;
 
 @Props()
 class _$DropZoneProps extends UiProps {

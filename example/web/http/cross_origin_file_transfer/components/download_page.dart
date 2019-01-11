@@ -57,7 +57,9 @@ String _humanizeFileSize(int bytes) {
 
 @Factory()
 // ignore: undefined_identifier
-UiFactory<DownloadPageProps> DownloadPage = $DownloadPage;
+UiFactory<DownloadPageProps> DownloadPage =
+    // ignore: undefined_identifier
+    _$DownloadPage;
 
 @Props()
 class _$DownloadPageProps extends UiProps {

@@ -4,7 +4,7 @@ private: true
 
 dev_dependencies:
   collection: ^1.14.6
-  over_react: ^1.30.0
+  over_react: ^1.30.2
   w_transport:
     path: ../
 

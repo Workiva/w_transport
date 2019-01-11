@@ -34,7 +34,9 @@ Future<bool> _pingServer() async =>
 
 @Factory()
 // ignore: undefined_identifier
-UiFactory<GlobalExampleMenuProps> GlobalExampleMenu = $GlobalExampleMenu;
+UiFactory<GlobalExampleMenuProps> GlobalExampleMenu =
+    // ignore: undefined_identifier
+    _$GlobalExampleMenu;
 
 @Props()
 class _$GlobalExampleMenuProps extends UiProps {

@@ -28,7 +28,9 @@ part 'app_component.over_react.g.dart';
 /// Sets up the file drop zone, file upload, and file download components.
 @Factory()
 // ignore: undefined_identifier
-UiFactory<AppProps> App = $App;
+UiFactory<AppProps> App =
+    // ignore: undefined_identifier
+    _$App;
 
 @Props()
 class _$AppProps extends UiProps {}

@@ -32,7 +32,8 @@ const Duration _transferCompleteFadeoutDuration = const Duration(seconds: 2);
 @Factory()
 // ignore: undefined_identifier
 UiFactory<FileTransferListItemProps> FileTransferListItem =
-    $FileTransferListItem;
+    // ignore: undefined_identifier
+    _$FileTransferListItem;
 
 @Props()
 class _$FileTransferListItemProps extends UiProps {

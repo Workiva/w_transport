@@ -23,7 +23,9 @@ part 'upload_page.over_react.g.dart';
 
 @Factory()
 // ignore: undefined_identifier
-UiFactory<UploadPageProps> UploadPage = $UploadPage;
+UiFactory<UploadPageProps> UploadPage =
+    // ignore: undefined_identifier
+    _$UploadPage;
 
 @Props()
 class _$UploadPageProps extends UiProps {

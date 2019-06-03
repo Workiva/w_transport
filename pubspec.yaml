@@ -28,7 +28,7 @@ dependencies:
   sockjs_client:
     git:
       url: git://github.com/Workiva/sockjs-dart-client.git
-      ref: 0.3.5
+      ref: 0.3.6
   sockjs_client_wrapper: ^1.0.5
 
 dev_dependencies:

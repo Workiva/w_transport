@@ -170,7 +170,7 @@ enum FileTransferItemStatus {
 class FileTransferListItemProps extends _$FileTransferListItemProps
     with _$FileTransferListItemPropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const PropsMeta meta = $metaForFileTransferListItemProps;
+  static const PropsMeta meta = _$metaForFileTransferListItemProps;
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
@@ -178,5 +178,5 @@ class FileTransferListItemProps extends _$FileTransferListItemProps
 class FileTransferListItemState extends _$FileTransferListItemState
     with _$FileTransferListItemStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const StateMeta meta = $metaForFileTransferListItemState;
+  static const StateMeta meta = _$metaForFileTransferListItemState;
 }

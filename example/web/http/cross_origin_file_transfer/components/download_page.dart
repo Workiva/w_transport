@@ -230,7 +230,7 @@ class DownloadPageComponent
 class DownloadPageProps extends _$DownloadPageProps
     with _$DownloadPagePropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const PropsMeta meta = $metaForDownloadPageProps;
+  static const PropsMeta meta = _$metaForDownloadPageProps;
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
@@ -238,5 +238,5 @@ class DownloadPageProps extends _$DownloadPageProps
 class DownloadPageState extends _$DownloadPageState
     with _$DownloadPageStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const StateMeta meta = $metaForDownloadPageState;
+  static const StateMeta meta = _$metaForDownloadPageState;
 }

@@ -45,17 +45,6 @@ Future<Null> main(List<String> args) async {
   config.format.paths = directories;
 
   config.test
-    ..unitTests = [
-      'test/unit/http',
-      'test/unit/mocks',
-      'test/unit/ws',
-    ]
-    ..integrationTests = [
-      'test/integration/global_web_socket_monitor',
-      'test/integration/http',
-      'test/integration/platforms',
-      'test/integration/ws',
-    ]
     ..platforms = ['vm', 'chrome']
     ..pubServe = true
     ..before = [_streamServer, _streamSockJSServer]
@@ -75,14 +64,6 @@ List<String> _serverOutput;
 
 /// Output from the SockJS server.
 List<String> _sockJSServerOutput;
-
-Future<Null> _serveExamples() {
-  io.Process.runSync('pub', ['get'], workingDirectory: 'example');
-  io.Process.start('pub', ['serve', '--port=9000'],
-      workingDirectory: 'example');
-
-  return new Completer<Null>().future;
-}
 
 /// Start the server needed for integration tests and examples and stream the
 /// server output as it arrives. The output will be mixed in with output from

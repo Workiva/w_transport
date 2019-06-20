@@ -77,5 +77,5 @@ class FileTransferListComponent extends UiComponent<FileTransferListProps> {
 class FileTransferListProps extends _$FileTransferListProps
     with _$FileTransferListPropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const PropsMeta meta = $metaForFileTransferListProps;
+  static const PropsMeta meta = _$metaForFileTransferListProps;
 }

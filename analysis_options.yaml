@@ -9,3 +9,4 @@ linter:
   rules:
     - avoid_types_on_closure_parameters
     - prefer_void_to_null
+    - void_checks

@@ -23,15 +23,17 @@ import '../../integration_paths.dart';
 void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
   group('Common Request API', () {
     transport.FormRequest formReqFactory({bool withBody = false}) {
-      if (!withBody)
+      if (!withBody) {
         return transport.FormRequest(transportPlatform: transportPlatform);
+      }
       return transport.FormRequest(transportPlatform: transportPlatform)
         ..fields['field'] = 'value';
     }
 
     transport.JsonRequest jsonReqFactory({bool withBody = false}) {
-      if (!withBody)
+      if (!withBody) {
         return transport.JsonRequest(transportPlatform: transportPlatform);
+      }
       return transport.JsonRequest(transportPlatform: transportPlatform)
         ..body = [
           {'field': 'value'}
@@ -45,15 +47,17 @@ void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
     }
 
     transport.Request reqFactory({bool withBody = false}) {
-      if (!withBody)
+      if (!withBody) {
         return transport.Request(transportPlatform: transportPlatform);
+      }
       return transport.Request(transportPlatform: transportPlatform)
         ..body = 'body';
     }
 
     transport.StreamedRequest streamedReqFactory({bool withBody = false}) {
-      if (!withBody)
+      if (!withBody) {
         return transport.StreamedRequest(transportPlatform: transportPlatform);
+      }
       return transport.StreamedRequest(transportPlatform: transportPlatform)
         ..body = Stream.fromIterable([convert.utf8.encode('bytes')])
         ..contentLength = convert.utf8.encode('bytes').length;
@@ -399,7 +403,7 @@ void _runCommonRequestSuiteFor(
 
       // Abort the request now that it is in flight.
       request.abort();
-      expect(future, throwsA(isInstanceOf<transport.RequestException>()));
+      expect(future, throwsA(isA<transport.RequestException>()));
     });
 
     test('timeoutThreshold does nothing if request completes in time',
@@ -429,8 +433,7 @@ void _runAutoRetryTestSuiteFor(
 
         defineResponseChain(request, [500]);
 
-        expect(
-            request.get(), throwsA(isInstanceOf<transport.RequestException>()));
+        expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -483,8 +486,7 @@ void _runAutoRetryTestSuiteFor(
 
         defineResponseChain(request, [500, 500, 500]);
 
-        expect(
-            request.get(), throwsA(isInstanceOf<transport.RequestException>()));
+        expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(3));
         expect(request.autoRetry.failures.length, equals(3));
@@ -496,7 +498,7 @@ void _runAutoRetryTestSuiteFor(
 void defineResponseChain(transport.BaseRequest request, List<int> statusCodes) {
   request
     ..uri = IntegrationPaths.customEndpointUri
-    ..requestInterceptor = (transport.BaseRequest request) {
+    ..requestInterceptor = (request) async {
       request.updateQuery({'status': statusCodes.removeAt(0).toString()});
     };
 }

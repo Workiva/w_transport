@@ -29,15 +29,15 @@ import 'package:w_transport/src/mocks/mock_transports.dart' show MockTransports;
 export 'package:w_transport/src/http/finalized_request.dart'
     show FinalizedRequest;
 export 'package:w_transport/src/http/mock/base_request.dart'
-    show MockBaseRequest; // ignore: deprecated_member_use
+    show MockBaseRequest; // ignore: deprecated_member_use_from_same_package
 export 'package:w_transport/src/http/mock/client.dart'
-    show MockClient; // ignore: deprecated_member_use
+    show MockClient; // ignore: deprecated_member_use_from_same_package
 export 'package:w_transport/src/http/mock/requests.dart'
     show
-        MockFormRequest, // ignore: deprecated_member_use
-        MockJsonRequest, // ignore: deprecated_member_use
-        MockPlainTextRequest, // ignore: deprecated_member_use
-        MockStreamedRequest; // ignore: deprecated_member_use
+        MockFormRequest, // ignore: deprecated_member_use_from_same_package
+        MockJsonRequest, // ignore: deprecated_member_use_from_same_package
+        MockPlainTextRequest, // ignore: deprecated_member_use_from_same_package
+        MockStreamedRequest; // ignore: deprecated_member_use_from_same_package
 export 'package:w_transport/src/http/mock/response.dart'
     show MockResponse, MockStreamedResponse;
 
@@ -54,7 +54,7 @@ export 'package:w_transport/src/mocks/mock_transports.dart'
         WebSocketPatternConnectHandler;
 
 export 'package:w_transport/src/web_socket/mock/w_socket.dart'
-    show MockWSocket; // ignore: deprecated_member_use
+    show MockWSocket; // ignore: deprecated_member_use_from_same_package
 
 /// Configure w_transport for use in tests, allowing you to easily mock out the
 /// behavior of the w_transport classes.

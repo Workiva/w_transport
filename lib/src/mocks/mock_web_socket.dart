@@ -109,14 +109,14 @@ class MockWebSocketInternal {
       // For backwards compatibility, it is still allowed to pass in a `WSocket`
       // instance for the `connectTo` param. If that happens, return it here and
       // it should function as expected.
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       if (expectation.connectTo is WSocket) return expectation.connectTo;
 
       // The new behavior is to pass in a `MockWebSocketServer` for the
       // `connectTo` param. When this is done, we have to create a mock
       // `WebSocket` instance, return it, and notify the mock server that this
       // new client has connected.
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final mockWebSocket = MockWSocket();
       MockWebSocketServer mockWebSocketServer = expectation.connectTo;
       mockWebSocketServer._connectClient(mockWebSocket, uri,
@@ -139,7 +139,7 @@ class MockWebSocketInternal {
       if (result is Future) {
         result = await result;
       }
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       if (result is! WSocket && result is! MockWebSocketServer) {
         throw ArgumentError('Mock WebSocket handlers must return an '
             'instance of MockWSocket or MockWebSocketServer.');
@@ -148,14 +148,14 @@ class MockWebSocketInternal {
       // For backwards compatibility, it is still allowed to return a `WSocket`
       // instance from the handler. If that happens, return it here and it
       // should function as expected.
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       if (result is WSocket) return result;
 
       // The new behavior is to return a `MockWebSocketServer` from the handler.
       // When this is done, we have to create a mock `WebSocket` instance,
       // return it, and notify the mock server that this new client has
       // connected.
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final mockWebSocket = MockWSocket();
       MockWebSocketServer mockWebSocketServer = result;
       mockWebSocketServer._connectClient(mockWebSocket, uri,
@@ -181,7 +181,7 @@ class MockWebSocketInternal {
       throw ArgumentError('Either connectTo OR reject must be set.');
     }
     if (connectTo != null &&
-        // ignore: deprecated_member_use
+        // ignore: deprecated_member_use_from_same_package
         connectTo is! MockWSocket &&
         connectTo is! MockWebSocketServer) {
       throw ArgumentError(
@@ -200,6 +200,7 @@ class MockWebSocketInternal {
         final Pattern pattern = e.uri;
         return pattern.allMatches(uri.toString()).isNotEmpty;
       }
+      return false;
     });
   }
 

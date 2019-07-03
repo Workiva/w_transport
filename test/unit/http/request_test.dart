@@ -84,6 +84,7 @@ void main() {
       // Hold the requests long enough to let the client cancel them on close
       MockTransports.http.when(requestUri, (request) async {
         await Future.delayed(Duration(seconds: 10));
+        return null;
       }, method: 'GET');
 
       final client = transport.HttpClient();
@@ -108,21 +109,21 @@ void main() {
       final interval = Duration(seconds: 10);
 
       final exponentialBackOff = transport.RetryBackOff.exponential(interval);
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       expect(exponentialBackOff.duration, equals(interval));
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       expect(exponentialBackOff.duration, equals(exponentialBackOff.interval));
 
       final fixedBackOff = transport.RetryBackOff.fixed(interval);
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       expect(fixedBackOff.duration, equals(interval));
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       expect(fixedBackOff.duration, equals(exponentialBackOff.interval));
 
       final noBackOff = transport.RetryBackOff.none();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       expect(noBackOff.duration, isNull);
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       expect(noBackOff.duration, equals(noBackOff.interval));
     });
   });
@@ -294,7 +295,7 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory();
       request.abort();
       Future future = request.get(uri: requestUri);
-      expect(future, throwsA(isInstanceOf<transport.RequestException>()));
+      expect(future, throwsA(isA<transport.RequestException>()));
       await future.catchError((_) {});
       expect(request.isDone, isTrue,
           reason: 'canceled request should be marked as "done"');
@@ -310,7 +311,7 @@ void _runCommonRequestSuiteFor(
       final future = request.get(uri: requestUri);
       await Future.delayed(Duration(milliseconds: 100));
       request.abort();
-      expect(future, throwsA(isInstanceOf<transport.RequestException>()));
+      expect(future, throwsA(isA<transport.RequestException>()));
       await future.catchError((_) {});
       expect(request.isDone, isTrue,
           reason: 'canceled request should be marked as "done"');
@@ -332,7 +333,7 @@ void _runCommonRequestSuiteFor(
       MockTransports.http.expect('GET', requestUri, failWith: Exception());
       final request = requestFactory();
       final future = request.get(uri: requestUri);
-      expect(future, throwsA(isInstanceOf<transport.RequestException>()));
+      expect(future, throwsA(isA<transport.RequestException>()));
       try {
         await future;
       } catch (_) {}
@@ -355,7 +356,7 @@ void _runCommonRequestSuiteFor(
         request.abort();
       }, returnsNormally);
       expect(request.get(uri: requestUri),
-          throwsA(isInstanceOf<transport.RequestException>()));
+          throwsA(isA<transport.RequestException>()));
     });
 
     test('request cancellations should not be retried', () async {
@@ -376,7 +377,7 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory();
       MockTransports.http.causeFailureOnOpen(request);
       expect(request.get(uri: requestUri),
-          throwsA(isInstanceOf<transport.RequestException>()));
+          throwsA(isA<transport.RequestException>()));
     });
 
     test('should throw if status code is non-200', () async {
@@ -384,7 +385,7 @@ void _runCommonRequestSuiteFor(
           respondWith: MockResponse.internalServerError());
       final request = requestFactory();
       expect(request.get(uri: requestUri),
-          throwsA(isInstanceOf<transport.RequestException>()));
+          throwsA(isA<transport.RequestException>()));
     });
 
     test('headers should be unmodifiable once sent', () async {
@@ -438,7 +439,7 @@ void _runCommonRequestSuiteFor(
           .expect('GET', requestUri, respondWith: MockResponse.notFound());
       final request = requestFactory();
       final future = request.get(uri: requestUri);
-      expect(future, throwsA(isInstanceOf<transport.RequestException>()));
+      expect(future, throwsA(isA<transport.RequestException>()));
       await future.catchError((_) {});
       expect(request.isDone, isTrue);
     });
@@ -501,7 +502,7 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory();
       request.responseInterceptor =
           (request, transport.BaseResponse response, [exception]) async {
-        expect(response, isInstanceOf<transport.Response>());
+        expect(response, isA<transport.Response>());
         transport.Response standardResponse = response;
         expect(standardResponse.body.asString(), equals('original'));
         return standardResponse;
@@ -525,13 +526,13 @@ void _runCommonRequestSuiteFor(
       MockTransports.http
           .expect('GET', requestUri, failWith: Exception('mock failure'));
       final request = requestFactory();
-      request.responseInterceptor =
-          (request, response, [transport.RequestException exception]) async {
+      request.responseInterceptor = (request, response, [exception]) async {
         expect(exception, isNotNull);
         expect(exception.toString(), contains('mock failure'));
+        return response;
       };
       expect(request.get(uri: requestUri),
-          throwsA(isInstanceOf<transport.RequestException>()));
+          throwsA(isA<transport.RequestException>()));
     });
 
     test('responseInterceptor allows replacement of BaseResponse', () async {
@@ -567,7 +568,8 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory();
       await request.get(uri: requestUri);
       expect(() {
-        request.responseInterceptor = (request, response, [exception]) async {};
+        request.responseInterceptor =
+            (request, response, [exception]) async => response;
       }, throwsStateError);
     });
 
@@ -589,7 +591,7 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory();
       final future = request.get(uri: requestUri);
       await Future.delayed(Duration(milliseconds: 250));
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       MockTransports.http.completeRequest(request);
       await future;
     });
@@ -600,7 +602,7 @@ void _runCommonRequestSuiteFor(
         ..timeoutThreshold = Duration(milliseconds: 500);
       final future = request.get(uri: requestUri);
       await Future.delayed(Duration(milliseconds: 250));
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       MockTransports.http.completeRequest(request);
       await future;
     });
@@ -704,7 +706,7 @@ void _runAutoRetryTestSuiteFor(
             respondWith: MockResponse.internalServerError());
         final request = requestFactory();
         expect(request.get(uri: requestUri),
-            throwsA(isInstanceOf<transport.RequestException>()));
+            throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -772,7 +774,7 @@ void _runAutoRetryTestSuiteFor(
           ..maxRetries = 2;
 
         expect(request.get(uri: requestUri),
-            throwsA(isInstanceOf<transport.RequestException>()));
+            throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(3));
         expect(request.autoRetry.failures.length, equals(3));
@@ -791,7 +793,7 @@ void _runAutoRetryTestSuiteFor(
           ..maxRetries = 2;
 
         expect(request.get(uri: requestUri),
-            throwsA(isInstanceOf<transport.RequestException>()));
+            throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(2));
         expect(request.autoRetry.failures.length, equals(2));
@@ -808,7 +810,7 @@ void _runAutoRetryTestSuiteFor(
           ..maxRetries = 2;
 
         expect(request.post(uri: requestUri),
-            throwsA(isInstanceOf<transport.RequestException>()));
+            throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -826,7 +828,7 @@ void _runAutoRetryTestSuiteFor(
           ..maxRetries = 2;
 
         expect(request.get(uri: requestUri),
-            throwsA(isInstanceOf<transport.RequestException>()));
+            throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -847,7 +849,7 @@ void _runAutoRetryTestSuiteFor(
                   response.headers['x-retry'] == 'yes';
 
         expect(request.get(uri: requestUri),
-            throwsA(isInstanceOf<transport.RequestException>()));
+            throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -865,7 +867,7 @@ void _runAutoRetryTestSuiteFor(
             await request.get(uri: requestUri);
           } else {
             expect(request.get(uri: requestUri),
-                throwsA(isInstanceOf<transport.RequestException>()));
+                throwsA(isA<transport.RequestException>()));
           }
           await request.done;
           expect(request.autoRetry.numAttempts, equals(num + 1));
@@ -908,7 +910,7 @@ void _runAutoRetryTestSuiteFor(
             await request.send(method, uri: requestUri);
           } else {
             expect(request.send(method, uri: requestUri),
-                throwsA(isInstanceOf<transport.RequestException>()));
+                throwsA(isA<transport.RequestException>()));
           }
 
           await request.done;
@@ -1011,7 +1013,7 @@ void _runAutoRetryTestSuiteFor(
           ..test = (request, response, willRetry) async => willRetry;
 
         expect(request.get(uri: requestUri),
-            throwsA(isInstanceOf<transport.RequestException>()));
+            throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -1028,6 +1030,7 @@ void _runAutoRetryTestSuiteFor(
           } else {
             await Future.delayed(Duration(seconds: 10));
           }
+          return null;
         }, method: 'GET');
 
         final request = requestFactory();
@@ -1050,6 +1053,7 @@ void _runAutoRetryTestSuiteFor(
         MockTransports.http.when(requestUri, (request) async {
           if (++c == 1) {
             await Future.delayed(Duration(seconds: 1));
+            return null;
           } else {
             return MockResponse.ok();
           }
@@ -1069,6 +1073,7 @@ void _runAutoRetryTestSuiteFor(
         // 1st request = hangs until timeout
         MockTransports.http.when(requestUri, (request) async {
           await Future.delayed(Duration(seconds: 1));
+          return null;
         }, method: 'GET');
 
         final request = requestFactory();
@@ -1079,7 +1084,7 @@ void _runAutoRetryTestSuiteFor(
           ..maxRetries = 2;
 
         final future = request.get(uri: requestUri);
-        expect(future, throwsA(isInstanceOf<transport.RequestException>()));
+        expect(future, throwsA(isA<transport.RequestException>()));
         await future.catchError((_) {});
         expect(request.autoRetry.numAttempts, equals(1));
       });
@@ -1244,6 +1249,8 @@ void _runAutoRetryTestSuiteFor(
               return MockResponse.notImplemented();
             case 5:
               throw Exception('Unexpected failure.');
+            default:
+              return null;
           }
         });
 

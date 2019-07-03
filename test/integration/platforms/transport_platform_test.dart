@@ -102,7 +102,7 @@ void main() {
         'establishing a WS connection without a TP throws a TransportPlatformMissing',
         () {
       expect(transport.WebSocket.connect(Uri.parse('/')),
-          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isA<transport.TransportPlatformMissing>()));
     });
 
     test('constructing any HTTP class without a TP will inherit the global',

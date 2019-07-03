@@ -27,7 +27,7 @@ import 'package:w_transport/src/transport_platform.dart';
 abstract class CommonFormRequest extends CommonRequest implements FormRequest {
   CommonFormRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   CommonFormRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 

@@ -44,7 +44,7 @@ abstract class CommonRequest extends Object
     autoRetry = RequestAutoRetry(this);
   }
 
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   CommonRequest.fromClient(Client wTransportClient, this.client)
       : this._wTransportClient = wTransportClient {
     autoRetry = RequestAutoRetry(this);
@@ -152,7 +152,7 @@ abstract class CommonRequest extends Object
 
   /// HttpClient instance from which this request was created. Used in [clone]
   /// to correctly tie the clone to the same client.
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   Client _wTransportClient;
 
   /// Gets the content length of the request. If the size of the request is not
@@ -452,9 +452,10 @@ abstract class CommonRequest extends Object
     final finalizedRequest = FinalizedRequest(
         method, uri, finalizedHeaders, finalizedBody, withCredentials);
 
-    if (isSent)
+    if (isSent) {
       throw StateError(
           'Request ($this) has already been sent - it cannot be sent again.');
+    }
     isSent = true;
 
     return finalizedRequest;
@@ -476,9 +477,10 @@ abstract class CommonRequest extends Object
   /// should be considered frozen. If this request has been sent, this throws
   /// a [StateError].
   void verifyUnsent() {
-    if (isSent)
+    if (isSent) {
       throw StateError(
           'Request ($this) has already been sent and can no longer be modified.');
+    }
   }
 
   @override
@@ -695,12 +697,15 @@ abstract class CommonRequest extends Object
   }
 
   void _verifyCanRetryManually() {
-    if (!isSent)
+    if (!isSent) {
       throw StateError('Cannot retry a request that has not yet been sent.');
-    if (!_done.isCompleted)
+    }
+    if (!_done.isCompleted) {
       throw StateError('Cannot retry a request that has not yet completed.');
-    if (didSucceed)
+    }
+    if (didSucceed) {
       throw StateError('Cannot retry a request that did not fail.');
+    }
   }
 
   /// Send the HTTP request:
@@ -724,8 +729,9 @@ abstract class CommonRequest extends Object
     if (uri != null) {
       this.uri = uri;
     }
-    if (this.uri == null || this.uri.toString().isEmpty)
+    if (this.uri == null || this.uri.toString().isEmpty) {
       throw StateError('Request: Cannot send a request without a URI.');
+    }
     if (headers != null) {
       headers.forEach((key, value) {
         this.headers[key] = value;

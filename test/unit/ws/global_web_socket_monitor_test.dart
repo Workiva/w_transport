@@ -27,13 +27,12 @@ void main() {
     test(
         'getGlobalWebSocketMonitor() returns correctly from WSocket & WebSocket',
         () async {
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocketMonitor = transport.WSocket.getGlobalEventMonitor();
       final webSocketMonitor = transport.WebSocket.getGlobalEventMonitor();
 
-      expect(wSocketMonitor, isInstanceOf<transport.GlobalWebSocketMonitor>());
-      expect(
-          webSocketMonitor, isInstanceOf<transport.GlobalWebSocketMonitor>());
+      expect(wSocketMonitor, isA<transport.GlobalWebSocketMonitor>());
+      expect(webSocketMonitor, isA<transport.GlobalWebSocketMonitor>());
 
       await wSocketMonitor.close();
       await webSocketMonitor.close();

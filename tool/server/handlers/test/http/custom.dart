@@ -30,7 +30,7 @@ class CustomHandler extends Handler {
     request.response.statusCode =
         int.parse(request.uri.queryParameters['status']) ??
             io_constant.HttpStatus.ok;
-    request.response.headers.contentType = ContentType.TEXT;
+    request.response.headers.contentType = ContentType.text;
     setCorsHeaders(request);
   }
 }

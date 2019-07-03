@@ -26,7 +26,7 @@ class MockHttp {
 
   void causeFailureOnOpen(BaseRequest request) {
     MockHttpInternal._verifyRequestIsMock(request);
-    // ignore: deprecated_member_use
+    // ignore: deprecated_member_use_from_same_package
     final MockBaseRequest mockRequest = request;
     mockRequest.causeFailureOnOpen();
   }
@@ -143,15 +143,15 @@ class MockHttpInternal {
       {};
   static Map<Pattern, Map<String /* method */, PatternRequestHandler>>
       _patternRequestHandlers = {};
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   static List<MockBaseRequest> _pending = [];
 
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   static void cancelMockRequest(MockBaseRequest request) {
     _pending.remove(request);
   }
 
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   static void handleMockRequest(MockBaseRequest request) {
     final matchingExpectations =
         _getMatchingExpectations(request.method, request.uri, request.headers);
@@ -289,7 +289,7 @@ class MockHttpInternal {
   }
 
   static void _verifyRequestIsMock(BaseRequest request) {
-    // ignore: deprecated_member_use
+    // ignore: deprecated_member_use_from_same_package
     if (request is! MockBaseRequest) {
       throw ArgumentError.value(
           'Request must be of type MockBaseRequest. Make sure you configured w_transport for testing.');

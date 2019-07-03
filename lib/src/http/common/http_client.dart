@@ -132,8 +132,9 @@ abstract class CommonHttpClient implements HttpClient {
 
   /// Throws a [StateError] if this client has been closed.
   void verifyNotClosed() {
-    if (isClosed)
+    if (isClosed) {
       throw StateError(
           'HTTP Client has been closed, can\'t create a new request.');
+    }
   }
 }

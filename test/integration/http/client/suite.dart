@@ -23,7 +23,7 @@ void runHttpTransportClientSuite(
     [transport.TransportPlatform transportPlatform]) {
   group('Client', () {
     _runHttpClientSuite(
-        // ignore: deprecated_member_use
+        // ignore: deprecated_member_use_from_same_package
         () => transport.Client(transportPlatform: transportPlatform));
   });
 
@@ -33,9 +33,9 @@ void runHttpTransportClientSuite(
   });
 }
 
-// ignore: deprecated_member_use
+// ignore: deprecated_member_use_from_same_package
 void _runHttpClientSuite(transport.Client getClient()) {
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   transport.Client client;
 
   setUp(() {
@@ -111,7 +111,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
     // abort the pending request.
     client.close();
 
-    expect(willThrow, throwsA(isInstanceOf<transport.RequestException>()));
+    expect(willThrow, throwsA(isA<transport.RequestException>()));
   });
 }
 

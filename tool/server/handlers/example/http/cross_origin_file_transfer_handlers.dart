@@ -177,8 +177,7 @@ class FilesHandler extends Handler {
 
   @override
   Future<Null> delete(HttpRequest request) async {
-    Iterable<File> files =
-        fw.files.where((FileSystemEntity entity) => entity is File);
+    Iterable<File> files = fw.files.whereType<File>();
     for (final entity in files) {
       entity.deleteSync();
     }

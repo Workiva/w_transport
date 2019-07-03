@@ -64,7 +64,7 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   CommonMultipartRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   CommonMultipartRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
@@ -94,8 +94,9 @@ abstract class CommonMultipartRequest extends CommonRequest
     });
 
     files.forEach((name, file) {
-      if (file is! MultipartFile)
+      if (file is! MultipartFile) {
         throw UnsupportedError('Illegal multipart file type: $file');
+      }
       length += _boundaryDelimiterLength;
       length += convert.utf8.encode(_multipartFileHeaders(name, file)).length;
       length += file.length;

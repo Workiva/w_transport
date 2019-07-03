@@ -59,41 +59,41 @@ class MockAwareTransportPlatform {
   static HttpClient newHttpClient(TransportPlatform realTransportPlatform) =>
       MockHttpClient(realTransportPlatform);
 
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   /// Construct a new [MockFormRequest] instance that implements
   /// [FormRequest].
   static FormRequest newFormRequest(TransportPlatform realTransportPlatform) =>
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       MockFormRequest(realTransportPlatform);
 
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   /// Construct a new [MockJsonRequest] instance that implements
   /// [JsonRequest].
   static JsonRequest newJsonRequest(TransportPlatform realTransportPlatform) =>
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       MockJsonRequest(realTransportPlatform);
 
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   /// Construct a new [MockMultipartRequest] instance that implements
   /// [MultipartRequest].
   static MultipartRequest newMultipartRequest(
           TransportPlatform realTransportPlatform) =>
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       MockMultipartRequest(realTransportPlatform);
 
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   /// Construct a new [MockPlainTextRequest] instance that implements
   /// [Request].
   static Request newRequest(TransportPlatform realTransportPlatform) =>
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       MockPlainTextRequest(realTransportPlatform);
 
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   /// Construct a new [MockStreamedRequest] instance that implements
   /// [StreamedRequest].
   static StreamedRequest newStreamedRequest(
           TransportPlatform realTransportPlatform) =>
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       MockStreamedRequest(realTransportPlatform);
 
   /// Construct a new [MockWebSocket] instance that implements [WebSocket].
@@ -108,22 +108,22 @@ class MockAwareTransportPlatform {
       @Deprecated(v3Deprecation) bool useSockJS}) {
     if (MockTransportsInternal.isInstalled &&
         MockWebSocketInternal.hasHandlerForWebSocket(uri)) {
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       return MockWSocket.connect(uri, headers: headers, protocols: protocols);
     } else if (MockTransportsInternal.fallThrough &&
         realTransportPlatform != null) {
       return realTransportPlatform.newWebSocket(uri,
           headers: headers,
           protocols: protocols,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSDebug: sockJSDebug,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSNoCredentials: sockJSNoCredentials,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSTimeout: sockJSTimeout,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           useSockJS: useSockJS);
     } else {
       throw TransportPlatformMissing.webSocketFailed(uri);

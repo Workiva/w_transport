@@ -206,7 +206,7 @@ abstract class CommonMultipartRequest extends CommonRequest
     });
 
     // ignore: unawaited_futures
-    Future.forEach(fileList, (Map file) {
+    Future.forEach(fileList, (file) {
       // TODO: make this better
       Stream<List<int>> byteStream;
       final bs = file['byteStream'];

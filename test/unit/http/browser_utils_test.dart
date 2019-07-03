@@ -71,7 +71,7 @@ void main() {
 
         final c = Completer<Null>();
         int eventCount = 0;
-        StreamSubscription subscription = wEventStream.listen((_) {
+        final subscription = wEventStream.listen((_) {
           eventCount++;
         }, onDone: c.complete);
 

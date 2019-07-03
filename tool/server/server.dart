@@ -29,7 +29,7 @@ class Server {
 
   Logger _logger = Logger();
   HttpServer _server;
-  StreamSubscription _subscription;
+  StreamSubscription<HttpRequest> _subscription;
 
   Server({this.host = defaultHost, this.port = defaultPort});
 
@@ -42,7 +42,7 @@ class Server {
     return server.start();
   }
 
-  Stream get output => _logger.stream;
+  Stream<String> get output => _logger.stream;
 
   Future<Null> start() async {
     final router = Router(_logger);

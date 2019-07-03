@@ -136,7 +136,7 @@ class MockWebSocketInternal {
             handlerMatch.handler(uri, headers: headers, protocols: protocols);
       }
 
-      if (result is Future) {
+      if (result is Future<dynamic>) {
         result = await result;
       }
       // ignore: deprecated_member_use_from_same_package

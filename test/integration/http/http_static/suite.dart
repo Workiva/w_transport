@@ -241,7 +241,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
       return response.encoding.decode(bytes.toList());
     }
 
-    Future<Map> _decodeStreamedResponseToJson(
+    Future<Map<dynamic, dynamic>> _decodeStreamedResponseToJson(
         transport.StreamedResponse response) async {
       return convert.json
           .decode(await _decodeStreamedResponseToString(response));

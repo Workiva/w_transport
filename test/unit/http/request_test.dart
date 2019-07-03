@@ -294,7 +294,7 @@ void _runCommonRequestSuiteFor(
         () async {
       final request = requestFactory();
       request.abort();
-      Future future = request.get(uri: requestUri);
+      final future = request.get(uri: requestUri);
       expect(future, throwsA(isA<transport.RequestException>()));
       await future.catchError((_) {});
       expect(request.isDone, isTrue,

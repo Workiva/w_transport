@@ -40,7 +40,7 @@ class _$FileTransferListProps extends UiProps {
 @Component()
 class FileTransferListComponent extends UiComponent<FileTransferListProps> {
   @override
-  Map getDefaultProps() => newProps()
+  getDefaultProps() => newProps()
     ..transfers = const <FileTransfer>[]
     ..noTransfersMessage = 'There are no pending transfers.'
     ..hideChildrenFromPointerEvents = false;

@@ -84,7 +84,8 @@ import 'package:w_transport/src/web_socket/w_socket.dart';
 /// library first. See https://github.com/workiva/sockjs_client_wrapper#usage
 ///
 // ignore: deprecated_member_use_from_same_package
-abstract class WebSocket extends WSocket implements Stream, StreamSink {
+abstract class WebSocket extends WSocket
+    implements Stream<dynamic>, StreamSink<dynamic> {
   /// Create a new WebSocket connection. The given [uri] must use the scheme
   /// `ws` or `wss`.
   ///
@@ -194,7 +195,7 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
   @override
-  Future<Null> addStream(Stream stream);
+  Future<Null> addStream(Stream<dynamic> stream);
 
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.

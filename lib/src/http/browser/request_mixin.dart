@@ -99,7 +99,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     }
 
     // Wait for the configuration if applicable before sending the request.
-    if (configurationResult != null && configurationResult is Future) {
+    if (configurationResult != null && configurationResult is Future<dynamic>) {
       await configurationResult;
     }
 

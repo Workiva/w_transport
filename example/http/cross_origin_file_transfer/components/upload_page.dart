@@ -42,10 +42,10 @@ class _$UploadPageState extends UiState {
 class UploadPageComponent
     extends UiStatefulComponent<UploadPageProps, UploadPageState> {
   @override
-  Map getDefaultProps() => newProps()..isActive = true;
+  getDefaultProps() => newProps()..isActive = true;
 
   @override
-  Map getInitialState() => newState()
+  getInitialState() => newState()
     ..isDragging = false
     ..uploads = const <Upload>[];
 

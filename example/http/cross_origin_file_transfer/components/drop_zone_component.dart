@@ -60,7 +60,7 @@ class DropZoneComponent
   Timer _hideDropTargetTimer;
 
   @override
-  Map getInitialState() => newState()
+  getInitialState() => newState()
     ..overDropZone = false
     ..overDropTarget = false;
 

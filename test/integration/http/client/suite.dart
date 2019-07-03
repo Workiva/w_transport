@@ -74,7 +74,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('should support multiple concurrent requests', () async {
-    final requests = <Future>[
+    final requests = <Future<void>>[
       client.newFormRequest().post(uri: IntegrationPaths.reflectEndpointUri),
       client.newJsonRequest().put(uri: IntegrationPaths.reflectEndpointUri),
       (client.newMultipartRequest()..fields['f'] = 'v')

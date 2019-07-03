@@ -55,12 +55,12 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<
   Timer serverPolling;
 
   @override
-  Map getDefaultProps() => newProps()
+  getDefaultProps() => newProps()
     ..nav = true
     ..includeServerStatus = false;
 
   @override
-  Map getInitialState() => newState()..serverOnline = false;
+  getInitialState() => newState()..serverOnline = false;
 
   @override
   void componentWillMount() {

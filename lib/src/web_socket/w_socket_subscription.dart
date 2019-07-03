@@ -42,7 +42,7 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   bool get isPaused => _sub.isPaused;
 
   @override
-  Future cancel() async {
+  Future<dynamic> cancel() async {
     if (_isCanceled) return;
 
     // Make the onData, onError, and onDone handlers no-ops.
@@ -73,7 +73,7 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   }
 
   @override
-  void pause([Future resumeSignal]) {
+  void pause([Future<dynamic> resumeSignal]) {
     if (_isCanceled) return;
     _sub.pause();
     if (resumeSignal != null) {

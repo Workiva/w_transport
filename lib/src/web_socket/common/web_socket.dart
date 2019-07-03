@@ -19,7 +19,7 @@ import 'package:w_transport/src/web_socket/w_socket_subscription.dart';
 
 /// Implementation of the [WebSocket] class that is common across all platforms.
 /// Platform-dependent pieces are left as unimplemented abstract members.
-abstract class CommonWebSocket extends Stream implements WebSocket {
+abstract class CommonWebSocket extends Stream<dynamic> implements WebSocket {
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
   @override
@@ -36,7 +36,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
 
   /// The subscription to the underlying WebSocket (either a browser WebSocket,
   /// VM WebSocket, SockJS Client, or a mock WebSocket).
-  StreamSubscription webSocketSubscription;
+  StreamSubscription<dynamic> webSocketSubscription;
 
   /// A completer that completes when both the outgoing stream sink and the
   /// incoming stream have been closed. This is used to determine when this
@@ -50,7 +50,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// Any error that may be caught during the life of the underlying WebSocket.
   Object _error;
 
-  Future _inProgressAddStream;
+  Future<dynamic> _inProgressAddStream;
 
   /// A `StreamController` used to expose the incoming stream of events from the
   /// underlying WebSocket.
@@ -72,7 +72,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
 
   /// The custom `StreamSubscription` that is used to proxy the subscription to
   /// the underlying WebSocket.
-  WSocketSubscription _incomingSubscription;
+  WSocketSubscription<dynamic> _incomingSubscription;
 
   CommonWebSocket() {
     _allClosed.future.then((_) {
@@ -139,7 +139,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
   @override
-  Future<Null> addStream(Stream stream) async {
+  Future<Null> addStream(Stream<dynamic> stream) async {
     _inProgressAddStream = _outgoing.addStream(stream);
     await _inProgressAddStream;
     _inProgressAddStream = null;
@@ -154,7 +154,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   }
 
   @override
-  StreamSubscription listen(void onData(dynamic event),
+  StreamSubscription<dynamic> listen(void onData(dynamic event),
       {Function onError, void onDone(), bool cancelOnError}) {
     // ignore: cancel_subscriptions
     final sub = _incoming.stream

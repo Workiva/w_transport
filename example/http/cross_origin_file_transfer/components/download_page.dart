@@ -82,14 +82,14 @@ class _$DownloadPageState extends UiState {
 class DownloadPageComponent
     extends UiStatefulComponent<DownloadPageProps, DownloadPageState> {
   RemoteFiles remoteFiles;
-  StreamSubscription fileStreamSubscription;
-  StreamSubscription fileStreamErrorSubscription;
+  StreamSubscription<List<RemoteFileDescription>> fileStreamSubscription;
+  StreamSubscription<RequestException> fileStreamErrorSubscription;
 
   @override
-  Map getDefaultProps() => newProps()..isActive = false;
+  getDefaultProps() => newProps()..isActive = false;
 
   @override
-  Map getInitialState() => newState()
+  getInitialState() => newState()
     ..downloads = const <Download>[]
     ..fileDescriptions = const <RemoteFileDescription>[];
 

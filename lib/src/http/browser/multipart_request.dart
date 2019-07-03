@@ -121,7 +121,7 @@ class BrowserMultipartRequest extends CommonRequest
     });
 
     // Add each blob/file.
-    final additions = <Future>[];
+    final additions = <Future<void>>[];
     files.forEach((name, value) {
       additions.add(() async {
         if (value is File) {

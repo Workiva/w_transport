@@ -31,7 +31,8 @@ class SockJSPortWebSocket extends CommonWebSocket implements WebSocket {
   /// used.
   sockjs.Client _webSocket;
 
-  SockJSPortWebSocket._(this._webSocket, Future webSocketClosed) : super() {
+  SockJSPortWebSocket._(this._webSocket, Future<dynamic> webSocketClosed)
+      : super() {
     webSocketClosed.then((closeEvent) {
       closeCode = closeEvent.code;
       closeReason = closeEvent.reason;

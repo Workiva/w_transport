@@ -55,7 +55,7 @@ class FileTransferListItemComponent extends UiStatefulComponent<
       state.status == FileTransferItemStatus.doneFailure;
 
   @override
-  Map getInitialState() => newState()..status = FileTransferItemStatus.idle;
+  getInitialState() => newState()..status = FileTransferItemStatus.idle;
 
   @override
   void componentWillMount() {

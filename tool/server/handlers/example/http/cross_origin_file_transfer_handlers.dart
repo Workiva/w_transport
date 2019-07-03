@@ -161,9 +161,8 @@ class FilesHandler extends Handler {
 
   @override
   Future<Null> get(HttpRequest request) async {
-    Iterable<File> files = fw.files.where(
-        (FileSystemEntity entity) => entity is File && entity.existsSync());
-    List<Map> filesPayload = files
+    final files = fw.files.whereType<File>().where((file) => file.existsSync());
+    final filesPayload = files
         .map((File entity) => {
               'name': Uri.parse(entity.path).pathSegments.last,
               'size': entity.lengthSync()

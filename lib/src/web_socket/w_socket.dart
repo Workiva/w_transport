@@ -79,7 +79,7 @@ import 'package:w_transport/src/transport_platform.dart';
 ///
 /// TODO: Remove this class in 4.0.0 and move the abstract definition into the `WebSocket` class.
 @Deprecated(v3Deprecation + 'Use `WebSocket` instead.')
-abstract class WSocket implements Stream, StreamSink {
+abstract class WSocket implements Stream<dynamic>, StreamSink<dynamic> {
   /// Create a new WebSocket connection. The given [uri] must use the scheme
   /// `ws` or `wss`.
   ///
@@ -153,7 +153,7 @@ abstract class WSocket implements Stream, StreamSink {
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
   @override
-  Future<Null> addStream(Stream stream);
+  Future<Null> addStream(Stream<dynamic> stream);
 
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.

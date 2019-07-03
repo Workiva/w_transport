@@ -44,7 +44,7 @@ class _$AppState extends UiState {
 @Component()
 class AppComponent extends UiStatefulComponent<AppProps, AppState> {
   @override
-  Map getInitialState() => newState()
+  getInitialState() => newState()
     ..page = AppPage.upload
     ..isProxyEnabled = proxy.proxyEnabled;
 

@@ -20,7 +20,7 @@ class Logger implements Function {
 
   Logger();
 
-  Stream get stream => _controller.stream;
+  Stream<String> get stream => _controller.stream;
 
   void call(String message, {bool isError = false}) {
     if (isError) {

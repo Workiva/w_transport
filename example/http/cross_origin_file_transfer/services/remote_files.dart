@@ -78,7 +78,7 @@ class RemoteFiles {
       final response = await Http.get(getFilesEndpointUrl());
 
       // Parse the file list from the response
-      List results = response.body.asJson()['results'];
+      List<Map<String, dynamic>> results = response.body.asJson()['results'];
       List<RemoteFileDescription> files = results
           .map((file) => RemoteFileDescription(file['name'], file['size']))
           .toList();

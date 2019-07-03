@@ -31,7 +31,8 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
   /// used.
   SockJSClient _webSocket;
 
-  SockJSWrapperWebSocket._(this._webSocket, Future webSocketClosed) : super() {
+  SockJSWrapperWebSocket._(this._webSocket, Future<dynamic> webSocketClosed)
+      : super() {
     webSocketClosed.then((closeEvent) {
       closeCode = closeEvent.code;
       closeReason = closeEvent.reason;

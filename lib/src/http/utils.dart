@@ -85,7 +85,7 @@ String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
   final params = <String>[];
   map.forEach((key, value) {
     // Support fields with multiple values.
-    final valueList = value is List ? value : [value];
+    final valueList = value is List<dynamic> ? value : [value];
     for (final v in valueList) {
       final encoded = <String>[
         Uri.encodeQueryComponent(key, encoding: encoding ?? convert.utf8),
@@ -170,10 +170,10 @@ Map<String, Object> queryToMap(String query, {Encoding encoding}) {
     value = Uri.decodeQueryComponent(value, encoding: encoding ?? convert.utf8);
 
     if (fields.containsKey(key)) {
-      if (fields[key] is! List) {
+      if (fields[key] is! List<dynamic>) {
         fields[key] = [fields[key]];
       }
-      final List currentFields = fields[key];
+      final List<dynamic> currentFields = fields[key];
       currentFields.add(value);
     } else {
       fields[key] = value;

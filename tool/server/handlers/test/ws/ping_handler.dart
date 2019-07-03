@@ -34,7 +34,7 @@ class PingHandler extends WebSocketHandler {
         numPongs = int.parse(message);
       } catch (_) {}
       for (int i = 0; i < numPongs; i++) {
-        await new Future.delayed(new Duration(milliseconds: 50));
+        await Future.delayed(Duration(milliseconds: 50));
         webSocket.add('pong');
         _logger.withTime(' \t WS \tPong');
       }

@@ -23,7 +23,7 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
   group('Request', () {
     test('contentLength should be set automatically', () async {
       final emptyRequest =
-          new transport.Request(transportPlatform: transportPlatform);
+          transport.Request(transportPlatform: transportPlatform);
       final response =
           await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
       final contentLength =
@@ -32,7 +32,7 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
           reason: 'Empty plain-text request\'s content-length should be 0.');
 
       final nonEmptyRequest =
-          new transport.Request(transportPlatform: transportPlatform)
+          transport.Request(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..body = 'data';
       final response2 = await nonEmptyRequest.post();
@@ -44,57 +44,52 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
     });
 
     test('content-type should be set automatically', () async {
-      final request =
-          new transport.Request(transportPlatform: transportPlatform)
-            ..uri = IntegrationPaths.reflectEndpointUri
-            ..body = 'data';
+      final request = transport.Request(transportPlatform: transportPlatform)
+        ..uri = IntegrationPaths.reflectEndpointUri
+        ..body = 'data';
       final response = await request.post();
-      final contentType = new MediaType.parse(
-          response.body.asJson()['headers']['content-type']);
+      final contentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('text/plain'));
     });
 
     test('content-type should be overridable', () async {
-      final contentType = new MediaType('application', 'x-custom');
-      final request =
-          new transport.Request(transportPlatform: transportPlatform)
-            ..uri = IntegrationPaths.reflectEndpointUri
-            ..body = 'data'
-            ..contentType = contentType;
+      final contentType = MediaType('application', 'x-custom');
+      final request = transport.Request(transportPlatform: transportPlatform)
+        ..uri = IntegrationPaths.reflectEndpointUri
+        ..body = 'data'
+        ..contentType = contentType;
       final response = await request.post();
-      final reflectedContentType = new MediaType.parse(
-          response.body.asJson()['headers']['content-type']);
+      final reflectedContentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(reflectedContentType.mimeType, equals(contentType.mimeType));
     });
 
     test('UTF8', () async {
-      final request =
-          new transport.Request(transportPlatform: transportPlatform)
-            ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.utf8
-            ..body = 'dataç®å';
+      final request = transport.Request(transportPlatform: transportPlatform)
+        ..uri = IntegrationPaths.echoEndpointUri
+        ..encoding = convert.utf8
+        ..body = 'dataç®å';
       final response = await request.post();
       expect(response.encoding.name, equals(convert.utf8.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
     test('LATIN1', () async {
-      final request =
-          new transport.Request(transportPlatform: transportPlatform)
-            ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.latin1
-            ..body = 'dataç®å';
+      final request = transport.Request(transportPlatform: transportPlatform)
+        ..uri = IntegrationPaths.echoEndpointUri
+        ..encoding = convert.latin1
+        ..body = 'dataç®å';
       final response = await request.post();
       expect(response.encoding.name, equals(convert.latin1.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
     test('ASCII', () async {
-      final request =
-          new transport.Request(transportPlatform: transportPlatform)
-            ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.ascii
-            ..body = 'data';
+      final request = transport.Request(transportPlatform: transportPlatform)
+        ..uri = IntegrationPaths.echoEndpointUri
+        ..encoding = convert.ascii
+        ..body = 'data';
       final response = await request.post();
       expect(response.encoding.name, equals(convert.ascii.name));
       expect(response.body.asString(), equals('data'));

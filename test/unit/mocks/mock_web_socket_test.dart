@@ -26,7 +26,7 @@ import 'package:w_transport/src/web_socket/mock/web_socket.dart';
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicMocks;
 
@@ -44,7 +44,7 @@ void main() {
 
     test('MockWebSocket extends MockWSocket', () {
       // ignore: deprecated_member_use
-      expect(new MockWebSocket(), new isInstanceOf<MockWSocket>());
+      expect(MockWebSocket(), isInstanceOf<MockWSocket>());
     });
 
     group('TransportMocks.webSocket', () {
@@ -52,7 +52,7 @@ void main() {
         test('expected web socket connection completes automatically',
             () async {
           // ignore: deprecated_member_use
-          final webSocket = new MockWSocket();
+          final webSocket = MockWSocket();
           MockTransports.webSocket.expect(webSocketUri, connectTo: webSocket);
           expect(
               // ignore: deprecated_member_use
@@ -72,14 +72,14 @@ void main() {
         test('unexpected web socket connection throws', () async {
           // ignore: deprecated_member_use
           expect(transport.WSocket.connect(webSocketUri),
-              throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+              throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
         });
 
         test('supports connectTo OR reject, but not both', () {
           expect(() {
             MockTransports.webSocket.expect(webSocketUri,
                 // ignore: deprecated_member_use
-                connectTo: new MockWSocket(),
+                connectTo: MockWSocket(),
                 reject: true);
           }, throwsArgumentError);
         });
@@ -102,7 +102,7 @@ void main() {
         test('expected web socket connection completes automatically',
             () async {
           // ignore: deprecated_member_use
-          final webSocket = new MockWSocket();
+          final webSocket = MockWSocket();
           MockTransports.webSocket
               .expectPattern(webSocketUri.toString(), connectTo: webSocket);
           expect(
@@ -125,7 +125,7 @@ void main() {
           expect(() {
             MockTransports.webSocket.expectPattern(webSocketUri.toString(),
                 // ignore: deprecated_member_use
-                connectTo: new MockWSocket(),
+                connectTo: MockWSocket(),
                 reject: true);
           }, throwsArgumentError);
         });
@@ -151,23 +151,23 @@ void main() {
                 {Map<String, dynamic> headers,
                 Iterable<String> protocols}) async =>
             // ignore: deprecated_member_use
-            new MockWSocket();
+            MockWSocket();
         // ignore: deprecated_member_use
         Future<transport.WSocket> patternHandler(Uri uri,
                 {Map<String, dynamic> headers,
                 Match match,
                 Iterable<String> protocols}) async =>
             // ignore: deprecated_member_use
-            new MockWSocket();
+            MockWSocket();
         MockTransports.webSocket.when(webSocketUri, handler: handler);
         MockTransports.webSocket
             .whenPattern(webSocketUri.toString(), handler: patternHandler);
         MockTransports.webSocket
             // ignore: deprecated_member_use
-            .expect(webSocketUri, connectTo: new MockWSocket());
+            .expect(webSocketUri, connectTo: MockWSocket());
         MockTransports.webSocket.expectPattern(webSocketUri.toString(),
             // ignore: deprecated_member_use
-            connectTo: new MockWSocket());
+            connectTo: MockWSocket());
 
         MockTransports.webSocket.reset();
 
@@ -180,7 +180,7 @@ void main() {
             'registers a handler for all web socket connections with matching URI',
             () async {
           // ignore: deprecated_member_use
-          final webSocket = new MockWSocket();
+          final webSocket = MockWSocket();
           // ignore: deprecated_member_use
           Future<transport.WSocket> handler(Uri uri,
                   {Map<String, dynamic> headers,
@@ -222,14 +222,14 @@ void main() {
           // Non-matching connection fails correctly.
           // ignore: deprecated_member_use
           expect(transport.WSocket.connect(Uri.parse('/other')),
-              throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+              throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
         });
 
         test('supports handler OR reject, but not both', () {
           expect(() {
             MockTransports.webSocket.when(webSocketUri,
                 // ignore: deprecated_member_use
-                handler: (uri, {protocols, headers}) async => new MockWSocket(),
+                handler: (uri, {protocols, headers}) async => MockWSocket(),
                 reject: true);
           }, throwsArgumentError);
         });
@@ -254,7 +254,7 @@ void main() {
 
         test('registers a handler that can be canceled', () async {
           // ignore: deprecated_member_use
-          final webSocket = new MockWSocket();
+          final webSocket = MockWSocket();
           final handler = MockTransports.webSocket.when(webSocketUri,
               handler: (uri, {protocols, headers}) async => webSocket);
 
@@ -270,7 +270,7 @@ void main() {
         test('canceling a handler does nothing if handler no longer exists',
             () async {
           // ignore: deprecated_member_use
-          final webSocket = new MockWSocket();
+          final webSocket = MockWSocket();
           final oldHandler =
               MockTransports.webSocket.when(webSocketUri, reject: true);
           MockTransports.webSocket.when(webSocketUri,
@@ -287,7 +287,7 @@ void main() {
 
         test('canceling a handler does nothing if handler was reset', () async {
           // ignore: deprecated_member_use
-          final webSocket = new MockWSocket();
+          final webSocket = MockWSocket();
           final oldHandler = MockTransports.webSocket.when(webSocketUri,
               handler: (uri, {protocols, headers}) async => webSocket);
           await MockTransports.reset();
@@ -307,7 +307,7 @@ void main() {
             'registers a handler for all web socket connections with matching URI',
             () async {
           // ignore: deprecated_member_use
-          final webSocket = new MockWSocket();
+          final webSocket = MockWSocket();
           // ignore: deprecated_member_use
           Future<transport.WSocket> handler(Uri uri,
                   {Map<String, dynamic> headers,
@@ -352,7 +352,7 @@ void main() {
           // Non-matching connection fails correctly.
           // ignore: deprecated_member_use
           expect(transport.WSocket.connect(Uri.parse('/other')),
-              throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+              throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
         });
 
         test('supports handler OR reject, but not both', () {
@@ -360,7 +360,7 @@ void main() {
             MockTransports.webSocket.whenPattern(webSocketUri.toString(),
                 handler: (uri, {protocols, headers, match}) async =>
                     // ignore: deprecated_member_use
-                    new MockWSocket(),
+                    MockWSocket(),
                 reject: true);
           }, throwsArgumentError);
         });
@@ -387,9 +387,9 @@ void main() {
         test(
             'registers a handler with a pattern that catches any connection with a matching URI',
             () async {
-          final uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
+          final uriPattern = RegExp('ws:\/\/(google|github)\.com\/ws.*');
           // ignore: deprecated_member_use
-          final webSocket = new MockWSocket();
+          final webSocket = MockWSocket();
           // ignore: deprecated_member_use
           Future<transport.WSocket> handler(Uri uri,
                   {Map<String, dynamic> headers,
@@ -417,7 +417,7 @@ void main() {
         test(
             'registers a handler that will receive the uri Match on connection',
             () async {
-          final uriPattern = new RegExp('ws:\/\/(google|github)\.com\/ws.*');
+          final uriPattern = RegExp('ws:\/\/(google|github)\.com\/ws.*');
           Match uriMatch;
           // ignore: deprecated_member_use
           Future<transport.WSocket> handler(Uri uri,
@@ -426,7 +426,7 @@ void main() {
               Iterable<String> protocols}) async {
             uriMatch = match;
             // ignore: deprecated_member_use
-            return new MockWSocket();
+            return MockWSocket();
           }
 
           MockTransports.webSocket.whenPattern(uriPattern, handler: handler);
@@ -440,7 +440,7 @@ void main() {
 
         test('registers a handler that can be canceled', () async {
           // ignore: deprecated_member_use
-          final webSocket = new MockWSocket();
+          final webSocket = MockWSocket();
           final handler = MockTransports.webSocket.whenPattern(
               webSocketUri.toString(),
               handler: (uri, {protocols, headers, match}) async => webSocket);
@@ -457,7 +457,7 @@ void main() {
         test('canceling a handler does nothing if handler no longer exists',
             () async {
           // ignore: deprecated_member_use
-          final webSocket = new MockWSocket();
+          final webSocket = MockWSocket();
           final oldHandler = MockTransports.webSocket
               .whenPattern(webSocketUri.toString(), reject: true);
           MockTransports.webSocket.whenPattern(webSocketUri.toString(),
@@ -474,7 +474,7 @@ void main() {
 
         test('canceling a handler does nothing if handler was reset', () async {
           // ignore: deprecated_member_use
-          final webSocket = new MockWSocket();
+          final webSocket = MockWSocket();
           final oldHandler = MockTransports.webSocket.whenPattern(
               webSocketUri.toString(),
               handler: (uri, {protocols, headers, match}) async => webSocket);
@@ -495,7 +495,7 @@ void main() {
       group('hasHandlerForWebSocket()', () {
         test('returns true if there is a matching expectation', () async {
           MockTransports.webSocket
-              .expect(webSocketUri, connectTo: new MockWebSocketServer());
+              .expect(webSocketUri, connectTo: MockWebSocketServer());
           expect(MockWebSocketInternal.hasHandlerForWebSocket(webSocketUri),
               isTrue);
           await MockTransports.reset();
@@ -518,8 +518,8 @@ void main() {
 
     group('MockWebSocketServer', () {
       test('should expose `done` for connected clients', () async {
-        final c = new Completer<Null>();
-        final mockWebSocketServer = new MockWebSocketServer();
+        final c = Completer<Null>();
+        final mockWebSocketServer = MockWebSocketServer();
         mockWebSocketServer.onClientConnected.listen((connection) {
           connection.done.then((_) => c.complete());
         });

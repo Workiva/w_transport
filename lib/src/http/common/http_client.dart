@@ -29,7 +29,7 @@ abstract class CommonHttpClient implements HttpClient {
   /// Every request created by this client will inherit this automatic retry
   /// configuration.
   @override
-  AutoRetryConfig autoRetry = new AutoRetryConfig();
+  AutoRetryConfig autoRetry = AutoRetryConfig();
 
   /// A base URI that all requests created by this client should inherit.
   @override
@@ -48,7 +48,7 @@ abstract class CommonHttpClient implements HttpClient {
   bool withCredentials;
 
   /// Headers to be inherited by all requests created from this client.
-  CaseInsensitiveMap<String> _headers = new CaseInsensitiveMap();
+  CaseInsensitiveMap<String> _headers = CaseInsensitiveMap();
 
   /// Whether or not this HTTP client has been closed.
   bool _isClosed = false;
@@ -56,15 +56,15 @@ abstract class CommonHttpClient implements HttpClient {
   /// List of outstanding requests.
   List<BaseRequest> _requests = [];
 
-  Pathway<RequestPayload> _requestPathway = new Pathway();
-  Pathway<ResponsePayload> _responsePathway = new Pathway();
+  Pathway<RequestPayload> _requestPathway = Pathway();
+  Pathway<ResponsePayload> _responsePathway = Pathway();
 
   @override
   Map<String, String> get headers => _headers;
 
   @override
   set headers(Map<String, String> headers) {
-    _headers = new CaseInsensitiveMap<String>.from(headers);
+    _headers = CaseInsensitiveMap<String>.from(headers);
   }
 
   /// Whether or not this HTTP client has been closed.
@@ -84,7 +84,7 @@ abstract class CommonHttpClient implements HttpClient {
     _isClosed = true;
     closeClient();
     for (final request in _requests) {
-      request.abort(new Exception(
+      request.abort(Exception(
           'HTTP client was closed before this request could complete.'));
     }
   }
@@ -116,12 +116,12 @@ abstract class CommonHttpClient implements HttpClient {
       ..test = autoRetry.test;
     if (_requestPathway.hasInterceptors) {
       request.requestInterceptor = (request) async {
-        await _requestPathway.process(new RequestPayload(request));
+        await _requestPathway.process(RequestPayload(request));
       };
     }
     if (_responsePathway.hasInterceptors) {
       request.responseInterceptor = (request, response, [exception]) async {
-        final payload = new ResponsePayload(request, response, exception);
+        final payload = ResponsePayload(request, response, exception);
         return (await _responsePathway.process(payload)).response;
       };
     }
@@ -133,7 +133,7 @@ abstract class CommonHttpClient implements HttpClient {
   /// Throws a [StateError] if this client has been closed.
   void verifyNotClosed() {
     if (isClosed)
-      throw new StateError(
+      throw StateError(
           'HTTP Client has been closed, can\'t create a new request.');
   }
 }

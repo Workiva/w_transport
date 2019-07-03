@@ -68,7 +68,7 @@ List<String> _sockJSServerOutput;
 /// server output as it arrives. The output will be mixed in with output from
 /// whichever task is running.
 Future<Null> _streamServer() async {
-  _server = new Server();
+  _server = Server();
   _server.output.listen((line) {
     reporter.log(reporter.colorBlue('    $line'));
   });
@@ -76,7 +76,7 @@ Future<Null> _streamServer() async {
 }
 
 Future<Null> _streamSockJSServer() async {
-  _sockJSServer = new TaskProcess('node', ['tool/server/sockjs.js']);
+  _sockJSServer = TaskProcess('node', ['tool/server/sockjs.js']);
   _sockJSServer.stdout.listen((line) {
     reporter.log(reporter.colorBlue('    $line'));
   });

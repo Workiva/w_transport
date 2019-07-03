@@ -42,7 +42,7 @@ class MultipartFile {
       if (mimeType == null) {
         mimeType = 'application/octet-stream';
       }
-      _contentType = new MediaType.parse(mimeType);
+      _contentType = MediaType.parse(mimeType);
     }
   }
 

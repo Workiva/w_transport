@@ -49,7 +49,7 @@ class BrowserMultipartRequest extends CommonRequest
 
   @override
   set contentLength(int contentLength) {
-    throw new UnsupportedError(
+    throw UnsupportedError(
         'The content-length of a multipart request cannot be set manually.');
   }
 
@@ -61,24 +61,24 @@ class BrowserMultipartRequest extends CommonRequest
 
   @override
   Map<String, String> get fields =>
-      isSent ? new Map<String, String>.unmodifiable(_fields) : _fields;
+      isSent ? Map<String, String>.unmodifiable(_fields) : _fields;
 
   @override
   set fields(Map<String, String> fields) {
     verifyUnsent();
-    _fields = new Map<String, String>.from(fields);
+    _fields = Map<String, String>.from(fields);
   }
 
   @override
   Map<String, dynamic> get files {
-    if (isSent) return new Map<String, dynamic>.unmodifiable(_files);
+    if (isSent) return Map<String, dynamic>.unmodifiable(_files);
     return _files;
   }
 
   @override
   set files(Map<String, dynamic> files) {
     verifyUnsent();
-    _files = new Map<String, Blob>.from(files);
+    _files = Map<String, Blob>.from(files);
   }
 
   @override
@@ -91,23 +91,22 @@ class BrowserMultipartRequest extends CommonRequest
 
   @override
   Map<String, String> finalizeHeaders() {
-    final headers =
-        new CaseInsensitiveMap<String>.from(super.finalizeHeaders());
+    final headers = CaseInsensitiveMap<String>.from(super.finalizeHeaders());
 
     // Remove the content-type header to allow the browser to set it.
     headers.remove('content-type');
 
-    return new Map<String, String>.unmodifiable(headers);
+    return Map<String, String>.unmodifiable(headers);
   }
 
   @override
   Future<FormDataBody> finalizeBody([dynamic body]) async {
     if (body != null) {
-      throw new UnsupportedError(
+      throw UnsupportedError(
           'The body of a Multipart request must be set via `fields` and/or `files`.');
     }
 
-    final formData = new FormData();
+    final formData = FormData();
 
     // Add each text field.
     fields.forEach((name, value) {
@@ -115,9 +114,8 @@ class BrowserMultipartRequest extends CommonRequest
         formData.append(name, value);
       } else {
         final contentType =
-            new MediaType('text', 'plain', {'charset': convert.utf8.name});
-        final blob =
-            new Blob([convert.utf8.encode(value)], contentType.toString());
+            MediaType('text', 'plain', {'charset': convert.utf8.name});
+        final blob = Blob([convert.utf8.encode(value)], contentType.toString());
         formData.appendBlob(name, blob);
       }
     });
@@ -132,13 +130,13 @@ class BrowserMultipartRequest extends CommonRequest
           formData.appendBlob(name, value);
         } else if (value is MultipartFile) {
           final contentType = value.contentType?.toString();
-          final blob = new Blob(await value.byteStream.toList(), contentType);
+          final blob = Blob(await value.byteStream.toList(), contentType);
           formData.appendBlob(name, blob, value.filename);
         }
       }());
     });
     await Future.wait(additions);
 
-    return new FormDataBody(formData);
+    return FormDataBody(formData);
   }
 }

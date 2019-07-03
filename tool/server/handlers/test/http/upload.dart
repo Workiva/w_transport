@@ -32,14 +32,14 @@ class UploadHandler extends Handler {
         ContentType.parse(request.headers.value('content-type'));
     final boundary = contentType.parameters['boundary'];
     final stream = request
-        .transform(new MimeMultipartTransformer(boundary))
+        .transform(MimeMultipartTransformer(boundary))
         .map(HttpMultipartFormData.parse);
 
     await for (HttpMultipartFormData formData in stream) {
       if (formData.isText) {
         await formData.toList();
       } else {
-        throw new Exception('Unknown multipart formdata.');
+        throw Exception('Unknown multipart formdata.');
       }
     }
 

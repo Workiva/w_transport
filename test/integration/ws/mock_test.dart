@@ -23,7 +23,7 @@ import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformMock
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
@@ -36,9 +36,9 @@ void main() {
     setUp(() {
       MockTransports.install();
 
-      mockCloseWebSocketServer = new MockWebSocketServer();
-      mockEchoWebSocketServer = new MockWebSocketServer();
-      mockPingWebSocketServer = new MockWebSocketServer();
+      mockCloseWebSocketServer = MockWebSocketServer();
+      mockEchoWebSocketServer = MockWebSocketServer();
+      mockPingWebSocketServer = MockWebSocketServer();
 
       mockCloseWebSocketServer.onClientConnected.listen((connection) {
         connection.onData((data) {
@@ -69,7 +69,7 @@ void main() {
             numPongs = int.parse(data);
           } catch (_) {}
           for (int i = 0; i < numPongs; i++) {
-            await new Future.delayed(new Duration(milliseconds: 5));
+            await Future.delayed(Duration(milliseconds: 5));
             connection.send('pong');
           }
         });
@@ -114,7 +114,7 @@ void main() {
       MockTransports.webSocket.when(IntegrationPaths.closeUri,
           handler: (Uri uri, {protocols, headers}) async {
         // ignore: deprecated_member_use
-        final webSocket = new MockWSocket();
+        final webSocket = MockWSocket();
 
         // ignore: deprecated_member_use
         webSocket.onOutgoing((data) {
@@ -138,7 +138,7 @@ void main() {
       MockTransports.webSocket.when(IntegrationPaths.echoUri,
           handler: (Uri uri, {protocols, headers}) async {
         // ignore: deprecated_member_use
-        final webSocket = new MockWSocket();
+        final webSocket = MockWSocket();
         // ignore: deprecated_member_use
         webSocket.onOutgoing(webSocket.addIncoming);
         return webSocket;
@@ -147,7 +147,7 @@ void main() {
       MockTransports.webSocket.when(IntegrationPaths.pingUri,
           handler: (Uri uri, {protocols, headers}) async {
         // ignore: deprecated_member_use
-        final webSocket = new MockWSocket();
+        final webSocket = MockWSocket();
 
         // ignore: deprecated_member_use
         webSocket.onOutgoing((data) async {
@@ -157,7 +157,7 @@ void main() {
             numPongs = int.parse(data);
           } catch (_) {}
           for (int i = 0; i < numPongs; i++) {
-            await new Future.delayed(new Duration(milliseconds: 5));
+            await Future.delayed(Duration(milliseconds: 5));
             // ignore: deprecated_member_use
             webSocket.addIncoming('pong');
           }

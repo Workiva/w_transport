@@ -22,7 +22,7 @@ import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformBrowser
     ..testType = testTypeIntegration
     ..topic = topicHttp;
@@ -33,15 +33,15 @@ void main() {
     group('autoRetry browser', () {
       test('null response default behavior', () async {
         final request =
-            new transport.Request(transportPlatform: browserTransportPlatform)
+            transport.Request(transportPlatform: browserTransportPlatform)
               ..headers.addAll({'x-custom': 'causes-CORS-request'})
               ..uri = IntegrationPaths.errorEndpointUri;
         request.autoRetry
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(request.get(),
-            throwsA(new isInstanceOf<transport.RequestException>()));
+        expect(
+            request.get(), throwsA(isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -49,7 +49,7 @@ void main() {
 
       test('null response should be retried', () async {
         final request =
-            new transport.Request(transportPlatform: browserTransportPlatform)
+            transport.Request(transportPlatform: browserTransportPlatform)
               ..headers.addAll({'x-custom': 'causes-CORS-request'})
               ..uri = IntegrationPaths.errorEndpointUri;
         request.autoRetry
@@ -62,8 +62,8 @@ void main() {
             return willRetry;
           };
 
-        expect(request.get(),
-            throwsA(new isInstanceOf<transport.RequestException>()));
+        expect(
+            request.get(), throwsA(isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(3));
         expect(request.autoRetry.failures.length, equals(3));

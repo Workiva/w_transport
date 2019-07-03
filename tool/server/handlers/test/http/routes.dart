@@ -25,13 +25,13 @@ import 'upload.dart';
 
 String pathPrefix = '/test/http';
 Map<String, Handler> testHttpIntegrationRoutes = {
-  '$pathPrefix/404': new FourzerofourHandler(),
-  '$pathPrefix/custom': new CustomHandler(),
-  '$pathPrefix/download': new DownloadHandler(),
-  '$pathPrefix/echo': new EchoHandler(),
-  '$pathPrefix/error': new ErrorHandler(),
-  '$pathPrefix/ping': new PingHandler(),
-  '$pathPrefix/reflect': new ReflectHandler(),
-  '$pathPrefix/timeout': new TimeoutHandler(),
-  '$pathPrefix/upload': new UploadHandler(),
+  '$pathPrefix/404': FourzerofourHandler(),
+  '$pathPrefix/custom': CustomHandler(),
+  '$pathPrefix/download': DownloadHandler(),
+  '$pathPrefix/echo': EchoHandler(),
+  '$pathPrefix/error': ErrorHandler(),
+  '$pathPrefix/ping': PingHandler(),
+  '$pathPrefix/reflect': ReflectHandler(),
+  '$pathPrefix/timeout': TimeoutHandler(),
+  '$pathPrefix/upload': UploadHandler(),
 };

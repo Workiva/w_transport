@@ -54,11 +54,11 @@ abstract class CommonStreamedRequest extends CommonRequest
 
   @override
   MediaType get defaultContentType =>
-      new MediaType('text', 'plain', {'charset': encoding.name});
+      MediaType('text', 'plain', {'charset': encoding.name});
 
   @override
   StreamedRequest clone() {
-    throw new UnsupportedError(
+    throw UnsupportedError(
         'StreamedRequests cannot be cloned because the streamed body can only '
         'be read once.');
   }
@@ -69,13 +69,13 @@ abstract class CommonStreamedRequest extends CommonRequest
       if (body is Stream<List<int>>) {
         this.body = body;
       } else {
-        throw new ArgumentError(
+        throw ArgumentError(
             'Streamed request body must be a Stream<List<int>>.');
       }
     }
 
-    this.body ??= new Stream.fromIterable([]);
-    return new StreamedHttpBody.fromByteStream(contentType, this.body,
+    this.body ??= Stream.fromIterable([]);
+    return StreamedHttpBody.fromByteStream(contentType, this.body,
         contentLength: contentLength);
   }
 }

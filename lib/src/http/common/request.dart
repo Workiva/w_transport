@@ -41,13 +41,13 @@ abstract class CommonRequest extends Object
     implements BaseRequest, RequestDispatchers {
   CommonRequest(TransportPlatform transportPlatform)
       : this._transportPlatform = transportPlatform {
-    autoRetry = new RequestAutoRetry(this);
+    autoRetry = RequestAutoRetry(this);
   }
 
   // ignore: deprecated_member_use
   CommonRequest.fromClient(Client wTransportClient, this.client)
       : this._wTransportClient = wTransportClient {
-    autoRetry = new RequestAutoRetry(this);
+    autoRetry = RequestAutoRetry(this);
   }
 
   /// Configuration of automatic request retrying for failed requests. Use this
@@ -76,7 +76,7 @@ abstract class CommonRequest extends Object
   /// [RequestProgress] stream controller for this HTTP request's download.
   // ignore: close_sinks
   StreamController<RequestProgress> downloadProgressController =
-      new StreamController<RequestProgress>();
+      StreamController<RequestProgress>();
 
   /// Whether or not the request has been canceled by the caller.
   bool isCanceled = false;
@@ -110,10 +110,10 @@ abstract class CommonRequest extends Object
   /// [RequestProgress] stream controller for this HTTP request's upload.
   // ignore: close_sinks
   StreamController<RequestProgress> uploadProgressController =
-      new StreamController<RequestProgress>();
+      StreamController<RequestProgress>();
 
   /// Completes only when a request is canceled.
-  Completer<Null> _cancellationCompleter = new Completer<Null>();
+  Completer<Null> _cancellationCompleter = Completer<Null>();
 
   /// Error associated with a cancellation.
   Object _cancellationError;
@@ -128,17 +128,17 @@ abstract class CommonRequest extends Object
 
   /// Completer that should complete when the request has finished (successful
   /// or otherwise).
-  Completer<Null> _done = new Completer<Null>();
+  Completer<Null> _done = Completer<Null>();
 
   /// Request body encoding.
   Encoding _encoding = convert.utf8;
 
   /// Request headers. Stored in a case-insensitive map since HTTP headers are
   /// case-insensitive.
-  CaseInsensitiveMap<String> _headers = new CaseInsensitiveMap<String>();
+  CaseInsensitiveMap<String> _headers = CaseInsensitiveMap<String>();
 
   /// Completes only when a request times out.
-  Completer<Null> _timeoutCompleter = new Completer<Null>();
+  Completer<Null> _timeoutCompleter = Completer<Null>();
 
   /// Error associated with a cancellation.
   Object _timeoutError;
@@ -165,7 +165,7 @@ abstract class CommonRequest extends Object
   /// headers have been sent.
   @override
   set contentLength(int length) {
-    throw new UnsupportedError(
+    throw UnsupportedError(
         'The content-length of a request cannot be set manually when the request body is known in advance.');
   }
 
@@ -224,7 +224,7 @@ abstract class CommonRequest extends Object
   @override
   set encoding(Encoding encoding) {
     verifyUnsent();
-    if (encoding == null) throw new ArgumentError.notNull('encoding');
+    if (encoding == null) throw ArgumentError.notNull('encoding');
     _encoding = encoding;
     if (!_wasContentTypeSetManually) {
       updateContentType(
@@ -237,7 +237,7 @@ abstract class CommonRequest extends Object
   Map<String, String> get headers {
     // If the request has been sent, the headers are effectively frozen.
     // To respect this, an unmodifiable Map is returned.
-    if (isSent) return new Map<String, String>.unmodifiable(_headers);
+    if (isSent) return Map<String, String>.unmodifiable(_headers);
 
     // Otherwise, the underlying case-insensitive Map is returned, which allows
     // modification of the individual headers.
@@ -248,7 +248,7 @@ abstract class CommonRequest extends Object
   @override
   set headers(Map<String, String> headers) {
     verifyUnsent();
-    _headers = new CaseInsensitiveMap<String>.from(headers);
+    _headers = CaseInsensitiveMap<String>.from(headers);
   }
 
   /// Returns `true` if this request is complete (successful or failed), `false`
@@ -331,7 +331,7 @@ abstract class CommonRequest extends Object
   /// This logic is platform-specific and should be implemented by the subclass.
   Future<BaseResponse> sendRequestAndFetchResponse(
       FinalizedRequest finalizedRequest,
-      {bool streamResponse: false});
+      {bool streamResponse = false});
 
   /// Cancel this request. If the request has already finished, this will do
   /// nothing.
@@ -351,14 +351,14 @@ abstract class CommonRequest extends Object
   /// Check if this request has been canceled.
   void checkForCancellation({BaseResponse response}) {
     if (isCanceled) {
-      final error = new RequestException(
+      final error = RequestException(
           method,
           uri,
           this,
           response,
           _cancellationError != null
               ? _cancellationError
-              : new Exception('Request canceled'));
+              : Exception('Request canceled'));
       autoRetry.failures.add(error);
       throw error;
     }
@@ -367,7 +367,7 @@ abstract class CommonRequest extends Object
   /// Check if this request has exceeded the timeout threshold.
   void checkForTimeout() {
     if (isTimedOut) {
-      throw new RequestException(method, uri, this, null, _timeoutError);
+      throw RequestException(method, uri, this, null, _timeoutError);
     }
   }
 
@@ -385,19 +385,19 @@ abstract class CommonRequest extends Object
     if (this is FormRequest) {
       requestClone = fromClient
           ? _wTransportClient.newFormRequest()
-          : new FormRequest(transportPlatform: _transportPlatform);
+          : FormRequest(transportPlatform: _transportPlatform);
     } else if (this is JsonRequest) {
       requestClone = fromClient
           ? _wTransportClient.newJsonRequest()
-          : new JsonRequest(transportPlatform: _transportPlatform);
+          : JsonRequest(transportPlatform: _transportPlatform);
     } else if (this is MultipartRequest) {
       requestClone = fromClient
           ? _wTransportClient.newMultipartRequest()
-          : new MultipartRequest(transportPlatform: _transportPlatform);
+          : MultipartRequest(transportPlatform: _transportPlatform);
     } else if (this is Request) {
       requestClone = fromClient
           ? _wTransportClient.newRequest()
-          : new Request(transportPlatform: _transportPlatform);
+          : Request(transportPlatform: _transportPlatform);
     }
 
     requestClone
@@ -440,7 +440,7 @@ abstract class CommonRequest extends Object
       headers['content-length'] = contentLength.toString();
     }
     headers['content-type'] = contentType.toString();
-    return new Map<String, String>.unmodifiable(headers);
+    return Map<String, String>.unmodifiable(headers);
   }
 
   /// Freeze this request in preparation of it being sent. This freezes all
@@ -449,11 +449,11 @@ abstract class CommonRequest extends Object
   Future<FinalizedRequest> finalizeRequest([dynamic body]) async {
     final finalizedHeaders = finalizeHeaders();
     final finalizedBody = await finalizeBody(body);
-    final finalizedRequest = new FinalizedRequest(
+    final finalizedRequest = FinalizedRequest(
         method, uri, finalizedHeaders, finalizedBody, withCredentials);
 
     if (isSent)
-      throw new StateError(
+      throw StateError(
           'Request ($this) has already been sent - it cannot be sent again.');
     isSent = true;
 
@@ -466,7 +466,7 @@ abstract class CommonRequest extends Object
   ///
   /// This is handled by the mock request mixin.
   CommonRequest switchToRealRequest({bool streamResponse}) {
-    throw new UnimplementedError();
+    throw UnimplementedError();
   }
 
   @override
@@ -477,7 +477,7 @@ abstract class CommonRequest extends Object
   /// a [StateError].
   void verifyUnsent() {
     if (isSent)
-      throw new StateError(
+      throw StateError(
           'Request ($this) has already been sent and can no longer be modified.');
   }
 
@@ -689,20 +689,18 @@ abstract class CommonRequest extends Object
       abortRequest();
     }
     isTimedOut = true;
-    _timeoutError = new TimeoutException(
+    _timeoutError = TimeoutException(
         'Request took too long to complete.', timeoutThreshold);
     _timeoutCompleter.complete();
   }
 
   void _verifyCanRetryManually() {
     if (!isSent)
-      throw new StateError(
-          'Cannot retry a request that has not yet been sent.');
+      throw StateError('Cannot retry a request that has not yet been sent.');
     if (!_done.isCompleted)
-      throw new StateError(
-          'Cannot retry a request that has not yet completed.');
+      throw StateError('Cannot retry a request that has not yet completed.');
     if (didSucceed)
-      throw new StateError('Cannot retry a request that did not fail.');
+      throw StateError('Cannot retry a request that did not fail.');
   }
 
   /// Send the HTTP request:
@@ -720,14 +718,14 @@ abstract class CommonRequest extends Object
 
     // Use a completer so that an exception can be wrapped in a RequestException
     // instance while still preserving the stack trace of the original error.
-    final c = new Completer<BaseResponse>();
+    final c = Completer<BaseResponse>();
 
     this.method = method;
     if (uri != null) {
       this.uri = uri;
     }
     if (this.uri == null || this.uri.toString().isEmpty)
-      throw new StateError('Request: Cannot send a request without a URI.');
+      throw StateError('Request: Cannot send a request without a URI.');
     if (headers != null) {
       headers.forEach((key, value) {
         this.headers[key] = value;
@@ -769,12 +767,12 @@ abstract class CommonRequest extends Object
       await openRequest(client);
       checkForCancellation();
       checkForTimeout();
-      final responseCompleter = new Completer<BaseResponse>();
+      final responseCompleter = Completer<BaseResponse>();
 
       // Enforce a timeout threshold if set.
       Timer timeout;
       if (timeoutThreshold != null) {
-        timeout = new Timer(timeoutThreshold, _timeoutRequest);
+        timeout = Timer(timeoutThreshold, _timeoutRequest);
       }
 
       // Attempt to fetch the response.
@@ -819,7 +817,7 @@ abstract class CommonRequest extends Object
       if (response.status != 0 &&
           response.status != 304 &&
           !(response.status >= 200 && response.status < 300)) {
-        throw new RequestException(method, this.uri, this, response);
+        throw RequestException(method, this.uri, this, response);
       }
 
       // Apply the response interceptor if set.
@@ -840,7 +838,7 @@ abstract class CommonRequest extends Object
       Object exception = e;
       if (exception is! RequestException) {
         exception =
-            new RequestException(method, this.uri, this, response, exception);
+            RequestException(method, this.uri, this, response, exception);
       }
       RequestException requestException = exception;
 
@@ -849,7 +847,7 @@ abstract class CommonRequest extends Object
       if (responseInterceptor != null && !responseInterceptorThrew) {
         response = await responseInterceptor(
             finalizedRequest, response, requestException);
-        requestException = new RequestException(
+        requestException = RequestException(
             method, this.uri, this, response, requestException.error);
       }
 
@@ -859,13 +857,13 @@ abstract class CommonRequest extends Object
       // Attempt to retry the request if configuration and state permit it.
       bool retrySucceeded = false;
       if (await _canRetry(finalizedRequest, response, requestException)) {
-        final retryCompleter = new Completer<BaseResponse>();
+        final retryCompleter = Completer<BaseResponse>();
 
         // If retry back-off is configured, wait as necessary.
         final backOff = utils.calculateBackOff(autoRetry);
 
         if (backOff != null) {
-          await new Future.delayed(backOff);
+          await Future.delayed(backOff);
         }
 
         // ignore: unawaited_futures

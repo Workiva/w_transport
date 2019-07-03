@@ -57,7 +57,7 @@ Future<Null> main() async {
     final sockjs = _useSockJS.checked;
     final timeout = _sockJSTimeout.value.isEmpty
         ? null
-        : new Duration(milliseconds: _sockJSTimeout.valueAsNumber);
+        : Duration(milliseconds: _sockJSTimeout.valueAsNumber);
     final protocols = <String>[];
     if (_sockJSWebSocket.checked) {
       protocols.add('websocket');

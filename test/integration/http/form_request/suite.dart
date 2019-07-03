@@ -26,7 +26,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
     test('content-length should be set automatically', () async {
       // Empty request.
       final emptyRequest =
-          new transport.FormRequest(transportPlatform: transportPlatform);
+          transport.FormRequest(transportPlatform: transportPlatform);
       final response =
           await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
       final contentLength =
@@ -36,7 +36,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
 
       // Non-empty request.
       final nonEmptyRequest =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'value2';
@@ -50,31 +50,31 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('content-type should be set automatically', () async {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..fields['field'] = 'value';
       final response = await request.post();
-      final contentType = new MediaType.parse(
-          response.body.asJson()['headers']['content-type']);
+      final contentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('application/x-www-form-urlencoded'));
     });
 
     test('content-type should be overridable', () async {
-      final contentType = new MediaType('application', 'x-custom');
+      final contentType = MediaType('application', 'x-custom');
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..fields['field'] = 'value'
             ..contentType = contentType;
       final response = await request.post();
-      final reflectedContentType = new MediaType.parse(
-          response.body.asJson()['headers']['content-type']);
+      final reflectedContentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(reflectedContentType.mimeType, equals(contentType.mimeType));
     });
 
     test('UTF8', () async {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
             ..encoding = convert.utf8
             ..fields['field1'] = 'value1'
@@ -89,7 +89,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('LATIN1', () async {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
             ..encoding = convert.latin1
             ..fields['field1'] = 'value1'
@@ -104,7 +104,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('ASCII', () async {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
             ..encoding = convert.ascii
             ..fields['field1'] = 'value1'
@@ -119,7 +119,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('should support multiple values for a single field', () async {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
             ..fields['items'] = ['one', 'two'];
       final response = await request.post();
@@ -131,7 +131,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
         'should prevent unsupported value types (anything other than String and List<String>)',
         () {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
             ..fields['invalid'] = 10;
 

@@ -24,13 +24,13 @@ import '../../../handler.dart';
 String pathPrefix = '/example/http/cross_origin_credentials';
 
 Map<String, Handler> exampleHttpCrossOriginCredentialsRoutes = {
-  '$pathPrefix/session': new SessionHandler(),
-  '$pathPrefix/credentialed': new CredentialedRequestHandler()
+  '$pathPrefix/session': SessionHandler(),
+  '$pathPrefix/credentialed': CredentialedRequestHandler()
 };
 
 String session;
 String generateSessionCookie() {
-  session = new Uuid().v4();
+  session = Uuid().v4();
   return session;
 }
 
@@ -55,7 +55,7 @@ class SessionHandler extends Handler {
   }
 
   Map<String, String> createSessionHeaders(String sessionCookieValue) {
-    Cookie sessionCookie = new Cookie('session', sessionCookieValue);
+    Cookie sessionCookie = Cookie('session', sessionCookieValue);
     sessionCookie.httpOnly = true;
     sessionCookie.path = '/';
     return {'set-cookie': sessionCookie.toString()};

@@ -24,7 +24,7 @@ import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  Naming naming = new Naming()
+  Naming naming = Naming()
     ..platform = platformBrowser
     ..testType = testTypeIntegration
     ..topic = topicGlobalWebSocketMonitor;

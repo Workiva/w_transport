@@ -20,7 +20,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -28,9 +28,9 @@ void main() {
     group('ResponseFormatException', () {
       test('should detail why bytes could not be decoded', () {
         final bytes = convert.utf8.encode('bodyçå®');
-        final contentType = new MediaType(
-            'application', 'json', {'charset': convert.ascii.name});
-        final exception = new transport.ResponseFormatException(
+        final contentType =
+            MediaType('application', 'json', {'charset': convert.ascii.name});
+        final exception = transport.ResponseFormatException(
             contentType, convert.ascii,
             bytes: bytes);
         expect(exception.toString(), contains('Bytes could not be decoded'));
@@ -43,9 +43,9 @@ void main() {
 
       test('should detail why string could not be encoded', () {
         const body = 'bodyçå®';
-        final contentType = new MediaType(
-            'application', 'json', {'charset': convert.ascii.name});
-        final exception = new transport.ResponseFormatException(
+        final contentType =
+            MediaType('application', 'json', {'charset': convert.ascii.name});
+        final exception = transport.ResponseFormatException(
             contentType, convert.ascii,
             body: body);
         expect(exception.toString(), contains('Body could not be encoded'));
@@ -57,11 +57,10 @@ void main() {
 
       test('should warn if encoding is null', () {
         const body = 'bodyçå®';
-        final contentType = new MediaType(
-            'application', 'json', {'charset': convert.ascii.name});
-        final exception = new transport.ResponseFormatException(
-            contentType, null,
-            body: body);
+        final contentType =
+            MediaType('application', 'json', {'charset': convert.ascii.name});
+        final exception =
+            transport.ResponseFormatException(contentType, null, body: body);
         expect(exception.toString(), contains('Body could not be encoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: null'));

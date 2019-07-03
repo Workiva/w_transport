@@ -34,14 +34,11 @@ abstract class RespIntMixin implements transport.HttpInterceptor {
   @override
   Future<transport.ResponsePayload> interceptResponse(
       transport.ResponsePayload payload) async {
-    final newHeaders = new Map<String, String>.from(payload.response.headers);
+    final newHeaders = Map<String, String>.from(payload.response.headers);
     newHeaders['x-intercepted'] = 'true';
     transport.Response response = payload.response;
-    payload.response = new transport.Response.fromString(
-        payload.response.status,
-        payload.response.statusText,
-        newHeaders,
-        response.body.asString());
+    payload.response = transport.Response.fromString(payload.response.status,
+        payload.response.statusText, newHeaders, response.body.asString());
     return payload;
   }
 }
@@ -57,7 +54,7 @@ class AsyncInt extends transport.HttpInterceptor {
   @override
   Future<transport.RequestPayload> interceptRequest(
       transport.RequestPayload payload) async {
-    await new Future.delayed(new Duration(milliseconds: 500));
+    await Future.delayed(Duration(milliseconds: 500));
     payload.request.updateQuery({'interceptor': 'asyncint'});
     return payload;
   }
@@ -65,16 +62,13 @@ class AsyncInt extends transport.HttpInterceptor {
   @override
   Future<transport.ResponsePayload> interceptResponse(
       transport.ResponsePayload payload) async {
-    await new Future.delayed(new Duration(milliseconds: 500));
-    final headers = new Map<String, String>.from(payload.response.headers);
+    await Future.delayed(Duration(milliseconds: 500));
+    final headers = Map<String, String>.from(payload.response.headers);
     transport.Response response = payload.response;
     headers['x-interceptor'] =
         payload.request.uri.queryParameters['interceptor'];
-    payload.response = new transport.Response.fromString(
-        payload.response.status,
-        payload.response.statusText,
-        headers,
-        response.body.asString());
+    payload.response = transport.Response.fromString(payload.response.status,
+        payload.response.statusText, headers, response.body.asString());
     return payload;
   }
 }
@@ -91,7 +85,7 @@ Iterable<transport.BaseRequest> createAllRequestTypes(transport.Client client) {
 }
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -107,11 +101,11 @@ void main() {
 
     group('Client', () {
       // ignore: deprecated_member_use
-      _runHttpClientSuite(() => new transport.Client());
+      _runHttpClientSuite(() => transport.Client());
     });
 
     group('HttpClient', () {
-      _runHttpClientSuite(() => new transport.HttpClient());
+      _runHttpClientSuite(() => transport.HttpClient());
     });
   });
 }
@@ -126,7 +120,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('newFormRequest() should create a new request', () async {
-    expect(client.newFormRequest(), new isInstanceOf<transport.FormRequest>());
+    expect(client.newFormRequest(), isInstanceOf<transport.FormRequest>());
   });
 
   test('newFormRequest() should throw if closed', () async {
@@ -135,7 +129,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('newJsonRequest() should create a new request', () async {
-    expect(client.newJsonRequest(), new isInstanceOf<transport.JsonRequest>());
+    expect(client.newJsonRequest(), isInstanceOf<transport.JsonRequest>());
   });
 
   test('newJsonRequest() should throw if closed', () async {
@@ -145,7 +139,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
 
   test('newMultipartRequest() should create a new request', () async {
     expect(client.newMultipartRequest(),
-        new isInstanceOf<transport.MultipartRequest>());
+        isInstanceOf<transport.MultipartRequest>());
   });
 
   test('newMultipartRequest() should throw if closed', () async {
@@ -154,7 +148,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('newRequest() should create a new request', () async {
-    expect(client.newRequest(), new isInstanceOf<transport.Request>());
+    expect(client.newRequest(), isInstanceOf<transport.Request>());
   });
 
   test('newRequest() should throw if closed', () async {
@@ -163,8 +157,8 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('newStreamedRequest() should create a new request', () async {
-    expect(client.newStreamedRequest(),
-        new isInstanceOf<transport.StreamedRequest>());
+    expect(
+        client.newStreamedRequest(), isInstanceOf<transport.StreamedRequest>());
   });
 
   test('newStreamedRequest() should throw if closed', () async {
@@ -204,7 +198,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('timeoutThreshold should be inherited by all requests', () async {
-    final tt = new Duration(seconds: 1);
+    final tt = Duration(seconds: 1);
     client.timeoutThreshold = tt;
     expect(client.timeoutThreshold, equals(tt));
     for (final request in createAllRequestTypes(client)) {
@@ -217,12 +211,12 @@ void _runHttpClientSuite(transport.Client getClient()) {
     expect(client.withCredentials, isTrue);
     for (final request in createAllRequestTypes(client)) {
       final uri = Uri.parse('/test');
-      final c = new Completer<Null>();
+      final c = Completer<Null>();
       MockTransports.http.when(uri, (FinalizedRequest request) async {
         request.withCredentials
             ? c.complete()
-            : c.completeError(new Exception('withCredentials should be true'));
-        return new MockResponse.ok();
+            : c.completeError(Exception('withCredentials should be true'));
+        return MockResponse.ok();
       }, method: 'GET');
       if (request is transport.MultipartRequest) {
         request.fields['f'] = 'v';
@@ -234,7 +228,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
 
   test('autoRetry should be inherited by all requests', () async {
     client.autoRetry
-      ..backOff = const transport.RetryBackOff.fixed(const Duration(seconds: 2))
+      ..backOff = transport.RetryBackOff.fixed(Duration(seconds: 2))
       ..enabled = true
       ..forHttpMethods = ['GET']
       ..forStatusCodes = [404]
@@ -260,7 +254,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('addInterceptor() single interceptor (request only)', () async {
-    client.addInterceptor(new ReqInt());
+    client.addInterceptor(ReqInt());
     for (final request in createAllRequestTypes(client)) {
       final uri = Uri.parse('/test');
       MockTransports.http
@@ -273,7 +267,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('addInterceptor() single interceptor (response only)', () async {
-    client.addInterceptor(new RespInt());
+    client.addInterceptor(RespInt());
     for (final request in createAllRequestTypes(client)) {
       final uri = Uri.parse('/test');
       MockTransports.http.expect('GET', uri);
@@ -286,7 +280,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('addInterceptor() single interceptor', () async {
-    client.addInterceptor(new ReqRespInt());
+    client.addInterceptor(ReqRespInt());
     for (final request in createAllRequestTypes(client)) {
       final uri = Uri.parse('/test');
       MockTransports.http
@@ -300,7 +294,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('addInterceptor() multiple interceptors', () async {
-    client..addInterceptor(new ReqRespInt())..addInterceptor(new AsyncInt());
+    client..addInterceptor(ReqRespInt())..addInterceptor(AsyncInt());
     for (final request in createAllRequestTypes(client)) {
       final uri = Uri.parse('/test');
       final augmentedUri =
@@ -319,6 +313,6 @@ void _runHttpClientSuite(transport.Client getClient()) {
   test('close()', () async {
     final future = client.newRequest().get(uri: Uri.parse('/test'));
     client.close();
-    expect(future, throwsA(new isInstanceOf<transport.RequestException>()));
+    expect(future, throwsA(isInstanceOf<transport.RequestException>()));
   });
 }

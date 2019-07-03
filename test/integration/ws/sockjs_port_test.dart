@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@Tags(const ['no-dart2'])
+@Tags(['no-dart2'])
 @TestOn('browser')
 import 'package:test/test.dart';
 
 import 'sockjs_common.dart';
 
-const _protocolsToTest = const [
+const _protocolsToTest = [
   'websocket', // All modern browsers (websocket=yes)
   'xhr-streaming', // All modern browsers (websocket=no, streaming=yes)
 

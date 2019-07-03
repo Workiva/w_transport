@@ -16,6 +16,6 @@ import 'package:w_transport/mock.dart';
 
 void mockPingEndpoint(Uri uri) {
   MockTransports.http.when(uri, (_) async {
-    return new MockResponse.ok();
+    return MockResponse.ok();
   });
 }

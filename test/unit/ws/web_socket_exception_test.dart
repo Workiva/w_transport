@@ -21,27 +21,27 @@ import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  Naming naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicWebSocket;
 
   group(naming.toString(), () {
     test('WSocketException should support toString()', () {
       // ignore: deprecated_member_use
-      expect(new WSocketException('test').toString(),
-          contains('WSocketException:'));
+      expect(
+          WSocketException('test').toString(), contains('WSocketException:'));
     });
 
     test('WebSocketException should support toString()', () {
-      expect(new WebSocketException('test').toString(),
+      expect(WebSocketException('test').toString(),
           contains('WebSocketException:'));
     });
 
     test('WebSocketException extends WSocketException', () {
       expect(
-          new WebSocketException('test'),
+          WebSocketException('test'),
           // ignore: deprecated_member_use
-          new isInstanceOf<WSocketException>());
+          isInstanceOf<WSocketException>());
     });
   });
 }

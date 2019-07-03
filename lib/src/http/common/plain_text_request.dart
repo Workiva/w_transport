@@ -58,7 +58,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
       _bodyBytes = encoding.encode(_body);
       return _bodyBytes;
     }
-    return new Uint8List.fromList([]);
+    return Uint8List.fromList([]);
   }
 
   @override
@@ -73,7 +73,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
 
   @override
   MediaType get defaultContentType =>
-      new MediaType('text', 'plain', {'charset': encoding.name});
+      MediaType('text', 'plain', {'charset': encoding.name});
 
   @override
   Request clone() {
@@ -94,11 +94,11 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
       } else if (body is List<int>) {
         bodyBytes = body;
       } else {
-        throw new ArgumentError(
+        throw ArgumentError(
             'Plain-text request body must be either a String or List<int>.');
       }
     }
 
-    return new HttpBody.fromBytes(contentType, bodyBytes);
+    return HttpBody.fromBytes(contentType, bodyBytes);
   }
 }

@@ -31,7 +31,7 @@ Map<String, Handler> exampleHttpCrossOriginFileTransferRoutes = {
 };
 
 Directory filesDirectory =
-    new Directory('example/web/http/cross_origin_file_transfer/files');
+    new Directory('example/http/cross_origin_file_transfer/files');
 
 Future<String> _readFileUploadAsString(HttpMultipartFormData formData) async {
   final parts = await formData.toList();
@@ -51,7 +51,7 @@ Future<List<int>> _readFileUploadAsBytes(HttpMultipartFormData formData) async {
 void _writeFileUploadAsString(String filename, String contents) {
   _createUploadDirectory();
   final uploadDestination =
-      Uri.parse('example/web/http/cross_origin_file_transfer/files/$filename');
+      Uri.parse('example/http/cross_origin_file_transfer/files/$filename');
   final upload = new File.fromUri(uploadDestination);
   upload.writeAsStringSync(contents);
 }
@@ -59,7 +59,7 @@ void _writeFileUploadAsString(String filename, String contents) {
 void _writeFileUploadAsBytes(String filename, List<int> bytes) {
   _createUploadDirectory();
   final uploadDestination =
-      Uri.parse('example/web/http/cross_origin_file_transfer/files/$filename');
+      Uri.parse('example/http/cross_origin_file_transfer/files/$filename');
   final upload = new File.fromUri(uploadDestination);
   upload.writeAsBytesSync(bytes);
 }
@@ -210,7 +210,7 @@ class DownloadHandler extends Handler {
     final shouldForceDownload = request.uri.queryParameters['dl'] == '1';
 
     final fileUri = Uri.parse(
-        'example/web/http/cross_origin_file_transfer/files/$requestedFile');
+        'example/http/cross_origin_file_transfer/files/$requestedFile');
     final file = new File.fromUri(fileUri);
     if (!file.existsSync()) {
       request.response.statusCode = io_constant.HttpStatus.notFound;

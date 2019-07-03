@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:io' as io;
 
 import 'package:dart_dev/dart_dev.dart' show dev, config;
 import 'package:dart_dev/util.dart' show TaskProcess, reporter;

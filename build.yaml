@@ -1,13 +1,11 @@
 targets:
   $default:
-    sources:
-      - "lib/**"
-      - "test/**"
     builders:
       build_web_compilers|entrypoint:
         generate_for:
-          exclude:
-            - "test/integration/**/vm_test.dart*"
           include:
+            - "example/**.dart"
             - "test/integration/**.browser_test.dart"
             - "test/unit/**.browser_test.dart"
+          exclude:
+            - "test/integration/**/vm_test.dart*"

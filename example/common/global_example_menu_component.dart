@@ -68,9 +68,8 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<
 
     if (props.includeServerStatus) {
       _pingServer().then(_updateOnlineStatus);
-      serverPolling = Timer.periodic(Duration(seconds: 4), (Timer timer) async {
+      serverPolling = Timer.periodic(Duration(seconds: 4), (timer) async {
         final isOnline = await _pingServer();
-
         _updateOnlineStatus(isOnline);
       });
     }

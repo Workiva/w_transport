@@ -245,10 +245,7 @@ void main() {
             'requires that the handler returns MockWSocket or MockWebSocketServer',
             () {
           MockTransports.webSocket.when(webSocketUri,
-              handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
-                  'invalid');
+              handler: (uri, {headers, protocols}) async => 'invalid');
           // ignore: deprecated_member_use_from_same_package
           expect(MockWSocket.connect(webSocketUri), throwsArgumentError);
         });
@@ -377,11 +374,7 @@ void main() {
             'requires that the handler returns MockWSocket or MockWebSocketServer',
             () {
           MockTransports.webSocket.whenPattern(webSocketUri.toString(),
-              handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Match match,
-                      Iterable<String> protocols}) async =>
-                  'invalid');
+              handler: (uri, {headers, match, protocols}) async => 'invalid');
           // ignore: deprecated_member_use_from_same_package
           expect(transport.WSocket.connect(webSocketUri), throwsArgumentError);
         });

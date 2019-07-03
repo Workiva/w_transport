@@ -73,7 +73,7 @@ void main() {
         final uri = Uri.parse('/test');
 
         final c = Completer<String>();
-        MockTransports.http.when(uri, (FinalizedRequest request) async {
+        MockTransports.http.when(uri, (request) async {
           transport.HttpBody body = request.body;
           c.complete(body.asString());
           return MockResponse.ok();
@@ -89,7 +89,7 @@ void main() {
         final uri = Uri.parse('/test');
 
         final c = Completer<String>();
-        MockTransports.http.when(uri, (FinalizedRequest request) async {
+        MockTransports.http.when(uri, (request) async {
           transport.HttpBody body = request.body;
           c.complete(body.asString());
           return MockResponse.ok();

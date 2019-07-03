@@ -265,7 +265,7 @@ void _runCommonRequestSuiteFor(
         'URI and data should be accepted as parameters to a request dispatch method',
         () async {
       final dataCompleter = Completer<String>();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+      MockTransports.http.when(requestUri, (request) async {
         if (request.body is transport.HttpBody) {
           transport.HttpBody body = request.body;
           dataCompleter.complete(body.asString());
@@ -456,7 +456,7 @@ void _runCommonRequestSuiteFor(
       MockTransports.http
           .expect('GET', requestUri, headers: {'x-intercepted': 'true'});
       final request = requestFactory();
-      request.requestInterceptor = (transport.BaseRequest request) async {
+      request.requestInterceptor = (request) async {
         request.headers['x-intercepted'] = 'true';
       };
       await request.get(uri: requestUri);
@@ -468,7 +468,7 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory();
       final exception = Exception('interceptor failure');
 
-      request.requestInterceptor = (transport.BaseRequest request) async {
+      request.requestInterceptor = (request) async {
         throw exception;
       };
       expect(request.get(uri: Uri.parse('/test')), throwsA(equals(exception)));
@@ -487,8 +487,7 @@ void _runCommonRequestSuiteFor(
     test('responseInterceptor gets FinalizedRequest', () async {
       MockTransports.http.expect('GET', requestUri);
       final request = requestFactory();
-      request.responseInterceptor =
-          (FinalizedRequest request, response, [exception]) async {
+      request.responseInterceptor = (request, response, [exception]) async {
         expect(request.method, equals('GET'));
         expect(request.uri, equals(requestUri));
         return response;
@@ -500,8 +499,7 @@ void _runCommonRequestSuiteFor(
       final mockResponse = MockResponse.ok(body: 'original');
       MockTransports.http.expect('GET', requestUri, respondWith: mockResponse);
       final request = requestFactory();
-      request.responseInterceptor =
-          (request, transport.BaseResponse response, [exception]) async {
+      request.responseInterceptor = (request, response, [exception]) async {
         expect(response, isA<transport.Response>());
         transport.Response standardResponse = response;
         expect(standardResponse.body.asString(), equals('original'));
@@ -539,8 +537,7 @@ void _runCommonRequestSuiteFor(
       final mockResponse = MockResponse.ok(body: 'original');
       MockTransports.http.expect('GET', requestUri, respondWith: mockResponse);
       final request = requestFactory();
-      request.responseInterceptor =
-          (request, transport.BaseResponse response, [exception]) async {
+      request.responseInterceptor = (request, response, [exception]) async {
         return transport.Response.fromString(
             response.status, response.statusText, response.headers, 'modified');
       };
@@ -844,9 +841,8 @@ void _runAutoRetryTestSuiteFor(
         request.autoRetry
           ..enabled = true
           ..maxRetries = 2
-          ..test =
-              (request, transport.BaseResponse response, willRetry) async =>
-                  response.headers['x-retry'] == 'yes';
+          ..test = (request, response, willRetry) async =>
+              response.headers['x-retry'] == 'yes';
 
         expect(request.get(uri: requestUri),
             throwsA(isA<transport.RequestException>()));
@@ -1261,8 +1257,7 @@ void _runAutoRetryTestSuiteFor(
           ..maxRetries = 4
           ..test = (request, response, willRetry) async => true;
 
-        expect(request.get(uri: requestUri),
-            throwsA(predicate((transport.RequestException reqEx) {
+        expect(request.get(uri: requestUri), throwsA(predicate((reqEx) {
           expect(reqEx.toString(), contains('Attempt #1: 400 BAD REQUEST'));
           expect(reqEx.toString(), contains('Attempt #2: 403 FORBIDDEN'));
           expect(reqEx.toString(),

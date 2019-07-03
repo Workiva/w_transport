@@ -98,8 +98,7 @@ class DownloadPageComponent
     super.componentWillMount();
 
     remoteFiles = RemoteFiles.connect();
-    fileStreamSubscription = remoteFiles.stream
-        .listen((List<RemoteFileDescription> fileDescriptions) {
+    fileStreamSubscription = remoteFiles.stream.listen((fileDescriptions) {
       var stateToSet = newState();
 
       if (!ListEquality<RemoteFileDescription>()
@@ -131,8 +130,8 @@ class DownloadPageComponent
     fileStreamErrorSubscription.cancel();
   }
 
-  Function _createDownloadFileCallback(RemoteFileDescription rfd) {
-    return (SyntheticMouseEvent event) {
+  MouseEventCallback _createDownloadFileCallback(RemoteFileDescription rfd) {
+    return (event) {
       event.preventDefault();
       _downloadFile(rfd);
     };

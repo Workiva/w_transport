@@ -371,9 +371,7 @@ void main() {
           final mockWebSocketServer = MockWebSocketServer();
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
-              handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+              handler: (uri, {headers, protocols}) async =>
                   mockWebSocketServer);
 
           final webSocket = await transport.WebSocket.connect(
@@ -624,9 +622,7 @@ void main() {
           final mockWebSocketServer = MockWebSocketServer();
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
-              handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+              handler: (uri, {headers, protocols}) async =>
                   mockWebSocketServer);
 
           final webSocket = await transport.WebSocket.connect(

@@ -18,7 +18,7 @@ import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
 
 CaseInsensitiveMap<String> parseServerHeaders(HttpHeaders httpHeaders) {
   final headers = CaseInsensitiveMap<String>();
-  httpHeaders.forEach((String name, List<String> values) {
+  httpHeaders.forEach((name, values) {
     headers[name] = values.join(',');
   });
   return headers;

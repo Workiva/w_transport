@@ -62,33 +62,33 @@ void main() {
     group('Pathway', () {
       test('waits for Futures to resolve', () async {
         final pathway = Pathway<String>();
-        pathway.addInterceptor((String input) async => input * 2);
-        pathway.addInterceptor((String input) async => input + 'b');
+        pathway.addInterceptor((input) async => input * 2);
+        pathway.addInterceptor((input) async => input + 'b');
         final result = await pathway.process('a');
         expect(result, equals('aab'));
       });
 
       test('handles values returned immediately (no Future)', () async {
         final pathway = Pathway<String>();
-        pathway.addInterceptor((String input) => input * 2);
-        pathway.addInterceptor((String input) => input + 'b');
+        pathway.addInterceptor((input) => input * 2);
+        pathway.addInterceptor((input) => input + 'b');
         final result = await pathway.process('a');
         expect(result, equals('aab'));
       });
 
       test('handles a mix of immediate values and Futures', () async {
         final pathway = Pathway<String>();
-        pathway.addInterceptor((String input) async => input * 2);
-        pathway.addInterceptor((String input) => input + 'b');
+        pathway.addInterceptor((input) async => input * 2);
+        pathway.addInterceptor((input) => input + 'b');
         final result = await pathway.process('a');
         expect(result, equals('aab'));
       });
 
       test('throws if an invalid value is returned', () async {
         final pathway = Pathway<String>();
-        pathway.addInterceptor((String input) async => input * 2);
-        pathway.addInterceptor((String input) => input + 'b');
-        pathway.addInterceptor((String input) => 10);
+        pathway.addInterceptor((input) async => input * 2);
+        pathway.addInterceptor((input) => input + 'b');
+        pathway.addInterceptor((input) => 10);
         expect(pathway.process('a'), throwsException);
       });
     });

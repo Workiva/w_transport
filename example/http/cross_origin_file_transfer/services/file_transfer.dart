@@ -115,7 +115,7 @@ class Download extends FileTransfer {
     _progressStream = _request.downloadProgress.asBroadcastStream();
     _progressStream.listen(_progressListener);
 
-    _progressStream.listen((RequestProgress progress) {
+    _progressStream.listen((progress) {
       if (_canceled) return;
 
       if (progress.lengthComputable) {
@@ -134,7 +134,7 @@ class Download extends FileTransfer {
     });
 
     // Send the request.
-    _request.get().then((Response response) {
+    _request.get().then((response) {
       _doneCompleter.complete();
     }, onError: (error) {
       _doneCompleter.completeError(error);

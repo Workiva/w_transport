@@ -163,7 +163,7 @@ class FilesHandler extends Handler {
   Future<Null> get(HttpRequest request) async {
     final files = fw.files.whereType<File>().where((file) => file.existsSync());
     final filesPayload = files
-        .map((File entity) => {
+        .map((entity) => {
               'name': Uri.parse(entity.path).pathSegments.last,
               'size': entity.lengthSync()
             })

@@ -171,7 +171,7 @@ class MockHttpInternal {
     if (handlerMatch != null) {
       // If a handler was set up for this type of request, call the handler.
       if (handlerMatch.handler is RequestHandler) {
-        request.onSent.then((FinalizedRequest finalizedRequest) {
+        request.onSent.then((finalizedRequest) {
           handlerMatch.handler(finalizedRequest).then((response) {
             request.complete(response: response);
           }, onError: (error) {
@@ -180,7 +180,7 @@ class MockHttpInternal {
         });
         return;
       } else if (handlerMatch.handler is PatternRequestHandler) {
-        request.onSent.then((FinalizedRequest finalizedRequest) {
+        request.onSent.then((finalizedRequest) {
           handlerMatch.handler(finalizedRequest, handlerMatch.match).then(
               (response) {
             request.complete(response: response);

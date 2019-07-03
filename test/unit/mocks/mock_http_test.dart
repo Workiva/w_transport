@@ -544,7 +544,7 @@ void main() {
 
         test('returns true if there is a matching handler', () async {
           MockTransports.http.when(
-              requestUri, (FinalizedRequest request) async => MockResponse.ok(),
+              requestUri, (request) async => MockResponse.ok(),
               method: 'GET');
           expect(MockHttpInternal.hasHandlerForRequest('GET', requestUri, {}),
               isTrue);

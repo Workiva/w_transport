@@ -4,3 +4,7 @@ analyzer:
   language:
     strict-inference: true
     strict-raw-types: true
+
+linter:
+  rules:
+    - avoid_types_on_closure_parameters

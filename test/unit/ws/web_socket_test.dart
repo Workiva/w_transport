@@ -30,14 +30,14 @@ void main() {
   group(naming.toString(), () {
     group('WSocket', () {
       // ignore: deprecated_member_use_from_same_package
-      _runWebSocketSuite((Uri uri) => transport.WSocket.connect(uri));
+      _runWebSocketSuite((uri) => transport.WSocket.connect(uri));
       // ignore: deprecated_member_use_from_same_package
-      _runLegacyWebSocketSuite((Uri uri) => transport.WSocket.connect(uri));
+      _runLegacyWebSocketSuite((uri) => transport.WSocket.connect(uri));
     });
 
     group('WebSocket', () {
-      _runWebSocketSuite((Uri uri) => transport.WebSocket.connect(uri));
-      _runLegacyWebSocketSuite((Uri uri) => transport.WebSocket.connect(uri));
+      _runWebSocketSuite((uri) => transport.WebSocket.connect(uri));
+      _runLegacyWebSocketSuite((uri) => transport.WebSocket.connect(uri));
     });
   });
 }

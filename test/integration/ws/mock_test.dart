@@ -79,15 +79,15 @@ void main() {
           .when(IntegrationPaths.fourOhFourUri, reject: true);
 
       MockTransports.webSocket.when(IntegrationPaths.closeUri,
-          handler: (Uri uri, {protocols, headers}) async =>
+          handler: (uri, {protocols, headers}) async =>
               mockCloseWebSocketServer);
 
       MockTransports.webSocket.when(IntegrationPaths.echoUri,
-          handler: (Uri uri, {protocols, headers}) async =>
+          handler: (uri, {protocols, headers}) async =>
               mockEchoWebSocketServer);
 
       MockTransports.webSocket.when(IntegrationPaths.pingUri,
-          handler: (Uri uri, {protocols, headers}) async =>
+          handler: (uri, {protocols, headers}) async =>
               mockPingWebSocketServer);
     });
 
@@ -112,7 +112,7 @@ void main() {
           .when(IntegrationPaths.fourOhFourUri, reject: true);
 
       MockTransports.webSocket.when(IntegrationPaths.closeUri,
-          handler: (Uri uri, {protocols, headers}) async {
+          handler: (uri, {protocols, headers}) async {
         // ignore: deprecated_member_use_from_same_package
         final webSocket = MockWSocket();
 
@@ -136,7 +136,7 @@ void main() {
       });
 
       MockTransports.webSocket.when(IntegrationPaths.echoUri,
-          handler: (Uri uri, {protocols, headers}) async {
+          handler: (uri, {protocols, headers}) async {
         // ignore: deprecated_member_use_from_same_package
         final webSocket = MockWSocket();
         // ignore: deprecated_member_use_from_same_package
@@ -145,7 +145,7 @@ void main() {
       });
 
       MockTransports.webSocket.when(IntegrationPaths.pingUri,
-          handler: (Uri uri, {protocols, headers}) async {
+          handler: (uri, {protocols, headers}) async {
         // ignore: deprecated_member_use_from_same_package
         final webSocket = MockWSocket();
 

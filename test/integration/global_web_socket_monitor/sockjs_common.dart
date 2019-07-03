@@ -43,7 +43,7 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
   group(sockjsPortNaming.toString(), () {
     _sockJSSuite(
         protocolsToTest,
-        (Uri uri, String protocol) => transport.WebSocket.connect(uri,
+        (uri, protocol) => transport.WebSocket.connect(uri,
             transportPlatform: BrowserTransportPlatformWithSockJS(
                 sockJSNoCredentials: true,
                 sockJSProtocolsWhitelist: [protocol])));
@@ -52,7 +52,7 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
   group(sockjsPortDeprecatedNaming.toString(), () {
     _sockJSSuite(
         protocolsToTest,
-        (Uri uri, String protocol) => transport.WebSocket.connect(uri,
+        (uri, protocol) => transport.WebSocket.connect(uri,
             // ignore: deprecated_member_use_from_same_package
             useSockJS: true,
             // ignore: deprecated_member_use_from_same_package
@@ -68,7 +68,7 @@ void _sockJSSuite(List<String> protocolsToTest,
   for (final protocol in protocolsToTest) {
     group('(protocol=$protocol)', () {
       runCommonGlobalWebSocketMonitorIntegrationTests(
-          (Uri uri) => connect(uri, protocol),
+          (uri) => connect(uri, protocol),
           port: _sockjsPort);
 
       var echoUri = IntegrationPaths.echoUri.replace(port: _sockjsPort);

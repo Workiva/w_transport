@@ -97,7 +97,7 @@ void _runCommonRequestSuiteFor(
 
       try {
         final future = request.post(uri: IntegrationPaths.timeoutEndpointUri);
-        await Future.delayed(Duration(milliseconds: 5));
+        await Future<void>.delayed(Duration(milliseconds: 5));
         request.abort();
         await future;
       } on transport.RequestException catch (_) {}
@@ -399,7 +399,7 @@ void _runCommonRequestSuiteFor(
 
       // Wait a sufficient amount of time to allow the request to open.
       // Since we're hitting a timeout endpoint, it shouldn't complete.
-      await Future.delayed(Duration(seconds: 1));
+      await Future<void>.delayed(Duration(seconds: 1));
 
       // Abort the request now that it is in flight.
       request.abort();

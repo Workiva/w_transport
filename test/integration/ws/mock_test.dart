@@ -69,7 +69,7 @@ void main() {
             numPongs = int.parse(data);
           } catch (_) {}
           for (int i = 0; i < numPongs; i++) {
-            await Future.delayed(Duration(milliseconds: 5));
+            await Future<void>.delayed(Duration(milliseconds: 5));
             connection.send('pong');
           }
         });
@@ -157,7 +157,7 @@ void main() {
             numPongs = int.parse(data);
           } catch (_) {}
           for (int i = 0; i < numPongs; i++) {
-            await Future.delayed(Duration(milliseconds: 5));
+            await Future<void>.delayed(Duration(milliseconds: 5));
             // ignore: deprecated_member_use_from_same_package
             webSocket.addIncoming('pong');
           }

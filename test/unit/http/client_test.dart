@@ -54,7 +54,7 @@ class AsyncInt extends transport.HttpInterceptor {
   @override
   Future<transport.RequestPayload> interceptRequest(
       transport.RequestPayload payload) async {
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future<void>.delayed(Duration(milliseconds: 500));
     payload.request.updateQuery({'interceptor': 'asyncint'});
     return payload;
   }
@@ -62,7 +62,7 @@ class AsyncInt extends transport.HttpInterceptor {
   @override
   Future<transport.ResponsePayload> interceptResponse(
       transport.ResponsePayload payload) async {
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future<void>.delayed(Duration(milliseconds: 500));
     final headers = Map<String, String>.from(payload.response.headers);
     transport.Response response = payload.response;
     headers['x-interceptor'] =

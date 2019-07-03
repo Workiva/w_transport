@@ -33,7 +33,7 @@ void main() {
           () async {
         final onCancelCalled = Completer<Null>();
 
-        final sc = StreamController<dynamic>();
+        final sc = StreamController<Null>();
         final sub = sc.stream.listen((_) {});
         final wsub =
             WSocketSubscription(sub, () {}, onCancel: onCancelCalled.complete);
@@ -48,7 +48,7 @@ void main() {
 
       test('isPaused should return the status of the underlying subscription',
           () async {
-        final sc = StreamController<dynamic>();
+        final sc = StreamController<Null>();
         final sub = sc.stream.listen((_) {});
         final wsub = WSocketSubscription(sub, () {});
 
@@ -68,7 +68,7 @@ void main() {
       });
 
       test('onDone() should update the done handler', () async {
-        final sub = MockStreamSubscription();
+        final sub = MockStreamSubscription<Null>();
         final wsub = WSocketSubscription(sub, () {});
         final doneHandler = () {};
 
@@ -80,7 +80,7 @@ void main() {
 
       test('onError() should call onError() on the underlying subscription',
           () async {
-        final sub = MockStreamSubscription();
+        final sub = MockStreamSubscription<Null>();
         final wsub = WSocketSubscription(sub, () {});
         final errorHandler = (_) {};
 
@@ -93,7 +93,7 @@ void main() {
 
       test('onData() should call onData() on the underlying subscription',
           () async {
-        final sub = MockStreamSubscription();
+        final sub = MockStreamSubscription<Null>();
         final wsub = WSocketSubscription(sub, () {});
         final dataHandler = (_) {};
 

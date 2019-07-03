@@ -96,7 +96,7 @@ class FileWatcher {
   void _startWatching() {
     if (!_watching) return;
     _listFiles();
-    Future.delayed(Duration(seconds: 2)).then((_) => _startWatching());
+    Future<void>.delayed(Duration(seconds: 2)).then((_) => _startWatching());
   }
 
   void _endWatching() {

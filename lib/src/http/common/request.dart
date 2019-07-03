@@ -869,7 +869,7 @@ abstract class CommonRequest extends Object
         final backOff = utils.calculateBackOff(autoRetry);
 
         if (backOff != null) {
-          await Future.delayed(backOff);
+          await Future<void>.delayed(backOff);
         }
 
         // ignore: unawaited_futures

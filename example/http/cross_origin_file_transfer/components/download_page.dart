@@ -102,7 +102,8 @@ class DownloadPageComponent
         .listen((List<RemoteFileDescription> fileDescriptions) {
       var stateToSet = newState();
 
-      if (!ListEquality().equals(fileDescriptions, state.fileDescriptions)) {
+      if (!ListEquality<RemoteFileDescription>()
+          .equals(fileDescriptions, state.fileDescriptions)) {
         stateToSet.fileDescriptions = fileDescriptions;
       }
 

@@ -83,7 +83,7 @@ void main() {
 
       // Hold the requests long enough to let the client cancel them on close
       MockTransports.http.when(requestUri, (request) async {
-        await Future.delayed(Duration(seconds: 10));
+        await Future<void>.delayed(Duration(seconds: 10));
         return null;
       }, method: 'GET');
 
@@ -309,7 +309,7 @@ void _runCommonRequestSuiteFor(
         () async {
       final request = requestFactory();
       final future = request.get(uri: requestUri);
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future<void>.delayed(Duration(milliseconds: 100));
       request.abort();
       expect(future, throwsA(isA<transport.RequestException>()));
       await future.catchError((_) {});
@@ -365,7 +365,7 @@ void _runCommonRequestSuiteFor(
         ..enabled = true
         ..test = (request, response, willRetry) async => true;
       final future = request.get(uri: requestUri);
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future<void>.delayed(Duration(milliseconds: 100));
       request.abort();
       expect(future, throwsA(predicate((error) {
         return error is transport.RequestException &&
@@ -590,7 +590,7 @@ void _runCommonRequestSuiteFor(
     test('timeoutThreshold is not enforced if not set', () async {
       final request = requestFactory();
       final future = request.get(uri: requestUri);
-      await Future.delayed(Duration(milliseconds: 250));
+      await Future<void>.delayed(Duration(milliseconds: 250));
       // ignore: deprecated_member_use_from_same_package
       MockTransports.http.completeRequest(request);
       await future;
@@ -601,7 +601,7 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory()
         ..timeoutThreshold = Duration(milliseconds: 500);
       final future = request.get(uri: requestUri);
-      await Future.delayed(Duration(milliseconds: 250));
+      await Future<void>.delayed(Duration(milliseconds: 250));
       // ignore: deprecated_member_use_from_same_package
       MockTransports.http.completeRequest(request);
       await future;
@@ -622,7 +622,7 @@ void _runCommonRequestSuiteFor(
       final request = requestFactory()
         ..timeoutThreshold = Duration(milliseconds: 500);
       final future = request.get(uri: requestUri);
-      await Future.delayed(Duration(milliseconds: 250));
+      await Future<void>.delayed(Duration(milliseconds: 250));
       request.abort();
       expect(future, throwsA(predicate((error) {
         return error is transport.RequestException &&
@@ -1028,7 +1028,7 @@ void _runAutoRetryTestSuiteFor(
           if (++c == 1) {
             return MockResponse.internalServerError();
           } else {
-            await Future.delayed(Duration(seconds: 10));
+            await Future<void>.delayed(Duration(seconds: 10));
           }
           return null;
         }, method: 'GET');
@@ -1039,7 +1039,7 @@ void _runAutoRetryTestSuiteFor(
           ..maxRetries = 2;
 
         final future = request.get(uri: requestUri);
-        await Future.delayed(Duration(milliseconds: 500));
+        await Future<void>.delayed(Duration(milliseconds: 500));
         request.abort();
         expect(future, throwsA(predicate((exception) {
           return exception is transport.RequestException &&
@@ -1052,7 +1052,7 @@ void _runAutoRetryTestSuiteFor(
         int c = 0;
         MockTransports.http.when(requestUri, (request) async {
           if (++c == 1) {
-            await Future.delayed(Duration(seconds: 1));
+            await Future<void>.delayed(Duration(seconds: 1));
             return null;
           } else {
             return MockResponse.ok();
@@ -1072,7 +1072,7 @@ void _runAutoRetryTestSuiteFor(
       test('request timeout should not be retried if disabled', () async {
         // 1st request = hangs until timeout
         MockTransports.http.when(requestUri, (request) async {
-          await Future.delayed(Duration(seconds: 1));
+          await Future<void>.delayed(Duration(seconds: 1));
           return null;
         }, method: 'GET');
 
@@ -1108,7 +1108,7 @@ void _runAutoRetryTestSuiteFor(
 
         // Wait an arbitrarily short amount of time to allow all retries to
         // complete with confidence that no back-off occurred.
-        await Future.delayed(Duration(milliseconds: 20));
+        await Future<void>.delayed(Duration(milliseconds: 20));
         expect(request.autoRetry.numAttempts, equals(4));
       });
 
@@ -1135,13 +1135,13 @@ void _runAutoRetryTestSuiteFor(
         // < 100ms = 2 attempts
         // < 150ms = 3 attempts
         // >= 150ms = 4 attempts
-        await Future.delayed(Duration(milliseconds: 25));
+        await Future<void>.delayed(Duration(milliseconds: 25));
         expect(request.autoRetry.numAttempts, equals(1));
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(Duration(milliseconds: 50));
         expect(request.autoRetry.numAttempts, equals(2));
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(Duration(milliseconds: 50));
         expect(request.autoRetry.numAttempts, equals(3));
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future<void>.delayed(Duration(milliseconds: 50));
         expect(request.autoRetry.numAttempts, equals(4));
       });
 
@@ -1167,7 +1167,7 @@ void _runAutoRetryTestSuiteFor(
         // 2nd attempt = +0 to 15s
         // 3rd attempt = +0 to 15s
         // 4th attempt = +0 to 15s
-        await Future.delayed(Duration(milliseconds: 200));
+        await Future<void>.delayed(Duration(milliseconds: 200));
         expect(request.autoRetry.numAttempts, equals(4));
       });
 
@@ -1195,13 +1195,13 @@ void _runAutoRetryTestSuiteFor(
         // 2nd attempt = +50s (25*2^1)
         // 3rd attempt = +100s (25*2^2)
         // 4th attempt = +200s (25*2^3)
-        await Future.delayed(Duration(milliseconds: 1));
+        await Future<void>.delayed(Duration(milliseconds: 1));
         expect(request.autoRetry.numAttempts, equals(1));
-        await Future.delayed(Duration(milliseconds: 60));
+        await Future<void>.delayed(Duration(milliseconds: 60));
         expect(request.autoRetry.numAttempts, equals(2));
-        await Future.delayed(Duration(milliseconds: 120));
+        await Future<void>.delayed(Duration(milliseconds: 120));
         expect(request.autoRetry.numAttempts, equals(3));
-        await Future.delayed(Duration(milliseconds: 240));
+        await Future<void>.delayed(Duration(milliseconds: 240));
         expect(request.autoRetry.numAttempts, equals(4));
       });
 
@@ -1229,7 +1229,7 @@ void _runAutoRetryTestSuiteFor(
         // 2nd attempt = +0 to 50s (25*2^1)
         // 3rd attempt = +0 to 100s (25*2^2) + 2nd attempt
         // 4th attempt = +0 to 200s (25*2^3) + 3rd attempt
-        await Future.delayed(Duration(milliseconds: 500));
+        await Future<void>.delayed(Duration(milliseconds: 500));
         expect(request.autoRetry.numAttempts, equals(4));
       });
 
@@ -1245,7 +1245,7 @@ void _runAutoRetryTestSuiteFor(
             case 3:
               return MockResponse.internalServerError();
             case 4:
-              await Future.delayed(Duration(seconds: 1));
+              await Future<void>.delayed(Duration(seconds: 1));
               return MockResponse.notImplemented();
             case 5:
               throw Exception('Unexpected failure.');
@@ -1297,7 +1297,7 @@ void _runAutoRetryTestSuiteFor(
         final request = requestFactory();
         // ignore: unawaited_futures
         request.get(uri: requestUri);
-        await Future.delayed(Duration(milliseconds: 10));
+        await Future<void>.delayed(Duration(milliseconds: 10));
         expect(request.retry, throwsStateError);
       });
 
@@ -1328,7 +1328,7 @@ void _runAutoRetryTestSuiteFor(
         final request = requestFactory();
         // ignore: unawaited_futures
         request.get(uri: requestUri);
-        await Future.delayed(Duration(milliseconds: 10));
+        await Future<void>.delayed(Duration(milliseconds: 10));
         expect(request.streamRetry, throwsStateError);
       });
 

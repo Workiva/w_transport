@@ -41,7 +41,7 @@ void main() {
 
       test('setting fields defaults to empty map if null', () {
         final request = transport.FormRequest()..fields = null;
-        expect(request.fields, equals({}));
+        expect(request.fields, isEmpty);
       });
 
       test('setting entire fields map', () {

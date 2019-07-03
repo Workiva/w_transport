@@ -452,7 +452,7 @@ void main() {
           clientRequestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
-          await Future.delayed(Duration(milliseconds: 50));
+          await Future<void>.delayed(Duration(milliseconds: 50));
           expect(MockTransports.http.numPendingRequests, equals(12));
           await MockTransports.reset();
         });

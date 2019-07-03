@@ -57,7 +57,7 @@ void main() {
       test('setting entire body (invalid JSON)', () {
         final request = transport.JsonRequest();
         expect(() {
-          request.body = Stream.fromIterable([]);
+          request.body = Stream<int>.empty();
         }, throwsA(isA<JsonUnsupportedObjectError>()));
       });
 

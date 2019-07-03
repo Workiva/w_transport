@@ -115,7 +115,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 }
 
-Future<Null> _testRequest(transport.BaseRequest request) async {
+Future<void> _testRequest(transport.BaseRequest request) async {
   request.uri = IntegrationPaths.reflectEndpointUri;
   request.headers = {'x-custom': 'value', 'x-tokens': 'token1, token2'};
   final response = await request.get();

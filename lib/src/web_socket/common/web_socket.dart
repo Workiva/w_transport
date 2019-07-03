@@ -41,11 +41,11 @@ abstract class CommonWebSocket extends Stream<dynamic> implements WebSocket {
   /// A completer that completes when both the outgoing stream sink and the
   /// incoming stream have been closed. This is used to determine when this
   /// [WebSocket] instance can be considered completely closed.
-  Completer<Null> _allClosed = Completer<Null>();
+  Completer<void> _allClosed = Completer<void>();
 
   /// A completer that completes when this [WebSocket] instance is completely
   /// "done" - both outgoing and incoming.
-  Completer<Null> _done = Completer<Null>();
+  Completer<void> _done = Completer<void>();
 
   /// Any error that may be caught during the life of the underlying WebSocket.
   Object _error;
@@ -105,7 +105,7 @@ abstract class CommonWebSocket extends Stream<dynamic> implements WebSocket {
 
   /// Future that resolves when this WebSocket connection has completely closed.
   @override
-  Future<Null> get done => _done.future;
+  Future<void> get done => _done.future;
 
   /// Sends a message over the WebSocket connection.
   ///
@@ -139,7 +139,7 @@ abstract class CommonWebSocket extends Stream<dynamic> implements WebSocket {
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
   @override
-  Future<Null> addStream(Stream<dynamic> stream) async {
+  Future<void> addStream(Stream<dynamic> stream) async {
     _inProgressAddStream = _outgoing.addStream(stream);
     await _inProgressAddStream;
     _inProgressAddStream = null;
@@ -148,7 +148,7 @@ abstract class CommonWebSocket extends Stream<dynamic> implements WebSocket {
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
   @override
-  Future<Null> close([int code, String reason]) {
+  Future<void> close([int code, String reason]) {
     shutDown(code: code, reason: reason);
     return done;
   }
@@ -167,7 +167,7 @@ abstract class CommonWebSocket extends Stream<dynamic> implements WebSocket {
 
   /// Called when the subscription to the incoming `StreamController` is
   /// canceled.
-  Future<Null> onIncomingCancel() async {
+  Future<void> onIncomingCancel() async {
     await webSocketSubscription.cancel();
     await _incoming.close();
   }

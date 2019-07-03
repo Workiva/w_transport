@@ -57,13 +57,13 @@ class MockTransports {
     MockTransportsInternal.fallThrough = fallThrough ?? false;
   }
 
-  static Future<Null> reset() {
+  static Future<void> reset() {
     http.reset();
     webSocket.reset();
     return Future.value();
   }
 
-  static Future<Null> uninstall() async {
+  static Future<void> uninstall() async {
     await reset();
     MockTransportsInternal.isInstalled = false;
   }

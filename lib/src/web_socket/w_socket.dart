@@ -124,7 +124,7 @@ abstract class WSocket implements Stream<dynamic>, StreamSink<dynamic> {
 
   /// Future that resolves when this WebSocket connection has completely closed.
   @override
-  Future<Null> get done;
+  Future<void> get done;
 
   /// Sends a message over the WebSocket connection.
   ///
@@ -153,10 +153,10 @@ abstract class WSocket implements Stream<dynamic>, StreamSink<dynamic> {
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
   @override
-  Future<Null> addStream(Stream<dynamic> stream);
+  Future<void> addStream(Stream<dynamic> stream);
 
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
   @override
-  Future<Null> close([int code, String reason]);
+  Future<void> close([int code, String reason]);
 }

@@ -21,7 +21,7 @@ import 'package:w_transport/src/http/response.dart';
 
 @Deprecated(v3Deprecation)
 abstract class MockBaseRequest extends BaseRequest {
-  Future<Null> get onCanceled;
+  Future<void> get onCanceled;
   Future<FinalizedRequest> get onSent;
   void complete({BaseResponse response});
   void completeError({Object error, BaseResponse response});

@@ -166,7 +166,7 @@ void _runWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
     final sub = webSocket.listen((_) {}, onDone: () {});
 
-    final c = Completer<Null>();
+    final c = Completer<void>();
     sub.onDone(() {
       c.complete();
     });
@@ -393,7 +393,7 @@ void _runLegacyWebSocketSuite(Future<transport.WSocket> getWebSocket(Uri uri)) {
 
       final sub = webSocket.listen((_) {}, onDone: () {});
 
-      final c = Completer<Null>();
+      final c = Completer<void>();
       sub.onDone(() {
         c.complete();
       });

@@ -29,7 +29,7 @@ import 'package:w_transport/src/mocks/mock_transports.dart'
 
 // ignore: deprecated_member_use_from_same_package
 abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
-  Completer<Null> _canceled = Completer<Null>();
+  Completer<void> _canceled = Completer<void>();
   bool _mockHandlersRegistered = false;
   Completer<BaseResponse> _response = Completer<BaseResponse>();
   Completer<FinalizedRequest> _sent = Completer<FinalizedRequest>();
@@ -40,7 +40,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   bool get isMockAware => true;
 
   @override
-  Future<Null> get onCanceled {
+  Future<void> get onCanceled {
     _registerHandlers();
     return _canceled.future;
   }
@@ -60,7 +60,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   BaseRequest createRealRequest();
 
   @override
-  Future<Null> openRequest([_]) async {
+  Future<void> openRequest([_]) async {
     _registerHandlers();
 
     // Allow the controller of this mock request to trigger an unexpected

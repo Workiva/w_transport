@@ -29,7 +29,7 @@ abstract class Handler {
 
   /// Main entry point for request handling.
   /// Sub-classes should implement only the necessary REST method handlers.
-  Future<Null> processRequest(HttpRequest request) async {
+  Future<void> processRequest(HttpRequest request) async {
     Function handler;
     switch (request.method) {
       case 'COPY':
@@ -114,41 +114,41 @@ abstract class Handler {
   }
 
   /// RESTful method handlers. Override as necessary.
-  Future<Null> copy(HttpRequest request) async {
+  Future<void> copy(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
   }
 
-  Future<Null> delete(HttpRequest request) async {
+  Future<void> delete(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
   }
 
-  Future<Null> get(HttpRequest request) async {
+  Future<void> get(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
   }
 
-  Future<Null> head(HttpRequest request) async {
+  Future<void> head(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
   }
 
-  Future<Null> patch(HttpRequest request) async {
+  Future<void> patch(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
   }
 
-  Future<Null> post(HttpRequest request) async {
+  Future<void> post(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
   }
 
-  Future<Null> put(HttpRequest request) async {
+  Future<void> put(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
   }
 
-  Future<Null> trace(HttpRequest request) async {
+  Future<void> trace(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
   }
 
   /// Handler for the OPTIONS request. For convenience, this returns
   /// 200 OK by default if CORS support has been enabled.
-  Future<Null> options(HttpRequest request) async {
+  Future<void> options(HttpRequest request) async {
     if (_corsEnabled) {
       request.response.statusCode = io_constant.HttpStatus.ok;
       setCorsHeaders(request);
@@ -160,7 +160,7 @@ abstract class Handler {
 
 abstract class WebSocketHandler extends Handler {
   @override
-  Future<Null> processRequest(HttpRequest request) async {
+  Future<void> processRequest(HttpRequest request) async {
     final webSocket = await WebSocketTransformer.upgrade(request);
     onConnection(webSocket);
   }

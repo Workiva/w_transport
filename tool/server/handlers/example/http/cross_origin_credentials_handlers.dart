@@ -62,7 +62,7 @@ class SessionHandler extends Handler {
   }
 
   @override
-  Future<Null> get(HttpRequest request) async {
+  Future<void> get(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
     request.response.write(convert_constant.json
@@ -70,7 +70,7 @@ class SessionHandler extends Handler {
   }
 
   @override
-  Future<Null> post(HttpRequest request) async {
+  Future<void> post(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
     final headers = createSessionHeaders(generateSessionCookie());
@@ -82,7 +82,7 @@ class SessionHandler extends Handler {
   }
 
   @override
-  Future<Null> delete(HttpRequest request) async {
+  Future<void> delete(HttpRequest request) async {
     session = null;
     request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
@@ -101,7 +101,7 @@ class CredentialedRequestHandler extends Handler {
   }
 
   @override
-  Future<Null> get(HttpRequest request) async {
+  Future<void> get(HttpRequest request) async {
     // Verify the request has a valid session cookie
     if (isValidSession(request)) {
       request.response.statusCode = io_constant.HttpStatus.ok;

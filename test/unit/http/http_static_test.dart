@@ -46,7 +46,7 @@ void main() {
       });
 
       test('DELETE withCredentials', () async {
-        final c = Completer<Null>();
+        final c = Completer<void>();
         MockTransports.http.when(requestUri, (request) async {
           if (request.withCredentials) {
             c.complete();
@@ -67,7 +67,7 @@ void main() {
       });
 
       test('GET withCredentials', () async {
-        final c = Completer<Null>();
+        final c = Completer<void>();
         MockTransports.http.when(requestUri, (request) async {
           if (request.withCredentials) {
             c.complete();
@@ -86,7 +86,7 @@ void main() {
       });
 
       test('HEAD withCredentials', () async {
-        final c = Completer<Null>();
+        final c = Completer<void>();
         MockTransports.http.when(requestUri, (request) async {
           if (request.withCredentials) {
             c.complete();
@@ -105,7 +105,7 @@ void main() {
       });
 
       test('OPTIONS withCredentials', () async {
-        final c = Completer<Null>();
+        final c = Completer<void>();
         MockTransports.http.when(requestUri, (request) async {
           if (request.withCredentials) {
             c.complete();
@@ -138,7 +138,7 @@ void main() {
       });
 
       test('PATCH withCredentials', () async {
-        final c = Completer<Null>();
+        final c = Completer<void>();
         MockTransports.http.when(requestUri, (request) async {
           if (request.withCredentials) {
             c.complete();
@@ -171,7 +171,7 @@ void main() {
       });
 
       test('POST withCredentials', () async {
-        final c = Completer<Null>();
+        final c = Completer<void>();
         MockTransports.http.when(requestUri, (request) async {
           if (request.withCredentials) {
             c.complete();
@@ -202,7 +202,7 @@ void main() {
       });
 
       test('PUT withCredentials', () async {
-        final c = Completer<Null>();
+        final c = Completer<void>();
         MockTransports.http.when(requestUri, (request) async {
           if (request.withCredentials) {
             c.complete();
@@ -233,7 +233,7 @@ void main() {
       });
 
       test('custom method withCredentials', () async {
-        final c = Completer<Null>();
+        final c = Completer<void>();
         MockTransports.http.when(requestUri, (request) async {
           if (request.withCredentials) {
             c.complete();

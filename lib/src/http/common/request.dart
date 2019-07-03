@@ -113,7 +113,7 @@ abstract class CommonRequest extends Object
       StreamController<RequestProgress>();
 
   /// Completes only when a request is canceled.
-  Completer<Null> _cancellationCompleter = Completer<Null>();
+  Completer<void> _cancellationCompleter = Completer<void>();
 
   /// Error associated with a cancellation.
   Object _cancellationError;
@@ -128,7 +128,7 @@ abstract class CommonRequest extends Object
 
   /// Completer that should complete when the request has finished (successful
   /// or otherwise).
-  Completer<Null> _done = Completer<Null>();
+  Completer<void> _done = Completer<void>();
 
   /// Request body encoding.
   Encoding _encoding = convert.utf8;
@@ -138,7 +138,7 @@ abstract class CommonRequest extends Object
   CaseInsensitiveMap<String> _headers = CaseInsensitiveMap<String>();
 
   /// Completes only when a request times out.
-  Completer<Null> _timeoutCompleter = Completer<Null>();
+  Completer<void> _timeoutCompleter = Completer<void>();
 
   /// Error associated with a cancellation.
   Object _timeoutError;
@@ -208,7 +208,7 @@ abstract class CommonRequest extends Object
   /// Future that resolves when the request has completed (successful or
   /// otherwise).
   @override
-  Future<Null> get done => _done.future;
+  Future<void> get done => _done.future;
 
   /// [RequestProgress] stream for this HTTP request's download.
   @override
@@ -323,7 +323,7 @@ abstract class CommonRequest extends Object
   /// the request.
   ///
   /// This logic is platform-specific and should be implemented by the subclass.
-  Future<Null> openRequest([Object client]);
+  Future<void> openRequest([Object client]);
 
   /// Send the request described in [finalizedRequest] and fetch the response.
   /// If [streamResponse] is true, the response should be streamed.

@@ -101,7 +101,7 @@ class FileTransferListItemComponent extends UiStatefulComponent<
     _fadeTransferOut().then((_) => _removeTransfer());
   }
 
-  Future<Null> _fadeTransferOut() async {
+  Future<void> _fadeTransferOut() async {
     // wait a few seconds before beginning to fade the item out
     await Future<void>.delayed(_transferCompleteLingerDuration);
 

@@ -25,32 +25,32 @@ class FourzerofourHandler extends Handler {
     enableCors();
   }
 
-  Future<Null> notFound(HttpRequest request) async {
+  Future<void> notFound(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.notFound;
     setCorsHeaders(request);
   }
 
   @override
-  Future<Null> delete(HttpRequest request) => notFound(request);
+  Future<void> delete(HttpRequest request) => notFound(request);
 
   @override
-  Future<Null> get(HttpRequest request) => notFound(request);
+  Future<void> get(HttpRequest request) => notFound(request);
 
   @override
-  Future<Null> head(HttpRequest request) => notFound(request);
+  Future<void> head(HttpRequest request) => notFound(request);
 
   @override
-  Future<Null> options(HttpRequest request) => notFound(request);
+  Future<void> options(HttpRequest request) => notFound(request);
 
   @override
-  Future<Null> patch(HttpRequest request) => notFound(request);
+  Future<void> patch(HttpRequest request) => notFound(request);
 
   @override
-  Future<Null> post(HttpRequest request) => notFound(request);
+  Future<void> post(HttpRequest request) => notFound(request);
 
   @override
-  Future<Null> put(HttpRequest request) => notFound(request);
+  Future<void> put(HttpRequest request) => notFound(request);
 
   @override
-  Future<Null> trace(HttpRequest request) => notFound(request);
+  Future<void> trace(HttpRequest request) => notFound(request);
 }

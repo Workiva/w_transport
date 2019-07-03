@@ -27,7 +27,7 @@ class UploadHandler extends Handler {
     enableCors();
   }
 
-  Future<Null> upload(HttpRequest request) async {
+  Future<void> upload(HttpRequest request) async {
     final contentType =
         ContentType.parse(request.headers.value('content-type'));
     final boundary = contentType.parameters['boundary'];
@@ -48,26 +48,26 @@ class UploadHandler extends Handler {
   }
 
   @override
-  Future<Null> delete(HttpRequest request) async => upload(request);
+  Future<void> delete(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> get(HttpRequest request) async => upload(request);
+  Future<void> get(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> head(HttpRequest request) async => upload(request);
+  Future<void> head(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> options(HttpRequest request) async => upload(request);
+  Future<void> options(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> patch(HttpRequest request) async => upload(request);
+  Future<void> patch(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> post(HttpRequest request) async => upload(request);
+  Future<void> post(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> put(HttpRequest request) async => upload(request);
+  Future<void> put(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> trace(HttpRequest request) async => upload(request);
+  Future<void> trace(HttpRequest request) async => upload(request);
 }

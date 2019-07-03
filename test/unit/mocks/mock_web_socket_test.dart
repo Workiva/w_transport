@@ -514,7 +514,7 @@ void main() {
 
     group('MockWebSocketServer', () {
       test('should expose `done` for connected clients', () async {
-        final c = Completer<Null>();
+        final c = Completer<void>();
         final mockWebSocketServer = MockWebSocketServer();
         mockWebSocketServer.onClientConnected.listen((connection) {
           connection.done.then((_) => c.complete());

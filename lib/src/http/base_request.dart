@@ -26,7 +26,7 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/response.dart';
 
-typedef RequestInterceptor = Future<Null> Function(BaseRequest request);
+typedef RequestInterceptor = Future<void> Function(BaseRequest request);
 typedef ResponseInterceptor = Future<BaseResponse> Function(
     FinalizedRequest request, BaseResponse response,
     [RequestException error]);
@@ -60,7 +60,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
 
   /// Future that resolves when the request has completed (successful or
   /// otherwise).
-  Future<Null> get done;
+  Future<void> get done;
 
   /// [RequestProgress] stream for this HTTP request's download.
   Stream<RequestProgress> get downloadProgress;

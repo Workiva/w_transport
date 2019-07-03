@@ -342,7 +342,7 @@ void _runCommonRequestSuiteFor(
     });
 
     test('upload progress stream', () async {
-      final uploadProgressListenedTo = Completer<Null>();
+      final uploadProgressListenedTo = Completer<void>();
       final request = requestFactory(withBody: true)
         ..uri = IntegrationPaths.reflectEndpointUri;
       request.uploadProgress.listen((progress) {
@@ -355,7 +355,7 @@ void _runCommonRequestSuiteFor(
     });
 
     test('download progress stream', () async {
-      final downloadProgressListenedTo = Completer<Null>();
+      final downloadProgressListenedTo = Completer<void>();
       final request = requestFactory()
         ..uri = IntegrationPaths.downloadEndpointUri;
       request.downloadProgress.listen((progress) {

@@ -209,7 +209,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
     expect(client.withCredentials, isTrue);
     for (final request in createAllRequestTypes(client)) {
       final uri = Uri.parse('/test');
-      final c = Completer<Null>();
+      final c = Completer<void>();
       MockTransports.http.when(uri, (request) async {
         request.withCredentials
             ? c.complete()

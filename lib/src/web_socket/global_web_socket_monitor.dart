@@ -49,7 +49,7 @@ class GlobalWebSocketMonitor {
   Stream<WebSocketConnectEvent> get didAttemptToConnect =>
       _didAttemptToConnect.stream;
 
-  Future<Null> close() async {
+  Future<void> close() async {
     _monitors.remove(this);
     await _didAttemptToConnect.close();
   }

@@ -30,7 +30,7 @@ class Logger implements Function {
     }
   }
 
-  Future<Null> close() async {
+  Future<void> close() async {
     await _controller.close();
   }
 

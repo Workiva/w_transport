@@ -189,7 +189,7 @@ void runCommonWebSocketIntegrationTests(
   test('should call onDone() when socket closes', () async {
     final webSocket = await connect(echoUri);
 
-    final c = Completer<Null>();
+    final c = Completer<void>();
     webSocket.listen((_) {}, onDone: () {
       c.complete();
     });
@@ -204,7 +204,7 @@ void runCommonWebSocketIntegrationTests(
       () async {
     final webSocket = await connect(echoUri);
 
-    final c = Completer<Null>();
+    final c = Completer<void>();
     webSocket.listen((_) {}, onDone: () {
       expect(webSocket.closeCode, equals(4001));
       expect(webSocket.closeReason, equals('Closed.'));
@@ -277,8 +277,8 @@ void runCommonWebSocketIntegrationTests(
     final webSocket = await connect(pingUri);
     final stream = webSocket.asBroadcastStream();
 
-    final c1 = Completer<Null>();
-    final c2 = Completer<Null>();
+    final c1 = Completer<void>();
+    final c2 = Completer<void>();
 
     stream.listen((_) {
       c1.complete();
@@ -426,7 +426,7 @@ void runCommonWebSocketIntegrationTests(
 
     // pause the subscription, messages should be discarded until the resume
     // signal future resolves.
-    final c = Completer<Null>();
+    final c = Completer<void>();
     sub.pause(c.future);
     await Future<void>.delayed(Duration(milliseconds: 200));
     webSocket.add('2');
@@ -458,7 +458,7 @@ void runCommonWebSocketIntegrationTests(
 
     // pause the subscription, messages should be discarded until the resume
     // signal future resolves.
-    final c = Completer<Null>();
+    final c = Completer<void>();
     sub.pause(c.future);
     await Future<void>.delayed(Duration(milliseconds: 200));
     webSocket.add('2');
@@ -553,7 +553,7 @@ void runCommonWebSocketIntegrationTests(
 
   test('should support reassigning the onDone() handler', () async {
     final webSocket = await connect(closeUri);
-    final c = Completer<Null>();
+    final c = Completer<void>();
     final subscription = webSocket.listen((_) {}, onDone: () {});
     subscription.onDone(() {
       c.complete();
@@ -578,7 +578,7 @@ String _closeRequest([int closeCode, String closeReason]) {
 
 class WSHelper {
   transport.WebSocket socket;
-  Map<int, Completer<Null>> _completers = {};
+  Map<int, Completer<void>> _completers = {};
   List<String> _messages = [];
 
   WSHelper(this.socket) {
@@ -594,10 +594,10 @@ class WSHelper {
 
   Iterable<String> get messages => _messages;
 
-  Future<Null> messagesReceived(int numMessages) async {
+  Future<void> messagesReceived(int numMessages) async {
     if (_messages.length >= numMessages) return;
 
-    final c = Completer<Null>();
+    final c = Completer<void>();
     _completers[numMessages] = c;
     await c.future;
   }

@@ -115,7 +115,7 @@ class UploadHandler extends Handler {
   }
 
   @override
-  Future<Null> post(HttpRequest request) async {
+  Future<void> post(HttpRequest request) async {
     if (request.headers['content-type'] == null) {
       request.response.statusCode = io_constant.HttpStatus.badRequest;
       setCorsHeaders(request);
@@ -160,7 +160,7 @@ class FilesHandler extends Handler {
   }
 
   @override
-  Future<Null> get(HttpRequest request) async {
+  Future<void> get(HttpRequest request) async {
     final files = fw.files.whereType<File>().where((file) => file.existsSync());
     final filesPayload = files
         .map((entity) => {
@@ -175,7 +175,7 @@ class FilesHandler extends Handler {
   }
 
   @override
-  Future<Null> delete(HttpRequest request) async {
+  Future<void> delete(HttpRequest request) async {
     Iterable<File> files = fw.files.whereType<File>();
     for (final entity in files) {
       entity.deleteSync();
@@ -191,7 +191,7 @@ class DownloadHandler extends Handler {
   }
 
   @override
-  Future<Null> get(HttpRequest request) async {
+  Future<void> get(HttpRequest request) async {
     if (request.uri.queryParameters['file'] == null) {
       request.response.statusCode = io_constant.HttpStatus.notFound;
       setCorsHeaders(request);

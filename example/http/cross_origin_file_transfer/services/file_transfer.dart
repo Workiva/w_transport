@@ -39,7 +39,7 @@ class FileTransfer {
   FileTransfer(this.name)
       : id = 'fileTransfer${_transferNum++}',
         _canceled = false,
-        _doneCompleter = Completer<Null>(),
+        _doneCompleter = Completer<void>(),
         _percentComplete = 0.0;
 
   /// Unique file transfer identifier.
@@ -57,8 +57,8 @@ class FileTransfer {
   double _percentComplete;
 
   /// Whether or not the request has finished.
-  Future<Null> get done => _doneCompleter.future;
-  Completer<Null> _doneCompleter;
+  Future<void> get done => _doneCompleter.future;
+  Completer<void> _doneCompleter;
 
   /// Cancel the request (will do nothing if the request has already finished).
   void cancel(String reason) {

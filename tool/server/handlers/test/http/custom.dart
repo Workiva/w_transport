@@ -26,7 +26,7 @@ class CustomHandler extends Handler {
   }
 
   @override
-  Future<Null> get(HttpRequest request) async {
+  Future<void> get(HttpRequest request) async {
     request.response.statusCode =
         int.parse(request.uri.queryParameters['status']) ??
             io_constant.HttpStatus.ok;

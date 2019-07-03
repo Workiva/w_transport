@@ -72,7 +72,7 @@ class RemoteFiles {
   }
 
   /// Send the HTTP polling request.
-  Future<Null> _poll() async {
+  Future<void> _poll() async {
     if (!_connected) return;
     try {
       final response = await Http.get(getFilesEndpointUrl());

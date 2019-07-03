@@ -69,7 +69,7 @@ void main() {
         final wEventStream =
             eventController.stream.transform(transformProgressEvents);
 
-        final c = Completer<Null>();
+        final c = Completer<void>();
         int eventCount = 0;
         final subscription = wEventStream.listen((_) {
           eventCount++;

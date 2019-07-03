@@ -186,7 +186,7 @@ void main() {
         () async {
       MockTransports.install(fallThrough: true);
 
-      Future<Null> requestInterceptor(transport.BaseRequest request) async =>
+      Future<void> requestInterceptor(transport.BaseRequest request) async =>
           null;
       Future<transport.BaseResponse> responseInterceptor(
               FinalizedRequest request, transport.BaseResponse response,

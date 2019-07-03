@@ -27,9 +27,9 @@ class MockWebSocketConnection {
       : headers = Map.unmodifiable(headers ?? {}),
         protocols = List.unmodifiable(protocols ?? []);
 
-  Future<Null> get done => _connectedClient.done;
+  Future<void> get done => _connectedClient.done;
 
-  Future<Null> close([int code, String reason]) {
+  Future<void> close([int code, String reason]) {
     return _connectedClient.close(code, reason);
   }
 
@@ -54,7 +54,7 @@ class MockWebSocketServer {
   Stream<MockWebSocketConnection> get onClientConnected =>
       _onClientConnected.stream;
 
-  Future<Null> shutDown() async {
+  Future<void> shutDown() async {
     final futures = _connectedClients.map((client) => client.close());
     await Future.wait(futures);
   }

@@ -78,7 +78,7 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
 
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
-    final connected = Completer<Null>();
+    final connected = Completer<void>();
     // Note: the SockJSClient always closes the onOpen event stream, so we don't
     // need to manually manage this subscription.
     client.onOpen.listen((event) {

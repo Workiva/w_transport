@@ -483,7 +483,7 @@ void main() {
         ]);
         final listener = http_utils.ByteStreamProgressListener(byteStream);
 
-        final done = Completer<Null>();
+        final done = Completer<void>();
         final sub = listener.byteStream.listen((_) {}, onDone: done.complete);
         sub.pause();
         sub.resume();

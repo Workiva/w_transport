@@ -33,7 +33,7 @@ class ReflectHandler extends Handler {
     enableCors();
   }
 
-  Future<Null> reflect(HttpRequest request) async {
+  Future<void> reflect(HttpRequest request) async {
     final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
@@ -66,29 +66,29 @@ class ReflectHandler extends Handler {
   }
 
   @override
-  Future<Null> copy(HttpRequest request) async => reflect(request);
+  Future<void> copy(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> delete(HttpRequest request) async => reflect(request);
+  Future<void> delete(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> get(HttpRequest request) async => reflect(request);
+  Future<void> get(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> head(HttpRequest request) async => reflect(request);
+  Future<void> head(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> options(HttpRequest request) async => reflect(request);
+  Future<void> options(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> patch(HttpRequest request) async => reflect(request);
+  Future<void> patch(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> post(HttpRequest request) async => reflect(request);
+  Future<void> post(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> put(HttpRequest request) async => reflect(request);
+  Future<void> put(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> trace(HttpRequest request) async => reflect(request);
+  Future<void> trace(HttpRequest request) async => reflect(request);
 }

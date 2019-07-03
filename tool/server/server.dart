@@ -21,7 +21,7 @@ import 'router.dart';
 const String defaultHost = 'localhost';
 const int defaultPort = 8024;
 
-Future<Null> main() => Server.run(dumpOutput: true);
+Future<void> main() => Server.run(dumpOutput: true);
 
 class Server {
   final String host;
@@ -33,7 +33,7 @@ class Server {
 
   Server({this.host = defaultHost, this.port = defaultPort});
 
-  static Future<Null> run(
+  static Future<void> run(
       {bool dumpOutput = false,
       String host = defaultHost,
       int port = defaultPort}) {
@@ -44,7 +44,7 @@ class Server {
 
   Stream<String> get output => _logger.stream;
 
-  Future<Null> start() async {
+  Future<void> start() async {
     final router = Router(_logger);
 
     try {
@@ -67,7 +67,7 @@ class Server {
     }
   }
 
-  Future<Null> stop() async {
+  Future<void> stop() async {
     await Future.wait(
         [_server.close(force: true), _subscription.cancel(), _logger.close()]);
   }

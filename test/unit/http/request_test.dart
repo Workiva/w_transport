@@ -663,7 +663,7 @@ void _runAutoRetryTestSuiteFor(
     });
 
     test('clone()', () {
-      Future<Null> reqInt(transport.BaseRequest request) async {}
+      Future<void> reqInt(transport.BaseRequest request) async {}
       Future<transport.BaseResponse> respInt(
               FinalizedRequest request, transport.BaseResponse response,
               [transport.RequestException exception]) async =>
@@ -852,7 +852,7 @@ void _runAutoRetryTestSuiteFor(
       });
 
       test('retries only 500, 502, 503, 504 by default', () async {
-        Future<Null> expectNumRetries(int num,
+        Future<void> expectNumRetries(int num,
             {bool shouldSucceed = true}) async {
           final request = requestFactory();
           request.autoRetry
@@ -895,7 +895,7 @@ void _runAutoRetryTestSuiteFor(
       });
 
       test('retries only GET, HEAD, OPTIONS by default', () async {
-        Future<Null> expectNumRetries(String method, int num,
+        Future<void> expectNumRetries(String method, int num,
             {bool shouldSucceed = true}) async {
           final request = requestFactory();
           request.autoRetry

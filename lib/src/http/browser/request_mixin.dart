@@ -33,7 +33,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
   }
 
   @override
-  Future<Null> openRequest([_]) async {
+  Future<void> openRequest([_]) async {
     _request = HttpRequest();
     _request.open(method, uri.toString());
   }
@@ -77,7 +77,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         c.complete(_createResponse(streamResponse: streamResponse));
       }
     });
-    Future<Null> onError(Object error) async {
+    Future<void> onError(Object error) async {
       if (!c.isCompleted) {
         final response = await _createResponse(streamResponse: streamResponse);
         error = RequestException(method, uri, this, response, error);

@@ -183,8 +183,8 @@ abstract class CommonMultipartRequest extends CommonRequest
       controller.add(convert.utf8.encode(content));
     }
 
-    Future<Null> writeByteStream(Stream<List<int>> byteStream) {
-      final c = Completer<Null>();
+    Future<void> writeByteStream(Stream<List<int>> byteStream) {
+      final c = Completer<void>();
       byteStream.listen(controller.add,
           onError: controller.addError, onDone: c.complete);
       return c.future;

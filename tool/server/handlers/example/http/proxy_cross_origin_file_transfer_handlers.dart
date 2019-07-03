@@ -49,7 +49,7 @@ class FilesProxy extends Handler {
   }
 
   @override
-  Future<Null> get(HttpRequest request) async {
+  Future<void> get(HttpRequest request) async {
     final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
@@ -66,7 +66,7 @@ class FilesProxy extends Handler {
   }
 
   @override
-  Future<Null> delete(HttpRequest request) async {
+  Future<void> delete(HttpRequest request) async {
     final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
@@ -89,7 +89,7 @@ class UploadProxy extends Handler {
   }
 
   @override
-  Future<Null> post(HttpRequest request) async {
+  Future<void> post(HttpRequest request) async {
     final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
@@ -129,7 +129,7 @@ class DownloadProxy extends Handler {
   }
 
   @override
-  Future<Null> get(HttpRequest request) async {
+  Future<void> get(HttpRequest request) async {
     final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');

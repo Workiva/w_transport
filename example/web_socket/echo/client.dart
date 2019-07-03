@@ -41,7 +41,7 @@ CheckboxInputElement _sockJSXhrStreaming =
 CheckboxInputElement _sockJSXhrPolling = querySelector('#sockjs-xhr-polling');
 CheckboxInputElement _useSockJS = querySelector('#sockjs');
 
-Future<Null> main() async {
+Future<void> main() async {
   setClientConfiguration();
   configureWTransportForBrowser();
 

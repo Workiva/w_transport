@@ -144,7 +144,8 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<
 // ignore: undefined_class
 class GlobalExampleMenuProps extends _$GlobalExampleMenuProps
     // ignore: mixin_of_non_class, undefined_class
-    with _$GlobalExampleMenuPropsAccessorsMixin {
+    with
+        _$GlobalExampleMenuPropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const PropsMeta meta = _$metaForGlobalExampleMenuProps;
 }
@@ -153,7 +154,8 @@ class GlobalExampleMenuProps extends _$GlobalExampleMenuProps
 // ignore: undefined_class
 class GlobalExampleMenuState extends _$GlobalExampleMenuState
     // ignore: mixin_of_non_class, undefined_class
-    with _$GlobalExampleMenuStateAccessorsMixin {
+    with
+        _$GlobalExampleMenuStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const StateMeta meta = _$metaForGlobalExampleMenuState;
 }

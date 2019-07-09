@@ -228,7 +228,8 @@ class DownloadPageComponent
 // ignore: undefined_class
 class DownloadPageProps extends _$DownloadPageProps
     // ignore: mixin_of_non_class, undefined_class
-    with _$DownloadPagePropsAccessorsMixin {
+    with
+        _$DownloadPagePropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const PropsMeta meta = _$metaForDownloadPageProps;
 }
@@ -237,7 +238,8 @@ class DownloadPageProps extends _$DownloadPageProps
 // ignore: undefined_class
 class DownloadPageState extends _$DownloadPageState
     // ignore: mixin_of_non_class, undefined_class
-    with _$DownloadPageStateAccessorsMixin {
+    with
+        _$DownloadPageStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const StateMeta meta = _$metaForDownloadPageState;
 }

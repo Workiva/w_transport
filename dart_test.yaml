@@ -1,25 +1,3 @@
-# Dart 1:
-# -------
-#
-# Run unit tests:
-#
-#     $ pub run dart_dev test -P dart1
-#
-# Run integration tests:
-#
-#     $ pub run dart_dev test -P dart1 -P integration
-#
-#
-# Dart 2:
-# -------
-#
-# Run unit tests:
-#
-#     $ pub run dart_dev test -P dart1
-#
-# Run integration tests:
-#
-#     $ pub run dart_dev test -P dart2 -P integration
 platforms:
   - chrome
   - vm
@@ -29,9 +7,9 @@ platforms:
 retry: 3
 concurrency: 1
 
-presets:
-  dart2:
-    exclude_tags: "no-dart2"
+# TODO: Remove these tests along with the deprecated sockjs logic
+exclude_tags: "no-dart2"
 
+presets:
   travis:
     reporter: expanded

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:html' hide Client;
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart'
     show CaseInsensitiveMap, MediaType;
 
@@ -113,9 +113,8 @@ class BrowserMultipartRequest extends CommonRequest
       if (http_utils.isAsciiOnly(value)) {
         formData.append(name, value);
       } else {
-        final contentType =
-            MediaType('text', 'plain', {'charset': convert.utf8.name});
-        final blob = Blob([convert.utf8.encode(value)], contentType.toString());
+        final contentType = MediaType('text', 'plain', {'charset': utf8.name});
+        final blob = Blob([utf8.encode(value)], contentType.toString());
         formData.appendBlob(name, blob);
       }
     });

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 @TestOn('browser')
+import 'dart:convert';
 import 'dart:html';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:test/test.dart';
 import 'package:w_transport/browser.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -92,7 +92,7 @@ void main() {
       });
 
       test('should support Blob file', () async {
-        final blob = Blob([convert.utf8.encode('file')]);
+        final blob = Blob([utf8.encode('file')]);
         final request = transport.MultipartRequest(
             transportPlatform: browserTransportPlatform)
           ..uri = IntegrationPaths.reflectEndpointUri

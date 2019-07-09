@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:w_transport/mock.dart';
 
 void mockDownloadEndpoint(Uri uri) {
   MockTransports.http.when(uri, (_) async {
-    final byteStream = Stream.fromIterable([convert.utf8.encode('file')]);
+    final byteStream = Stream.fromIterable([utf8.encode('file')]);
     return MockStreamedResponse.ok(byteStream: byteStream);
   });
 }

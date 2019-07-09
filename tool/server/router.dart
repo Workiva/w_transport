@@ -15,8 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
-
 import 'handler.dart';
 import 'handlers/example/http/cross_origin_credentials_handlers.dart'
     show exampleHttpCrossOriginCredentialsRoutes;
@@ -48,7 +46,7 @@ class Router implements Function {
     if (routes.containsKey(request.uri.path)) {
       await routes[request.uri.path].processRequest(request);
     } else {
-      request.response.statusCode = io_constant.HttpStatus.notFound;
+      request.response.statusCode = HttpStatus.notFound;
       await request.response.close();
     }
   }

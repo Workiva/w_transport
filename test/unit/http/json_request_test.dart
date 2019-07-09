@@ -16,7 +16,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
@@ -80,9 +79,9 @@ void main() {
         });
 
         final request = transport.JsonRequest();
-        final json = <String, String>{'field': 'value'};
-        await request.post(uri: uri, body: json);
-        expect(await c.future, equals(convert.json.encode(json)));
+        final jsonMap = <String, String>{'field': 'value'};
+        await request.post(uri: uri, body: jsonMap);
+        expect(await c.future, equals(json.encode(jsonMap)));
       });
 
       test('setting body in request dispatcher is supported (List)', () async {
@@ -96,11 +95,11 @@ void main() {
         });
 
         final request = transport.JsonRequest();
-        final json = <Map<String, String>>[
+        final jsonMap = <Map<String, String>>[
           {'field': 'value'}
         ];
-        await request.post(uri: uri, body: json);
-        expect(await c.future, equals(convert.json.encode(json)));
+        await request.post(uri: uri, body: jsonMap);
+        expect(await c.future, equals(json.encode(jsonMap)));
       });
 
       test('setting body in request dispatcher should throw if invalid',
@@ -108,7 +107,7 @@ void main() {
         final uri = Uri.parse('/test');
 
         final request = transport.JsonRequest();
-        expect(request.post(uri: uri, body: convert.utf8),
+        expect(request.post(uri: uri, body: utf8),
             throwsA(isA<JsonUnsupportedObjectError>()));
       });
 
@@ -138,36 +137,30 @@ void main() {
 
       test('setting encoding should update content-type', () {
         final request = transport.JsonRequest();
-        expect(request.contentType.parameters['charset'],
-            equals(convert.utf8.name));
+        expect(request.contentType.parameters['charset'], equals(utf8.name));
 
-        request.encoding = convert.latin1;
-        expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+        request.encoding = latin1;
+        expect(request.contentType.parameters['charset'], equals(latin1.name));
 
-        request.encoding = convert.ascii;
-        expect(request.contentType.parameters['charset'],
-            equals(convert.ascii.name));
+        request.encoding = ascii;
+        expect(request.contentType.parameters['charset'], equals(ascii.name));
       });
 
       test(
           'setting encoding should not update content-type if content-type has been set manually',
           () {
         final request = transport.JsonRequest();
-        expect(request.contentType.parameters['charset'],
-            equals(convert.utf8.name));
+        expect(request.contentType.parameters['charset'], equals(utf8.name));
 
         // Manually override content-type.
-        request.contentType = MediaType(
-            'application', 'x-custom', {'charset': convert.latin1.name});
+        request.contentType =
+            MediaType('application', 'x-custom', {'charset': latin1.name});
         expect(request.contentType.mimeType, equals('application/x-custom'));
-        expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+        expect(request.contentType.parameters['charset'], equals(latin1.name));
 
         // Changes to encoding should no longer update the content-type.
-        request.encoding = convert.ascii;
-        expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+        request.encoding = ascii;
+        expect(request.contentType.parameters['charset'], equals(latin1.name));
       });
 
       test('setting content-type should not be allowed once sent', () async {
@@ -186,7 +179,7 @@ void main() {
         final request = transport.JsonRequest();
         await request.get(uri: uri);
         expect(() {
-          request.encoding = convert.latin1;
+          request.encoding = latin1;
         }, throwsStateError);
       });
 

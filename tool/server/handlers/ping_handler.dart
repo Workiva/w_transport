@@ -15,8 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
-
 import '../handler.dart';
 
 /// Always responds with a 200 OK.
@@ -27,7 +25,7 @@ class PingHandler extends Handler {
 
   @override
   Future<void> get(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
   }
 }

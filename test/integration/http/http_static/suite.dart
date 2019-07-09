@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
@@ -243,8 +243,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
 
     Future<Map<dynamic, dynamic>> _decodeStreamedResponseToJson(
         transport.StreamedResponse response) async {
-      return convert.json
-          .decode(await _decodeStreamedResponseToString(response));
+      return json.decode(await _decodeStreamedResponseToString(response));
     }
 
     test('streamed DELETE request', () async {

@@ -15,8 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
-
 import '../../../handler.dart';
 
 /// Always responds with a 200 OK and send a large
@@ -29,7 +27,7 @@ class DownloadHandler extends Handler {
   Future<void> download(HttpRequest request) async {
     final file = File('tool/server/handlers/test/http/file.txt');
     final downloadStream = file.openRead();
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     request.response.headers
         .set('content-length', file.lengthSync().toString());
     request.response.headers.set('content-type', 'text/plain; charset=utf-8');

@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:dart2_constant/convert.dart' as convert;
+import 'dart:convert';
+
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -27,38 +28,34 @@ void main() {
   group(naming.toString(), () {
     group('ResponseFormatException', () {
       test('should detail why bytes could not be decoded', () {
-        final bytes = convert.utf8.encode('bodyçå®');
+        final bytes = utf8.encode('bodyçå®');
         final contentType =
-            MediaType('application', 'json', {'charset': convert.ascii.name});
-        final exception = transport.ResponseFormatException(
-            contentType, convert.ascii,
-            bytes: bytes);
+            MediaType('application', 'json', {'charset': ascii.name});
+        final exception =
+            transport.ResponseFormatException(contentType, ascii, bytes: bytes);
         expect(exception.toString(), contains('Bytes could not be decoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
+        expect(exception.toString(), contains('Encoding: ${ascii.name}'));
         expect(
-            exception.toString(), contains('Encoding: ${convert.ascii.name}'));
-        expect(exception.toString(),
-            contains(convert.utf8.encode('bodyçå®').toString()));
+            exception.toString(), contains(utf8.encode('bodyçå®').toString()));
       });
 
       test('should detail why string could not be encoded', () {
         const body = 'bodyçå®';
         final contentType =
-            MediaType('application', 'json', {'charset': convert.ascii.name});
-        final exception = transport.ResponseFormatException(
-            contentType, convert.ascii,
-            body: body);
+            MediaType('application', 'json', {'charset': ascii.name});
+        final exception =
+            transport.ResponseFormatException(contentType, ascii, body: body);
         expect(exception.toString(), contains('Body could not be encoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
-        expect(
-            exception.toString(), contains('Encoding: ${convert.ascii.name}'));
+        expect(exception.toString(), contains('Encoding: ${ascii.name}'));
         expect(exception.toString(), contains('bodyçå®'));
       });
 
       test('should warn if encoding is null', () {
         const body = 'bodyçå®';
         final contentType =
-            MediaType('application', 'json', {'charset': convert.ascii.name});
+            MediaType('application', 'json', {'charset': ascii.name});
         final exception =
             transport.ResponseFormatException(contentType, null, body: body);
         expect(exception.toString(), contains('Body could not be encoded'));

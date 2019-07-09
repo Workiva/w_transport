@@ -15,8 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
-
 import '../../../handler.dart';
 
 /// Always responds with a 200 OK and reads the request body into memory to
@@ -28,7 +26,7 @@ class EchoHandler extends Handler {
   }
 
   Future<void> echo(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     request.response.headers.contentType = request.headers.contentType;
     setCorsHeaders(request);
     await request.response.addStream(request);

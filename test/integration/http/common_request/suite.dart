@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
@@ -59,8 +59,8 @@ void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
         return transport.StreamedRequest(transportPlatform: transportPlatform);
       }
       return transport.StreamedRequest(transportPlatform: transportPlatform)
-        ..body = Stream.fromIterable([convert.utf8.encode('bytes')])
-        ..contentLength = convert.utf8.encode('bytes').length;
+        ..body = Stream.fromIterable([utf8.encode('bytes')])
+        ..contentLength = utf8.encode('bytes').length;
     }
 
     _runCommonRequestSuiteFor('FormRequest', formReqFactory);

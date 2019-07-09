@@ -15,8 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
-
 /// Base request handler class that enables CORS by default.
 /// Should be subclassed and the handleRequest() method must be implemented.
 abstract class Handler {
@@ -60,7 +58,7 @@ abstract class Handler {
         handler = trace;
         break;
       default:
-        request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
+        request.response.statusCode = HttpStatus.methodNotAllowed;
     }
     await handler(request);
     await request.response.close();
@@ -115,45 +113,45 @@ abstract class Handler {
 
   /// RESTful method handlers. Override as necessary.
   Future<void> copy(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
+    request.response.statusCode = HttpStatus.methodNotAllowed;
   }
 
   Future<void> delete(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
+    request.response.statusCode = HttpStatus.methodNotAllowed;
   }
 
   Future<void> get(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
+    request.response.statusCode = HttpStatus.methodNotAllowed;
   }
 
   Future<void> head(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
+    request.response.statusCode = HttpStatus.methodNotAllowed;
   }
 
   Future<void> patch(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
+    request.response.statusCode = HttpStatus.methodNotAllowed;
   }
 
   Future<void> post(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
+    request.response.statusCode = HttpStatus.methodNotAllowed;
   }
 
   Future<void> put(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
+    request.response.statusCode = HttpStatus.methodNotAllowed;
   }
 
   Future<void> trace(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
+    request.response.statusCode = HttpStatus.methodNotAllowed;
   }
 
   /// Handler for the OPTIONS request. For convenience, this returns
   /// 200 OK by default if CORS support has been enabled.
   Future<void> options(HttpRequest request) async {
     if (_corsEnabled) {
-      request.response.statusCode = io_constant.HttpStatus.ok;
+      request.response.statusCode = HttpStatus.ok;
       setCorsHeaders(request);
     } else {
-      request.response.statusCode = io_constant.HttpStatus.methodNotAllowed;
+      request.response.statusCode = HttpStatus.methodNotAllowed;
     }
   }
 }

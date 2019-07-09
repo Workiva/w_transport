@@ -13,7 +13,8 @@
 // limitations under the License.
 
 @TestOn('browser')
-import 'package:dart2_constant/convert.dart' as convert;
+import 'dart:convert';
+
 import 'package:test/test.dart';
 import 'package:w_transport/browser.dart' show browserTransportPlatform;
 import 'package:w_transport/src/http/browser/form_data_body.dart';
@@ -32,8 +33,7 @@ void main() {
       group('finalizeBody', () {
         test('does not include duplicate ascii fields', () async {
           const key = 'ascii';
-          final value =
-              convert.ascii.decode(convert.ascii.encode('This is ASCII!'));
+          final value = ascii.decode(ascii.encode('This is ASCII!'));
 
           final BrowserMultipartRequest request = transport.MultipartRequest(
               transportPlatform: browserTransportPlatform)

@@ -16,8 +16,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart2_constant/convert.dart' as convert_constant;
-import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:http_parser/http_parser.dart' show MediaType;
 
 import 'package:w_transport/src/http/utils.dart' as http_utils;
@@ -41,14 +39,14 @@ class ReflectHandler extends Handler {
 
     Encoding encoding;
     if (request.headers.contentType == null) {
-      encoding = convert_constant.latin1;
+      encoding = latin1;
     } else {
       final contentType = MediaType(
           request.headers.contentType.primaryType,
           request.headers.contentType.subType,
           request.headers.contentType.parameters);
       encoding = http_utils.parseEncodingFromContentType(contentType,
-          fallback: convert_constant.latin1);
+          fallback: latin1);
     }
 
     final reflection = <String, Object>{
@@ -58,11 +56,11 @@ class ReflectHandler extends Handler {
       'body': await encoding.decodeStream(request),
     };
 
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     request.response.headers
         .set('content-type', 'application/json; charset=utf-8');
     setCorsHeaders(request);
-    request.response.write(convert_constant.json.encode(reflection));
+    request.response.write(json.encode(reflection));
   }
 
   @override

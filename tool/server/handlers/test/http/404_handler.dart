@@ -15,8 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
-
 import '../../../handler.dart';
 
 /// Always responds with a 404 Not Found.
@@ -26,7 +24,7 @@ class FourzerofourHandler extends Handler {
   }
 
   Future<void> notFound(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.notFound;
+    request.response.statusCode = HttpStatus.notFound;
     setCorsHeaders(request);
   }
 

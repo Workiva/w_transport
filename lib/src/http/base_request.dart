@@ -15,7 +15,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:fluri/fluri.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -69,7 +68,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// will also update the [contentType]'s charset.
   ///
   /// Defaults to utf-8.
-  Encoding encoding = convert.utf8;
+  Encoding encoding = utf8;
 
   /// Headers to send with the HTTP request. Headers are case-insensitive.
   ///

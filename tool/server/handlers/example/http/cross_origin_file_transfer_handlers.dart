@@ -125,8 +125,8 @@ class UploadHandler extends Handler {
     final contentType =
         ContentType.parse(request.headers.value('content-type'));
     final boundary = contentType.parameters['boundary'];
-    final stream = request
-        .transform(new MimeMultipartTransformer(boundary))
+    final stream = new MimeMultipartTransformer(boundary)
+        .bind(request)
         .map(HttpMultipartFormData.parse);
 
     await for (HttpMultipartFormData formData in stream) {

@@ -25,6 +25,11 @@ Future<void> main(List<String> args) async {
   final directories = <String>['example/', 'lib/', 'test/', 'tool/'];
 
   config.analyze.entryPoints = [
+    'example/http/cross_origin_credentials/',
+    'example/http/cross_origin_file_transfer/',
+    'example/http/simple_client/',
+    'example/web_socket/echo/',
+    'example/',
     'lib/',
     'test/',
     'test/unit/',

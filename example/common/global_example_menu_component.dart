@@ -143,8 +143,8 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 // ignore: undefined_class
 class GlobalExampleMenuProps extends _$GlobalExampleMenuProps
-    // ignore: mixin_of_non_class, undefined_class
     with
+        // ignore: mixin_of_non_class, undefined_class
         _$GlobalExampleMenuPropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const PropsMeta meta = _$metaForGlobalExampleMenuProps;
@@ -153,8 +153,8 @@ class GlobalExampleMenuProps extends _$GlobalExampleMenuProps
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 // ignore: undefined_class
 class GlobalExampleMenuState extends _$GlobalExampleMenuState
-    // ignore: mixin_of_non_class, undefined_class
     with
+        // ignore: mixin_of_non_class, undefined_class
         _$GlobalExampleMenuStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const StateMeta meta = _$metaForGlobalExampleMenuState;

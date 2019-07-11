@@ -60,7 +60,7 @@ class UploadPageComponent
   /// Called when the file transfer list component is done with the transfer
   /// and no longer needs to display it, meaning we can remove it
   /// from memory.
-  void _removeUpload(Upload upload) {
+  void _removeUpload(FileTransfer upload) {
     final uploads = <Upload>[];
     uploads.addAll(state.uploads);
     uploads.remove(upload);
@@ -105,8 +105,8 @@ class UploadPageComponent
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 // ignore: undefined_class
 class UploadPageProps extends _$UploadPageProps
-    // ignore: mixin_of_non_class, undefined_class
     with
+        // ignore: mixin_of_non_class, undefined_class
         _$UploadPagePropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const PropsMeta meta = _$metaForUploadPageProps;
@@ -115,8 +115,8 @@ class UploadPageProps extends _$UploadPageProps
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 // ignore: undefined_class
 class UploadPageState extends _$UploadPageState
-    // ignore: mixin_of_non_class, undefined_class
     with
+        // ignore: mixin_of_non_class, undefined_class
         _$UploadPageStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const StateMeta meta = _$metaForUploadPageState;

@@ -78,14 +78,16 @@ class RemoteFiles {
       final response = await Http.get(getFilesEndpointUrl());
 
       // Parse the file list from the response
-      List<Map<String, dynamic>> results = response.body.asJson()['results'];
+      final List<dynamic> resultsJson = response.body.asJson()['results'];
+      final Iterable<Map<String, dynamic>> results =
+          resultsJson.map((item) => Map<String, dynamic>.from(item));
       List<RemoteFileDescription> files = results
           .map((file) => RemoteFileDescription(file['name'], file['size']))
           .toList();
 
       // Send the updated file list to listeners
       _fileStreamController.add(files);
-    } catch (e, stackTrace) {
+    } on RequestException catch (e, stackTrace) {
       // Send the error to listeners
       _errorStreamController.add(e);
       print(e);

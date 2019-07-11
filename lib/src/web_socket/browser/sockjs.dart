@@ -26,8 +26,8 @@ import 'package:w_transport/src/web_socket/web_socket.dart';
 /// be XHR-streaming).
 abstract class SockJSWebSocket extends CommonWebSocket implements WebSocket {
   static Future<WebSocket> connect(Uri uri,
-      {bool debug: false,
-      bool noCredentials: false,
+      {bool debug = false,
+      bool noCredentials = false,
       List<String> protocolsWhitelist,
       Duration timeout}) async {
     // The SockJS wrapper library is preferred because it uses the actual JS lib

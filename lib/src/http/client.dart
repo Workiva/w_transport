@@ -30,7 +30,7 @@ import 'package:w_transport/src/transport_platform.dart';
 @Deprecated(v3Deprecation + 'Use `HttpClient` instead.')
 abstract class Client {
   factory Client({TransportPlatform transportPlatform}) =>
-      new HttpClient(transportPlatform: transportPlatform);
+      HttpClient(transportPlatform: transportPlatform);
 
   /// Configuration of automatic request retrying for failed requests. Use this
   /// object to enable or disable automatic retrying, configure the criteria

@@ -16,8 +16,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart2_constant/convert.dart' as convert_constant;
-import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:http_parser/http_parser.dart' show MediaType;
 
 import 'package:w_transport/src/http/utils.dart' as http_utils;
@@ -33,7 +31,7 @@ class ReflectHandler extends Handler {
     enableCors();
   }
 
-  Future<Null> reflect(HttpRequest request) async {
+  Future<void> reflect(HttpRequest request) async {
     final headers = <String, String>{};
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
@@ -41,14 +39,14 @@ class ReflectHandler extends Handler {
 
     Encoding encoding;
     if (request.headers.contentType == null) {
-      encoding = convert_constant.latin1;
+      encoding = latin1;
     } else {
-      final contentType = new MediaType(
+      final contentType = MediaType(
           request.headers.contentType.primaryType,
           request.headers.contentType.subType,
           request.headers.contentType.parameters);
       encoding = http_utils.parseEncodingFromContentType(contentType,
-          fallback: convert_constant.latin1);
+          fallback: latin1);
     }
 
     final reflection = <String, Object>{
@@ -58,37 +56,37 @@ class ReflectHandler extends Handler {
       'body': await encoding.decodeStream(request),
     };
 
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     request.response.headers
         .set('content-type', 'application/json; charset=utf-8');
     setCorsHeaders(request);
-    request.response.write(convert_constant.json.encode(reflection));
+    request.response.write(json.encode(reflection));
   }
 
   @override
-  Future<Null> copy(HttpRequest request) async => reflect(request);
+  Future<void> copy(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> delete(HttpRequest request) async => reflect(request);
+  Future<void> delete(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> get(HttpRequest request) async => reflect(request);
+  Future<void> get(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> head(HttpRequest request) async => reflect(request);
+  Future<void> head(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> options(HttpRequest request) async => reflect(request);
+  Future<void> options(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> patch(HttpRequest request) async => reflect(request);
+  Future<void> patch(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> post(HttpRequest request) async => reflect(request);
+  Future<void> post(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> put(HttpRequest request) async => reflect(request);
+  Future<void> put(HttpRequest request) async => reflect(request);
 
   @override
-  Future<Null> trace(HttpRequest request) async => reflect(request);
+  Future<void> trace(HttpRequest request) async => reflect(request);
 }

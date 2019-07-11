@@ -32,9 +32,9 @@ class RemoteFiles {
   /// via HTTP polling.
   RemoteFiles._() {
     _connected = true;
-    _errorStreamController = new StreamController<RequestException>();
+    _errorStreamController = StreamController<RequestException>();
     _errorStream = _errorStreamController.stream.asBroadcastStream();
-    _fileStreamController = new StreamController<List<RemoteFileDescription>>();
+    _fileStreamController = StreamController<List<RemoteFileDescription>>();
     _fileStream = _fileStreamController.stream.asBroadcastStream();
     _startPolling();
   }
@@ -47,7 +47,7 @@ class RemoteFiles {
 
   /// Establish a connection with the remote files server.
   static RemoteFiles connect() {
-    return new RemoteFiles._();
+    return RemoteFiles._();
   }
 
   static void deleteAll() {
@@ -66,26 +66,28 @@ class RemoteFiles {
   void _startPolling() {
     if (!_connected) return;
     _poll().then((_) {
-      _pollingTimer = new Timer(
-          new Duration(seconds: _remoteFilePollingInterval), _startPolling);
+      _pollingTimer =
+          Timer(Duration(seconds: _remoteFilePollingInterval), _startPolling);
     });
   }
 
   /// Send the HTTP polling request.
-  Future<Null> _poll() async {
+  Future<void> _poll() async {
     if (!_connected) return;
     try {
       final response = await Http.get(getFilesEndpointUrl());
 
       // Parse the file list from the response
-      List results = response.body.asJson()['results'];
+      final List<dynamic> resultsJson = response.body.asJson()['results'];
+      final Iterable<Map<String, dynamic>> results =
+          resultsJson.map((item) => Map<String, dynamic>.from(item));
       List<RemoteFileDescription> files = results
-          .map((file) => new RemoteFileDescription(file['name'], file['size']))
+          .map((file) => RemoteFileDescription(file['name'], file['size']))
           .toList();
 
       // Send the updated file list to listeners
       _fileStreamController.add(files);
-    } catch (e, stackTrace) {
+    } on RequestException catch (e, stackTrace) {
       // Send the error to listeners
       _errorStreamController.add(e);
       print(e);

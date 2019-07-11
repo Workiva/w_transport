@@ -19,4 +19,4 @@ import 'echo_handler.dart';
 String pathPrefix = '/example/ws';
 
 Map<String, Handler> getExampleWsRoutes(Logger logger) =>
-    {'$pathPrefix/echo': new EchoHandler(logger)};
+    {'$pathPrefix/echo': EchoHandler(logger)};

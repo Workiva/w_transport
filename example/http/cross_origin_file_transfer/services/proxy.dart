@@ -15,7 +15,7 @@
 // Whether or not to route requests through a proxy server.
 bool proxyEnabled = false;
 
-void toggleProxy({bool enabled: false}) {
+void toggleProxy({bool enabled = false}) {
   proxyEnabled = enabled;
 }
 

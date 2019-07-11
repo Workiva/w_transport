@@ -22,8 +22,8 @@ import '../services/file_transfer.dart';
 // ignore: uri_has_not_been_generated
 part 'file_transfer_list_item_component.over_react.g.dart';
 
-const Duration _transferCompleteLingerDuration = const Duration(seconds: 4);
-const Duration _transferCompleteFadeoutDuration = const Duration(seconds: 2);
+const Duration _transferCompleteLingerDuration = Duration(seconds: 4);
+const Duration _transferCompleteFadeoutDuration = Duration(seconds: 2);
 
 /// A single file upload or download.
 ///
@@ -55,7 +55,7 @@ class FileTransferListItemComponent extends UiStatefulComponent<
       state.status == FileTransferItemStatus.doneFailure;
 
   @override
-  Map getInitialState() => newState()..status = FileTransferItemStatus.idle;
+  getInitialState() => newState()..status = FileTransferItemStatus.idle;
 
   @override
   void componentWillMount() {
@@ -101,14 +101,14 @@ class FileTransferListItemComponent extends UiStatefulComponent<
     _fadeTransferOut().then((_) => _removeTransfer());
   }
 
-  Future<Null> _fadeTransferOut() async {
+  Future<void> _fadeTransferOut() async {
     // wait a few seconds before beginning to fade the item out
-    await new Future.delayed(_transferCompleteLingerDuration);
+    await Future<void>.delayed(_transferCompleteLingerDuration);
 
     setState(newState()..status = FileTransferItemStatus.willRemove);
 
     // wait for the css transition to complete
-    await new Future.delayed(_transferCompleteFadeoutDuration);
+    await Future<void>.delayed(_transferCompleteFadeoutDuration);
   }
 
   void _removeTransfer() {
@@ -140,7 +140,7 @@ class FileTransferListItemComponent extends UiStatefulComponent<
     );
   }
 
-  List<ReactElement> _renderTransferItemLabel() {
+  List<dynamic> _renderTransferItemLabel() {
     final label = <dynamic>[props.transfer.name];
     if (!fileTransferIsDone) {
       label.addAll([
@@ -166,17 +166,21 @@ enum FileTransferItemStatus {
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
-// ignore: mixin_of_non_class, undefined_class
+// ignore: undefined_class
 class FileTransferListItemProps extends _$FileTransferListItemProps
-    with _$FileTransferListItemPropsAccessorsMixin {
+    with
+        // ignore: mixin_of_non_class, undefined_class
+        _$FileTransferListItemPropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const PropsMeta meta = $metaForFileTransferListItemProps;
+  static const PropsMeta meta = _$metaForFileTransferListItemProps;
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
-// ignore: mixin_of_non_class, undefined_class
+// ignore: undefined_class
 class FileTransferListItemState extends _$FileTransferListItemState
-    with _$FileTransferListItemStateAccessorsMixin {
+    with
+        // ignore: mixin_of_non_class, undefined_class
+        _$FileTransferListItemStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const StateMeta meta = $metaForFileTransferListItemState;
+  static const StateMeta meta = _$metaForFileTransferListItemState;
 }

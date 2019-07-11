@@ -32,7 +32,7 @@ import '../integration_paths.dart';
 const int sockjsPort = 8026;
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformBrowser
     ..testType = testTypeIntegration
     ..topic = topicTransportPlatform;
@@ -46,28 +46,23 @@ void main() {
       transport.globalTransportPlatform = browserTransportPlatform;
 
       // Properly constructs browser implementations of HTTP classes
-      // ignore: deprecated_member_use
-      expect(new transport.Client(), new isInstanceOf<BrowserHttpClient>());
-      expect(new transport.HttpClient(), new isInstanceOf<BrowserHttpClient>());
-      expect(
-          new transport.FormRequest(), new isInstanceOf<BrowserFormRequest>());
-      expect(
-          new transport.JsonRequest(), new isInstanceOf<BrowserJsonRequest>());
-      expect(new transport.MultipartRequest(),
-          new isInstanceOf<BrowserMultipartRequest>());
-      expect(
-          new transport.Request(), new isInstanceOf<BrowserPlainTextRequest>());
-      expect(new transport.StreamedRequest(),
-          new isInstanceOf<BrowserStreamedRequest>());
+      // ignore: deprecated_member_use_from_same_package
+      expect(transport.Client(), isA<BrowserHttpClient>());
+      expect(transport.HttpClient(), isA<BrowserHttpClient>());
+      expect(transport.FormRequest(), isA<BrowserFormRequest>());
+      expect(transport.JsonRequest(), isA<BrowserJsonRequest>());
+      expect(transport.MultipartRequest(), isA<BrowserMultipartRequest>());
+      expect(transport.Request(), isA<BrowserPlainTextRequest>());
+      expect(transport.StreamedRequest(), isA<BrowserStreamedRequest>());
 
       // Properly constructs browser implementation of WebSocket
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, new isInstanceOf<BrowserWebSocket>());
+      expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(wSocket, new isInstanceOf<BrowserWebSocket>());
+      expect(wSocket, isA<BrowserWebSocket>());
       await wSocket.close();
     });
 
@@ -86,22 +81,21 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, new isInstanceOf<SockJSWrapperWebSocket>());
+      expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, new isInstanceOf<SockJSWrapperWebSocket>());
+      expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
     test('globalTransportPlatform = custom BrowserTransportPlatformWithSockJS',
         () async {
-      transport.globalTransportPlatform =
-          new BrowserTransportPlatformWithSockJS(
-              sockJSDebug: true,
-              sockJSNoCredentials: false,
-              sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming'],
-              sockJSTimeout: new Duration(seconds: 1));
+      transport.globalTransportPlatform = BrowserTransportPlatformWithSockJS(
+          sockJSDebug: true,
+          sockJSNoCredentials: false,
+          sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming'],
+          sockJSTimeout: Duration(seconds: 1));
 
       BrowserTransportPlatformWithSockJS btpwsj =
           transport.globalTransportPlatform;
@@ -115,11 +109,11 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, new isInstanceOf<SockJSWrapperWebSocket>());
+      expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, new isInstanceOf<SockJSWrapperWebSocket>());
+      expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
@@ -130,15 +124,15 @@ void main() {
 
       // Properly constructs Browser implementation of WebSocket
       final webSocket = await transport.WebSocket
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           .connect(IntegrationPaths.pingUri, useSockJS: false);
-      expect(webSocket, new isInstanceOf<BrowserWebSocket>());
+      expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           .connect(IntegrationPaths.pingUri, useSockJS: false);
-      expect(wSocket, new isInstanceOf<BrowserWebSocket>());
+      expect(wSocket, isA<BrowserWebSocket>());
       await wSocket.close();
     });
 
@@ -146,33 +140,28 @@ void main() {
       configureWTransportForBrowser();
 
       // Properly constructs browser implementations of HTTP classes
-      // ignore: deprecated_member_use
-      expect(new transport.Client(), new isInstanceOf<BrowserHttpClient>());
-      expect(new transport.HttpClient(), new isInstanceOf<BrowserHttpClient>());
-      expect(
-          new transport.FormRequest(), new isInstanceOf<BrowserFormRequest>());
-      expect(
-          new transport.JsonRequest(), new isInstanceOf<BrowserJsonRequest>());
-      expect(new transport.MultipartRequest(),
-          new isInstanceOf<BrowserMultipartRequest>());
-      expect(
-          new transport.Request(), new isInstanceOf<BrowserPlainTextRequest>());
-      expect(new transport.StreamedRequest(),
-          new isInstanceOf<BrowserStreamedRequest>());
+      // ignore: deprecated_member_use_from_same_package
+      expect(transport.Client(), isA<BrowserHttpClient>());
+      expect(transport.HttpClient(), isA<BrowserHttpClient>());
+      expect(transport.FormRequest(), isA<BrowserFormRequest>());
+      expect(transport.JsonRequest(), isA<BrowserJsonRequest>());
+      expect(transport.MultipartRequest(), isA<BrowserMultipartRequest>());
+      expect(transport.Request(), isA<BrowserPlainTextRequest>());
+      expect(transport.StreamedRequest(), isA<BrowserStreamedRequest>());
 
       // Properly constructs browser implementation of WebSocket
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, new isInstanceOf<BrowserWebSocket>());
+      expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(wSocket, new isInstanceOf<BrowserWebSocket>());
+      expect(wSocket, isA<BrowserWebSocket>());
       await wSocket.close();
     });
 
     test('configureWTransportForBrowser(useSockJS: true) custom', () async {
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       configureWTransportForBrowser(useSockJS: true);
 
       BrowserTransportPlatformWithSockJS btpwsj =
@@ -186,23 +175,23 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, new isInstanceOf<SockJSWrapperWebSocket>());
+      expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, new isInstanceOf<SockJSWrapperWebSocket>());
+      expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
     test('configureWTransportForBrowser(useSockJS: true) custom', () async {
       configureWTransportForBrowser(
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           useSockJS: true,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSDebug: true,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSNoCredentials: true,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming']);
 
       BrowserTransportPlatformWithSockJS btpwsj =
@@ -217,11 +206,11 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, new isInstanceOf<SockJSWrapperWebSocket>());
+      expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, new isInstanceOf<SockJSWrapperWebSocket>());
+      expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
@@ -237,40 +226,40 @@ void main() {
         });
 
         test('requests with matching expectation should be handled', () async {
-          final formRequest = new transport.FormRequest(
+          final formRequest = transport.FormRequest(
               transportPlatform: browserTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final jsonRequest = new transport.JsonRequest(
+          final jsonRequest = transport.JsonRequest(
               transportPlatform: browserTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
+          final multipartRequest = transport.MultipartRequest(
               transportPlatform: browserTransportPlatform)
             ..fields['foo'] = 'bar';
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final request = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final request =
+              transport.Request(transportPlatform: browserTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
+          final streamedRequest = transport.StreamedRequest(
               transportPlatform: browserTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final requestWithStreamedResponse = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final requestWithStreamedResponse =
+              transport.Request(transportPlatform: browserTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
-          final httpClient = new transport.HttpClient(
-              transportPlatform: browserTransportPlatform);
+          final httpClient =
+              transport.HttpClient(transportPlatform: browserTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
@@ -303,36 +292,36 @@ void main() {
 
         test('requests with matching handler should be handled', () async {
           MockTransports.http.when(IntegrationPaths.pingEndpointUri,
-              (request) async => new MockResponse.ok());
+              (request) async => MockResponse.ok());
 
-          final formRequest = new transport.FormRequest(
+          final formRequest = transport.FormRequest(
               transportPlatform: browserTransportPlatform);
           await formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final jsonRequest = new transport.JsonRequest(
+          final jsonRequest = transport.JsonRequest(
               transportPlatform: browserTransportPlatform);
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
+          final multipartRequest = transport.MultipartRequest(
               transportPlatform: browserTransportPlatform)
             ..fields['foo'] = 'bar';
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final request = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final request =
+              transport.Request(transportPlatform: browserTransportPlatform);
           await request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
+          final streamedRequest = transport.StreamedRequest(
               transportPlatform: browserTransportPlatform);
           await streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final requestWithStreamedResponse = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final requestWithStreamedResponse =
+              transport.Request(transportPlatform: browserTransportPlatform);
           await requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
-          final httpClient = new transport.HttpClient(
-              transportPlatform: browserTransportPlatform);
+          final httpClient =
+              transport.HttpClient(transportPlatform: browserTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           await clientFormRequest.get(uri: IntegrationPaths.pingEndpointUri);
@@ -359,7 +348,7 @@ void main() {
 
         test('websockets with matching expectation should be handled',
             () async {
-          final mockWebSocketServer = new MockWebSocketServer();
+          final mockWebSocketServer = MockWebSocketServer();
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
@@ -379,12 +368,10 @@ void main() {
         });
 
         test('websockets with matching handler should be handled', () async {
-          final mockWebSocketServer = new MockWebSocketServer();
+          final mockWebSocketServer = MockWebSocketServer();
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
-              handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+              handler: (uri, {headers, protocols}) async =>
                   mockWebSocketServer);
 
           final webSocket = await transport.WebSocket.connect(
@@ -402,40 +389,40 @@ void main() {
 
         test('requests without expectation or handler should be pending',
             () async {
-          final formRequest = new transport.FormRequest(
+          final formRequest = transport.FormRequest(
               transportPlatform: browserTransportPlatform);
           // ignore: unawaited_futures
           formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final jsonRequest = new transport.JsonRequest(
+          final jsonRequest = transport.JsonRequest(
               transportPlatform: browserTransportPlatform);
           // ignore: unawaited_futures
           jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
+          final multipartRequest = transport.MultipartRequest(
               transportPlatform: browserTransportPlatform)
             ..fields['foo'] = 'bar';
           // ignore: unawaited_futures
           multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final request = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final request =
+              transport.Request(transportPlatform: browserTransportPlatform);
           // ignore: unawaited_futures
           request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
+          final streamedRequest = transport.StreamedRequest(
               transportPlatform: browserTransportPlatform);
           // ignore: unawaited_futures
           streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final requestWithStreamedResponse = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final requestWithStreamedResponse =
+              transport.Request(transportPlatform: browserTransportPlatform);
           // ignore: unawaited_futures
           requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
-          final httpClient = new transport.HttpClient(
-              transportPlatform: browserTransportPlatform);
+          final httpClient =
+              transport.HttpClient(transportPlatform: browserTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           // ignore: unawaited_futures
@@ -463,7 +450,7 @@ void main() {
           clientRequestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
-          await new Future.delayed(const Duration(milliseconds: 50));
+          await Future<void>.delayed(Duration(milliseconds: 50));
           expect(MockTransports.http.numPendingRequests, equals(12));
           await MockTransports.reset();
         });
@@ -490,40 +477,40 @@ void main() {
         });
 
         test('requests with matching expectation should be handled', () async {
-          final formRequest = new transport.FormRequest(
+          final formRequest = transport.FormRequest(
               transportPlatform: browserTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final jsonRequest = new transport.JsonRequest(
+          final jsonRequest = transport.JsonRequest(
               transportPlatform: browserTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
+          final multipartRequest = transport.MultipartRequest(
               transportPlatform: browserTransportPlatform)
             ..fields['foo'] = 'bar';
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final request = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final request =
+              transport.Request(transportPlatform: browserTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
+          final streamedRequest = transport.StreamedRequest(
               transportPlatform: browserTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final requestWithStreamedResponse = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final requestWithStreamedResponse =
+              transport.Request(transportPlatform: browserTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
-          final httpClient = new transport.HttpClient(
-              transportPlatform: browserTransportPlatform);
+          final httpClient =
+              transport.HttpClient(transportPlatform: browserTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
@@ -556,36 +543,36 @@ void main() {
 
         test('requests with matching handler should be handled', () async {
           MockTransports.http.when(IntegrationPaths.pingEndpointUri,
-              (request) async => new MockResponse.ok());
+              (request) async => MockResponse.ok());
 
-          final formRequest = new transport.FormRequest(
+          final formRequest = transport.FormRequest(
               transportPlatform: browserTransportPlatform);
           await formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final jsonRequest = new transport.JsonRequest(
+          final jsonRequest = transport.JsonRequest(
               transportPlatform: browserTransportPlatform);
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
+          final multipartRequest = transport.MultipartRequest(
               transportPlatform: browserTransportPlatform)
             ..fields['foo'] = 'bar';
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final request = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final request =
+              transport.Request(transportPlatform: browserTransportPlatform);
           await request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
+          final streamedRequest = transport.StreamedRequest(
               transportPlatform: browserTransportPlatform);
           await streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final requestWithStreamedResponse = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final requestWithStreamedResponse =
+              transport.Request(transportPlatform: browserTransportPlatform);
           await requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
-          final httpClient = new transport.HttpClient(
-              transportPlatform: browserTransportPlatform);
+          final httpClient =
+              transport.HttpClient(transportPlatform: browserTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           await clientFormRequest.get(uri: IntegrationPaths.pingEndpointUri);
@@ -612,7 +599,7 @@ void main() {
 
         test('websockets with matching expectation should be handled',
             () async {
-          final mockWebSocketServer = new MockWebSocketServer();
+          final mockWebSocketServer = MockWebSocketServer();
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
@@ -632,12 +619,10 @@ void main() {
         });
 
         test('websockets with matching handler should be handled', () async {
-          final mockWebSocketServer = new MockWebSocketServer();
+          final mockWebSocketServer = MockWebSocketServer();
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
-              handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+              handler: (uri, {headers, protocols}) async =>
                   mockWebSocketServer);
 
           final webSocket = await transport.WebSocket.connect(
@@ -656,35 +641,35 @@ void main() {
         test(
             'requests without expectation or handler should switch to real request',
             () async {
-          final formRequest = new transport.FormRequest(
+          final formRequest = transport.FormRequest(
               transportPlatform: browserTransportPlatform);
           await formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final jsonRequest = new transport.JsonRequest(
+          final jsonRequest = transport.JsonRequest(
               transportPlatform: browserTransportPlatform);
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
+          final multipartRequest = transport.MultipartRequest(
               transportPlatform: browserTransportPlatform)
             ..fields['foo'] = 'bar'
-            ..files['blob'] = new html.Blob([]);
+            ..files['blob'] = html.Blob([]);
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final request = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final request =
+              transport.Request(transportPlatform: browserTransportPlatform);
           await request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
+          final streamedRequest = transport.StreamedRequest(
               transportPlatform: browserTransportPlatform);
           await streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final requestWithStreamedResponse = new transport.Request(
-              transportPlatform: browserTransportPlatform);
+          final requestWithStreamedResponse =
+              transport.Request(transportPlatform: browserTransportPlatform);
           await requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
-          final httpClient = new transport.HttpClient(
-              transportPlatform: browserTransportPlatform);
+          final httpClient =
+              transport.HttpClient(transportPlatform: browserTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           await clientFormRequest.get(uri: IntegrationPaths.pingEndpointUri);
@@ -694,7 +679,7 @@ void main() {
 
           final clientMultipartRequest = httpClient.newMultipartRequest()
             ..fields['foo'] = 'bar'
-            ..files['blob'] = new html.Blob([]);
+            ..files['blob'] = html.Blob([]);
           await clientMultipartRequest.get(
               uri: IntegrationPaths.pingEndpointUri);
 
@@ -716,22 +701,22 @@ void main() {
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatform);
-          expect(webSocket, new isInstanceOf<BrowserWebSocket>());
+          expect(webSocket, isA<BrowserWebSocket>());
           await webSocket.close();
 
           final pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
           final sockJS = await transport.WebSocket.connect(pingUri,
               transportPlatform: browserTransportPlatformWithSockJS);
-          expect(sockJS, new isInstanceOf<SockJSWrapperWebSocket>());
+          expect(sockJS, isA<SockJSWrapperWebSocket>());
           await sockJS.close();
 
           // This verifies the ability to override the transport platform's
           // "useSockJS" value when constructing a single WebSocket instance.
           final singleSockJS = await transport.WebSocket.connect(pingUri,
               transportPlatform: browserTransportPlatform,
-              // ignore: deprecated_member_use
+              // ignore: deprecated_member_use_from_same_package
               useSockJS: true);
-          expect(singleSockJS, new isInstanceOf<SockJSWrapperWebSocket>());
+          expect(singleSockJS, isA<SockJSWrapperWebSocket>());
           await singleSockJS.close();
         });
       });

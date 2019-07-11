@@ -15,8 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
-
 import '../../../handler.dart';
 
 /// Return a custom response dictated by the request.
@@ -26,11 +24,10 @@ class CustomHandler extends Handler {
   }
 
   @override
-  Future<Null> get(HttpRequest request) async {
+  Future<void> get(HttpRequest request) async {
     request.response.statusCode =
-        int.parse(request.uri.queryParameters['status']) ??
-            io_constant.HttpStatus.ok;
-    request.response.headers.contentType = ContentType.TEXT;
+        int.parse(request.uri.queryParameters['status']) ?? HttpStatus.ok;
+    request.response.headers.contentType = ContentType.text;
     setCorsHeaders(request);
   }
 }

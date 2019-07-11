@@ -19,7 +19,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicGlobalWebSocketMonitor;
 
@@ -27,14 +27,12 @@ void main() {
     test(
         'getGlobalWebSocketMonitor() returns correctly from WSocket & WebSocket',
         () async {
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocketMonitor = transport.WSocket.getGlobalEventMonitor();
       final webSocketMonitor = transport.WebSocket.getGlobalEventMonitor();
 
-      expect(
-          wSocketMonitor, new isInstanceOf<transport.GlobalWebSocketMonitor>());
-      expect(webSocketMonitor,
-          new isInstanceOf<transport.GlobalWebSocketMonitor>());
+      expect(wSocketMonitor, isA<transport.GlobalWebSocketMonitor>());
+      expect(webSocketMonitor, isA<transport.GlobalWebSocketMonitor>());
 
       await wSocketMonitor.close();
       await webSocketMonitor.close();

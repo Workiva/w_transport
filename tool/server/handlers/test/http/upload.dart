@@ -15,7 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:http_server/http_server.dart';
 import 'package:mime/mime.dart';
 
@@ -27,11 +26,11 @@ class UploadHandler extends Handler {
     enableCors();
   }
 
-  Future<Null> upload(HttpRequest request) async {
+  Future<void> upload(HttpRequest request) async {
     final contentType =
         ContentType.parse(request.headers.value('content-type'));
     final boundary = contentType.parameters['boundary'];
-    final stream = new MimeMultipartTransformer(boundary)
+    final stream = MimeMultipartTransformer(boundary)
         .bind(request)
         .map(HttpMultipartFormData.parse);
 
@@ -39,35 +38,35 @@ class UploadHandler extends Handler {
       if (formData.isText) {
         await formData.toList();
       } else {
-        throw new Exception('Unknown multipart formdata.');
+        throw Exception('Unknown multipart formdata.');
       }
     }
 
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
   }
 
   @override
-  Future<Null> delete(HttpRequest request) async => upload(request);
+  Future<void> delete(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> get(HttpRequest request) async => upload(request);
+  Future<void> get(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> head(HttpRequest request) async => upload(request);
+  Future<void> head(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> options(HttpRequest request) async => upload(request);
+  Future<void> options(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> patch(HttpRequest request) async => upload(request);
+  Future<void> patch(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> post(HttpRequest request) async => upload(request);
+  Future<void> post(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> put(HttpRequest request) async => upload(request);
+  Future<void> put(HttpRequest request) async => upload(request);
 
   @override
-  Future<Null> trace(HttpRequest request) async => upload(request);
+  Future<void> trace(HttpRequest request) async => upload(request);
 }

@@ -22,10 +22,10 @@ void mockEchoEndpoint(Uri uri) {
     };
     if (request.body is HttpBody) {
       HttpBody body = request.body;
-      return new MockResponse.ok(body: body.asString(), headers: headers);
+      return MockResponse.ok(body: body.asString(), headers: headers);
     } else {
       StreamedHttpBody body = request.body;
-      return new MockStreamedResponse.ok(
+      return MockStreamedResponse.ok(
           byteStream: body.byteStream, headers: headers);
     }
   });

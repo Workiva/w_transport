@@ -25,7 +25,7 @@ import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformBrowser
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
@@ -35,7 +35,7 @@ void main() {
         transportPlatform: browserTransportPlatform);
 
     test('should support Blob', () async {
-      final blob = new Blob(['one', 'two']);
+      final blob = Blob(['one', 'two']);
       final socket = await transport.WebSocket.connect(IntegrationPaths.echoUri,
           transportPlatform: browserTransportPlatform);
       socket.add(blob);
@@ -51,7 +51,7 @@ void main() {
     });
 
     test('should support TypedData', () async {
-      final data = new Uint16List.fromList([1, 2, 3]);
+      final data = Uint16List.fromList([1, 2, 3]);
       final socket = await transport.WebSocket.connect(IntegrationPaths.echoUri,
           transportPlatform: browserTransportPlatform);
       socket.add(data);

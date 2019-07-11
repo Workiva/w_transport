@@ -25,7 +25,7 @@ import '../../common/loading_component.dart';
 /// Handle clicks on file names.
 /// Sends a GET request to retrieve the file contents,
 /// then displays the contents in the response pane.
-Future<Null> handleFileClick(MouseEvent event) async {
+Future<void> handleFileClick(MouseEvent event) async {
   // Prevent link navigation
   event.preventDefault();
 

@@ -55,12 +55,12 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<
   Timer serverPolling;
 
   @override
-  Map getDefaultProps() => newProps()
+  getDefaultProps() => newProps()
     ..nav = true
     ..includeServerStatus = false;
 
   @override
-  Map getInitialState() => newState()..serverOnline = false;
+  getInitialState() => newState()..serverOnline = false;
 
   @override
   void componentWillMount() {
@@ -68,10 +68,8 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<
 
     if (props.includeServerStatus) {
       _pingServer().then(_updateOnlineStatus);
-      serverPolling =
-          new Timer.periodic(const Duration(seconds: 4), (Timer timer) async {
+      serverPolling = Timer.periodic(Duration(seconds: 4), (timer) async {
         final isOnline = await _pingServer();
-
         _updateOnlineStatus(isOnline);
       });
     }
@@ -93,7 +91,7 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<
   ReactElement _renderServerStatusBanner() {
     if (!props.includeServerStatus) return null;
 
-    var classes = new ClassNameBuilder()
+    var classes = ClassNameBuilder()
       ..add('server-status')
       ..add('online', state.serverOnline);
 
@@ -143,17 +141,21 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
-// ignore: mixin_of_non_class, undefined_class
+// ignore: undefined_class
 class GlobalExampleMenuProps extends _$GlobalExampleMenuProps
-    with _$GlobalExampleMenuPropsAccessorsMixin {
+    with
+        // ignore: mixin_of_non_class, undefined_class
+        _$GlobalExampleMenuPropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const PropsMeta meta = $metaForGlobalExampleMenuProps;
+  static const PropsMeta meta = _$metaForGlobalExampleMenuProps;
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
-// ignore: mixin_of_non_class, undefined_class
+// ignore: undefined_class
 class GlobalExampleMenuState extends _$GlobalExampleMenuState
-    with _$GlobalExampleMenuStateAccessorsMixin {
+    with
+        // ignore: mixin_of_non_class, undefined_class
+        _$GlobalExampleMenuStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const StateMeta meta = $metaForGlobalExampleMenuState;
+  static const StateMeta meta = _$metaForGlobalExampleMenuState;
 }

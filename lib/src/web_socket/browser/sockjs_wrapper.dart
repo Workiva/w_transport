@@ -31,7 +31,8 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
   /// used.
   SockJSClient _webSocket;
 
-  SockJSWrapperWebSocket._(this._webSocket, Future webSocketClosed) : super() {
+  SockJSWrapperWebSocket._(this._webSocket, Future<dynamic> webSocketClosed)
+      : super() {
     webSocketClosed.then((closeEvent) {
       closeCode = closeEvent.code;
       closeReason = closeEvent.reason;
@@ -53,8 +54,8 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   static Future<WebSocket> connect(Uri uri,
-      {bool debug: false,
-      bool noCredentials: false,
+      {bool debug = false,
+      bool noCredentials = false,
       List<String> protocolsWhitelist,
       Duration timeout}) async {
     Uri sockjsUri;
@@ -65,19 +66,19 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
     }
 
     // TODO: pass `debug`, `noCredentials`, and `timeout` through when possible.
-    final client = new SockJSClient(sockjsUri,
-        options: new SockJSOptions(transports: protocolsWhitelist));
+    final client = SockJSClient(sockjsUri,
+        options: SockJSOptions(transports: protocolsWhitelist));
 
     // Listen for and store the close event. This will determine whether or
     // not the socket connected successfully, and will also be used later
     // to handle the web socket closing.
-    final closed = new Completer<SockJSCloseEvent>();
+    final closed = Completer<SockJSCloseEvent>();
     // ignore: unawaited_futures
     client.onClose.first.then(closed.complete);
 
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
-    final connected = new Completer<Null>();
+    final connected = Completer<void>();
     // Note: the SockJSClient always closes the onOpen event stream, so we don't
     // need to manually manage this subscription.
     client.onOpen.listen((event) {
@@ -92,7 +93,7 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
     closed.future.then((_) {
       if (!connected.isCompleted) {
         connected
-            .completeError(new WebSocketException('Could not connect to $uri'));
+            .completeError(WebSocketException('Could not connect to $uri'));
         emitWebSocketConnectEvent(newWebSocketConnectEvent(
             url: uri.toString(),
             wasSuccessful: false,
@@ -101,7 +102,7 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
     });
 
     await connected.future;
-    return new SockJSWrapperWebSocket._(client, closed.future);
+    return SockJSWrapperWebSocket._(client, closed.future);
   }
 
   @override
@@ -147,7 +148,7 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
   @override
   void validateOutgoingData(Object data) {
     if (data is! String) {
-      throw new ArgumentError(
+      throw ArgumentError(
           'WSocket data type must be a String when using SockJS.');
     }
   }

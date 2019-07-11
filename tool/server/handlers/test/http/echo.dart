@@ -15,8 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
-
 import '../../../handler.dart';
 
 /// Always responds with a 200 OK and reads the request body into memory to
@@ -27,37 +25,37 @@ class EchoHandler extends Handler {
     enableCors();
   }
 
-  Future<Null> echo(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.ok;
+  Future<void> echo(HttpRequest request) async {
+    request.response.statusCode = HttpStatus.ok;
     request.response.headers.contentType = request.headers.contentType;
     setCorsHeaders(request);
     await request.response.addStream(request);
   }
 
   @override
-  Future<Null> copy(HttpRequest request) async => echo(request);
+  Future<void> copy(HttpRequest request) async => echo(request);
 
   @override
-  Future<Null> delete(HttpRequest request) async => echo(request);
+  Future<void> delete(HttpRequest request) async => echo(request);
 
   @override
-  Future<Null> get(HttpRequest request) async => echo(request);
+  Future<void> get(HttpRequest request) async => echo(request);
 
   @override
-  Future<Null> head(HttpRequest request) async => echo(request);
+  Future<void> head(HttpRequest request) async => echo(request);
 
   @override
-  Future<Null> options(HttpRequest request) async => echo(request);
+  Future<void> options(HttpRequest request) async => echo(request);
 
   @override
-  Future<Null> patch(HttpRequest request) async => echo(request);
+  Future<void> patch(HttpRequest request) async => echo(request);
 
   @override
-  Future<Null> post(HttpRequest request) async => echo(request);
+  Future<void> post(HttpRequest request) async => echo(request);
 
   @override
-  Future<Null> put(HttpRequest request) async => echo(request);
+  Future<void> put(HttpRequest request) async => echo(request);
 
   @override
-  Future<Null> trace(HttpRequest request) async => echo(request);
+  Future<void> trace(HttpRequest request) async => echo(request);
 }

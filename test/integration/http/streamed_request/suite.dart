@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -25,7 +25,7 @@ void runStreamedRequestSuite([transport.TransportPlatform transportPlatform]) {
   group('StreamedRequest', () {
     test('contentLength should NOT be set automatically', () async {
       final emptyRequest =
-          new transport.StreamedRequest(transportPlatform: transportPlatform)
+          transport.StreamedRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..contentLength = 0;
       final response =
@@ -37,18 +37,18 @@ void runStreamedRequestSuite([transport.TransportPlatform transportPlatform]) {
               'Empty streamed plain-text request\'s content-length should be 0.');
 
       final chunks = <List<int>>[
-        convert.utf8.encode('chunk1'),
-        convert.utf8.encode('chunk2'),
-        convert.utf8.encode('chunk3')
+        utf8.encode('chunk1'),
+        utf8.encode('chunk2'),
+        utf8.encode('chunk3')
       ];
       int size = 0;
       for (final chunk in chunks) {
         size += chunk.length;
       }
       final nonEmptyRequest =
-          new transport.StreamedRequest(transportPlatform: transportPlatform)
+          transport.StreamedRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
-            ..body = new Stream.fromIterable(chunks)
+            ..body = Stream.fromIterable(chunks)
             ..contentLength = size;
       final response2 = await nonEmptyRequest.post();
       final contentLength2 =
@@ -60,60 +60,60 @@ void runStreamedRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('content-type should be set automatically', () async {
       final request =
-          new transport.StreamedRequest(transportPlatform: transportPlatform)
+          transport.StreamedRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
-            ..body = new Stream.fromIterable([])
+            ..body = Stream.fromIterable([])
             ..contentLength = 0;
       final response = await request.post();
-      final contentType = new MediaType.parse(
-          response.body.asJson()['headers']['content-type']);
+      final contentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('text/plain'));
     });
 
     test('content-type should be overridable', () async {
-      final contentType = new MediaType('application', 'x-custom');
+      final contentType = MediaType('application', 'x-custom');
       final request =
-          new transport.StreamedRequest(transportPlatform: transportPlatform)
+          transport.StreamedRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
-            ..body = new Stream.fromIterable([])
+            ..body = Stream.fromIterable([])
             ..contentLength = 0
             ..contentType = contentType;
       final response = await request.post();
-      final reflectedContentType = new MediaType.parse(
-          response.body.asJson()['headers']['content-type']);
+      final reflectedContentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(reflectedContentType.mimeType, equals(contentType.mimeType));
     });
 
     test('UTF8', () async {
       final request =
-          new transport.StreamedRequest(transportPlatform: transportPlatform)
+          transport.StreamedRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.utf8
-            ..body = new Stream.fromIterable([convert.utf8.encode('dataç®å')]);
+            ..encoding = utf8
+            ..body = Stream.fromIterable([utf8.encode('dataç®å')]);
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.utf8.name));
+      expect(response.encoding.name, equals(utf8.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
     test('LATIN1', () async {
-      final request = new transport.StreamedRequest(
-          transportPlatform: transportPlatform)
-        ..uri = IntegrationPaths.echoEndpointUri
-        ..encoding = convert.latin1
-        ..body = new Stream.fromIterable([convert.latin1.encode('dataç®å')]);
+      final request =
+          transport.StreamedRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.echoEndpointUri
+            ..encoding = latin1
+            ..body = Stream.fromIterable([latin1.encode('dataç®å')]);
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.latin1.name));
+      expect(response.encoding.name, equals(latin1.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
     test('ASCII', () async {
       final request =
-          new transport.StreamedRequest(transportPlatform: transportPlatform)
+          transport.StreamedRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.ascii
-            ..body = new Stream.fromIterable([convert.ascii.encode('data')]);
+            ..encoding = ascii
+            ..body = Stream.fromIterable([ascii.encode('data')]);
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.ascii.name));
+      expect(response.encoding.name, equals(ascii.name));
       expect(response.body.asString(), equals('data'));
     });
   });

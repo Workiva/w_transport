@@ -24,7 +24,7 @@ import './service.dart' as service;
 import './status.dart' as status;
 
 /// Setup the example application.
-Future<Null> main() async {
+Future<void> main() async {
   setClientConfiguration();
   configureWTransportForBrowser();
   renderGlobalExampleMenu(includeServerStatus: true);

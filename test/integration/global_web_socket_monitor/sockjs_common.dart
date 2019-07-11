@@ -25,15 +25,15 @@ import 'common.dart';
 const _sockjsPort = 8026;
 
 void runCommonSockJSSuite(List<String> protocolsToTest,
-    {bool usingSockjsPort: true}) {
-  final sockjsPortNaming = new Naming()
+    {bool usingSockjsPort = true}) {
+  final sockjsPortNaming = Naming()
     ..platform = usingSockjsPort
         ? platformBrowserSockjsPort
         : platformBrowserSockjsWrapper
     ..testType = testTypeIntegration
     ..topic = topicGlobalWebSocketMonitor;
 
-  final sockjsPortDeprecatedNaming = new Naming()
+  final sockjsPortDeprecatedNaming = Naming()
     ..platform = usingSockjsPort
         ? platformBrowserSockjsPortDeprecated
         : platformBrowserSockjsWrapperDeprecated
@@ -43,8 +43,8 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
   group(sockjsPortNaming.toString(), () {
     _sockJSSuite(
         protocolsToTest,
-        (Uri uri, String protocol) => transport.WebSocket.connect(uri,
-            transportPlatform: new BrowserTransportPlatformWithSockJS(
+        (uri, protocol) => transport.WebSocket.connect(uri,
+            transportPlatform: BrowserTransportPlatformWithSockJS(
                 sockJSNoCredentials: true,
                 sockJSProtocolsWhitelist: [protocol])));
   });
@@ -52,12 +52,12 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
   group(sockjsPortDeprecatedNaming.toString(), () {
     _sockJSSuite(
         protocolsToTest,
-        (Uri uri, String protocol) => transport.WebSocket.connect(uri,
-            // ignore: deprecated_member_use
+        (uri, protocol) => transport.WebSocket.connect(uri,
+            // ignore: deprecated_member_use_from_same_package
             useSockJS: true,
-            // ignore: deprecated_member_use
+            // ignore: deprecated_member_use_from_same_package
             sockJSNoCredentials: true,
-            // ignore: deprecated_member_use
+            // ignore: deprecated_member_use_from_same_package
             sockJSProtocolsWhitelist: [protocol],
             transportPlatform: browserTransportPlatform));
   });
@@ -68,7 +68,7 @@ void _sockJSSuite(List<String> protocolsToTest,
   for (final protocol in protocolsToTest) {
     group('(protocol=$protocol)', () {
       runCommonGlobalWebSocketMonitorIntegrationTests(
-          (Uri uri) => connect(uri, protocol),
+          (uri) => connect(uri, protocol),
           port: _sockjsPort);
 
       var echoUri = IntegrationPaths.echoUri.replace(port: _sockjsPort);

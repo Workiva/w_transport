@@ -32,8 +32,8 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   FormRequest newFormRequest() {
     verifyNotClosed();
-    // ignore: deprecated_member_use
-    final request = new MockFormRequest.fromClient(this, _transport);
+    // ignore: deprecated_member_use_from_same_package
+    final request = MockFormRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -43,8 +43,8 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   JsonRequest newJsonRequest() {
     verifyNotClosed();
-    // ignore: deprecated_member_use
-    final request = new MockJsonRequest.fromClient(this, _transport);
+    // ignore: deprecated_member_use_from_same_package
+    final request = MockJsonRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -54,8 +54,8 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
-    // ignore: deprecated_member_use
-    final request = new MockMultipartRequest.fromClient(this, _transport);
+    // ignore: deprecated_member_use_from_same_package
+    final request = MockMultipartRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -65,8 +65,8 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   Request newRequest() {
     verifyNotClosed();
-    // ignore: deprecated_member_use
-    final request = new MockPlainTextRequest.fromClient(this, _transport);
+    // ignore: deprecated_member_use_from_same_package
+    final request = MockPlainTextRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -76,8 +76,8 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   @override
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
-    // ignore: deprecated_member_use
-    final request = new MockStreamedRequest.fromClient(this, _transport);
+    // ignore: deprecated_member_use_from_same_package
+    final request = MockStreamedRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }

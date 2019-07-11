@@ -19,47 +19,47 @@ class MockWebSocketConnection {
   final Iterable<String> protocols;
   final Uri uri;
 
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   final MockWSocket _connectedClient;
 
   MockWebSocketConnection._(this._connectedClient, this.uri,
       {Map<String, dynamic> headers, Iterable<String> protocols})
-      : headers = new Map.unmodifiable(headers ?? {}),
-        protocols = new List.unmodifiable(protocols ?? []);
+      : headers = Map.unmodifiable(headers ?? {}),
+        protocols = List.unmodifiable(protocols ?? []);
 
-  Future<Null> get done => _connectedClient.done;
+  Future<void> get done => _connectedClient.done;
 
-  Future<Null> close([int code, String reason]) {
+  Future<void> close([int code, String reason]) {
     return _connectedClient.close(code, reason);
   }
 
   void onData(callback(dynamic data)) {
-    // ignore: deprecated_member_use
+    // ignore: deprecated_member_use_from_same_package
     _connectedClient.onOutgoing(callback);
   }
 
   void send(Object data) {
-    // ignore: deprecated_member_use
+    // ignore: deprecated_member_use_from_same_package
     _connectedClient.addIncoming(data);
   }
 }
 
 class MockWebSocketServer {
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   List<MockWSocket> _connectedClients = [];
 
   StreamController<MockWebSocketConnection> _onClientConnected =
-      new StreamController<MockWebSocketConnection>();
+      StreamController<MockWebSocketConnection>();
 
   Stream<MockWebSocketConnection> get onClientConnected =>
       _onClientConnected.stream;
 
-  Future<Null> shutDown() async {
+  Future<void> shutDown() async {
     final futures = _connectedClients.map((client) => client.close());
     await Future.wait(futures);
   }
 
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   void _connectClient(MockWSocket client, Uri uri,
       {Map<String, dynamic> headers, Iterable<String> protocols}) {
     _connectedClients.add(client);
@@ -68,7 +68,7 @@ class MockWebSocketServer {
     }).catchError((_) {
       _connectedClients.remove(client);
     });
-    _onClientConnected.add(new MockWebSocketConnection._(client, uri,
+    _onClientConnected.add(MockWebSocketConnection._(client, uri,
         headers: headers, protocols: protocols));
   }
 }

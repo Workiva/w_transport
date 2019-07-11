@@ -25,14 +25,14 @@ void emitWebSocketConnectEvent(WebSocketConnectEvent connectEvent) {
 }
 
 GlobalWebSocketMonitor newGlobalWebSocketMonitor() =>
-    new GlobalWebSocketMonitor._();
+    GlobalWebSocketMonitor._();
 
 WebSocketConnectEvent newWebSocketConnectEvent(
         {@required String url,
         @required bool wasSuccessful,
         String sockJsSelectedProtocol,
         List<String> sockJsProtocolsWhitelist}) =>
-    new WebSocketConnectEvent._(
+    WebSocketConnectEvent._(
         url: url,
         wasSuccessful: wasSuccessful,
         sockJsProtocolsWhitelist: sockJsProtocolsWhitelist,
@@ -40,7 +40,7 @@ WebSocketConnectEvent newWebSocketConnectEvent(
 
 class GlobalWebSocketMonitor {
   StreamController<WebSocketConnectEvent> _didAttemptToConnect =
-      new StreamController<WebSocketConnectEvent>.broadcast();
+      StreamController<WebSocketConnectEvent>.broadcast();
 
   GlobalWebSocketMonitor._() {
     _monitors.add(this);
@@ -49,7 +49,7 @@ class GlobalWebSocketMonitor {
   Stream<WebSocketConnectEvent> get didAttemptToConnect =>
       _didAttemptToConnect.stream;
 
-  Future<Null> close() async {
+  Future<void> close() async {
     _monitors.remove(this);
     await _didAttemptToConnect.close();
   }

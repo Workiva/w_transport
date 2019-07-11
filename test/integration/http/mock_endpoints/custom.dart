@@ -17,6 +17,6 @@ import 'package:w_transport/mock.dart';
 void mockCustomEndpoint(Pattern uriPattern) {
   MockTransports.http.whenPattern(uriPattern, (request, match) async {
     final status = int.parse(request.uri.queryParameters['status'] ?? '200');
-    return new MockResponse(status);
+    return MockResponse(status);
   });
 }

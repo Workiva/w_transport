@@ -15,7 +15,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart'
     show CaseInsensitiveMap, MediaType;
 
@@ -36,10 +35,9 @@ abstract class BaseResponse {
   Map<String, String> _headers;
 
   BaseResponse(this.status, this.statusText, Map<String, String> headers) {
-    _headers = new Map<String, String>.unmodifiable(
-        new CaseInsensitiveMap<String>.from(headers));
-    _encoding =
-        http_utils.parseEncodingFromHeaders(_headers, fallback: convert.latin1);
+    _headers = Map<String, String>.unmodifiable(
+        CaseInsensitiveMap<String>.from(headers));
+    _encoding = http_utils.parseEncodingFromHeaders(_headers, fallback: latin1);
     _contentType = http_utils.parseContentTypeFromHeaders(_headers);
   }
 
@@ -56,7 +54,7 @@ abstract class BaseResponse {
 
   /// Encoding that will be used to decode the response body. This encoding is
   /// selected based on [contentType]'s `charset` parameter. If `charset` is not
-  /// given or the encoding name is unrecognized, [convert.latin1] is used by
+  /// given or the encoding name is unrecognized, [latin1] is used by
   /// default ([RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html)).
   Encoding get encoding => _encoding;
 
@@ -83,15 +81,13 @@ class Response extends BaseResponse {
   Response.fromBytes(int status, String statusText, Map<String, String> headers,
       List<int> bytes)
       : super(status, statusText, headers) {
-    _body =
-        new HttpBody.fromBytes(contentType, bytes, fallbackEncoding: encoding);
+    _body = HttpBody.fromBytes(contentType, bytes, fallbackEncoding: encoding);
   }
 
   Response.fromString(
       int status, String statusText, Map<String, String> headers, String body)
       : super(status, statusText, headers) {
-    _body =
-        new HttpBody.fromString(contentType, body, fallbackEncoding: encoding);
+    _body = HttpBody.fromString(contentType, body, fallbackEncoding: encoding);
   }
 
   /// This response's body. Provides synchronous access to the response body as
@@ -116,12 +112,12 @@ class Response extends BaseResponse {
     headers ??= this.headers;
     if (bodyBytes == null) {
       if (bodyString == null) {
-        return new Response._(status, statusText, headers, _body);
+        return Response._(status, statusText, headers, _body);
       } else {
-        return new Response.fromString(status, statusText, headers, bodyString);
+        return Response.fromString(status, statusText, headers, bodyString);
       }
     } else {
-      return new Response.fromBytes(status, statusText, headers, bodyBytes);
+      return Response.fromBytes(status, statusText, headers, bodyBytes);
     }
   }
 }
@@ -141,7 +137,7 @@ class StreamedResponse extends BaseResponse {
   StreamedResponse.fromByteStream(int status, String statusText,
       Map<String, String> headers, Stream<List<int>> byteStream)
       : super(status, statusText, headers) {
-    _body = new StreamedHttpBody.fromByteStream(contentType, byteStream,
+    _body = StreamedHttpBody.fromByteStream(contentType, byteStream,
         contentLength: contentLength, fallbackEncoding: encoding);
   }
 
@@ -167,9 +163,9 @@ class StreamedResponse extends BaseResponse {
     statusText ??= this.statusText;
     headers ??= this.headers;
     if (byteStream == null) {
-      return new StreamedResponse._(status, statusText, headers, _body);
+      return StreamedResponse._(status, statusText, headers, _body);
     } else {
-      return new StreamedResponse.fromByteStream(
+      return StreamedResponse.fromByteStream(
           status, statusText, headers, byteStream);
     }
   }

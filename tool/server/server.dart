@@ -21,31 +21,31 @@ import 'router.dart';
 const String defaultHost = 'localhost';
 const int defaultPort = 8024;
 
-Future<Null> main() => Server.run(dumpOutput: true);
+Future<void> main() => Server.run(dumpOutput: true);
 
 class Server {
   final String host;
   final int port;
 
-  Logger _logger = new Logger();
+  Logger _logger = Logger();
   HttpServer _server;
-  StreamSubscription _subscription;
+  StreamSubscription<HttpRequest> _subscription;
 
-  Server({this.host: defaultHost, this.port: defaultPort});
+  Server({this.host = defaultHost, this.port = defaultPort});
 
-  static Future<Null> run(
-      {bool dumpOutput: false,
-      String host: defaultHost,
-      int port: defaultPort}) {
-    final server = new Server(host: host, port: port);
+  static Future<void> run(
+      {bool dumpOutput = false,
+      String host = defaultHost,
+      int port = defaultPort}) {
+    final server = Server(host: host, port: port);
     server.output.listen(print);
     return server.start();
   }
 
-  Stream get output => _logger.stream;
+  Stream<String> get output => _logger.stream;
 
-  Future<Null> start() async {
-    final router = new Router(_logger);
+  Future<void> start() async {
+    final router = Router(_logger);
 
     try {
       _server = await HttpServer.bind(host, port);
@@ -67,7 +67,7 @@ class Server {
     }
   }
 
-  Future<Null> stop() async {
+  Future<void> stop() async {
     await Future.wait(
         [_server.close(force: true), _subscription.cancel(), _logger.close()]);
   }

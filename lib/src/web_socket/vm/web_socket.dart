@@ -46,13 +46,13 @@ class VMWebSocket extends CommonWebSocket implements WebSocket {
       wasSuccessful = true;
     } on io.SocketException catch (e) {
       wasSuccessful = false;
-      throw new WebSocketException(e.toString());
+      throw WebSocketException(e.toString());
     } finally {
       emitWebSocketConnectEvent(newWebSocketConnectEvent(
           url: uri.toString(), wasSuccessful: wasSuccessful));
     }
 
-    return new VMWebSocket._(webSocket);
+    return VMWebSocket._(webSocket);
   }
 
   @override
@@ -91,7 +91,7 @@ class VMWebSocket extends CommonWebSocket implements WebSocket {
   @override
   void validateOutgoingData(Object data) {
     if (data is! String && data is! List<int>) {
-      throw new ArgumentError(
+      throw ArgumentError(
           'WebSocket data type must be a String or a List<int>.');
     }
   }

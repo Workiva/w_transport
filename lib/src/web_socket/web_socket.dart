@@ -83,8 +83,9 @@ import 'package:w_transport/src/web_socket/w_socket.dart';
 /// **Note:** In order to leverage SockJS, you will need to load the `sockjs.js`
 /// library first. See https://github.com/workiva/sockjs_client_wrapper#usage
 ///
-// ignore: deprecated_member_use
-abstract class WebSocket extends WSocket implements Stream, StreamSink {
+// ignore: deprecated_member_use_from_same_package
+abstract class WebSocket extends WSocket
+    implements Stream<dynamic>, StreamSink<dynamic> {
   /// Create a new WebSocket connection. The given [uri] must use the scheme
   /// `ws` or `wss`.
   ///
@@ -113,36 +114,36 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
       return MockAwareTransportPlatform.newWebSocket(transportPlatform, uri,
           headers: headers,
           protocols: protocols,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSDebug: sockJSDebug,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSNoCredentials: sockJSNoCredentials,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSTimeout: sockJSTimeout,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           useSockJS: useSockJS);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
       return transportPlatform.newWebSocket(uri,
           headers: headers,
           protocols: protocols,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSDebug: sockJSDebug,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSNoCredentials: sockJSNoCredentials,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSTimeout: sockJSTimeout,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           useSockJS: useSockJS);
     } else {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
       // successfully construct a WebSocket.
-      throw new TransportPlatformMissing.webSocketFailed(uri);
+      throw TransportPlatformMissing.webSocketFailed(uri);
     }
   }
 
@@ -165,7 +166,7 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
 
   /// Future that resolves when this WebSocket connection has completely closed.
   @override
-  Future<Null> get done;
+  Future<void> get done;
 
   /// Sends a message over the WebSocket connection.
   ///
@@ -194,10 +195,10 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
   /// Sending additional data before this stream has completed may
   /// result in a [StateError].
   @override
-  Future<Null> addStream(Stream stream);
+  Future<void> addStream(Stream<dynamic> stream);
 
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
   @override
-  Future<Null> close([int code, String reason]);
+  Future<void> close([int code, String reason]);
 }

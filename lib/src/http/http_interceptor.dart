@@ -85,7 +85,7 @@ class Pathway<T> {
         final msg = 'Interceptor returned a value of the incorrect type.\n'
             '  Expected: ${T.runtimeType}\n'
             '  Actual:   ${result.runtimeType}';
-        throw new Exception(msg);
+        throw Exception(msg);
       }
     }
     return payload;

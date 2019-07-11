@@ -52,7 +52,7 @@ void display(String message, {bool isSuccessful}) {
 }
 
 /// Setup bindings for the controls.
-Future<Null> setupControlBindings() async {
+Future<void> setupControlBindings() async {
   // Handle login/logout
   querySelector('#toggle-auth').onClick.listen((_) async {
     if (!status.authenticated) {

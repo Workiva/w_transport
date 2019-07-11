@@ -18,29 +18,29 @@ import 'package:w_transport/w_transport.dart' as transport;
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
   group(naming.toString(), () {
     group('RequestProgress', () {
       test('lengthComputable should be true if total is known', () {
-        final prog = new transport.RequestProgress(10, 100);
+        final prog = transport.RequestProgress(10, 100);
         expect(prog.lengthComputable, isTrue);
       });
 
       test('lengthComputable should be false if total is unknown', () {
-        final prog = new transport.RequestProgress(10);
+        final prog = transport.RequestProgress(10);
         expect(prog.lengthComputable, isFalse);
       });
 
       test('percent should be calculcated', () {
-        final prog = new transport.RequestProgress(10, 100);
+        final prog = transport.RequestProgress(10, 100);
         expect(prog.percent, equals(10.0));
       });
 
       test('percent should be 0.0 if length is not computable', () {
-        final prog = new transport.RequestProgress(10);
+        final prog = transport.RequestProgress(10);
         expect(prog.percent, equals(0.0));
       });
     });

@@ -33,24 +33,23 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
   }
 
   @override
-  Future<Null> openRequest([_]) async {
-    _request = new HttpRequest();
+  Future<void> openRequest([_]) async {
+    _request = HttpRequest();
     _request.open(method, uri.toString());
   }
 
   @override
   Future<BaseResponse> sendRequestAndFetchResponse(
       FinalizedRequest finalizedRequest,
-      {bool streamResponse: false}) async {
-    final c = new Completer<BaseResponse>();
+      {bool streamResponse = false}) async {
+    final c = Completer<BaseResponse>();
 
     // Add request headers.
     if (finalizedRequest.headers != null) {
       // The browser forbids setting these two headers:
       // - connection
       // - content-length
-      final headersToAdd =
-          new Map<String, String>.from(finalizedRequest.headers);
+      final headersToAdd = Map<String, String>.from(finalizedRequest.headers);
       headersToAdd.remove('connection');
       headersToAdd.remove('content-length');
       headersToAdd.forEach(_request.setRequestHeader);
@@ -78,10 +77,10 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         c.complete(_createResponse(streamResponse: streamResponse));
       }
     });
-    Future<Null> onError(Object error) async {
+    Future<void> onError(Object error) async {
       if (!c.isCompleted) {
         final response = await _createResponse(streamResponse: streamResponse);
-        error = new RequestException(method, uri, this, response, error);
+        error = RequestException(method, uri, this, response, error);
         c.completeError(error, StackTrace.current);
       }
     }
@@ -100,7 +99,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     }
 
     // Wait for the configuration if applicable before sending the request.
-    if (configurationResult != null && configurationResult is Future) {
+    if (configurationResult != null && configurationResult is Future<dynamic>) {
       await configurationResult;
     }
 
@@ -117,26 +116,26 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     return await c.future;
   }
 
-  Future<BaseResponse> _createResponse({bool streamResponse: false}) async {
+  Future<BaseResponse> _createResponse({bool streamResponse = false}) async {
     streamResponse ??= false;
 
     BaseResponse response;
     if (streamResponse) {
-      final result = new Completer<List<int>>();
-      final reader = new FileReader();
+      final result = Completer<List<int>>();
+      final reader = FileReader();
       // ignore: unawaited_futures
       reader.onLoad.first.then((_) {
         result.complete(reader.result);
       });
       // ignore: unawaited_futures
       reader.onError.first.then(result.completeError);
-      reader.readAsArrayBuffer(_request.response ?? new Blob([]));
+      reader.readAsArrayBuffer(_request.response ?? Blob([]));
       final bytes = await result.future;
-      final byteStream = new Stream.fromIterable([bytes]);
-      response = new StreamedResponse.fromByteStream(_request.status,
+      final byteStream = Stream.fromIterable([bytes]);
+      response = StreamedResponse.fromByteStream(_request.status,
           _request.statusText, _request.responseHeaders, byteStream);
     } else {
-      response = new Response.fromString(_request.status, _request.statusText,
+      response = Response.fromString(_request.status, _request.statusText,
           _request.responseHeaders, _request.responseText);
     }
     return response;

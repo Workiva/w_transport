@@ -24,7 +24,7 @@ import 'package:w_transport/src/http/vm/requests.dart';
 /// connections to be cached.
 class VMHttpClient extends CommonHttpClient implements HttpClient {
   /// The underlying HTTP client used to open and send requests.
-  io.HttpClient _ioHttpClient = new io.HttpClient();
+  io.HttpClient _ioHttpClient = io.HttpClient();
 
   /// Close the underlying HTTP client.
   @override
@@ -37,7 +37,7 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
   @override
   FormRequest newFormRequest() {
     verifyNotClosed();
-    final request = new VMFormRequest.fromClient(this, _ioHttpClient);
+    final request = VMFormRequest.fromClient(this, _ioHttpClient);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -47,7 +47,7 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
   @override
   JsonRequest newJsonRequest() {
     verifyNotClosed();
-    final request = new VMJsonRequest.fromClient(this, _ioHttpClient);
+    final request = VMJsonRequest.fromClient(this, _ioHttpClient);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -57,7 +57,7 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
   @override
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
-    final request = new VMMultipartRequest.fromClient(this, _ioHttpClient);
+    final request = VMMultipartRequest.fromClient(this, _ioHttpClient);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -67,7 +67,7 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
   @override
   Request newRequest() {
     verifyNotClosed();
-    final request = new VMPlainTextRequest.fromClient(this, _ioHttpClient);
+    final request = VMPlainTextRequest.fromClient(this, _ioHttpClient);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -77,7 +77,7 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
   @override
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
-    final request = new VMStreamedRequest.fromClient(this, _ioHttpClient);
+    final request = VMStreamedRequest.fromClient(this, _ioHttpClient);
     registerAndDecorateRequest(request);
     return request;
   }

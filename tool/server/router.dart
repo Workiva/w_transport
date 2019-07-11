@@ -15,8 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
-
 import 'handler.dart';
 import 'handlers/example/http/cross_origin_credentials_handlers.dart'
     show exampleHttpCrossOriginCredentialsRoutes;
@@ -35,7 +33,7 @@ class Router implements Function {
   Map<String, Handler> routes;
 
   Router(this.logger) {
-    routes = {'/ping': new PingHandler()}
+    routes = {'/ping': PingHandler()}
       ..addAll(exampleHttpCrossOriginCredentialsRoutes)
       ..addAll(exampleHttpCrossOriginFileTransferRoutes)
       ..addAll(getExampleWsRoutes(logger))
@@ -44,11 +42,11 @@ class Router implements Function {
       ..addAll(getTestWebSocketIntegrationRoutes(logger));
   }
 
-  Future<Null> call(HttpRequest request) async {
+  Future<void> call(HttpRequest request) async {
     if (routes.containsKey(request.uri.path)) {
       await routes[request.uri.path].processRequest(request);
     } else {
-      request.response.statusCode = io_constant.HttpStatus.notFound;
+      request.response.statusCode = HttpStatus.notFound;
       await request.response.close();
     }
   }

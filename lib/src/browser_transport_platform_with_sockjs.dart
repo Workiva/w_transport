@@ -22,7 +22,7 @@ import 'package:w_transport/src/web_socket/browser/web_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 
 const BrowserTransportPlatformWithSockJS browserTransportPlatformWithSockJS =
-    const BrowserTransportPlatformWithSockJS();
+    BrowserTransportPlatformWithSockJS();
 
 class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
     implements TransportPlatform {
@@ -32,8 +32,8 @@ class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
   final Duration _sockJSTimeout;
 
   const BrowserTransportPlatformWithSockJS(
-      {bool sockJSNoCredentials: false,
-      bool sockJSDebug: false,
+      {bool sockJSNoCredentials = false,
+      bool sockJSDebug = false,
       List<String> sockJSProtocolsWhitelist,
       Duration sockJSTimeout})
       : _sockJSDebug = sockJSDebug == true,
@@ -44,7 +44,7 @@ class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
   bool get sockJSDebug => _sockJSDebug;
   bool get sockJSNoCredentials => _sockJSNoCredentials;
   List<String> get sockJSProtocolsWhitelist => _sockJSProtocolsWhitelist != null
-      ? new List.from(_sockJSProtocolsWhitelist)
+      ? List.from(_sockJSProtocolsWhitelist)
       : null;
   Duration get sockJSTimeout => _sockJSTimeout;
 

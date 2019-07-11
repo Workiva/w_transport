@@ -13,19 +13,23 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:io' as io;
 
 import 'package:dart_dev/dart_dev.dart' show dev, config;
 import 'package:dart_dev/util.dart' show TaskProcess, reporter;
 
 import 'server/server.dart' show Server;
 
-Future<Null> main(List<String> args) async {
+Future<void> main(List<String> args) async {
   // https://github.com/Workiva/dart_dev
 
   final directories = <String>['example/', 'lib/', 'test/', 'tool/'];
 
   config.analyze.entryPoints = [
+    'example/http/cross_origin_credentials/',
+    'example/http/cross_origin_file_transfer/',
+    'example/http/simple_client/',
+    'example/web_socket/echo/',
+    'example/',
     'lib/',
     'test/',
     'test/unit/',
@@ -45,17 +49,6 @@ Future<Null> main(List<String> args) async {
   config.format.paths = directories;
 
   config.test
-    ..unitTests = [
-      'test/unit/http',
-      'test/unit/mocks',
-      'test/unit/ws',
-    ]
-    ..integrationTests = [
-      'test/integration/global_web_socket_monitor',
-      'test/integration/http',
-      'test/integration/platforms',
-      'test/integration/ws',
-    ]
     ..platforms = ['vm', 'chrome']
     ..pubServe = true
     ..before = [_streamServer, _streamSockJSServer]
@@ -76,27 +69,19 @@ List<String> _serverOutput;
 /// Output from the SockJS server.
 List<String> _sockJSServerOutput;
 
-Future<Null> _serveExamples() {
-  io.Process.runSync('pub', ['get'], workingDirectory: 'example');
-  io.Process.start('pub', ['serve', '--port=9000'],
-      workingDirectory: 'example');
-
-  return new Completer<Null>().future;
-}
-
 /// Start the server needed for integration tests and examples and stream the
 /// server output as it arrives. The output will be mixed in with output from
 /// whichever task is running.
-Future<Null> _streamServer() async {
-  _server = new Server();
+Future<void> _streamServer() async {
+  _server = Server();
   _server.output.listen((line) {
     reporter.log(reporter.colorBlue('    $line'));
   });
   await _server.start();
 }
 
-Future<Null> _streamSockJSServer() async {
-  _sockJSServer = new TaskProcess('node', ['tool/server/sockjs.js']);
+Future<void> _streamSockJSServer() async {
+  _sockJSServer = TaskProcess('node', ['tool/server/sockjs.js']);
   _sockJSServer.stdout.listen((line) {
     reporter.log(reporter.colorBlue('    $line'));
   });
@@ -107,7 +92,7 @@ Future<Null> _streamSockJSServer() async {
 }
 
 /// Stop the server needed for integration tests and examples.
-Future<Null> _stopServer() async {
+Future<void> _stopServer() async {
   if (_serverOutput != null) {
     reporter.logGroup('HTTP Server Logs',
         output: '    ${_serverOutput.join('\n')}');
@@ -115,7 +100,7 @@ Future<Null> _stopServer() async {
   await _server.stop();
 }
 
-Future<Null> _stopSockJSServer() async {
+Future<void> _stopSockJSServer() async {
   if (_sockJSServerOutput != null) {
     reporter.logGroup('SockJS Server Logs',
         output: '    ${_sockJSServerOutput.join('\n')}');

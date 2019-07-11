@@ -23,19 +23,19 @@ void runHttpTransportClientSuite(
     [transport.TransportPlatform transportPlatform]) {
   group('Client', () {
     _runHttpClientSuite(
-        // ignore: deprecated_member_use
-        () => new transport.Client(transportPlatform: transportPlatform));
+        // ignore: deprecated_member_use_from_same_package
+        () => transport.Client(transportPlatform: transportPlatform));
   });
 
   group('HttpClient', () {
     _runHttpClientSuite(
-        () => new transport.HttpClient(transportPlatform: transportPlatform));
+        () => transport.HttpClient(transportPlatform: transportPlatform));
   });
 }
 
-// ignore: deprecated_member_use
+// ignore: deprecated_member_use_from_same_package
 void _runHttpClientSuite(transport.Client getClient()) {
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   transport.Client client;
 
   setUp(() {
@@ -74,7 +74,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('should support multiple concurrent requests', () async {
-    final requests = <Future>[
+    final requests = <Future<void>>[
       client.newFormRequest().post(uri: IntegrationPaths.reflectEndpointUri),
       client.newJsonRequest().put(uri: IntegrationPaths.reflectEndpointUri),
       (client.newMultipartRequest()..fields['f'] = 'v')
@@ -111,11 +111,11 @@ void _runHttpClientSuite(transport.Client getClient()) {
     // abort the pending request.
     client.close();
 
-    expect(willThrow, throwsA(new isInstanceOf<transport.RequestException>()));
+    expect(willThrow, throwsA(isA<transport.RequestException>()));
   });
 }
 
-Future<Null> _testRequest(transport.BaseRequest request) async {
+Future<void> _testRequest(transport.BaseRequest request) async {
   request.uri = IntegrationPaths.reflectEndpointUri;
   request.headers = {'x-custom': 'value', 'x-tokens': 'token1, token2'};
   final response = await request.get();

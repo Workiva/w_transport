@@ -15,5 +15,5 @@
 import 'package:w_transport/mock.dart';
 
 void mock404Endpoint(Uri uri) {
-  MockTransports.http.when(uri, (request) async => new MockResponse.notFound());
+  MockTransports.http.when(uri, (request) async => MockResponse.notFound());
 }

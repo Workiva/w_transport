@@ -20,7 +20,7 @@ import 'ping_handler.dart';
 
 String pathPrefix = '/test/ws';
 Map<String, Handler> getTestWebSocketIntegrationRoutes(Logger logger) => {
-      '$pathPrefix/close': new CloseHandler(logger),
-      '$pathPrefix/echo': new EchoHandler(logger),
-      '$pathPrefix/ping': new PingHandler(logger)
+      '$pathPrefix/close': CloseHandler(logger),
+      '$pathPrefix/echo': EchoHandler(logger),
+      '$pathPrefix/ping': PingHandler(logger)
     };

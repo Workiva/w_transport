@@ -20,29 +20,29 @@ import 'package:w_transport/w_transport.dart' as transport;
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
   group(naming.toString(), () {
     group('RequestException', () {
       test('should include the method and URI if given', () {
-        final exception = new transport.RequestException(
-            'POST', Uri.parse('/path'), null, null);
+        final exception =
+            transport.RequestException('POST', Uri.parse('/path'), null, null);
         expect(exception.toString(), contains('POST'));
         expect(exception.toString(), contains('/path'));
       });
 
       test('should include the response status and text if given', () {
-        final response = new MockResponse.ok();
+        final response = MockResponse.ok();
         final exception =
-            new transport.RequestException('GET', null, null, response);
+            transport.RequestException('GET', null, null, response);
         expect(exception.toString(), contains('200 OK'));
       });
 
       test('should include the original error if given', () {
-        final exception = new transport.RequestException(
-            'GET', null, null, null, new Exception('original'));
+        final exception = transport.RequestException(
+            'GET', null, null, null, Exception('original'));
         expect(exception.toString(), contains('original'));
       });
     });

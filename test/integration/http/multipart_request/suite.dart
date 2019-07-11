@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -25,20 +25,20 @@ void runMultipartRequestSuite([transport.TransportPlatform transportPlatform]) {
   group('MultipartRequest', () {
     test('contentLength should be set automatically', () async {
       final chunks = <List<int>>[
-        convert.utf8.encode('chunk1'),
-        convert.utf8.encode('chunk2'),
-        convert.utf8.encode('chunk2'),
-        convert.utf8.encode('chunk3')
+        utf8.encode('chunk1'),
+        utf8.encode('chunk2'),
+        utf8.encode('chunk2'),
+        utf8.encode('chunk3')
       ];
       int size = 0;
       for (final chunk in chunks) {
         size += chunk.length;
       }
-      final fileStream = new Stream.fromIterable(chunks);
-      final file = new transport.MultipartFile(fileStream, size);
+      final fileStream = Stream.fromIterable(chunks);
+      final file = transport.MultipartFile(fileStream, size);
 
       final request =
-          new transport.MultipartRequest(transportPlatform: transportPlatform)
+          transport.MultipartRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..files['file'] = file
             ..fields['field'] = 'value';
@@ -54,18 +54,18 @@ void runMultipartRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('content-type should be set automatically', () async {
       final request =
-          new transport.MultipartRequest(transportPlatform: transportPlatform)
+          transport.MultipartRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..fields['field'] = 'value';
       final response = await request.post();
-      final contentType = new MediaType.parse(
-          response.body.asJson()['headers']['content-type']);
+      final contentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('multipart/form-data'));
     });
 
     test('text fields with non-ASCII chars', () async {
       final request =
-          new transport.MultipartRequest(transportPlatform: transportPlatform)
+          transport.MultipartRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.uploadEndpointUri
             ..fields['field'] = 'ç®å';
       await request.post();
@@ -73,43 +73,40 @@ void runMultipartRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('uploading multiple files with different charsets', () async {
       // UTF8-encoded file.
-      final utf8Chunks = <List<int>>[
-        convert.utf8.encode('chunk1'),
-        convert.utf8.encode('ç®å')
-      ];
-      final utf8Stream = new Stream.fromIterable(utf8Chunks);
+      final utf8Chunks = <List<int>>[utf8.encode('chunk1'), utf8.encode('ç®å')];
+      final utf8Stream = Stream.fromIterable(utf8Chunks);
       final utf8Size = utf8Chunks[0].length + utf8Chunks[1].length;
       final utf8ContentType =
-          new MediaType('text', 'plain', {'charset': convert.utf8.name});
-      final utf8File = new transport.MultipartFile(utf8Stream, utf8Size,
+          MediaType('text', 'plain', {'charset': utf8.name});
+      final utf8File = transport.MultipartFile(utf8Stream, utf8Size,
           contentType: utf8ContentType, filename: 'utf8-file');
 
       // LATIN1-encoded file.
       final latin1Chunks = <List<int>>[
-        convert.latin1.encode('chunk1'),
-        convert.latin1.encode('ç®å')
+        latin1.encode('chunk1'),
+        latin1.encode('ç®å')
       ];
-      final latin1Stream = new Stream.fromIterable(latin1Chunks);
+      final latin1Stream = Stream.fromIterable(latin1Chunks);
       final latin1Size = latin1Chunks[0].length + latin1Chunks[1].length;
       final latin1ContentType =
-          new MediaType('text', 'plain', {'charset': convert.latin1.name});
-      final latin1File = new transport.MultipartFile(latin1Stream, latin1Size,
+          MediaType('text', 'plain', {'charset': latin1.name});
+      final latin1File = transport.MultipartFile(latin1Stream, latin1Size,
           contentType: latin1ContentType, filename: 'latin1-file');
 
       // ASCII-encoded file.
       final asciiChunks = <List<int>>[
-        convert.ascii.encode('chunk1'),
-        convert.ascii.encode('chunk2')
+        ascii.encode('chunk1'),
+        ascii.encode('chunk2')
       ];
-      final asciiStream = new Stream.fromIterable(asciiChunks);
+      final asciiStream = Stream.fromIterable(asciiChunks);
       final asciiSize = asciiChunks[0].length + asciiChunks[1].length;
       final asciiContentType =
-          new MediaType('text', 'plain', {'charset': convert.ascii.name});
-      final asciiFile = new transport.MultipartFile(asciiStream, asciiSize,
+          MediaType('text', 'plain', {'charset': ascii.name});
+      final asciiFile = transport.MultipartFile(asciiStream, asciiSize,
           contentType: asciiContentType, filename: 'ascii-file');
 
       final request =
-          new transport.MultipartRequest(transportPlatform: transportPlatform)
+          transport.MultipartRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.uploadEndpointUri
             ..files['utf8File'] = utf8File
             ..files['latin1File'] = latin1File

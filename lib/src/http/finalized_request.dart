@@ -42,6 +42,6 @@ class FinalizedRequest {
       this.body,
       // ignore: avoid_positional_boolean_parameters
       this.withCredentials)
-      : this.headers = new Map<String, String>.unmodifiable(
-            new CaseInsensitiveMap<String>.from(headers));
+      : this.headers = Map<String, String>.unmodifiable(
+            CaseInsensitiveMap<String>.from(headers));
 }

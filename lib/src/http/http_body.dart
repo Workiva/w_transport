@@ -16,7 +16,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart' show MediaType;
 
 import 'package:w_transport/src/http/response_format_exception.dart';
@@ -70,8 +69,8 @@ class HttpBody extends BaseHttpBody {
       {Encoding encoding, Encoding fallbackEncoding}) {
     _encoding = encoding ??
         http_utils.parseEncodingFromContentType(contentType,
-            fallback: fallbackEncoding ?? convert.utf8);
-    _bytes = new Uint8List.fromList(bytes ?? []);
+            fallback: fallbackEncoding ?? utf8);
+    _bytes = Uint8List.fromList(bytes ?? []);
   }
 
   /// Construct the body to an HTTP request or an HTTP response from text.
@@ -92,7 +91,7 @@ class HttpBody extends BaseHttpBody {
       {Encoding encoding, Encoding fallbackEncoding}) {
     _encoding = encoding ??
         http_utils.parseEncodingFromContentType(contentType,
-            fallback: fallbackEncoding ?? convert.utf8);
+            fallback: fallbackEncoding ?? utf8);
     _body = body ?? '';
   }
 
@@ -111,9 +110,9 @@ class HttpBody extends BaseHttpBody {
       try {
         encoded = encoding.encode(_body);
       } on ArgumentError {
-        throw new ResponseFormatException(contentType, encoding, body: _body);
+        throw ResponseFormatException(contentType, encoding, body: _body);
       }
-      _bytes = new Uint8List.fromList(encoded);
+      _bytes = Uint8List.fromList(encoded);
     }
     return _bytes;
   }
@@ -124,7 +123,7 @@ class HttpBody extends BaseHttpBody {
       try {
         _body = encoding.decode(_bytes);
       } on FormatException {
-        throw new ResponseFormatException(contentType, encoding, bytes: _bytes);
+        throw ResponseFormatException(contentType, encoding, bytes: _bytes);
       }
     }
     return _body;
@@ -136,7 +135,7 @@ class HttpBody extends BaseHttpBody {
   /// This attempts to read this request/response body as a `String` and decode
   /// it to a JSON object. Throws a [FormatException] if this request/response
   /// body cannot be decoded to text or if the text is not valid JSON.
-  dynamic asJson() => convert.json.decode(asString());
+  dynamic asJson() => json.decode(asString());
 }
 
 /// Representation of an HTTP request body or an HTTP response body where the
@@ -162,7 +161,7 @@ class StreamedHttpBody extends BaseHttpBody {
   /// subscription stream.
   StreamedHttpBody.fromByteStream(this.contentType, this.byteStream,
       {this.contentLength, Encoding fallbackEncoding}) {
-    if (byteStream == null) throw new ArgumentError.notNull('byteStream');
+    if (byteStream == null) throw ArgumentError.notNull('byteStream');
     _encoding = http_utils.parseEncodingFromContentType(contentType,
         fallback: fallbackEncoding);
   }

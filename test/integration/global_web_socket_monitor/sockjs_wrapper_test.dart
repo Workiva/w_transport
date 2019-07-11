@@ -17,7 +17,7 @@ import 'package:test/test.dart';
 
 import 'sockjs_common.dart';
 
-const _protocolsToTest = const [
+const _protocolsToTest = [
   'websocket', // All modern browsers (websocket=yes)
   'xhr-streaming', // All modern browsers (websocket=no, streaming=yes)
   'xhr-polling', // All modern browsers (streaming=no)

@@ -23,13 +23,13 @@ import 'package:w_transport/src/http/base_request.dart' show BaseRequest;
 import 'package:w_transport/src/http/finalized_request.dart'
     show FinalizedRequest;
 import 'package:w_transport/src/http/mock/base_request.dart'
-    show MockBaseRequest; // ignore: deprecated_member_use
+    show MockBaseRequest; // ignore: deprecated_member_use_from_same_package
 import 'package:w_transport/src/http/mock/response.dart' show MockResponse;
 import 'package:w_transport/src/http/response.dart' show BaseResponse;
 import 'package:w_transport/src/web_socket/mock/w_socket.dart'
-    show MockWSocket; // ignore: deprecated_member_use
+    show MockWSocket; // ignore: deprecated_member_use_from_same_package
 import 'package:w_transport/src/web_socket/w_socket.dart'
-    show WSocket; // ignore: deprecated_member_use
+    show WSocket; // ignore: deprecated_member_use_from_same_package
 import 'package:w_transport/src/web_socket/web_socket.dart' show WebSocket;
 import 'package:w_transport/src/web_socket/web_socket_exception.dart'
     show WebSocketException;
@@ -39,8 +39,8 @@ part 'package:w_transport/src/mocks/mock_web_socket.dart';
 part 'package:w_transport/src/mocks/mock_web_socket_server.dart';
 
 class MockTransports {
-  static const MockHttp http = const MockHttp();
-  static const MockWebSockets webSocket = const MockWebSockets();
+  static const MockHttp http = MockHttp();
+  static const MockWebSockets webSocket = MockWebSockets();
 
   /// Install mocking logic & controls for all transports. This will effectively
   /// wrap all [BaseRequest], [HttpClient], and [WebSocket] instances in a
@@ -52,18 +52,18 @@ class MockTransports {
   /// a mock expectation or handler is not set up to handle it. This enables
   /// selective mocking - certain requests or WebSockets can be mocked while
   /// the rest will be handled by a real transport platform.
-  static void install({bool fallThrough: false}) {
+  static void install({bool fallThrough = false}) {
     MockTransportsInternal.isInstalled = true;
     MockTransportsInternal.fallThrough = fallThrough ?? false;
   }
 
-  static Future<Null> reset() {
+  static Future<void> reset() {
     http.reset();
     webSocket.reset();
-    return new Future.value();
+    return Future.value();
   }
 
-  static Future<Null> uninstall() async {
+  static Future<void> uninstall() async {
     await reset();
     MockTransportsInternal.isInstalled = false;
   }

@@ -24,7 +24,7 @@ import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformBrowser
     ..testType = testTypeIntegration
     ..topic = topicHttp;
@@ -33,9 +33,9 @@ void main() {
     runStreamedRequestSuite(browserTransportPlatform);
 
     test('underlying HttpRequest configuration', () async {
-      final request = new transport.StreamedRequest(
-          transportPlatform: browserTransportPlatform)
-        ..uri = IntegrationPaths.reflectEndpointUri;
+      final request =
+          transport.StreamedRequest(transportPlatform: browserTransportPlatform)
+            ..uri = IntegrationPaths.reflectEndpointUri;
       request.configure((request) async {
         HttpRequest xhr = request;
         xhr.setRequestHeader('x-configured', 'true');
@@ -46,7 +46,7 @@ void main() {
 
     group('withCredentials', () {
       test('set to true (StreamedRequest)', () async {
-        final request = new transport.StreamedRequest(
+        final request = transport.StreamedRequest(
             transportPlatform: browserTransportPlatform)
           ..uri = IntegrationPaths.pingEndpointUri
           ..withCredentials = true;
@@ -58,7 +58,7 @@ void main() {
       });
 
       test('set to false (StreamedRequest)', () async {
-        final request = new transport.StreamedRequest(
+        final request = transport.StreamedRequest(
             transportPlatform: browserTransportPlatform)
           ..uri = IntegrationPaths.pingEndpointUri
           ..withCredentials = false;

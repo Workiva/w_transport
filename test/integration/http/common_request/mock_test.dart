@@ -27,7 +27,7 @@ import '../mock_endpoints/timeout.dart';
 import 'suite.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformMock
     ..testType = testTypeIntegration
     ..topic = topicHttp;

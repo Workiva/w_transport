@@ -15,8 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
-
 import '../../../handler.dart';
 
 /// Will cause an error with a 0 response code due to CORS.
@@ -24,9 +22,9 @@ class ErrorHandler extends Handler {
   ErrorHandler() : super();
 
   @override
-  Future<Null> get(HttpRequest request) async {
+  Future<void> get(HttpRequest request) async {
     request.response.statusCode =
-        request.uri.queryParameters['status'] ?? io_constant.HttpStatus.ok;
+        request.uri.queryParameters['status'] ?? HttpStatus.ok;
     request.response.headers.contentType = request.headers.contentType;
   }
 }

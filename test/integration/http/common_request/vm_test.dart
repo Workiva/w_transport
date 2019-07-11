@@ -21,7 +21,7 @@ import '../../../naming.dart';
 import 'suite.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformVM
     ..testType = testTypeIntegration
     ..topic = topicHttp;
@@ -31,8 +31,8 @@ void main() {
 
     group('MultipartRequest', () {
       test('adding invalid type as file throws', () {
-        final request = new transport.MultipartRequest(
-            transportPlatform: vmTransportPlatform);
+        final request =
+            transport.MultipartRequest(transportPlatform: vmTransportPlatform);
         request.files['test'] = 'not a file';
         expect(() => request.contentLength, throwsUnsupportedError);
         expect(request.post(uri: Uri.parse('/test')), throwsUnsupportedError);

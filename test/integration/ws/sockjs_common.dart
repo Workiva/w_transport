@@ -27,15 +27,15 @@ import 'common.dart';
 const _sockjsPort = 8026;
 
 void runCommonSockJSSuite(List<String> protocolsToTest,
-    {bool usingSockjsPort: true}) {
-  final sockjsNaming = new Naming()
+    {bool usingSockjsPort = true}) {
+  final sockjsNaming = Naming()
     ..platform = usingSockjsPort
         ? platformBrowserSockjsPort
         : platformBrowserSockjsWrapper
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
-  final sockjsDeprecatedNaming = new Naming()
+  final sockjsDeprecatedNaming = Naming()
     ..platform = usingSockjsPort
         ? platformBrowserSockjsPortDeprecated
         : platformBrowserSockjsWrapperDeprecated
@@ -45,8 +45,8 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
   group(sockjsNaming.toString(), () {
     _sockJSSuite(
         protocolsToTest,
-        (Uri uri, String protocol) => transport.WebSocket.connect(uri,
-            transportPlatform: new BrowserTransportPlatformWithSockJS(
+        (uri, protocol) => transport.WebSocket.connect(uri,
+            transportPlatform: BrowserTransportPlatformWithSockJS(
                 sockJSNoCredentials: true,
                 sockJSProtocolsWhitelist: [protocol])));
   });
@@ -54,12 +54,12 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
   group(sockjsDeprecatedNaming.toString(), () {
     _sockJSSuite(
         protocolsToTest,
-        (Uri uri, String protocol) => transport.WebSocket.connect(uri,
-            // ignore: deprecated_member_use
+        (uri, protocol) => transport.WebSocket.connect(uri,
+            // ignore: deprecated_member_use_from_same_package
             useSockJS: true,
-            // ignore: deprecated_member_use
+            // ignore: deprecated_member_use_from_same_package
             sockJSNoCredentials: true,
-            // ignore: deprecated_member_use
+            // ignore: deprecated_member_use_from_same_package
             sockJSProtocolsWhitelist: [protocol],
             transportPlatform: browserTransportPlatform));
   });
@@ -70,13 +70,13 @@ void _sockJSSuite(List<String> protocolsToTest,
   for (final protocol in protocolsToTest) {
     group('(protocol=$protocol)', () {
       runCommonWebSocketIntegrationTests(
-          connect: (Uri uri) => connect(uri, protocol), port: _sockjsPort);
+          connect: (uri) => connect(uri, protocol), port: _sockjsPort);
 
       final echoUri = IntegrationPaths.echoUri.replace(port: _sockjsPort);
       final pingUri = IntegrationPaths.pingUri.replace(port: _sockjsPort);
 
       test('should not support Blob', () async {
-        final blob = new Blob(['one', 'two']);
+        final blob = Blob(['one', 'two']);
         final socket = await connect(pingUri, protocol);
         expect(() {
           socket.add(blob);
@@ -92,7 +92,7 @@ void _sockJSSuite(List<String> protocolsToTest,
       });
 
       test('should not support TypedData', () async {
-        final data = new Uint16List.fromList([1, 2, 3]);
+        final data = Uint16List.fromList([1, 2, 3]);
         final socket = await connect(echoUri, protocol);
         expect(() {
           socket.add(data);

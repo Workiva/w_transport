@@ -23,7 +23,7 @@ import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformMock
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
@@ -36,9 +36,9 @@ void main() {
     setUp(() {
       MockTransports.install();
 
-      mockCloseWebSocketServer = new MockWebSocketServer();
-      mockEchoWebSocketServer = new MockWebSocketServer();
-      mockPingWebSocketServer = new MockWebSocketServer();
+      mockCloseWebSocketServer = MockWebSocketServer();
+      mockEchoWebSocketServer = MockWebSocketServer();
+      mockPingWebSocketServer = MockWebSocketServer();
 
       mockCloseWebSocketServer.onClientConnected.listen((connection) {
         connection.onData((data) {
@@ -69,7 +69,7 @@ void main() {
             numPongs = int.parse(data);
           } catch (_) {}
           for (int i = 0; i < numPongs; i++) {
-            await new Future.delayed(new Duration(milliseconds: 5));
+            await Future<void>.delayed(Duration(milliseconds: 5));
             connection.send('pong');
           }
         });
@@ -79,15 +79,15 @@ void main() {
           .when(IntegrationPaths.fourOhFourUri, reject: true);
 
       MockTransports.webSocket.when(IntegrationPaths.closeUri,
-          handler: (Uri uri, {protocols, headers}) async =>
+          handler: (uri, {protocols, headers}) async =>
               mockCloseWebSocketServer);
 
       MockTransports.webSocket.when(IntegrationPaths.echoUri,
-          handler: (Uri uri, {protocols, headers}) async =>
+          handler: (uri, {protocols, headers}) async =>
               mockEchoWebSocketServer);
 
       MockTransports.webSocket.when(IntegrationPaths.pingUri,
-          handler: (Uri uri, {protocols, headers}) async =>
+          handler: (uri, {protocols, headers}) async =>
               mockPingWebSocketServer);
     });
 
@@ -112,11 +112,11 @@ void main() {
           .when(IntegrationPaths.fourOhFourUri, reject: true);
 
       MockTransports.webSocket.when(IntegrationPaths.closeUri,
-          handler: (Uri uri, {protocols, headers}) async {
-        // ignore: deprecated_member_use
-        final webSocket = new MockWSocket();
+          handler: (uri, {protocols, headers}) async {
+        // ignore: deprecated_member_use_from_same_package
+        final webSocket = MockWSocket();
 
-        // ignore: deprecated_member_use
+        // ignore: deprecated_member_use_from_same_package
         webSocket.onOutgoing((data) {
           if (data.startsWith('close')) {
             final parts = data.split(':');
@@ -136,20 +136,20 @@ void main() {
       });
 
       MockTransports.webSocket.when(IntegrationPaths.echoUri,
-          handler: (Uri uri, {protocols, headers}) async {
-        // ignore: deprecated_member_use
-        final webSocket = new MockWSocket();
-        // ignore: deprecated_member_use
+          handler: (uri, {protocols, headers}) async {
+        // ignore: deprecated_member_use_from_same_package
+        final webSocket = MockWSocket();
+        // ignore: deprecated_member_use_from_same_package
         webSocket.onOutgoing(webSocket.addIncoming);
         return webSocket;
       });
 
       MockTransports.webSocket.when(IntegrationPaths.pingUri,
-          handler: (Uri uri, {protocols, headers}) async {
-        // ignore: deprecated_member_use
-        final webSocket = new MockWSocket();
+          handler: (uri, {protocols, headers}) async {
+        // ignore: deprecated_member_use_from_same_package
+        final webSocket = MockWSocket();
 
-        // ignore: deprecated_member_use
+        // ignore: deprecated_member_use_from_same_package
         webSocket.onOutgoing((data) async {
           data = data.replaceAll('ping', '');
           int numPongs = 1;
@@ -157,8 +157,8 @@ void main() {
             numPongs = int.parse(data);
           } catch (_) {}
           for (int i = 0; i < numPongs; i++) {
-            await new Future.delayed(new Duration(milliseconds: 5));
-            // ignore: deprecated_member_use
+            await Future<void>.delayed(Duration(milliseconds: 5));
+            // ignore: deprecated_member_use_from_same_package
             webSocket.addIncoming('pong');
           }
         });

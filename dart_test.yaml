@@ -2,14 +2,18 @@ platforms:
   - chrome
   - vm
 
-# The SockJS integration test server sometimes gets overloaded and rejects
-# connections. To mitigate this, retries are enabled and concurrency set to 1.
-retry: 3
-concurrency: 1
-
 # TODO: Remove these tests along with the deprecated sockjs logic
 exclude_tags: "no-dart2"
 
 presets:
-  travis:
-    reporter: expanded
+  unit:
+    paths:
+      - test/unit/
+
+  integration:
+    paths:
+      - test/integration/
+    concurrency: 1
+    # The SockJS integration test server sometimes gets overloaded and rejects
+    # connections. To mitigate this, retries are enabled and concurrency set to 1.
+    retry: 3

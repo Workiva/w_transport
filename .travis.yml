@@ -20,6 +20,6 @@ before_script:
 
 script:
   - pub run dart_dev analyze
-  - pub run dart_dev format --check
-  - pub run dependency_validator -i build_runner,build_test,build_web_compilers,dart_style,pedantic
-  - pub run dart_dev test -P travis
+  - pub run dart_dev format --assert
+  - pub run dependency_validator -i pedantic
+  - pub run dart_dev test

@@ -12,102 +12,83 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
+/// -----------
+/// DART_DEV V3
+/// -----------
 
-import 'package:dart_dev/dart_dev.dart' show dev, config;
-import 'package:dart_dev/util.dart' show TaskProcess, reporter;
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dart_dev/configs/workiva.dart';
+import 'package:dart_dev/dart_dev.dart';
+import 'package:dart_dev/utils.dart';
+import 'package:logging/logging.dart';
 
 import 'server/server.dart' show Server;
 
-Future<void> main(List<String> args) async {
-  // https://github.com/Workiva/dart_dev
+final config = {
+  ...workivaConfig,
 
-  final directories = <String>['example/', 'lib/', 'test/', 'tool/'];
+  // The `test` target runs unit tests first and then integration tests and also
+  // handles starting/stopping the HTTP/WS servers required by the integration
+  // tests.
+  'test': withHooks(
+    TestTool()..testArgs = ['-P', 'unit', '-P', 'integration'],
+    before: [startTestServersTool],
+    after: [stopTestServersTool],
+  ),
 
-  config.analyze.entryPoints = [
-    'example/http/cross_origin_credentials/',
-    'example/http/cross_origin_file_transfer/',
-    'example/http/simple_client/',
-    'example/web_socket/echo/',
-    'example/',
-    'lib/',
-    'test/',
-    'test/unit/',
-    'test/integration/',
-    'tool/',
-    'tool/server/'
-  ];
+  // The `serve` target serves the w_transport examples on :8080 and also
+  // handles starting/stopping the HTTP/WS servers required by these examples.
+  'serve': withHooks(
+    WebdevServeTool()..webdevArgs = ['example'],
+    before: [startTestServersTool],
+    after: [stopTestServersTool],
+  ),
+};
 
-  config.copyLicense.directories = directories;
+final startTestServersTool = DartFunctionTool(startTestServers);
+final stopTestServersTool = DartFunctionTool(stopTestServers);
 
-  config.coverage
-    ..pubServe = true
-    ..reportOn = ['lib/']
-    ..before = [_streamServer, _streamSockJSServer]
-    ..after = [_stopServer, _stopSockJSServer];
+Server _dartTestServer;
+final _dartTestServerLog = Logger('TestServer');
+Process _sockjsTestServer;
+final _sockjsTestServerLog = Logger('SockjsServer');
 
-  config.format.paths = directories;
-
-  config.test
-    ..platforms = ['vm', 'chrome']
-    ..pubServe = true
-    ..before = [_streamServer, _streamSockJSServer]
-    ..after = [_stopServer, _stopSockJSServer];
-
-  await dev(args);
-}
-
-/// Server needed for integration tests and examples.
-Server _server;
-
-/// SockJS Server needed for integration tests.
-TaskProcess _sockJSServer;
-
-/// Output from the server (only used if caching the output to dump at the end).
-List<String> _serverOutput;
-
-/// Output from the SockJS server.
-List<String> _sockJSServerOutput;
-
-/// Start the server needed for integration tests and examples and stream the
-/// server output as it arrives. The output will be mixed in with output from
-/// whichever task is running.
-Future<void> _streamServer() async {
-  _server = Server();
-  _server.output.listen((line) {
-    reporter.log(reporter.colorBlue('    $line'));
+Future<int> startTestServers(_) async {
+  await logTimedAsync(_dartTestServerLog, 'Starting HTTP/WS test server',
+      () async {
+    _dartTestServer = Server();
+    _dartTestServer.output.listen(_dartTestServerLog.fine);
+    await _dartTestServer.start();
   });
-  await _server.start();
-}
 
-Future<void> _streamSockJSServer() async {
-  _sockJSServer = TaskProcess('node', ['tool/server/sockjs.js']);
-  _sockJSServer.stdout.listen((line) {
-    reporter.log(reporter.colorBlue('    $line'));
+  await logTimedAsync(_sockjsTestServerLog, 'Starting SockJS test server',
+      () async {
+    _sockjsTestServer = await Process.start('node', ['tool/server/sockjs.js'],
+        mode: ProcessStartMode.detachedWithStdio);
+    _sockjsTestServer.stdout
+        .transform(utf8.decoder)
+        .transform(LineSplitter())
+        .listen(_sockjsTestServerLog.fine);
+    _sockjsTestServer.stderr
+        .transform(utf8.decoder)
+        .transform(LineSplitter())
+        .listen(_sockjsTestServerLog.fine);
   });
-  _sockJSServer.stderr.listen((line) {
-    reporter.log(reporter.colorBlue('    $line'));
-  });
-  // todo: wait for server to start
+
+  // Wait a short amount of time to prevent the servers from missing anything.
+  await Future<void>.delayed(Duration(milliseconds: 500));
+
+  return 0;
 }
 
-/// Stop the server needed for integration tests and examples.
-Future<void> _stopServer() async {
-  if (_serverOutput != null) {
-    reporter.logGroup('HTTP Server Logs',
-        output: '    ${_serverOutput.join('\n')}');
-  }
-  await _server.stop();
-}
+Future<int> stopTestServers(_) async {
+  _sockjsTestServer?.kill();
+  _sockjsTestServer = null;
+  await _dartTestServer?.stop();
+  _dartTestServer = null;
 
-Future<void> _stopSockJSServer() async {
-  if (_sockJSServerOutput != null) {
-    reporter.logGroup('SockJS Server Logs',
-        output: '    ${_sockJSServerOutput.join('\n')}');
-  }
-  if (_sockJSServer != null) {
-    try {
-      _sockJSServer.kill();
-    } catch (_) {}
-  }
+  return 0;
 }

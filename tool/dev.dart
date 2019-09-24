@@ -34,7 +34,7 @@ final config = {
   // handles starting/stopping the HTTP/WS servers required by the integration
   // tests.
   'test': withHooks(
-    TestTool()..testArgs = ['-P', 'unit', '-P', 'integration'],
+    TestTool(),
     before: [startTestServersTool],
     after: [stopTestServersTool],
   ),

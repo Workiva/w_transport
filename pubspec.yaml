@@ -23,7 +23,7 @@ dependency_overrides:
   dart_dev:
     git:
       url: https://github.com/Workiva/dart_dev.git
-      ref: v3_rework
+      ref: 3.0.0-wip__tools
 
 dependencies:
   fluri: ^1.2.5
@@ -37,9 +37,10 @@ dependencies:
   sockjs_client_wrapper: ^1.0.8
 
 dev_dependencies:
-  build_runner: ^1.6.1
+  build_runner: ^1.7.1
   build_test: ^0.10.8
-  build_web_compilers: ^2.1.2
+  build_vm_compilers: ^1.0.3
+  build_web_compilers: ^2.4.1
   collection: ^1.14.11
   dart_dev: ^2.1.0
   dart_style: ^1.2.8
@@ -50,4 +51,4 @@ dev_dependencies:
   over_react: ^2.4.4
   pedantic: ^1.8.0
   test: ^1.6.4
-  uuid: ^1.0.3
+  uuid: ^2.0.0

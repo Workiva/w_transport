@@ -20,7 +20,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart_dev/configs/workiva.dart';
 import 'package:dart_dev/dart_dev.dart';
 import 'package:dart_dev/utils.dart';
 import 'package:logging/logging.dart';
@@ -28,12 +27,12 @@ import 'package:logging/logging.dart';
 import 'server/server.dart' show Server;
 
 final config = {
-  ...workivaConfig,
+  ...coreConfig,
 
   // The `test` target runs unit tests first and then integration tests and also
   // handles starting/stopping the HTTP/WS servers required by the integration
   // tests.
-  'test': withHooks(
+  'test': compose(
     TestTool(),
     before: [startTestServersTool],
     after: [stopTestServersTool],
@@ -41,7 +40,7 @@ final config = {
 
   // The `serve` target serves the w_transport examples on :8080 and also
   // handles starting/stopping the HTTP/WS servers required by these examples.
-  'serve': withHooks(
+  'serve': compose(
     WebdevServeTool()..webdevArgs = ['example'],
     before: [startTestServersTool],
     after: [stopTestServersTool],

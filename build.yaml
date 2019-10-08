@@ -1,11 +1,12 @@
 targets:
   $default:
     builders:
+      build_vm_compilers|entrypoint:
+        generate_for:
+          include:
+            - "test/**.vm_test.dart"
       build_web_compilers|entrypoint:
         generate_for:
           include:
             - "example/**.dart"
-            - "test/integration/**.browser_test.dart"
-            - "test/unit/**.browser_test.dart"
-          exclude:
-            - "test/integration/**/vm_test.dart*"
+            - "test/**.browser_test.dart"

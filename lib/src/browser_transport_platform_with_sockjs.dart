@@ -22,7 +22,7 @@ import 'package:w_transport/src/web_socket/browser/web_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 
 const BrowserTransportPlatformWithSockJS browserTransportPlatformWithSockJS =
-    const BrowserTransportPlatformWithSockJS();
+    BrowserTransportPlatformWithSockJS();
 
 class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
     implements TransportPlatform {

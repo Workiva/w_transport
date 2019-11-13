@@ -234,7 +234,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
 
   test('autoRetry should be inherited by all requests', () async {
     client.autoRetry
-      ..backOff = const transport.RetryBackOff.fixed(const Duration(seconds: 2))
+      ..backOff = const transport.RetryBackOff.fixed(Duration(seconds: 2))
       ..enabled = true
       ..forHttpMethods = ['GET']
       ..forStatusCodes = [404]

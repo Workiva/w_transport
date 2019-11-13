@@ -158,8 +158,7 @@ void main() {
   });
 }
 
-const StubTransportPlatform stubTransportPlatform =
-    const StubTransportPlatform();
+const StubTransportPlatform stubTransportPlatform = StubTransportPlatform();
 
 class StubTransportPlatform implements transport.TransportPlatform {
   const StubTransportPlatform();

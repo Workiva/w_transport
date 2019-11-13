@@ -23,7 +23,7 @@ import 'package:w_transport/src/transport_platform.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 import 'package:w_transport/src/web_socket/vm/web_socket.dart';
 
-const VMTransportPlatform vmTransportPlatform = const VMTransportPlatform();
+const VMTransportPlatform vmTransportPlatform = VMTransportPlatform();
 
 class VMTransportPlatform implements TransportPlatform {
   const VMTransportPlatform();

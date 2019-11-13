@@ -162,7 +162,7 @@ class RequestAutoRetry extends AutoRetryConfig {
 /// attempts so far.
 class RetryBackOff {
   /// The default maximum duration between retries. (5 minutes)
-  static const Duration defaultMaxInterval = const Duration(minutes: 5);
+  static const Duration defaultMaxInterval = Duration(minutes: 5);
 
   /// The base duration from which the delay between retries will be calculated.
   /// For fixed back-off, the delay will always be this value. For exponential

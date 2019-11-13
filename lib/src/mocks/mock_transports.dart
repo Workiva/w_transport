@@ -39,8 +39,8 @@ part 'package:w_transport/src/mocks/mock_web_socket.dart';
 part 'package:w_transport/src/mocks/mock_web_socket_server.dart';
 
 class MockTransports {
-  static const MockHttp http = const MockHttp();
-  static const MockWebSockets webSocket = const MockWebSockets();
+  static const MockHttp http = MockHttp();
+  static const MockWebSockets webSocket = MockWebSockets();
 
   /// Install mocking logic & controls for all transports. This will effectively
   /// wrap all [BaseRequest], [HttpClient], and [WebSocket] instances in a

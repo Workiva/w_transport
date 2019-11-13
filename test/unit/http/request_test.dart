@@ -672,7 +672,7 @@ void _runAutoRetryTestSuiteFor(
           response;
 
       final headers = <String, String>{'x-custom': 'header'};
-      const tt = const Duration(seconds: 10);
+      const tt = Duration(seconds: 10);
       final encoding = latin1;
 
       final orig = requestFactory()

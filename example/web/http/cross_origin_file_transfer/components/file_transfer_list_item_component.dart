@@ -22,8 +22,8 @@ import '../services/file_transfer.dart';
 // ignore: uri_has_not_been_generated
 part 'file_transfer_list_item_component.over_react.g.dart';
 
-const Duration _transferCompleteLingerDuration = const Duration(seconds: 4);
-const Duration _transferCompleteFadeoutDuration = const Duration(seconds: 2);
+const Duration _transferCompleteLingerDuration = Duration(seconds: 4);
+const Duration _transferCompleteFadeoutDuration = Duration(seconds: 2);
 
 /// A single file upload or download.
 ///

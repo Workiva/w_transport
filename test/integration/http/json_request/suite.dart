@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:dart2_constant/convert.dart' as convert;
+import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -71,10 +71,10 @@ void runJsonRequestSuite([transport.TransportPlatform transportPlatform]) {
       final request =
           new transport.JsonRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.utf8
+            ..encoding = utf8
             ..body = {'field1': 'value1', 'field2': 'ç®å'};
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.utf8.name));
+      expect(response.encoding.name, equals(utf8.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'ç®å'));
     });
@@ -83,10 +83,10 @@ void runJsonRequestSuite([transport.TransportPlatform transportPlatform]) {
       final request =
           new transport.JsonRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.latin1
+            ..encoding = latin1
             ..body = {'field1': 'value1', 'field2': 'ç®å'};
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.latin1.name));
+      expect(response.encoding.name, equals(latin1.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'ç®å'));
     });
@@ -95,10 +95,10 @@ void runJsonRequestSuite([transport.TransportPlatform transportPlatform]) {
       final request =
           new transport.JsonRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.ascii
+            ..encoding = ascii
             ..body = {'field1': 'value1', 'field2': 'value2'};
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.ascii.name));
+      expect(response.encoding.name, equals(ascii.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'value2'));
     });

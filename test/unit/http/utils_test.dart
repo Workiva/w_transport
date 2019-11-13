@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
@@ -251,7 +251,7 @@ void main() {
           'sentence=words+with+spaces',
           'chars=%E7%25%2F%5C%7B%5D.%2B%22%27'
         ].join('&');
-        expect(http_utils.mapToQuery(map, encoding: convert.latin1),
+        expect(http_utils.mapToQuery(map, encoding: latin1),
             equals(expected));
       });
 
@@ -284,7 +284,7 @@ void main() {
           'sentence': 'words with spaces',
           'chars': 'ç%/\\{].+"\''
         };
-        expect(http_utils.queryToMap(query, encoding: convert.latin1),
+        expect(http_utils.queryToMap(query, encoding: latin1),
             equals(expected));
       });
 
@@ -322,45 +322,45 @@ void main() {
 
       test('parseEncodingFromContentType()', () {
         MediaType ct;
-        ct = new MediaType('text', 'plain', {'charset': convert.utf8.name});
+        ct = new MediaType('text', 'plain', {'charset': utf8.name});
         expect(
-            http_utils.parseEncodingFromContentType(ct), equals(convert.utf8));
-        ct = new MediaType('text', 'plain', {'charset': convert.latin1.name});
+            http_utils.parseEncodingFromContentType(ct), equals(utf8));
+        ct = new MediaType('text', 'plain', {'charset': latin1.name});
         expect(http_utils.parseEncodingFromContentType(ct),
-            equals(convert.latin1));
+            equals(latin1));
       });
 
       test('parseEncodingFromContentType() no charset', () {
         final ct = new MediaType('text', 'plain');
         expect(
             http_utils.parseEncodingFromContentType(ct,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+                fallback: ascii),
+            equals(ascii));
       });
 
       test('parseEncodingFromContentType() null content-type', () {
         expect(
             http_utils.parseEncodingFromContentType(null,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+                fallback: ascii),
+            equals(ascii));
       });
 
       test('parseEncodingFromContentType() unrecognized charset', () {
         final ct = new MediaType('text', 'plain', {'charset': 'unknown'});
         expect(
             http_utils.parseEncodingFromContentType(ct,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+                fallback: ascii),
+            equals(ascii));
       });
 
       test('parseEncodingFromContentTypeOrFail()', () {
         MediaType ct;
-        ct = new MediaType('text', 'plain', {'charset': convert.utf8.name});
+        ct = new MediaType('text', 'plain', {'charset': utf8.name});
         expect(http_utils.parseEncodingFromContentTypeOrFail(ct),
-            equals(convert.utf8));
-        ct = new MediaType('text', 'plain', {'charset': convert.latin1.name});
+            equals(utf8));
+        ct = new MediaType('text', 'plain', {'charset': latin1.name});
         expect(http_utils.parseEncodingFromContentTypeOrFail(ct),
-            equals(convert.latin1));
+            equals(latin1));
       });
 
       test('parseEncodingFromContentTypeOrFail() no charset', () {
@@ -387,10 +387,10 @@ void main() {
         Map<String, String> headers;
         headers = {'content-type': 'text/plain; charset=utf-8'};
         expect(
-            http_utils.parseEncodingFromHeaders(headers), equals(convert.utf8));
+            http_utils.parseEncodingFromHeaders(headers), equals(utf8));
         headers = {'content-type': 'text/plain; charset=iso-8859-1'};
         expect(http_utils.parseEncodingFromHeaders(headers),
-            equals(convert.latin1));
+            equals(latin1));
       });
 
       test('parseEncodingFromHeaders() case mismatch', () {
@@ -398,23 +398,23 @@ void main() {
           'cOnteNt-tYPe': 'text/plain; charset=utf-8'
         };
         expect(
-            http_utils.parseEncodingFromHeaders(headers), equals(convert.utf8));
+            http_utils.parseEncodingFromHeaders(headers), equals(utf8));
       });
 
       test('parseEncodingFromHeaders() no charset', () {
         final headers = <String, String>{'content-type': 'text/plain'};
         expect(
             http_utils.parseEncodingFromHeaders(headers,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+                fallback: ascii),
+            equals(ascii));
       });
 
       test('parseEncodingFromHeaders() no content-type', () {
         final headers = <String, String>{};
         expect(
             http_utils.parseEncodingFromHeaders(headers,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+                fallback: ascii),
+            equals(ascii));
       });
 
       test('parseEncodingFromHeaders() unrecognized charset', () {
@@ -423,8 +423,8 @@ void main() {
         };
         expect(
             http_utils.parseEncodingFromHeaders(headers,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+                fallback: ascii),
+            equals(ascii));
       });
 
       test('reduceByteStream()', () async {

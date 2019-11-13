@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart2_constant/convert.dart' as convert_constant;
 import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:uuid/uuid.dart';
 
@@ -65,7 +65,7 @@ class SessionHandler extends Handler {
   Future<Null> get(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
-    request.response.write(convert_constant.json
+    request.response.write(json
         .encode({'authenticated': isValidSession(request)}));
   }
 
@@ -78,7 +78,7 @@ class SessionHandler extends Handler {
       request.response.headers.set(h, v);
     });
     request.response
-        .write(convert_constant.json.encode({'authenticated': true}));
+        .write(json.encode({'authenticated': true}));
   }
 
   @override
@@ -91,7 +91,7 @@ class SessionHandler extends Handler {
       request.response.headers.set(h, v);
     });
     request.response
-        .write(convert_constant.json.encode({'authenticated': false}));
+        .write(json.encode({'authenticated': false}));
   }
 }
 

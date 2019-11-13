@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart2_constant/convert.dart' as convert_constant;
 import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:http_server/http_server.dart';
 import 'package:mime/mime.dart';
@@ -172,7 +172,7 @@ class FilesHandler extends Handler {
     request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
     request.response
-        .write(convert_constant.json.encode({'results': filesPayload}));
+        .write(json.encode({'results': filesPayload}));
   }
 
   @override

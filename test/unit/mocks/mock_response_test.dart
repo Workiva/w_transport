@@ -14,8 +14,8 @@
 
 @TestOn('vm || browser')
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 
@@ -92,9 +92,9 @@ void main() {
       });
 
       test('encoding should set charset', () {
-        final response = new MockResponse(200, encoding: convert.ascii);
+        final response = new MockResponse(200, encoding: ascii);
         expect(response.contentType.parameters['charset'],
-            equals(convert.ascii.name));
+            equals(ascii.name));
       });
 
       test('should support string body', () {
@@ -104,7 +104,7 @@ void main() {
 
       test('should support bytes body', () {
         final response =
-            new MockResponse(200, body: convert.utf8.encode('body'));
+            new MockResponse(200, body: utf8.encode('body'));
         expect(response.body.asString(), equals('body'));
       });
 
@@ -136,7 +136,7 @@ void main() {
 
     group('MockStreamedResponse', () {
       Stream<List<int>> toByteStream(String body) =>
-          new Stream.fromIterable([convert.utf8.encode(body)]);
+          new Stream.fromIterable([utf8.encode(body)]);
 
       test('custom constructor', () async {
         final response = new MockStreamedResponse(100,
@@ -147,7 +147,7 @@ void main() {
         expect(response.statusText, equals('custom'));
         expect(response.headers['x-custom'], equals('value'));
         expect(
-            convert.utf8.decode(await response.body.toBytes()), equals('data'));
+            utf8.decode(await response.body.toBytes()), equals('data'));
       });
 
       test('.ok() 200', () {
@@ -205,16 +205,16 @@ void main() {
       });
 
       test('encoding should set charset', () {
-        final response = new MockStreamedResponse(200, encoding: convert.ascii);
+        final response = new MockStreamedResponse(200, encoding: ascii);
         expect(response.contentType.parameters['charset'],
-            equals(convert.ascii.name));
+            equals(ascii.name));
       });
 
       test('should support byteStream body', () async {
         final response =
             new MockStreamedResponse(200, byteStream: toByteStream('body'));
         expect(
-            convert.utf8.decode(await response.body.toBytes()), equals('body'));
+            utf8.decode(await response.body.toBytes()), equals('body'));
       });
 
       test('content-length', () {
@@ -232,8 +232,8 @@ void main() {
       });
 
       test('encoding', () {
-        final response = new MockStreamedResponse(200, encoding: convert.utf8);
-        expect(response.encoding, equals(convert.utf8));
+        final response = new MockStreamedResponse(200, encoding: utf8);
+        expect(response.encoding, equals(utf8));
       });
 
       test('replace', () {

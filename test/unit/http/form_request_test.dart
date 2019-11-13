@@ -14,8 +14,8 @@
 
 @TestOn('browser || vm')
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
@@ -111,15 +111,15 @@ void main() {
       test('setting encoding should update content-type', () {
         final request = new transport.FormRequest();
         expect(request.contentType.parameters['charset'],
-            equals(convert.utf8.name));
+            equals(utf8.name));
 
-        request.encoding = convert.latin1;
+        request.encoding = latin1;
         expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+            equals(latin1.name));
 
-        request.encoding = convert.ascii;
+        request.encoding = ascii;
         expect(request.contentType.parameters['charset'],
-            equals(convert.ascii.name));
+            equals(ascii.name));
       });
 
       test(
@@ -127,19 +127,19 @@ void main() {
           () {
         final request = new transport.FormRequest();
         expect(request.contentType.parameters['charset'],
-            equals(convert.utf8.name));
+            equals(utf8.name));
 
         // Manually override content-type.
         request.contentType = new MediaType(
-            'application', 'x-custom', {'charset': convert.latin1.name});
+            'application', 'x-custom', {'charset': latin1.name});
         expect(request.contentType.mimeType, equals('application/x-custom'));
         expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+            equals(latin1.name));
 
         // Changes to encoding should no longer update the content-type.
-        request.encoding = convert.ascii;
+        request.encoding = ascii;
         expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+            equals(latin1.name));
       });
 
       test('setting content-type should not be allowed once sent', () async {
@@ -158,7 +158,7 @@ void main() {
         final request = new transport.FormRequest();
         await request.get(uri: uri);
         expect(() {
-          request.encoding = convert.latin1;
+          request.encoding = latin1;
         }, throwsStateError);
       });
 

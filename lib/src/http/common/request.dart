@@ -15,7 +15,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:fluri/fluri.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -131,7 +130,7 @@ abstract class CommonRequest extends Object
   Completer<Null> _done = new Completer<Null>();
 
   /// Request body encoding.
-  Encoding _encoding = convert.utf8;
+  Encoding _encoding = utf8;
 
   /// Request headers. Stored in a case-insensitive map since HTTP headers are
   /// case-insensitive.

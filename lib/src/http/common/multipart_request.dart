@@ -16,7 +16,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart' show MediaType;
 
 import 'package:w_transport/src/http/client.dart';
@@ -88,8 +87,8 @@ abstract class CommonMultipartRequest extends CommonRequest
 
     fields.forEach((name, value) {
       length += _boundaryDelimiterLength;
-      length += convert.utf8.encode(_multipartFieldHeaders(name, value)).length;
-      length += convert.utf8.encode(value).length;
+      length += utf8.encode(_multipartFieldHeaders(name, value)).length;
+      length += utf8.encode(value).length;
       length += _crlf.length;
     });
 
@@ -97,7 +96,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       if (file is! MultipartFile)
         throw new UnsupportedError('Illegal multipart file type: $file');
       length += _boundaryDelimiterLength;
-      length += convert.utf8.encode(_multipartFileHeaders(name, file)).length;
+      length += utf8.encode(_multipartFileHeaders(name, file)).length;
       length += file.length;
       length += _crlf.length;
     });
@@ -179,7 +178,7 @@ abstract class CommonMultipartRequest extends CommonRequest
 
     final controller = new StreamController<List<int>>();
     void write(String content) {
-      controller.add(convert.utf8.encode(content));
+      controller.add(utf8.encode(content));
     }
 
     Future<Null> writeByteStream(Stream<List<int>> byteStream) {

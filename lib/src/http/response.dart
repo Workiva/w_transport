@@ -15,7 +15,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart'
     show CaseInsensitiveMap, MediaType;
 
@@ -39,7 +38,7 @@ abstract class BaseResponse {
     _headers = new Map<String, String>.unmodifiable(
         new CaseInsensitiveMap<String>.from(headers));
     _encoding =
-        http_utils.parseEncodingFromHeaders(_headers, fallback: convert.latin1);
+        http_utils.parseEncodingFromHeaders(_headers, fallback: latin1);
     _contentType = http_utils.parseContentTypeFromHeaders(_headers);
   }
 
@@ -56,7 +55,7 @@ abstract class BaseResponse {
 
   /// Encoding that will be used to decode the response body. This encoding is
   /// selected based on [contentType]'s `charset` parameter. If `charset` is not
-  /// given or the encoding name is unrecognized, [convert.latin1] is used by
+  /// given or the encoding name is unrecognized, [latin1] is used by
   /// default ([RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html)).
   Encoding get encoding => _encoding;
 

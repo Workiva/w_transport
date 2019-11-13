@@ -14,8 +14,8 @@
 
 @TestOn('browser || vm')
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
@@ -44,7 +44,7 @@ void main() {
 
         request.body = 'body';
         expect(request.body, equals('body'));
-        expect(request.bodyBytes, equals(convert.utf8.encode('body')));
+        expect(request.bodyBytes, equals(utf8.encode('body')));
 
         request.body = null;
         expect(request.body, equals(''));
@@ -54,8 +54,8 @@ void main() {
       test('setting body (bytes)', () {
         final request = new transport.Request();
 
-        request.bodyBytes = convert.utf8.encode('body');
-        expect(request.bodyBytes, equals(convert.utf8.encode('body')));
+        request.bodyBytes = utf8.encode('body');
+        expect(request.bodyBytes, equals(utf8.encode('body')));
         expect(request.body, equals('body'));
 
         request.bodyBytes = null;
@@ -90,7 +90,7 @@ void main() {
         });
 
         final request = new transport.Request();
-        await request.post(uri: uri, body: convert.utf8.encode('body'));
+        await request.post(uri: uri, body: utf8.encode('body'));
         expect(await c.future, equals('body'));
       });
 
@@ -112,7 +112,7 @@ void main() {
           request.body = 'too late';
         }, throwsStateError);
         expect(() {
-          request.bodyBytes = convert.utf8.encode('too late');
+          request.bodyBytes = utf8.encode('too late');
         }, throwsStateError);
       });
 
@@ -133,15 +133,15 @@ void main() {
       test('setting encoding should update content-type', () {
         final request = new transport.Request();
         expect(request.contentType.parameters['charset'],
-            equals(convert.utf8.name));
+            equals(utf8.name));
 
-        request.encoding = convert.latin1;
+        request.encoding = latin1;
         expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+            equals(latin1.name));
 
-        request.encoding = convert.ascii;
+        request.encoding = ascii;
         expect(request.contentType.parameters['charset'],
-            equals(convert.ascii.name));
+            equals(ascii.name));
       });
 
       test(
@@ -149,19 +149,19 @@ void main() {
           () {
         final request = new transport.Request();
         expect(request.contentType.parameters['charset'],
-            equals(convert.utf8.name));
+            equals(utf8.name));
 
         // Manually override content-type.
         request.contentType = new MediaType(
-            'application', 'x-custom', {'charset': convert.latin1.name});
+            'application', 'x-custom', {'charset': latin1.name});
         expect(request.contentType.mimeType, equals('application/x-custom'));
         expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+            equals(latin1.name));
 
         // Changes to encoding should no longer update the content-type.
-        request.encoding = convert.ascii;
+        request.encoding = ascii;
         expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+            equals(latin1.name));
       });
 
       test('setting content-type should not be allowed once sent', () async {
@@ -180,7 +180,7 @@ void main() {
         final request = new transport.Request();
         await request.get(uri: uri);
         expect(() {
-          request.encoding = convert.latin1;
+          request.encoding = latin1;
         }, throwsStateError);
       });
 
@@ -199,7 +199,7 @@ void main() {
         final clone = orig.clone();
         expect(clone.body, equals(body));
 
-        final bodyBytes = convert.utf8.encode('bytes');
+        final bodyBytes = utf8.encode('bytes');
         final orig2 = new transport.Request()..bodyBytes = bodyBytes;
         final clone2 = orig2.clone();
         expect(clone2.bodyBytes, equals(bodyBytes));

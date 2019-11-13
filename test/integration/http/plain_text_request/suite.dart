@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:dart2_constant/convert.dart' as convert;
+import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -71,10 +71,10 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
       final request =
           new transport.Request(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.utf8
+            ..encoding = utf8
             ..body = 'dataç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.utf8.name));
+      expect(response.encoding.name, equals(utf8.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
@@ -82,10 +82,10 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
       final request =
           new transport.Request(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.latin1
+            ..encoding = latin1
             ..body = 'dataç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.latin1.name));
+      expect(response.encoding.name, equals(latin1.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
@@ -93,10 +93,10 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
       final request =
           new transport.Request(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.ascii
+            ..encoding = ascii
             ..body = 'data';
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.ascii.name));
+      expect(response.encoding.name, equals(ascii.name));
       expect(response.body.asString(), equals('data'));
     });
   });

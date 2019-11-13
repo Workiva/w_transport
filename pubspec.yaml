@@ -20,7 +20,6 @@ environment:
   sdk: '>=1.24.3 <3.0.0'
 
 dependencies:
-  dart2_constant: ^1.0.1
   fluri: ^1.2.2
   http_parser: '>=2.2.0 <4.0.0'
   meta: ^1.1.0

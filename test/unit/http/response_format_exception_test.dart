@@ -28,37 +28,35 @@ void main() {
     group('ResponseFormatException', () {
       test('should detail why bytes could not be decoded', () {
         final bytes = utf8.encode('bodyçå®');
-        final contentType = new MediaType(
-            'application', 'json', {'charset': ascii.name});
+        final contentType =
+            new MediaType('application', 'json', {'charset': ascii.name});
         final exception = new transport.ResponseFormatException(
             contentType, ascii,
             bytes: bytes);
         expect(exception.toString(), contains('Bytes could not be decoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
+        expect(exception.toString(), contains('Encoding: ${ascii.name}'));
         expect(
-            exception.toString(), contains('Encoding: ${ascii.name}'));
-        expect(exception.toString(),
-            contains(utf8.encode('bodyçå®').toString()));
+            exception.toString(), contains(utf8.encode('bodyçå®').toString()));
       });
 
       test('should detail why string could not be encoded', () {
         const body = 'bodyçå®';
-        final contentType = new MediaType(
-            'application', 'json', {'charset': ascii.name});
+        final contentType =
+            new MediaType('application', 'json', {'charset': ascii.name});
         final exception = new transport.ResponseFormatException(
             contentType, ascii,
             body: body);
         expect(exception.toString(), contains('Body could not be encoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
-        expect(
-            exception.toString(), contains('Encoding: ${ascii.name}'));
+        expect(exception.toString(), contains('Encoding: ${ascii.name}'));
         expect(exception.toString(), contains('bodyçå®'));
       });
 
       test('should warn if encoding is null', () {
         const body = 'bodyçå®';
-        final contentType = new MediaType(
-            'application', 'json', {'charset': ascii.name});
+        final contentType =
+            new MediaType('application', 'json', {'charset': ascii.name});
         final exception = new transport.ResponseFormatException(
             contentType, null,
             body: body);

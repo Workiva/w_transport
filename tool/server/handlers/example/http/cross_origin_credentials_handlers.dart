@@ -65,8 +65,8 @@ class SessionHandler extends Handler {
   Future<Null> get(HttpRequest request) async {
     request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
-    request.response.write(json
-        .encode({'authenticated': isValidSession(request)}));
+    request.response
+        .write(json.encode({'authenticated': isValidSession(request)}));
   }
 
   @override
@@ -77,8 +77,7 @@ class SessionHandler extends Handler {
     headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
-    request.response
-        .write(json.encode({'authenticated': true}));
+    request.response.write(json.encode({'authenticated': true}));
   }
 
   @override
@@ -90,8 +89,7 @@ class SessionHandler extends Handler {
     headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
-    request.response
-        .write(json.encode({'authenticated': false}));
+    request.response.write(json.encode({'authenticated': false}));
   }
 }
 

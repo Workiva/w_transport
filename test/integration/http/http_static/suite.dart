@@ -243,8 +243,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
 
     Future<Map> _decodeStreamedResponseToJson(
         transport.StreamedResponse response) async {
-      return json
-          .decode(await _decodeStreamedResponseToString(response));
+      return json.decode(await _decodeStreamedResponseToString(response));
     }
 
     test('streamed DELETE request', () async {

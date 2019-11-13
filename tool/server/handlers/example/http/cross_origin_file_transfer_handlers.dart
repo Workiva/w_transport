@@ -171,8 +171,7 @@ class FilesHandler extends Handler {
         .toList();
     request.response.statusCode = io_constant.HttpStatus.ok;
     setCorsHeaders(request);
-    request.response
-        .write(json.encode({'results': filesPayload}));
+    request.response.write(json.encode({'results': filesPayload}));
   }
 
   @override

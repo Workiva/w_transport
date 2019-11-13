@@ -57,8 +57,8 @@ void main() {
             new transport.HttpBody.fromString(contentType, 'body');
         expect(stringBody.encoding, equals(ascii));
 
-        final bytesBody = new transport.HttpBody.fromBytes(
-            contentType, utf8.encode('body'));
+        final bytesBody =
+            new transport.HttpBody.fromBytes(contentType, utf8.encode('body'));
         expect(bytesBody.encoding, equals(ascii));
       });
 
@@ -83,8 +83,8 @@ void main() {
             new transport.HttpBody.fromString(contentType, 'body');
         expect(stringBody.encoding, equals(utf8));
 
-        final bytesBody = new transport.HttpBody.fromBytes(
-            contentType, utf8.encode('body'));
+        final bytesBody =
+            new transport.HttpBody.fromBytes(contentType, utf8.encode('body'));
         expect(bytesBody.encoding, equals(utf8));
       });
 
@@ -107,8 +107,7 @@ void main() {
         final contentType =
             new MediaType('text', 'plain', {'charset': latin1.name});
         final body = new transport.HttpBody.fromString(contentType, 'bodyçå®');
-        final encoded =
-            new Uint8List.fromList(latin1.encode('bodyçå®'));
+        final encoded = new Uint8List.fromList(latin1.encode('bodyçå®'));
         expect(body.asBytes(), equals(encoded));
       });
 
@@ -121,8 +120,8 @@ void main() {
       });
 
       test('asJson() UTF8', () {
-        final contentType = new MediaType(
-            'application', 'json', {'charset': utf8.name});
+        final contentType =
+            new MediaType('application', 'json', {'charset': utf8.name});
         final bodyJson = <Map<String, String>>[
           {'foo': 'bar', 'baz': 'çå®"'}
         ];
@@ -132,8 +131,8 @@ void main() {
       });
 
       test('asJson() LATIN1', () {
-        final contentType = new MediaType(
-            'application', 'json', {'charset': latin1.name});
+        final contentType =
+            new MediaType('application', 'json', {'charset': latin1.name});
         final bodyJson = <Map<String, String>>[
           {'foo': 'bar', 'baz': 'çå®"'}
         ];
@@ -143,8 +142,8 @@ void main() {
       });
 
       test('asJson() ASCII', () {
-        final contentType = new MediaType(
-            'application', 'json', {'charset': ascii.name});
+        final contentType =
+            new MediaType('application', 'json', {'charset': ascii.name});
         final bodyJson = <Map<String, String>>[
           {'foo': 'bar', 'bar': 'baz'}
         ];
@@ -154,33 +153,33 @@ void main() {
       });
 
       test('asString() UTF8', () {
-        final contentType = new MediaType(
-            'application', 'json', {'charset': utf8.name});
+        final contentType =
+            new MediaType('application', 'json', {'charset': utf8.name});
         final body = new transport.HttpBody.fromBytes(
             contentType, utf8.encode('bodyçå®'));
         expect(body.asString(), equals('bodyçå®'));
       });
 
       test('asString() LATIN1', () {
-        final contentType = new MediaType(
-            'application', 'json', {'charset': latin1.name});
+        final contentType =
+            new MediaType('application', 'json', {'charset': latin1.name});
         final body = new transport.HttpBody.fromBytes(
             contentType, latin1.encode('bodyçå®'));
         expect(body.asString(), equals('bodyçå®'));
       });
 
       test('asString() ASCII', () {
-        final contentType = new MediaType(
-            'application', 'json', {'charset': ascii.name});
-        final body = new transport.HttpBody.fromBytes(
-            contentType, ascii.encode('body'));
+        final contentType =
+            new MediaType('application', 'json', {'charset': ascii.name});
+        final body =
+            new transport.HttpBody.fromBytes(contentType, ascii.encode('body'));
         expect(body.asString(), equals('body'));
       });
 
       test('should throw ResponseFormatException if body cannot be encoded',
           () {
-        final contentType = new MediaType(
-            'application', 'json', {'charset': ascii.name});
+        final contentType =
+            new MediaType('application', 'json', {'charset': ascii.name});
         final body = new transport.HttpBody.fromString(contentType, 'bodyçå®');
         Object exception;
         try {
@@ -195,15 +194,14 @@ void main() {
                 'should throw ResponseFormatException if body cannot be encoded');
         expect(exception.toString(), contains('Body could not be encoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
-        expect(
-            exception.toString(), contains('Encoding: ${ascii.name}'));
+        expect(exception.toString(), contains('Encoding: ${ascii.name}'));
         expect(exception.toString(), contains('bodyçå®'));
       });
 
       test('should throw ResponseFormatException if bytes cannot be decoded',
           () {
-        final contentType = new MediaType(
-            'application', 'json', {'charset': ascii.name});
+        final contentType =
+            new MediaType('application', 'json', {'charset': ascii.name});
         final body = new transport.HttpBody.fromBytes(
             contentType, utf8.encode('bodyçå®'));
         Object exception;
@@ -219,10 +217,9 @@ void main() {
                 'should throw ResponseFormatException if bytes cannot be decoded');
         expect(exception.toString(), contains('Bytes could not be decoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
+        expect(exception.toString(), contains('Encoding: ${ascii.name}'));
         expect(
-            exception.toString(), contains('Encoding: ${ascii.name}'));
-        expect(exception.toString(),
-            contains(utf8.encode('bodyçå®').toString()));
+            exception.toString(), contains(utf8.encode('bodyçå®').toString()));
       });
     });
 

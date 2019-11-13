@@ -96,11 +96,11 @@ void runStreamedRequestSuite([transport.TransportPlatform transportPlatform]) {
     });
 
     test('LATIN1', () async {
-      final request = new transport.StreamedRequest(
-          transportPlatform: transportPlatform)
-        ..uri = IntegrationPaths.echoEndpointUri
-        ..encoding = latin1
-        ..body = new Stream.fromIterable([latin1.encode('dataç®å')]);
+      final request =
+          new transport.StreamedRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.echoEndpointUri
+            ..encoding = latin1
+            ..body = new Stream.fromIterable([latin1.encode('dataç®å')]);
       final response = await request.post();
       expect(response.encoding.name, equals(latin1.name));
       expect(response.body.asString(), equals('dataç®å'));

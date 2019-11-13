@@ -73,10 +73,7 @@ void runMultipartRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('uploading multiple files with different charsets', () async {
       // UTF8-encoded file.
-      final utf8Chunks = <List<int>>[
-        utf8.encode('chunk1'),
-        utf8.encode('ç®å')
-      ];
+      final utf8Chunks = <List<int>>[utf8.encode('chunk1'), utf8.encode('ç®å')];
       final utf8Stream = new Stream.fromIterable(utf8Chunks);
       final utf8Size = utf8Chunks[0].length + utf8Chunks[1].length;
       final utf8ContentType =

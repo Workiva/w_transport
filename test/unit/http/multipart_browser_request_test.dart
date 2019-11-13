@@ -32,8 +32,7 @@ void main() {
       group('finalizeBody', () {
         test('does not include duplicate ascii fields', () async {
           const key = 'ascii';
-          final value =
-              ascii.decode(ascii.encode('This is ASCII!'));
+          final value = ascii.decode(ascii.encode('This is ASCII!'));
 
           final BrowserMultipartRequest request =
               new transport.MultipartRequest(

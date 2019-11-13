@@ -132,36 +132,30 @@ void main() {
 
       test('setting encoding should update content-type', () {
         final request = new transport.Request();
-        expect(request.contentType.parameters['charset'],
-            equals(utf8.name));
+        expect(request.contentType.parameters['charset'], equals(utf8.name));
 
         request.encoding = latin1;
-        expect(request.contentType.parameters['charset'],
-            equals(latin1.name));
+        expect(request.contentType.parameters['charset'], equals(latin1.name));
 
         request.encoding = ascii;
-        expect(request.contentType.parameters['charset'],
-            equals(ascii.name));
+        expect(request.contentType.parameters['charset'], equals(ascii.name));
       });
 
       test(
           'setting encoding should not update content-type if content-type has been set manually',
           () {
         final request = new transport.Request();
-        expect(request.contentType.parameters['charset'],
-            equals(utf8.name));
+        expect(request.contentType.parameters['charset'], equals(utf8.name));
 
         // Manually override content-type.
-        request.contentType = new MediaType(
-            'application', 'x-custom', {'charset': latin1.name});
+        request.contentType =
+            new MediaType('application', 'x-custom', {'charset': latin1.name});
         expect(request.contentType.mimeType, equals('application/x-custom'));
-        expect(request.contentType.parameters['charset'],
-            equals(latin1.name));
+        expect(request.contentType.parameters['charset'], equals(latin1.name));
 
         // Changes to encoding should no longer update the content-type.
         request.encoding = ascii;
-        expect(request.contentType.parameters['charset'],
-            equals(latin1.name));
+        expect(request.contentType.parameters['charset'], equals(latin1.name));
       });
 
       test('setting content-type should not be allowed once sent', () async {

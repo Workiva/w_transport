@@ -116,8 +116,7 @@ class BrowserMultipartRequest extends CommonRequest
       } else {
         final contentType =
             new MediaType('text', 'plain', {'charset': utf8.name});
-        final blob =
-            new Blob([utf8.encode(value)], contentType.toString());
+        final blob = new Blob([utf8.encode(value)], contentType.toString());
         formData.appendBlob(name, blob);
       }
     });

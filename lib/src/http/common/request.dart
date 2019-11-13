@@ -330,7 +330,7 @@ abstract class CommonRequest extends Object
   /// This logic is platform-specific and should be implemented by the subclass.
   Future<BaseResponse> sendRequestAndFetchResponse(
       FinalizedRequest finalizedRequest,
-      {bool streamResponse: false});
+      {bool streamResponse = false});
 
   /// Cancel this request. If the request has already finished, this will do
   /// nothing.

@@ -25,7 +25,7 @@ import 'common.dart';
 const _sockjsPort = 8026;
 
 void runCommonSockJSSuite(List<String> protocolsToTest,
-    {bool usingSockjsPort: true}) {
+    {bool usingSockjsPort = true}) {
   final sockjsPortNaming = new Naming()
     ..platform = usingSockjsPort
         ? platformBrowserSockjsPort

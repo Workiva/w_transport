@@ -53,8 +53,8 @@ class SockJSPortWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   static Future<WebSocket> connect(Uri uri,
-      {bool debug: false,
-      bool noCredentials: false,
+      {bool debug = false,
+      bool noCredentials = false,
       List<String> protocolsWhitelist,
       Duration timeout}) async {
     Uri sockjsUri;

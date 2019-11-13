@@ -22,7 +22,7 @@ class Logger implements Function {
 
   Stream get stream => _controller.stream;
 
-  void call(String message, {bool isError: false}) {
+  void call(String message, {bool isError = false}) {
     if (isError) {
       _controller.add('[ERROR] $message');
     } else {
@@ -45,7 +45,7 @@ class Logger implements Function {
         '$time\t${request.method}\t${request.response.statusCode}\t${request.uri.path}');
   }
 
-  void withTime(String msg, {bool isError: false}) {
+  void withTime(String msg, {bool isError = false}) {
     this('${new DateTime.now()}  $msg', isError: isError);
   }
 }

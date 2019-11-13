@@ -47,9 +47,9 @@ export 'package:w_transport/src/browser_transport_platform_with_sockjs.dart'
 
 /// Configures w_transport for use in the browser via dart:html.
 void configureWTransportForBrowser(
-    {@Deprecated(v3Deprecation) bool useSockJS: false,
-    @Deprecated(v3Deprecation) bool sockJSDebug: false,
-    @Deprecated(v3Deprecation) bool sockJSNoCredentials: false,
+    {@Deprecated(v3Deprecation) bool useSockJS = false,
+    @Deprecated(v3Deprecation) bool sockJSDebug = false,
+    @Deprecated(v3Deprecation) bool sockJSNoCredentials = false,
     @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist}) {
   // Configuring SockJS at this level is deprecated. SockJS configuration should
   // occur on a per-socket basis.

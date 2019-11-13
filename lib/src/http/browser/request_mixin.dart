@@ -41,7 +41,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
   @override
   Future<BaseResponse> sendRequestAndFetchResponse(
       FinalizedRequest finalizedRequest,
-      {bool streamResponse: false}) async {
+      {bool streamResponse = false}) async {
     final c = new Completer<BaseResponse>();
 
     // Add request headers.
@@ -117,7 +117,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     return await c.future;
   }
 
-  Future<BaseResponse> _createResponse({bool streamResponse: false}) async {
+  Future<BaseResponse> _createResponse({bool streamResponse = false}) async {
     streamResponse ??= false;
 
     BaseResponse response;

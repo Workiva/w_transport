@@ -37,12 +37,12 @@ void main() {
       MockTransports.verifyNoOutstandingExceptions();
     });
 
-    transport.FormRequest formReqFactory({bool withBody: false}) {
+    transport.FormRequest formReqFactory({bool withBody = false}) {
       if (!withBody) return new transport.FormRequest();
       return new transport.FormRequest()..fields['field'] = 'value';
     }
 
-    transport.JsonRequest jsonReqFactory({bool withBody: false}) {
+    transport.JsonRequest jsonReqFactory({bool withBody = false}) {
       if (!withBody) return new transport.JsonRequest();
       return new transport.JsonRequest()
         ..body = [
@@ -55,12 +55,12 @@ void main() {
       return new transport.MultipartRequest()..fields['field'] = 'value';
     }
 
-    transport.Request reqFactory({bool withBody: false}) {
+    transport.Request reqFactory({bool withBody = false}) {
       if (!withBody) return new transport.Request();
       return new transport.Request()..body = 'body';
     }
 
-    transport.StreamedRequest streamedReqFactory({bool withBody: false}) {
+    transport.StreamedRequest streamedReqFactory({bool withBody = false}) {
       if (!withBody) return new transport.StreamedRequest();
       return new transport.StreamedRequest()
         ..body = new Stream.fromIterable([utf8.encode('bytes')])
@@ -856,7 +856,7 @@ void _runAutoRetryTestSuiteFor(
 
       test('retries only 500, 502, 503, 504 by default', () async {
         Future<Null> expectNumRetries(int num,
-            {bool shouldSucceed: true}) async {
+            {bool shouldSucceed = true}) async {
           final request = requestFactory();
           request.autoRetry
             ..enabled = true
@@ -899,7 +899,7 @@ void _runAutoRetryTestSuiteFor(
 
       test('retries only GET, HEAD, OPTIONS by default', () async {
         Future<Null> expectNumRetries(String method, int num,
-            {bool shouldSucceed: true}) async {
+            {bool shouldSucceed = true}) async {
           final request = requestFactory();
           request.autoRetry
             ..enabled = true

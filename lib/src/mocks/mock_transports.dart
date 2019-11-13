@@ -52,7 +52,7 @@ class MockTransports {
   /// a mock expectation or handler is not set up to handle it. This enables
   /// selective mocking - certain requests or WebSockets can be mocked while
   /// the rest will be handled by a real transport platform.
-  static void install({bool fallThrough: false}) {
+  static void install({bool fallThrough = false}) {
     MockTransportsInternal.isInstalled = true;
     MockTransportsInternal.fallThrough = fallThrough ?? false;
   }

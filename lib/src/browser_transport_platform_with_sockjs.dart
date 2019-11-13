@@ -32,8 +32,8 @@ class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
   final Duration _sockJSTimeout;
 
   const BrowserTransportPlatformWithSockJS(
-      {bool sockJSNoCredentials: false,
-      bool sockJSDebug: false,
+      {bool sockJSNoCredentials = false,
+      bool sockJSDebug = false,
       List<String> sockJSProtocolsWhitelist,
       Duration sockJSTimeout})
       : _sockJSDebug = sockJSDebug == true,

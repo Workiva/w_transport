@@ -22,14 +22,14 @@ import '../../integration_paths.dart';
 
 void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
   group('Common Request API', () {
-    transport.FormRequest formReqFactory({bool withBody: false}) {
+    transport.FormRequest formReqFactory({bool withBody = false}) {
       if (!withBody)
         return new transport.FormRequest(transportPlatform: transportPlatform);
       return new transport.FormRequest(transportPlatform: transportPlatform)
         ..fields['field'] = 'value';
     }
 
-    transport.JsonRequest jsonReqFactory({bool withBody: false}) {
+    transport.JsonRequest jsonReqFactory({bool withBody = false}) {
       if (!withBody)
         return new transport.JsonRequest(transportPlatform: transportPlatform);
       return new transport.JsonRequest(transportPlatform: transportPlatform)
@@ -45,14 +45,14 @@ void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
         ..fields['field'] = 'value';
     }
 
-    transport.Request reqFactory({bool withBody: false}) {
+    transport.Request reqFactory({bool withBody = false}) {
       if (!withBody)
         return new transport.Request(transportPlatform: transportPlatform);
       return new transport.Request(transportPlatform: transportPlatform)
         ..body = 'body';
     }
 
-    transport.StreamedRequest streamedReqFactory({bool withBody: false}) {
+    transport.StreamedRequest streamedReqFactory({bool withBody = false}) {
       if (!withBody)
         return new transport.StreamedRequest(
             transportPlatform: transportPlatform);

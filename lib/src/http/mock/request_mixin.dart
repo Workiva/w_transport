@@ -102,7 +102,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   @override
   Future<BaseResponse> sendRequestAndFetchResponse(
       FinalizedRequest finalizedRequest,
-      {bool streamResponse: false}) async {
+      {bool streamResponse = false}) async {
     _streamResponse = streamResponse == true;
     _sent.complete(finalizedRequest);
 

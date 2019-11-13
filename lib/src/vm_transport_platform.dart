@@ -30,27 +30,27 @@ class VMTransportPlatform implements TransportPlatform {
 
   /// Construct an [HttpClient] instance for use in the Dart VM.
   @override
-  HttpClient newHttpClient() => new VMHttpClient();
+  HttpClient newHttpClient() => VMHttpClient();
 
   /// Construct a [FormRequest] instance for use in the Dart VM.
   @override
-  FormRequest newFormRequest() => new VMFormRequest(this);
+  FormRequest newFormRequest() => VMFormRequest(this);
 
   /// Construct a [JsonRequest] instance for use in the Dart VM.
   @override
-  JsonRequest newJsonRequest() => new VMJsonRequest(this);
+  JsonRequest newJsonRequest() => VMJsonRequest(this);
 
   /// Construct a [MultipartRequest] instance for use in the Dart VM.
   @override
-  MultipartRequest newMultipartRequest() => new VMMultipartRequest(this);
+  MultipartRequest newMultipartRequest() => VMMultipartRequest(this);
 
   /// Construct a [Request] instance for use in the Dart VM.
   @override
-  Request newRequest() => new VMPlainTextRequest(this);
+  Request newRequest() => VMPlainTextRequest(this);
 
   /// Construct a [StreamedRequest] instance for use in the Dart VM.
   @override
-  StreamedRequest newStreamedRequest() => new VMStreamedRequest(this);
+  StreamedRequest newStreamedRequest() => VMStreamedRequest(this);
 
   /// Construct a [WebSocket] instance for use in the Dart VM.
   @override

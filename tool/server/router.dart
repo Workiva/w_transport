@@ -35,7 +35,7 @@ class Router implements Function {
   Map<String, Handler> routes;
 
   Router(this.logger) {
-    routes = {'/ping': new PingHandler()}
+    routes = {'/ping': PingHandler()}
       ..addAll(exampleHttpCrossOriginCredentialsRoutes)
       ..addAll(exampleHttpCrossOriginFileTransferRoutes)
       ..addAll(getExampleWsRoutes(logger))

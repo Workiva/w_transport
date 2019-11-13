@@ -39,7 +39,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('DELETE request with headers', () async {
       final response = await transport.Http.delete(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -62,7 +62,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('GET request with headers', () async {
       final response = await transport.Http.get(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -84,7 +84,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('HEAD request with headers', () async {
       final response = await transport.Http.head(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
     });
@@ -100,7 +100,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('OPTIONS request with headers', () async {
       final response = await transport.Http.options(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -123,7 +123,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('PATCH request with headers', () async {
       final response = await transport.Http.patch(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -154,7 +154,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('POST request with headers', () async {
       final response = await transport.Http.post(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -185,7 +185,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('PUT request with headers', () async {
       final response = await transport.Http.put(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -216,7 +216,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('custom HTTP method request with headers', () async {
       final response = await transport.Http.send(
           'COPY', IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -258,7 +258,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('streamed DELETE request with headers', () async {
       final response = await transport.Http.streamDelete(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -282,7 +282,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('streamed GET request with headers', () async {
       final response = await transport.Http.streamGet(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -304,7 +304,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('streamed HEAD request with headers', () async {
       final response = await transport.Http.streamHead(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
     });
@@ -321,7 +321,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('streamed OPTIONS request with headers', () async {
       final response = await transport.Http.streamOptions(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -345,7 +345,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('streamed PATCH request with headers', () async {
       final response = await transport.Http.streamPatch(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -378,7 +378,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('streamed POST request with headers', () async {
       final response = await transport.Http.streamPost(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -411,7 +411,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('streamed PUT request with headers', () async {
       final response = await transport.Http.streamPut(
           IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
@@ -444,7 +444,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     test('streamed custom HTTP method request with headers', () async {
       final response = await transport.Http.streamSend(
           'COPY', IntegrationPaths.reflectEndpointUri,
-          headers: new Map<String, String>.from(headers),
+          headers: Map<String, String>.from(headers),
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 

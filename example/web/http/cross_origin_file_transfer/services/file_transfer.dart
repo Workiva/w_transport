@@ -39,7 +39,7 @@ class FileTransfer {
   FileTransfer(this.name)
       : id = 'fileTransfer${_transferNum++}',
         _canceled = false,
-        _doneCompleter = new Completer<Null>(),
+        _doneCompleter = Completer<Null>(),
         _percentComplete = 0.0;
 
   /// Unique file transfer identifier.
@@ -63,7 +63,7 @@ class FileTransfer {
   /// Cancel the request (will do nothing if the request has already finished).
   void cancel(String reason) {
     _canceled = true;
-    _request.abort(reason != null ? new Exception(reason) : null);
+    _request.abort(reason != null ? Exception(reason) : null);
   }
 
   void _progressListener(RequestProgress progress) {
@@ -77,9 +77,9 @@ class Upload extends FileTransfer {
   /// Construct a new file upload.
   Upload._fromFile(File file) : super(file.name) {
     // Prepare the upload request.
-    _request = new MultipartRequest()
+    _request = MultipartRequest()
       ..uri = getUploadEndpointUrl()
-      ..fields['datetime'] = new DateTime.now().toIso8601String()
+      ..fields['datetime'] = DateTime.now().toIso8601String()
       ..files['file'] = file;
 
     // Convert the progress stream into a broadcast stream to
@@ -96,7 +96,7 @@ class Upload extends FileTransfer {
 
   /// Start a new file upload. This will begin the upload to the server immediately.
   static Upload start(File file) {
-    return new Upload._fromFile(file);
+    return Upload._fromFile(file);
   }
 }
 
@@ -108,7 +108,7 @@ class Download extends FileTransfer {
     _bytesLoaded = 0;
 
     // Prepare the download request.
-    _request = new Request()..uri = getDownloadEndpointUrl(rfd.name);
+    _request = Request()..uri = getDownloadEndpointUrl(rfd.name);
 
     // Convert the progress stream into a broadcast stream to
     // allow multiple listeners.
@@ -153,6 +153,6 @@ class Download extends FileTransfer {
 
   /// Start a new file download. This will begin the download from the server immediately.
   static Download start(RemoteFileDescription rfd) {
-    return new Download._ofRemoteFile(rfd);
+    return Download._ofRemoteFile(rfd);
   }
 }

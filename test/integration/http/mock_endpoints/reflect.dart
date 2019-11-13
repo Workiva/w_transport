@@ -22,6 +22,6 @@ void mockReflectEndpoint(Uri uri) {
       'path': request.uri.path,
       'headers': request.headers,
     };
-    return new MockResponse.ok(body: json.encode(reflection));
+    return MockResponse.ok(body: json.encode(reflection));
   });
 }

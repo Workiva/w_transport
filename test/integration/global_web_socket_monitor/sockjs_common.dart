@@ -26,14 +26,14 @@ const _sockjsPort = 8026;
 
 void runCommonSockJSSuite(List<String> protocolsToTest,
     {bool usingSockjsPort = true}) {
-  final sockjsPortNaming = new Naming()
+  final sockjsPortNaming = Naming()
     ..platform = usingSockjsPort
         ? platformBrowserSockjsPort
         : platformBrowserSockjsWrapper
     ..testType = testTypeIntegration
     ..topic = topicGlobalWebSocketMonitor;
 
-  final sockjsPortDeprecatedNaming = new Naming()
+  final sockjsPortDeprecatedNaming = Naming()
     ..platform = usingSockjsPort
         ? platformBrowserSockjsPortDeprecated
         : platformBrowserSockjsWrapperDeprecated
@@ -44,7 +44,7 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
     _sockJSSuite(
         protocolsToTest,
         (Uri uri, String protocol) => transport.WebSocket.connect(uri,
-            transportPlatform: new BrowserTransportPlatformWithSockJS(
+            transportPlatform: BrowserTransportPlatformWithSockJS(
                 sockJSNoCredentials: true,
                 sockJSProtocolsWhitelist: [protocol])));
   });

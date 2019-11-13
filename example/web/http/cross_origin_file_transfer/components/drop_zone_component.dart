@@ -98,7 +98,7 @@ class DropZoneComponent
     // Delay this action slightly to allow it to be canceled.
     // This helps prevent a flicker when moving from the drop zone
     // to the drop target.
-    _hideDropTargetTimer = new Timer(const Duration(milliseconds: 100), () {
+    _hideDropTargetTimer = Timer(const Duration(milliseconds: 100), () {
       props.onNativeDragEnd(e);
 
       if (state.overDropZone) {
@@ -182,7 +182,7 @@ class DropZoneComponent
       ..add('drop-zone')
       ..add('active', state.overDropZone || state.overDropTarget);
 
-    var dropTargetClasses = new ClassNameBuilder()
+    var dropTargetClasses = ClassNameBuilder()
       ..add('drop-target')
       ..add('show', state.overDropZone || state.overDropTarget)
       ..add('over', state.overDropTarget);

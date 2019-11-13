@@ -24,7 +24,7 @@ import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformVM
     ..testType = testTypeIntegration
     ..topic = topicHttp;
@@ -33,9 +33,8 @@ void main() {
     runPlainTextRequestSuite(vmTransportPlatform);
 
     test('underlying HttpRequest configuration', () async {
-      final request =
-          new transport.Request(transportPlatform: vmTransportPlatform)
-            ..uri = IntegrationPaths.reflectEndpointUri;
+      final request = transport.Request(transportPlatform: vmTransportPlatform)
+        ..uri = IntegrationPaths.reflectEndpointUri;
       request.configure((request) async {
         HttpClientRequest ioRequest = request;
         ioRequest.headers.set('x-configured', 'true');

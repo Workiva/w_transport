@@ -33,7 +33,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   FormRequest newFormRequest() {
     verifyNotClosed();
     // ignore: deprecated_member_use
-    final request = new MockFormRequest.fromClient(this, _transport);
+    final request = MockFormRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -44,7 +44,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   JsonRequest newJsonRequest() {
     verifyNotClosed();
     // ignore: deprecated_member_use
-    final request = new MockJsonRequest.fromClient(this, _transport);
+    final request = MockJsonRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -55,7 +55,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
     // ignore: deprecated_member_use
-    final request = new MockMultipartRequest.fromClient(this, _transport);
+    final request = MockMultipartRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -66,7 +66,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   Request newRequest() {
     verifyNotClosed();
     // ignore: deprecated_member_use
-    final request = new MockPlainTextRequest.fromClient(this, _transport);
+    final request = MockPlainTextRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -77,7 +77,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
     // ignore: deprecated_member_use
-    final request = new MockStreamedRequest.fromClient(this, _transport);
+    final request = MockStreamedRequest.fromClient(this, _transport);
     registerAndDecorateRequest(request);
     return request;
   }

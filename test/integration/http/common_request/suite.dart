@@ -24,15 +24,15 @@ void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
   group('Common Request API', () {
     transport.FormRequest formReqFactory({bool withBody = false}) {
       if (!withBody)
-        return new transport.FormRequest(transportPlatform: transportPlatform);
-      return new transport.FormRequest(transportPlatform: transportPlatform)
+        return transport.FormRequest(transportPlatform: transportPlatform);
+      return transport.FormRequest(transportPlatform: transportPlatform)
         ..fields['field'] = 'value';
     }
 
     transport.JsonRequest jsonReqFactory({bool withBody = false}) {
       if (!withBody)
-        return new transport.JsonRequest(transportPlatform: transportPlatform);
-      return new transport.JsonRequest(transportPlatform: transportPlatform)
+        return transport.JsonRequest(transportPlatform: transportPlatform);
+      return transport.JsonRequest(transportPlatform: transportPlatform)
         ..body = [
           {'field': 'value'}
         ];
@@ -40,24 +40,22 @@ void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     transport.MultipartRequest multipartReqFactory({bool withBody}) {
       // Multipart requests can't be empty.
-      return new transport.MultipartRequest(
-          transportPlatform: transportPlatform)
+      return transport.MultipartRequest(transportPlatform: transportPlatform)
         ..fields['field'] = 'value';
     }
 
     transport.Request reqFactory({bool withBody = false}) {
       if (!withBody)
-        return new transport.Request(transportPlatform: transportPlatform);
-      return new transport.Request(transportPlatform: transportPlatform)
+        return transport.Request(transportPlatform: transportPlatform);
+      return transport.Request(transportPlatform: transportPlatform)
         ..body = 'body';
     }
 
     transport.StreamedRequest streamedReqFactory({bool withBody = false}) {
       if (!withBody)
-        return new transport.StreamedRequest(
-            transportPlatform: transportPlatform);
-      return new transport.StreamedRequest(transportPlatform: transportPlatform)
-        ..body = new Stream.fromIterable([utf8.encode('bytes')])
+        return transport.StreamedRequest(transportPlatform: transportPlatform);
+      return transport.StreamedRequest(transportPlatform: transportPlatform)
+        ..body = Stream.fromIterable([utf8.encode('bytes')])
         ..contentLength = utf8.encode('bytes').length;
     }
 
@@ -95,7 +93,7 @@ void _runCommonRequestSuiteFor(
 
       try {
         final future = request.post(uri: IntegrationPaths.timeoutEndpointUri);
-        await new Future.delayed(new Duration(milliseconds: 5));
+        await Future.delayed(Duration(milliseconds: 5));
         request.abort();
         await future;
       } on transport.RequestException catch (_) {}
@@ -185,7 +183,7 @@ void _runCommonRequestSuiteFor(
     test('DELETE request with headers', () async {
       final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map<String, String>.from(headers);
+        ..headers = Map<String, String>.from(headers);
       final response = await request.delete();
       expect(response.status, equals(200));
 
@@ -210,7 +208,7 @@ void _runCommonRequestSuiteFor(
     test('GET request with headers', () async {
       final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map<String, String>.from(headers);
+        ..headers = Map<String, String>.from(headers);
       final response = await request.get();
       expect(response.status, equals(200));
 
@@ -234,7 +232,7 @@ void _runCommonRequestSuiteFor(
     test('HEAD request with headers', () async {
       final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map<String, String>.from(headers);
+        ..headers = Map<String, String>.from(headers);
       final response = await request.head();
       expect(response.status, equals(200));
     });
@@ -250,7 +248,7 @@ void _runCommonRequestSuiteFor(
     test('OPTIONS request with headers', () async {
       final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map<String, String>.from(headers);
+        ..headers = Map<String, String>.from(headers);
       final response = await request.options();
       expect(response.status, equals(200));
 
@@ -275,7 +273,7 @@ void _runCommonRequestSuiteFor(
     test('PATCH request with headers', () async {
       final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map<String, String>.from(headers);
+        ..headers = Map<String, String>.from(headers);
       final response = await request.patch();
       expect(response.status, equals(200));
 
@@ -300,7 +298,7 @@ void _runCommonRequestSuiteFor(
     test('POST request with headers', () async {
       final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map<String, String>.from(headers);
+        ..headers = Map<String, String>.from(headers);
       final response = await request.post();
       expect(response.status, equals(200));
 
@@ -325,7 +323,7 @@ void _runCommonRequestSuiteFor(
     test('PUT request with headers', () async {
       final request = requestFactory()
         ..uri = IntegrationPaths.reflectEndpointUri
-        ..headers = new Map<String, String>.from(headers);
+        ..headers = Map<String, String>.from(headers);
       final response = await request.put();
       expect(response.status, equals(200));
 
@@ -340,7 +338,7 @@ void _runCommonRequestSuiteFor(
     });
 
     test('upload progress stream', () async {
-      final uploadProgressListenedTo = new Completer<Null>();
+      final uploadProgressListenedTo = Completer<Null>();
       final request = requestFactory(withBody: true)
         ..uri = IntegrationPaths.reflectEndpointUri;
       request.uploadProgress.listen((progress) {
@@ -353,7 +351,7 @@ void _runCommonRequestSuiteFor(
     });
 
     test('download progress stream', () async {
-      final downloadProgressListenedTo = new Completer<Null>();
+      final downloadProgressListenedTo = Completer<Null>();
       final request = requestFactory()
         ..uri = IntegrationPaths.downloadEndpointUri;
       request.downloadProgress.listen((progress) {
@@ -397,23 +395,22 @@ void _runCommonRequestSuiteFor(
 
       // Wait a sufficient amount of time to allow the request to open.
       // Since we're hitting a timeout endpoint, it shouldn't complete.
-      await new Future.delayed(new Duration(seconds: 1));
+      await Future.delayed(Duration(seconds: 1));
 
       // Abort the request now that it is in flight.
       request.abort();
-      expect(future, throwsA(new isInstanceOf<transport.RequestException>()));
+      expect(future, throwsA(isInstanceOf<transport.RequestException>()));
     });
 
     test('timeoutThreshold does nothing if request completes in time',
         () async {
-      final request = requestFactory()
-        ..timeoutThreshold = new Duration(seconds: 5);
+      final request = requestFactory()..timeoutThreshold = Duration(seconds: 5);
       await request.get(uri: IntegrationPaths.pingEndpointUri);
     });
 
     test('timeoutThreshold cancels the request if exceeded', () async {
       final request = requestFactory()
-        ..timeoutThreshold = new Duration(milliseconds: 250);
+        ..timeoutThreshold = Duration(milliseconds: 250);
       expect(request.get(uri: IntegrationPaths.timeoutEndpointUri),
           throwsA(predicate((error) {
         return error is transport.RequestException &&
@@ -432,8 +429,8 @@ void _runAutoRetryTestSuiteFor(
 
         defineResponseChain(request, [500]);
 
-        expect(request.get(),
-            throwsA(new isInstanceOf<transport.RequestException>()));
+        expect(
+            request.get(), throwsA(isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -486,8 +483,8 @@ void _runAutoRetryTestSuiteFor(
 
         defineResponseChain(request, [500, 500, 500]);
 
-        expect(request.get(),
-            throwsA(new isInstanceOf<transport.RequestException>()));
+        expect(
+            request.get(), throwsA(isInstanceOf<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(3));
         expect(request.autoRetry.failures.length, equals(3));

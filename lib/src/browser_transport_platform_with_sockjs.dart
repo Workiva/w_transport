@@ -44,7 +44,7 @@ class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
   bool get sockJSDebug => _sockJSDebug;
   bool get sockJSNoCredentials => _sockJSNoCredentials;
   List<String> get sockJSProtocolsWhitelist => _sockJSProtocolsWhitelist != null
-      ? new List.from(_sockJSProtocolsWhitelist)
+      ? List.from(_sockJSProtocolsWhitelist)
       : null;
   Duration get sockJSTimeout => _sockJSTimeout;
 

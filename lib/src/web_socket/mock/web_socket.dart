@@ -22,7 +22,7 @@ import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 
 abstract class MockWebSocket implements WebSocket {
-  factory MockWebSocket() => new _MockWebSocket();
+  factory MockWebSocket() => _MockWebSocket();
 
   static Future<WebSocket> connect(Uri uri,
           {Map<String, dynamic> headers, Iterable<String> protocols}) =>
@@ -70,7 +70,7 @@ class _MockWebSocket extends CommonWebSocket
 
   /// The mock underlying WebSocket. Events are added manually via the
   /// [MockWebSocket] api.
-  StreamController<dynamic> _mocket = new StreamController<dynamic>();
+  StreamController<dynamic> _mocket = StreamController<dynamic>();
 
   _MockWebSocket() : super() {
     webSocketSubscription = _mocket.stream.listen(onIncomingData);

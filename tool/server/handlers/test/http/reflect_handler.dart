@@ -42,7 +42,7 @@ class ReflectHandler extends Handler {
     if (request.headers.contentType == null) {
       encoding = latin1;
     } else {
-      final contentType = new MediaType(
+      final contentType = MediaType(
           request.headers.contentType.primaryType,
           request.headers.contentType.subType,
           request.headers.contentType.parameters);

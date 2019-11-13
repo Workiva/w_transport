@@ -20,15 +20,15 @@ import 'package:w_transport/src/http/request_progress.dart';
 /// Transforms an [ProgressEvent] stream from an [HttpRequest] into
 /// a [WProgress] stream.
 StreamTransformer<ProgressEvent, RequestProgress> transformProgressEvents =
-    new StreamTransformer<ProgressEvent, RequestProgress>(
+    StreamTransformer<ProgressEvent, RequestProgress>(
         (Stream<ProgressEvent> input, bool cancelOnError) {
   StreamController<RequestProgress> controller;
   StreamSubscription<ProgressEvent> subscription;
-  controller = new StreamController<RequestProgress>(onListen: () {
+  controller = StreamController<RequestProgress>(onListen: () {
     subscription = input.listen((ProgressEvent event) {
       controller.add(event.lengthComputable
-          ? new RequestProgress(event.loaded, event.total)
-          : new RequestProgress());
+          ? RequestProgress(event.loaded, event.total)
+          : RequestProgress());
     },
         onError: controller.addError,
         onDone: controller.close,

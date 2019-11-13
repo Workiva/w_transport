@@ -142,7 +142,7 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
       // successfully construct a WebSocket.
-      throw new TransportPlatformMissing.webSocketFailed(uri);
+      throw TransportPlatformMissing.webSocketFailed(uri);
     }
   }
 

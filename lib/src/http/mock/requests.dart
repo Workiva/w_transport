@@ -36,7 +36,7 @@ class MockFormRequest extends CommonFormRequest with MockRequestMixin {
   @override
   FormRequest createRealRequest() {
     if (_realTransport == null) {
-      throw new TransportPlatformMissing.httpRequestFailed('FormRequest');
+      throw TransportPlatformMissing.httpRequestFailed('FormRequest');
     }
     return _realTransport.newFormRequest()..fields = fields;
   }
@@ -55,7 +55,7 @@ class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {
   @override
   JsonRequest createRealRequest() {
     if (_realTransport == null) {
-      throw new TransportPlatformMissing.httpRequestFailed('JsonRequest');
+      throw TransportPlatformMissing.httpRequestFailed('JsonRequest');
     }
     return _realTransport.newJsonRequest()..body = body;
   }
@@ -75,7 +75,7 @@ class MockMultipartRequest extends CommonMultipartRequest
   @override
   MultipartRequest createRealRequest() {
     if (_realTransport == null) {
-      throw new TransportPlatformMissing.httpRequestFailed('MultipartRequest');
+      throw TransportPlatformMissing.httpRequestFailed('MultipartRequest');
     }
     return _realTransport.newMultipartRequest()
       ..fields = fields
@@ -97,7 +97,7 @@ class MockPlainTextRequest extends CommonPlainTextRequest
   @override
   Request createRealRequest() {
     if (_realTransport == null) {
-      throw new TransportPlatformMissing.httpRequestFailed('Request');
+      throw TransportPlatformMissing.httpRequestFailed('Request');
     }
     return _realTransport.newRequest()..body = body;
   }
@@ -116,7 +116,7 @@ class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {
   @override
   StreamedRequest createRealRequest() {
     if (_realTransport == null) {
-      throw new TransportPlatformMissing.httpRequestFailed('StreamedRequest');
+      throw TransportPlatformMissing.httpRequestFailed('StreamedRequest');
     }
     return _realTransport.newStreamedRequest()
       ..contentLength = contentLength

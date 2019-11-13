@@ -19,6 +19,6 @@ void mockUploadEndpoint(Uri uri) {
   MockTransports.http.when(uri, (request) async {
     transport.StreamedHttpBody body = request.body;
     await body.byteStream.drain();
-    return new MockResponse.ok();
+    return MockResponse.ok();
   });
 }

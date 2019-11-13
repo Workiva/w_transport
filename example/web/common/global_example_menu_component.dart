@@ -69,7 +69,7 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<
     if (props.includeServerStatus) {
       _pingServer().then(_updateOnlineStatus);
       serverPolling =
-          new Timer.periodic(const Duration(seconds: 4), (Timer timer) async {
+          Timer.periodic(const Duration(seconds: 4), (Timer timer) async {
         final isOnline = await _pingServer();
 
         _updateOnlineStatus(isOnline);
@@ -93,7 +93,7 @@ class GlobalExampleMenuComponent extends UiStatefulComponent<
   ReactElement _renderServerStatusBanner() {
     if (!props.includeServerStatus) return null;
 
-    var classes = new ClassNameBuilder()
+    var classes = ClassNameBuilder()
       ..add('server-status')
       ..add('online', state.serverOnline);
 

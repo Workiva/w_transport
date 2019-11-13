@@ -28,14 +28,14 @@ const _sockjsPort = 8026;
 
 void runCommonSockJSSuite(List<String> protocolsToTest,
     {bool usingSockjsPort = true}) {
-  final sockjsNaming = new Naming()
+  final sockjsNaming = Naming()
     ..platform = usingSockjsPort
         ? platformBrowserSockjsPort
         : platformBrowserSockjsWrapper
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
-  final sockjsDeprecatedNaming = new Naming()
+  final sockjsDeprecatedNaming = Naming()
     ..platform = usingSockjsPort
         ? platformBrowserSockjsPortDeprecated
         : platformBrowserSockjsWrapperDeprecated
@@ -46,7 +46,7 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
     _sockJSSuite(
         protocolsToTest,
         (Uri uri, String protocol) => transport.WebSocket.connect(uri,
-            transportPlatform: new BrowserTransportPlatformWithSockJS(
+            transportPlatform: BrowserTransportPlatformWithSockJS(
                 sockJSNoCredentials: true,
                 sockJSProtocolsWhitelist: [protocol])));
   });
@@ -76,7 +76,7 @@ void _sockJSSuite(List<String> protocolsToTest,
       final pingUri = IntegrationPaths.pingUri.replace(port: _sockjsPort);
 
       test('should not support Blob', () async {
-        final blob = new Blob(['one', 'two']);
+        final blob = Blob(['one', 'two']);
         final socket = await connect(pingUri, protocol);
         expect(() {
           socket.add(blob);
@@ -92,7 +92,7 @@ void _sockJSSuite(List<String> protocolsToTest,
       });
 
       test('should not support TypedData', () async {
-        final data = new Uint16List.fromList([1, 2, 3]);
+        final data = Uint16List.fromList([1, 2, 3]);
         final socket = await connect(echoUri, protocol);
         expect(() {
           socket.add(data);

@@ -24,7 +24,7 @@ import '../../integration_paths.dart';
 import 'suite.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformBrowser
     ..testType = testTypeIntegration
     ..topic = topicHttp;
@@ -34,7 +34,7 @@ void main() {
 
     test('underlying HttpRequest configuration', () async {
       final request =
-          new transport.JsonRequest(transportPlatform: browserTransportPlatform)
+          transport.JsonRequest(transportPlatform: browserTransportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri;
       request.configure((request) async {
         HttpRequest xhr = request;
@@ -46,10 +46,10 @@ void main() {
 
     group('withCredentials', () {
       test('set to true (JsonRequest)', () async {
-        final request = new transport.JsonRequest(
-            transportPlatform: browserTransportPlatform)
-          ..uri = IntegrationPaths.pingEndpointUri
-          ..withCredentials = true;
+        final request =
+            transport.JsonRequest(transportPlatform: browserTransportPlatform)
+              ..uri = IntegrationPaths.pingEndpointUri
+              ..withCredentials = true;
         request.configure((request) async {
           HttpRequest xhr = request;
           expect(xhr.withCredentials, isTrue);
@@ -58,10 +58,10 @@ void main() {
       });
 
       test('set to false (JsonRequest)', () async {
-        final request = new transport.JsonRequest(
-            transportPlatform: browserTransportPlatform)
-          ..uri = IntegrationPaths.pingEndpointUri
-          ..withCredentials = false;
+        final request =
+            transport.JsonRequest(transportPlatform: browserTransportPlatform)
+              ..uri = IntegrationPaths.pingEndpointUri
+              ..withCredentials = false;
         request.configure((request) async {
           HttpRequest xhr = request;
           expect(xhr.withCredentials, isFalse);

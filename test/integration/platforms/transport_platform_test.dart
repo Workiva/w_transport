@@ -21,7 +21,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeIntegration
     ..topic = topicTransportPlatform;
 
@@ -49,7 +49,7 @@ void main() {
         'constructing any HTTP class without a TP throws a TransportPlatformMissing',
         () {
       expect(() {
-        new transport.FormRequest();
+        transport.FormRequest();
       }, throwsA(predicate((exception) {
         return exception is transport.TransportPlatformMissing &&
             exception.toString().contains(
@@ -57,7 +57,7 @@ void main() {
       })));
 
       expect(() {
-        new transport.HttpClient();
+        transport.HttpClient();
       }, throwsA(predicate((exception) {
         return exception is transport.TransportPlatformMissing &&
             exception.toString().contains(
@@ -65,7 +65,7 @@ void main() {
       })));
 
       expect(() {
-        new transport.JsonRequest();
+        transport.JsonRequest();
       }, throwsA(predicate((exception) {
         return exception is transport.TransportPlatformMissing &&
             exception.toString().contains(
@@ -73,7 +73,7 @@ void main() {
       })));
 
       expect(() {
-        new transport.MultipartRequest();
+        transport.MultipartRequest();
       }, throwsA(predicate((exception) {
         return exception is transport.TransportPlatformMissing &&
             exception.toString().contains(
@@ -81,7 +81,7 @@ void main() {
       })));
 
       expect(() {
-        new transport.Request();
+        transport.Request();
       }, throwsA(predicate((exception) {
         return exception is transport.TransportPlatformMissing &&
             exception
@@ -90,7 +90,7 @@ void main() {
       })));
 
       expect(() {
-        new transport.StreamedRequest();
+        transport.StreamedRequest();
       }, throwsA(predicate((exception) {
         return exception is transport.TransportPlatformMissing &&
             exception.toString().contains(
@@ -102,7 +102,7 @@ void main() {
         'establishing a WS connection without a TP throws a TransportPlatformMissing',
         () {
       expect(transport.WebSocket.connect(Uri.parse('/')),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
     });
 
     test('constructing any HTTP class without a TP will inherit the global',
@@ -110,12 +110,12 @@ void main() {
       transport.globalTransportPlatform = stubTransportPlatform;
 
       // All of these should be null because the stub TP only returns null.
-      expect(new transport.FormRequest(), isNull);
-      expect(new transport.HttpClient(), isNull);
-      expect(new transport.JsonRequest(), isNull);
-      expect(new transport.MultipartRequest(), isNull);
-      expect(new transport.Request(), isNull);
-      expect(new transport.StreamedRequest(), isNull);
+      expect(transport.FormRequest(), isNull);
+      expect(transport.HttpClient(), isNull);
+      expect(transport.JsonRequest(), isNull);
+      expect(transport.MultipartRequest(), isNull);
+      expect(transport.Request(), isNull);
+      expect(transport.StreamedRequest(), isNull);
     });
 
     test('establishing a WS connection without a TP will inherit the global',
@@ -128,23 +128,19 @@ void main() {
 
     test('constructing any HTTP class with a TP does not throw', () {
       // All of these should be null because the stub TP only returns null.
-      expect(
-          new transport.FormRequest(transportPlatform: stubTransportPlatform),
+      expect(transport.FormRequest(transportPlatform: stubTransportPlatform),
           isNull);
-      expect(new transport.HttpClient(transportPlatform: stubTransportPlatform),
+      expect(transport.HttpClient(transportPlatform: stubTransportPlatform),
           isNull);
-      expect(
-          new transport.JsonRequest(transportPlatform: stubTransportPlatform),
+      expect(transport.JsonRequest(transportPlatform: stubTransportPlatform),
           isNull);
       expect(
-          new transport.MultipartRequest(
-              transportPlatform: stubTransportPlatform),
-          isNull);
-      expect(new transport.Request(transportPlatform: stubTransportPlatform),
+          transport.MultipartRequest(transportPlatform: stubTransportPlatform),
           isNull);
       expect(
-          new transport.StreamedRequest(
-              transportPlatform: stubTransportPlatform),
+          transport.Request(transportPlatform: stubTransportPlatform), isNull);
+      expect(
+          transport.StreamedRequest(transportPlatform: stubTransportPlatform),
           isNull);
     });
 

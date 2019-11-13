@@ -53,7 +53,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
       _client = httpClient;
       _isSingle = false;
     } else {
-      _client = new HttpClient();
+      _client = HttpClient();
       _isSingle = true;
     }
     _request = await _client.openUrl(method, uri);
@@ -88,7 +88,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
       final StreamedHttpBody body = finalizedRequest.body;
       // Use a byte stream progress listener to transform the request body such
       // that it produces a stream of progress events.
-      final progressListener = new http_utils.ByteStreamProgressListener(
+      final progressListener = http_utils.ByteStreamProgressListener(
           body.byteStream,
           total: finalizedRequest.body.contentLength);
 
@@ -106,10 +106,10 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
       // progress stream can be "completed" by adding a single progress event.
       RequestProgress progress;
       if (_request.contentLength == 0) {
-        progress = new RequestProgress(0, 0);
+        progress = RequestProgress(0, 0);
       } else {
         progress =
-            new RequestProgress(_request.contentLength, _request.contentLength);
+            RequestProgress(_request.contentLength, _request.contentLength);
       }
       uploadProgressController.add(progress);
     }
@@ -119,7 +119,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
 
     // Use a byte stream progress listener to transform the response stream such
     // that it produces a stream of progress events.
-    final progressListener = new http_utils.ByteStreamProgressListener(response,
+    final progressListener = http_utils.ByteStreamProgressListener(response,
         total: response.contentLength);
 
     // Response body now resides in this transformed byte stream.
@@ -133,7 +133,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
 
     // By default, responses in the VM are streamed. If this is the desired
     // format, simply return it.
-    final streamedResponse = new StreamedResponse.fromByteStream(
+    final streamedResponse = StreamedResponse.fromByteStream(
         response.statusCode,
         response.reasonPhrase,
         responseHeaders,
@@ -141,7 +141,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
     if (streamResponse) return streamedResponse;
 
     // Otherwise, the byte stream needs to be reduced to a single list of bytes.
-    return new Response.fromBytes(response.statusCode, response.reasonPhrase,
+    return Response.fromBytes(response.statusCode, response.reasonPhrase,
         responseHeaders, await streamedResponse.body.toBytes());
   }
 }

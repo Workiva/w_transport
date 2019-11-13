@@ -25,7 +25,7 @@ import '../../naming.dart';
 import '../../utils.dart' show nextTick;
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicMocks;
 
@@ -43,15 +43,15 @@ void main() {
 
     test('MockClient extends MockHttpClient', () {
       // ignore: deprecated_member_use
-      expect(new MockClient(null), new isInstanceOf<MockHttpClient>());
+      expect(MockClient(null), isInstanceOf<MockHttpClient>());
     });
 
     group('TransportMocks.http', () {
       test('causeFailureOnOpen() should cause request to throw', () async {
-        final request = new transport.Request();
+        final request = transport.Request();
         MockTransports.http.causeFailureOnOpen(request);
         expect(request.get(uri: requestUri),
-            throwsA(new isInstanceOf<transport.RequestException>()));
+            throwsA(isInstanceOf<transport.RequestException>()));
       });
 
       test('verifies that requests are mock requests before controlling them',
@@ -65,15 +65,15 @@ void main() {
 
       group('completeRequest()', () {
         test('completes a request with 200 OK by default', () async {
-          final request = new transport.Request();
+          final request = transport.Request();
           // ignore: deprecated_member_use
           MockTransports.http.completeRequest(request);
           expect((await request.get(uri: requestUri)).status, equals(200));
         });
 
         test('can complete a request with custom response', () async {
-          final request = new transport.Request();
-          final response = new MockResponse(202);
+          final request = transport.Request();
+          final response = MockResponse(202);
           // ignore: deprecated_member_use
           MockTransports.http.completeRequest(request, response: response);
           expect((await request.get(uri: requestUri)).status, equals(202));
@@ -88,13 +88,13 @@ void main() {
         });
 
         test('expected request with custom response', () async {
-          final response = new MockResponse(202);
+          final response = MockResponse(202);
           MockTransports.http.expect('POST', requestUri, respondWith: response);
           expect((await transport.Http.post(requestUri)).status, equals(202));
         });
 
         test('expected request failure', () async {
-          final exception = new Exception('Custom exception');
+          final exception = Exception('Custom exception');
           MockTransports.http.expect('DELETE', requestUri, failWith: exception);
           expect(transport.Http.delete(requestUri), throwsA(predicate((error) {
             return error.toString().contains('Custom exception');
@@ -115,7 +115,7 @@ void main() {
         test('supports failWith, or respondWith, but not both', () async {
           expect(() {
             MockTransports.http.expect('GET', requestUri,
-                failWith: new Exception(), respondWith: new MockResponse.ok());
+                failWith: Exception(), respondWith: MockResponse.ok());
           }, throwsArgumentError);
           await MockTransports.reset();
         });
@@ -129,14 +129,14 @@ void main() {
         });
 
         test('expected request with custom response', () async {
-          final response = new MockResponse(202);
+          final response = MockResponse(202);
           MockTransports.http.expectPattern('POST', requestUri.toString(),
               respondWith: response);
           expect((await transport.Http.post(requestUri)).status, equals(202));
         });
 
         test('expected request failure', () async {
-          final exception = new Exception('Custom exception');
+          final exception = Exception('Custom exception');
           MockTransports.http.expectPattern('DELETE', requestUri.toString(),
               failWith: exception);
           expect(transport.Http.delete(requestUri), throwsA(predicate((error) {
@@ -158,13 +158,13 @@ void main() {
         test('supports failWith, or respondWith, but not both', () async {
           expect(() {
             MockTransports.http.expectPattern('GET', requestUri.toString(),
-                failWith: new Exception(), respondWith: new MockResponse.ok());
+                failWith: Exception(), respondWith: MockResponse.ok());
           }, throwsArgumentError);
           await MockTransports.reset();
         });
 
         test('handles requests that match a pattern', () async {
-          final pattern = new RegExp('https:\/\/(google|github)\.com');
+          final pattern = RegExp('https:\/\/(google|github)\.com');
 
           // ignore: unawaited_futures
           transport.Http.get(Uri.parse('https://example.com')); // Wrong URI.
@@ -182,26 +182,26 @@ void main() {
 
       group('failRequest()', () {
         test('causes request to throw', () async {
-          final request = new transport.Request();
+          final request = transport.Request();
           // ignore: deprecated_member_use
           MockTransports.http.failRequest(request);
           expect(request.get(uri: requestUri),
-              throwsA(new isInstanceOf<transport.RequestException>()));
+              throwsA(isInstanceOf<transport.RequestException>()));
         });
 
         test('can include a custom exception', () async {
-          final request = new transport.Request();
+          final request = transport.Request();
           MockTransports.http
               // ignore: deprecated_member_use
-              .failRequest(request, error: new Exception('Custom exception'));
+              .failRequest(request, error: Exception('Custom exception'));
           expect(request.get(uri: requestUri), throwsA(predicate((error) {
             return error.toString().contains('Custom exception');
           })));
         });
 
         test('can include a custom response', () async {
-          final request = new transport.Request();
-          final response = new MockResponse.internalServerError();
+          final request = transport.Request();
+          final response = MockResponse.internalServerError();
           // ignore: deprecated_member_use
           MockTransports.http.failRequest(request, response: response);
           expect(request.get(uri: requestUri), throwsA(predicate((error) {
@@ -214,13 +214,12 @@ void main() {
       test(
           'reset() should clear all expectations, pending requests, and handlers',
           () async {
-        MockTransports.http
-            .when(requestUri, (req) async => new MockResponse.ok());
+        MockTransports.http.when(requestUri, (req) async => MockResponse.ok());
         MockTransports.http.whenPattern(
-            requestUri.toString(), (req, match) async => new MockResponse.ok());
+            requestUri.toString(), (req, match) async => MockResponse.ok());
         MockTransports.http.expect('GET', Uri.parse('/expected'));
         MockTransports.http.expectPattern('GET', '/expected');
-        final request = new transport.Request();
+        final request = transport.Request();
         // ignore: unawaited_futures
         request.get(uri: Uri.parse('/other'));
         // ignore: deprecated_member_use
@@ -232,7 +231,7 @@ void main() {
 
         // Would have been handled by either of the handlers, but should no
         // longer be:
-        final request2 = new transport.Request();
+        final request2 = transport.Request();
         // ignore: unawaited_futures
         request2.delete(uri: requestUri);
         // ignore: deprecated_member_use
@@ -240,7 +239,7 @@ void main() {
         await mockRequest2.onSent;
 
         // Would have been expected, but should no longer be:
-        final request3 = new transport.Request();
+        final request3 = transport.Request();
         // ignore: unawaited_futures
         request3.get(uri: Uri.parse('/expected'));
         // ignore: deprecated_member_use
@@ -259,7 +258,7 @@ void main() {
         });
 
         test('throws if requests are pending', () async {
-          final request = new transport.Request();
+          final request = transport.Request();
           // ignore: unawaited_futures
           request.get(uri: requestUri);
           // ignore: deprecated_member_use
@@ -286,7 +285,7 @@ void main() {
         test(
             'registers a handler for all requests with matching URI and method',
             () async {
-          final ok = new MockResponse.ok();
+          final ok = MockResponse.ok();
           MockTransports.http.when(requestUri, (_) async => ok, method: 'GET');
           // ignore: unawaited_futures
           transport.Http.get(Uri.parse('/wrong')); // Wrong URI.
@@ -302,7 +301,7 @@ void main() {
         test(
             'registers a handler for all requests with matching URI and ANY method',
             () async {
-          final ok = new MockResponse.ok();
+          final ok = MockResponse.ok();
           MockTransports.http.when(requestUri, (_) async => ok);
           // ignore: unawaited_futures
           transport.Http.get(Uri.parse('/wrong')); // Wrong URI.
@@ -315,7 +314,7 @@ void main() {
         });
 
         test('supports all standard methods', () async {
-          final ok = new MockResponse.ok();
+          final ok = MockResponse.ok();
           MockTransports.http
               .when(requestUri, (_) async => ok, method: 'DELETE');
           MockTransports.http.when(requestUri, (_) async => ok, method: 'GET');
@@ -337,21 +336,20 @@ void main() {
         });
 
         test('supports custom method', () async {
-          final ok = new MockResponse.ok();
+          final ok = MockResponse.ok();
           MockTransports.http.when(requestUri, (_) async => ok, method: 'COPY');
           await transport.Http.send('COPY', requestUri);
         });
 
         test('registers handler that throws to cause request failure',
             () async {
-          MockTransports.http
-              .when(requestUri, (_) async => throw new Exception());
+          MockTransports.http.when(requestUri, (_) async => throw Exception());
           expect(transport.Http.get(requestUri),
-              throwsA(new isInstanceOf<transport.RequestException>()));
+              throwsA(isInstanceOf<transport.RequestException>()));
         });
 
         test('registers a handler that can be canceled', () async {
-          final ok = new MockResponse.ok();
+          final ok = MockResponse.ok();
           final handler = MockTransports.http.when(requestUri, (_) async => ok);
           await transport.Http.get(requestUri);
           handler.cancel();
@@ -366,9 +364,8 @@ void main() {
         test('canceling a handler does nothing if handler no longer exists',
             () async {
           MockHttpHandler oldHandler = MockTransports.http
-              .when(requestUri, (_) async => new MockResponse.notFound());
-          MockTransports.http
-              .when(requestUri, (_) async => new MockResponse.ok());
+              .when(requestUri, (_) async => MockResponse.notFound());
+          MockTransports.http.when(requestUri, (_) async => MockResponse.ok());
           expect(() {
             oldHandler.cancel();
           }, returnsNormally);
@@ -376,10 +373,9 @@ void main() {
 
           // Test the same, but with a specific method.
           oldHandler = MockTransports.http.when(
-              requestUri, (_) async => new MockResponse.notFound(),
+              requestUri, (_) async => MockResponse.notFound(),
               method: 'DELETE');
-          MockTransports.http.when(
-              requestUri, (_) async => new MockResponse.ok(),
+          MockTransports.http.when(requestUri, (_) async => MockResponse.ok(),
               method: 'DELETE');
           expect(() {
             oldHandler.cancel();
@@ -389,7 +385,7 @@ void main() {
 
         test('canceling a handler does nothing if handler was reset', () async {
           MockHttpHandler oldHandler = MockTransports.http
-              .when(requestUri, (_) async => new MockResponse.ok());
+              .when(requestUri, (_) async => MockResponse.ok());
           await MockTransports.reset();
           expect(() {
             oldHandler.cancel();
@@ -408,7 +404,7 @@ void main() {
         test(
             'registers a handler for all requests with a matching URI and method',
             () async {
-          final ok = new MockResponse.ok();
+          final ok = MockResponse.ok();
           MockTransports.http.whenPattern(
               requestUri.toString(), (_a, _b) async => ok,
               method: 'GET');
@@ -426,7 +422,7 @@ void main() {
         test(
             'registers a handler for all requests with a matching URI and ANY method',
             () async {
-          final ok = new MockResponse.ok();
+          final ok = MockResponse.ok();
           MockTransports.http
               .whenPattern(requestUri.toString(), (_a, _b) async => ok);
           // ignore: unawaited_futures
@@ -442,16 +438,16 @@ void main() {
         test('registers a handler that throws to cause request failure',
             () async {
           MockTransports.http.whenPattern(
-              requestUri.toString(), (_a, _b) async => throw new Exception());
+              requestUri.toString(), (_a, _b) async => throw Exception());
           expect(transport.Http.get(requestUri),
-              throwsA(new isInstanceOf<transport.RequestException>()));
+              throwsA(isInstanceOf<transport.RequestException>()));
         });
 
         test(
             'registers a handler for all requests with a partially matching URI',
             () async {
-          final pattern = new RegExp('https:\/\/(google|github)\.com.*');
-          final ok = new MockResponse.ok();
+          final pattern = RegExp('https:\/\/(google|github)\.com.*');
+          final ok = MockResponse.ok();
           MockTransports.http.whenPattern(pattern, (_a, _b) async => ok);
           // ignore: unawaited_futures
           transport.Http.get(Uri.parse('/wrong')); // Wrong URI.
@@ -465,11 +461,11 @@ void main() {
 
         test('handler should recieve the Match instance from the pattern test',
             () async {
-          final pattern = new RegExp('https:\/\/(google|github)\.com');
+          final pattern = RegExp('https:\/\/(google|github)\.com');
           final matches = <Match>[];
           MockTransports.http.whenPattern(pattern, (_, match) async {
             matches.add(match);
-            return new MockResponse.ok();
+            return MockResponse.ok();
           });
           await transport.Http.get(Uri.parse('https://google.com'));
           await transport.Http.get(Uri.parse('https://github.com'));
@@ -482,7 +478,7 @@ void main() {
         });
 
         test('registers a handler that can be canceled', () async {
-          final ok = new MockResponse.ok();
+          final ok = MockResponse.ok();
           final handler = MockTransports.http
               .whenPattern(requestUri.toString(), (_a, _b) async => ok);
           await transport.Http.get(requestUri);
@@ -498,21 +494,20 @@ void main() {
         test('canceling a handler does nothing if handler no longer exists',
             () async {
           MockHttpHandler oldHandler = MockTransports.http.whenPattern(
-              requestUri.toString(),
-              (_a, _b) async => new MockResponse.notFound());
+              requestUri.toString(), (_a, _b) async => MockResponse.notFound());
           MockTransports.http.whenPattern(
-              requestUri.toString(), (_a, _b) async => new MockResponse.ok());
+              requestUri.toString(), (_a, _b) async => MockResponse.ok());
           expect(() {
             oldHandler.cancel();
           }, returnsNormally);
           await transport.Http.get(requestUri);
 
           // Test the same, but with a specific method.
-          oldHandler = MockTransports.http.whenPattern(requestUri.toString(),
-              (_a, _b) async => new MockResponse.notFound(),
+          oldHandler = MockTransports.http.whenPattern(
+              requestUri.toString(), (_a, _b) async => MockResponse.notFound(),
               method: 'DELETE');
           MockTransports.http.whenPattern(
-              requestUri.toString(), (_a, _b) async => new MockResponse.ok(),
+              requestUri.toString(), (_a, _b) async => MockResponse.ok(),
               method: 'DELETE');
           expect(() {
             oldHandler.cancel();
@@ -522,7 +517,7 @@ void main() {
 
         test('canceling a handler does nothing if handler was reset', () async {
           MockHttpHandler oldHandler = MockTransports.http.whenPattern(
-              requestUri.toString(), (_a, _b) async => new MockResponse.ok());
+              requestUri.toString(), (_a, _b) async => MockResponse.ok());
           await MockTransports.reset();
           expect(() {
             oldHandler.cancel();
@@ -548,8 +543,8 @@ void main() {
         });
 
         test('returns true if there is a matching handler', () async {
-          MockTransports.http.when(requestUri,
-              (FinalizedRequest request) async => new MockResponse.ok(),
+          MockTransports.http.when(
+              requestUri, (FinalizedRequest request) async => MockResponse.ok(),
               method: 'GET');
           expect(MockHttpInternal.hasHandlerForRequest('GET', requestUri, {}),
               isTrue);

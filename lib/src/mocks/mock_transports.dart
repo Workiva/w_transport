@@ -60,7 +60,7 @@ class MockTransports {
   static Future<Null> reset() {
     http.reset();
     webSocket.reset();
-    return new Future.value();
+    return Future.value();
   }
 
   static Future<Null> uninstall() async {

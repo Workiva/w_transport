@@ -70,7 +70,7 @@ class HttpBody extends BaseHttpBody {
     _encoding = encoding ??
         http_utils.parseEncodingFromContentType(contentType,
             fallback: fallbackEncoding ?? utf8);
-    _bytes = new Uint8List.fromList(bytes ?? []);
+    _bytes = Uint8List.fromList(bytes ?? []);
   }
 
   /// Construct the body to an HTTP request or an HTTP response from text.
@@ -110,9 +110,9 @@ class HttpBody extends BaseHttpBody {
       try {
         encoded = encoding.encode(_body);
       } on ArgumentError {
-        throw new ResponseFormatException(contentType, encoding, body: _body);
+        throw ResponseFormatException(contentType, encoding, body: _body);
       }
-      _bytes = new Uint8List.fromList(encoded);
+      _bytes = Uint8List.fromList(encoded);
     }
     return _bytes;
   }
@@ -123,7 +123,7 @@ class HttpBody extends BaseHttpBody {
       try {
         _body = encoding.decode(_bytes);
       } on FormatException {
-        throw new ResponseFormatException(contentType, encoding, bytes: _bytes);
+        throw ResponseFormatException(contentType, encoding, bytes: _bytes);
       }
     }
     return _body;
@@ -161,7 +161,7 @@ class StreamedHttpBody extends BaseHttpBody {
   /// subscription stream.
   StreamedHttpBody.fromByteStream(this.contentType, this.byteStream,
       {this.contentLength, Encoding fallbackEncoding}) {
-    if (byteStream == null) throw new ArgumentError.notNull('byteStream');
+    if (byteStream == null) throw ArgumentError.notNull('byteStream');
     _encoding = http_utils.parseEncodingFromContentType(contentType,
         fallback: fallbackEncoding);
   }

@@ -62,7 +62,7 @@ void configureWTransportForBrowser(
 
   // ignore: deprecated_member_use
   if (useSockJS == true) {
-    globalTransportPlatform = new BrowserTransportPlatformWithSockJS(
+    globalTransportPlatform = BrowserTransportPlatformWithSockJS(
         // ignore: deprecated_member_use
         sockJSNoCredentials: sockJSNoCredentials,
         // ignore: deprecated_member_use

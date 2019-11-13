@@ -23,9 +23,9 @@ import '../../../handler.dart';
 
 String pathPrefix = '/proxy/example/http/cross_origin_file_transfer';
 Map<String, Handler> proxyExampleHttpCrossOriginFileTransferRoutes = {
-  '$pathPrefix/files/': new FilesProxy(),
-  '$pathPrefix/download': new DownloadProxy(),
-  '$pathPrefix/upload': new UploadProxy()
+  '$pathPrefix/files/': FilesProxy(),
+  '$pathPrefix/download': DownloadProxy(),
+  '$pathPrefix/upload': UploadProxy()
 };
 
 Uri filesEndpoint = Uri.parse(
@@ -38,7 +38,7 @@ Uri downloadEndpoint = Uri.parse(
 transport.HttpClient client;
 transport.HttpClient getHttpClient() {
   if (client == null) {
-    client = new transport.HttpClient(transportPlatform: vmTransportPlatform);
+    client = transport.HttpClient(transportPlatform: vmTransportPlatform);
   }
   return client;
 }
@@ -95,7 +95,7 @@ class UploadProxy extends Handler {
       headers[name] = values.join(', ');
     });
     final contentType =
-        new transport.MediaType.parse(request.headers.value('content-type'));
+        transport.MediaType.parse(request.headers.value('content-type'));
     final proxyRequest = getHttpClient().newStreamedRequest()
       ..headers = headers
       ..body = request

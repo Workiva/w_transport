@@ -24,7 +24,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -40,18 +40,17 @@ void main() {
       });
 
       test('setting fields defaults to empty map if null', () {
-        final request = new transport.FormRequest()..fields = null;
+        final request = transport.FormRequest()..fields = null;
         expect(request.fields, equals({}));
       });
 
       test('setting entire fields map', () {
-        final request = new transport.FormRequest()
-          ..fields = {'field': 'value'};
+        final request = transport.FormRequest()..fields = {'field': 'value'};
         expect(request.fields, equals({'field': 'value'}));
       });
 
       test('setting fields incrementally', () {
-        final request = new transport.FormRequest()
+        final request = transport.FormRequest()
           ..fields['field1'] = 'value1'
           ..fields['field2'] = 'value2';
         expect(
@@ -61,14 +60,14 @@ void main() {
       test('setting body in request dispatcher is supported', () async {
         final uri = Uri.parse('/test');
 
-        final c = new Completer<String>();
+        final c = Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
           transport.HttpBody body = request.body;
           c.complete(body.asString());
-          return new MockResponse.ok();
+          return MockResponse.ok();
         });
 
-        final request = new transport.FormRequest();
+        final request = transport.FormRequest();
         await request.post(uri: uri, body: {'field': 'value'});
         expect(await c.future, equals('field=value'));
       });
@@ -77,14 +76,14 @@ void main() {
           () async {
         final uri = Uri.parse('/test');
 
-        final request = new transport.FormRequest();
+        final request = transport.FormRequest();
         expect(request.post(uri: uri, body: 'invalid'), throwsArgumentError);
       });
 
       test('body should be unmodifiable once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        final request = new transport.FormRequest();
+        final request = transport.FormRequest();
         await request.post(uri: uri);
         expect(() {
           request.fields['too'] = 'late';
@@ -95,21 +94,21 @@ void main() {
       });
 
       test('content-length cannot be set manually', () {
-        final request = new transport.Request();
+        final request = transport.Request();
         expect(() {
           request.contentLength = 10;
         }, throwsUnsupportedError);
       });
 
       test('setting encoding to null should throw', () {
-        final request = new transport.FormRequest();
+        final request = transport.FormRequest();
         expect(() {
           request.encoding = null;
         }, throwsArgumentError);
       });
 
       test('setting encoding should update content-type', () {
-        final request = new transport.FormRequest();
+        final request = transport.FormRequest();
         expect(request.contentType.parameters['charset'], equals(utf8.name));
 
         request.encoding = latin1;
@@ -122,12 +121,12 @@ void main() {
       test(
           'setting encoding should not update content-type if content-type has been set manually',
           () {
-        final request = new transport.FormRequest();
+        final request = transport.FormRequest();
         expect(request.contentType.parameters['charset'], equals(utf8.name));
 
         // Manually override content-type.
         request.contentType =
-            new MediaType('application', 'x-custom', {'charset': latin1.name});
+            MediaType('application', 'x-custom', {'charset': latin1.name});
         expect(request.contentType.mimeType, equals('application/x-custom'));
         expect(request.contentType.parameters['charset'], equals(latin1.name));
 
@@ -139,17 +138,17 @@ void main() {
       test('setting content-type should not be allowed once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        final request = new transport.FormRequest();
+        final request = transport.FormRequest();
         await request.get(uri: uri);
         expect(() {
-          request.contentType = new MediaType('application', 'x-custom');
+          request.contentType = MediaType('application', 'x-custom');
         }, throwsStateError);
       });
 
       test('setting encoding should not be allowed once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        final request = new transport.FormRequest();
+        final request = transport.FormRequest();
         await request.get(uri: uri);
         expect(() {
           request.encoding = latin1;
@@ -159,15 +158,15 @@ void main() {
       test('custom content-type without inferrable encoding', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        final request = new transport.FormRequest()
-          ..contentType = new MediaType('application', 'x-custom')
+        final request = transport.FormRequest()
+          ..contentType = MediaType('application', 'x-custom')
           ..fields['foo'] = 'bar';
         await request.post(uri: uri);
       });
 
       test('clone()', () {
         final fields = <String, String>{'f1': 'v1', 'f2': 'v2'};
-        final orig = new transport.FormRequest()..fields = fields;
+        final orig = transport.FormRequest()..fields = fields;
         final clone = orig.clone();
         expect(clone.fields, equals(fields));
       });

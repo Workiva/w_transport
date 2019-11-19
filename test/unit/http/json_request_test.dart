@@ -79,9 +79,9 @@ void main() {
         });
 
         final request = transport.JsonRequest();
-        final json = <String, String>{'field': 'value'};
-        await request.post(uri: uri, body: json);
-        expect(await c.future, equals(json.encode(json)));
+        final simpleJson = <String, String>{'field': 'value'};
+        await request.post(uri: uri, body: simpleJson);
+        expect(await c.future, equals(json.encode(simpleJson)));
       });
 
       test('setting body in request dispatcher is supported (List)', () async {
@@ -95,11 +95,11 @@ void main() {
         });
 
         final request = transport.JsonRequest();
-        final json = <Map<String, String>>[
+        final simpleJson = <Map<String, String>>[
           {'field': 'value'}
         ];
-        await request.post(uri: uri, body: json);
-        expect(await c.future, equals(json.encode(json)));
+        await request.post(uri: uri, body: simpleJson);
+        expect(await c.future, equals(json.encode(simpleJson)));
       });
 
       test('setting body in request dispatcher should throw if invalid',

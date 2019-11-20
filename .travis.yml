@@ -16,17 +16,17 @@ jobs:
       name: "SDK: 2.4.0"
       script:
         - pub run dart_dev analyze
-        - pub run dart_dev test --release -P integration -P travis
+        - pub run dart_dev test --release -P integration -P travis -P dart2
     - dart: stable
       name: "SDK: stable"
       script:
         - pub run dart_dev analyze
         - pub run dart_dev format --check
         - pub run dependency_validator --exclude-dir=example
-        - pub run dart_dev test -P integration -P travis
-        - pub run dart_dev test --release -P integration -P travis
+        - pub run dart_dev test -P integration -P travis -P dart2
+        - pub run dart_dev test --release -P integration -P travis -P dart2
     - dart: dev
       name: "SDK: dev"
       script:
         - pub run dart_dev analyze
-        - pub run dart_dev test --release -P integration -P travis
+        - pub run dart_dev test --release -P integration -P travis -P dart2

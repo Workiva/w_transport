@@ -10,6 +10,9 @@ cache:
   directories:
     - $HOME/.pub-cache
 
+before_script:
+  - npm install
+
 jobs:
   include:
     - dart: 2.4.0

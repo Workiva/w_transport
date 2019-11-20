@@ -16,7 +16,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:uuid/uuid.dart';
 
 import '../../../handler.dart';
@@ -63,7 +62,7 @@ class SessionHandler extends Handler {
 
   @override
   Future<Null> get(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
     request.response
         .write(json.encode({'authenticated': isValidSession(request)}));
@@ -71,7 +70,7 @@ class SessionHandler extends Handler {
 
   @override
   Future<Null> post(HttpRequest request) async {
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
     final headers = createSessionHeaders(generateSessionCookie());
     headers.forEach((h, v) {
@@ -83,7 +82,7 @@ class SessionHandler extends Handler {
   @override
   Future<Null> delete(HttpRequest request) async {
     session = null;
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
     final headers = createSessionHeaders('deleted');
     headers.forEach((h, v) {
@@ -102,12 +101,12 @@ class CredentialedRequestHandler extends Handler {
   Future<Null> get(HttpRequest request) async {
     // Verify the request has a valid session cookie
     if (isValidSession(request)) {
-      request.response.statusCode = io_constant.HttpStatus.ok;
+      request.response.statusCode = HttpStatus.ok;
       setCorsHeaders(request);
       request.response
           .write('Session verified, credentialed request successful!');
     } else {
-      request.response.statusCode = io_constant.HttpStatus.unauthorized;
+      request.response.statusCode = HttpStatus.unauthorized;
       setCorsHeaders(request);
       request.response.write('Invalid session, credentialed request failed!');
     }

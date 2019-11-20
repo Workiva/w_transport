@@ -16,7 +16,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:http_server/http_server.dart';
 import 'package:mime/mime.dart';
 
@@ -117,7 +116,7 @@ class UploadHandler extends Handler {
   @override
   Future<Null> post(HttpRequest request) async {
     if (request.headers['content-type'] == null) {
-      request.response.statusCode = io_constant.HttpStatus.badRequest;
+      request.response.statusCode = HttpStatus.badRequest;
       setCorsHeaders(request);
       return;
     }
@@ -146,7 +145,7 @@ class UploadHandler extends Handler {
       }
     }
 
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
   }
 }
@@ -169,7 +168,7 @@ class FilesHandler extends Handler {
               'size': entity.lengthSync()
             })
         .toList();
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
     request.response.write(json.encode({'results': filesPayload}));
   }
@@ -181,7 +180,7 @@ class FilesHandler extends Handler {
     for (final entity in files) {
       entity.deleteSync();
     }
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
   }
 }
@@ -194,14 +193,14 @@ class DownloadHandler extends Handler {
   @override
   Future<Null> get(HttpRequest request) async {
     if (request.uri.queryParameters['file'] == null) {
-      request.response.statusCode = io_constant.HttpStatus.notFound;
+      request.response.statusCode = HttpStatus.notFound;
       setCorsHeaders(request);
       return;
     }
     final requestedFile =
         Uri.parse(request.uri.queryParameters['file']).pathSegments.last;
     if (requestedFile == '' || requestedFile == null) {
-      request.response.statusCode = io_constant.HttpStatus.notFound;
+      request.response.statusCode = HttpStatus.notFound;
       setCorsHeaders(request);
       return;
     }
@@ -212,7 +211,7 @@ class DownloadHandler extends Handler {
         'example/web/http/cross_origin_file_transfer/files/$requestedFile');
     final file = File.fromUri(fileUri);
     if (!file.existsSync()) {
-      request.response.statusCode = io_constant.HttpStatus.notFound;
+      request.response.statusCode = HttpStatus.notFound;
       setCorsHeaders(request);
       return;
     }
@@ -226,7 +225,7 @@ class DownloadHandler extends Handler {
       headers['content-disposition'] = 'attachment; filename=$requestedFile';
     }
 
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
     headers.forEach((h, v) {
       request.response.headers.set(h, v);

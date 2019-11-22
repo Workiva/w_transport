@@ -14,15 +14,14 @@
 
 part of w_transport.src.mocks.mock_transports;
 
-typedef Future<dynamic /*WSocket|MockWebSocketServer*/ > WebSocketConnectHandler(
-    Uri uri,
-    {Map<String, dynamic> headers,
-    Iterable<String> protocols});
-typedef Future<dynamic /*WSocket|MockWebSocketServer*/ > WebSocketPatternConnectHandler(
-    Uri uri,
-    {Map<String, dynamic> headers,
-    Match match,
-    Iterable<String> protocols});
+typedef WebSocketConnectHandler
+    = Future<dynamic /*WSocket|MockWebSocketServer*/ > Function(Uri uri,
+        {Map<String, dynamic> headers, Iterable<String> protocols});
+typedef WebSocketPatternConnectHandler
+    = Future<dynamic /*WSocket|MockWebSocketServer*/ > Function(Uri uri,
+        {Map<String, dynamic> headers,
+        Match match,
+        Iterable<String> protocols});
 
 class MockWebSockets {
   const MockWebSockets();

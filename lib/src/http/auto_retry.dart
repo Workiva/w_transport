@@ -22,7 +22,7 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
 
-typedef Future<bool> RetryTest(
+typedef RetryTest = Future<bool> Function(
     FinalizedRequest request, BaseResponse response, bool willRetry);
 
 /// The valid retry back-off methods.

@@ -14,8 +14,9 @@
 
 part of w_transport.src.mocks.mock_transports;
 
-typedef Future<BaseResponse> RequestHandler(FinalizedRequest request);
-typedef Future<BaseResponse> PatternRequestHandler(
+typedef RequestHandler = Future<BaseResponse> Function(
+    FinalizedRequest request);
+typedef PatternRequestHandler = Future<BaseResponse> Function(
     FinalizedRequest request, Match match);
 
 class MockHttp {

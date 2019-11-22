@@ -25,8 +25,8 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/response.dart';
 
-typedef Future<Null> RequestInterceptor(BaseRequest request);
-typedef Future<BaseResponse> ResponseInterceptor(
+typedef RequestInterceptor = Future<Null> Function(BaseRequest request);
+typedef ResponseInterceptor = Future<BaseResponse> Function(
     FinalizedRequest request, BaseResponse response,
     [RequestException error]);
 

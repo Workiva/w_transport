@@ -22,8 +22,8 @@ import '../services/file_transfer.dart';
 // ignore: uri_has_not_been_generated
 part 'drop_zone_component.over_react.g.dart';
 
-typedef dynamic NewUploadsCallback(List<Upload> uploads);
-typedef dynamic DragEventCallback(Event event);
+typedef NewUploadsCallback = dynamic Function(List<Upload> uploads);
+typedef DragEventCallback = dynamic Function(Event event);
 
 /// File drop zone.
 ///

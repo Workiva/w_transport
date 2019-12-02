@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@Tags(['no-dart2'])
 @TestOn('browser')
 import 'package:test/test.dart';
 

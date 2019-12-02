@@ -1,25 +1,3 @@
-# Dart 1:
-# -------
-#
-# Run unit tests:
-#
-#     $ pub run dart_dev test -P dart1
-#
-# Run integration tests:
-#
-#     $ pub run dart_dev test -P dart1 -P integration
-#
-#
-# Dart 2:
-# -------
-#
-# Run unit tests:
-#
-#     $ pub run dart_dev test -P dart1
-#
-# Run integration tests:
-#
-#     $ pub run dart_dev test -P dart2 -P integration
 platforms:
   - chrome
   - vm
@@ -30,9 +8,6 @@ paths:
   - test/unit/ws
 
 presets:
-  dart2:
-    exclude_tags: "no-dart2"
-
   integration:
     concurrency: 1
     paths:

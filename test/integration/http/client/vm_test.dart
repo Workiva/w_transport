@@ -20,7 +20,7 @@ import '../../../naming.dart';
 import 'suite.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformVM
     ..testType = testTypeIntegration
     ..topic = topicHttp;

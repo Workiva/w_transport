@@ -28,7 +28,7 @@ import '../../naming.dart';
 import '../integration_paths.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformVM
     ..testType = testTypeIntegration
     ..topic = topicTransportPlatform;
@@ -43,24 +43,22 @@ void main() {
 
       // Properly constructs VM implementations of HTTP classes
       // ignore: deprecated_member_use
-      expect(new transport.Client(), new isInstanceOf<VMHttpClient>());
-      expect(new transport.HttpClient(), new isInstanceOf<VMHttpClient>());
-      expect(new transport.FormRequest(), new isInstanceOf<VMFormRequest>());
-      expect(new transport.JsonRequest(), new isInstanceOf<VMJsonRequest>());
-      expect(new transport.MultipartRequest(),
-          new isInstanceOf<VMMultipartRequest>());
-      expect(new transport.Request(), new isInstanceOf<VMPlainTextRequest>());
-      expect(new transport.StreamedRequest(),
-          new isInstanceOf<VMStreamedRequest>());
+      expect(transport.Client(), isInstanceOf<VMHttpClient>());
+      expect(transport.HttpClient(), isInstanceOf<VMHttpClient>());
+      expect(transport.FormRequest(), isInstanceOf<VMFormRequest>());
+      expect(transport.JsonRequest(), isInstanceOf<VMJsonRequest>());
+      expect(transport.MultipartRequest(), isInstanceOf<VMMultipartRequest>());
+      expect(transport.Request(), isInstanceOf<VMPlainTextRequest>());
+      expect(transport.StreamedRequest(), isInstanceOf<VMStreamedRequest>());
 
       // Properly constructs VM implementation of WebSocket
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, new isInstanceOf<VMWebSocket>());
+      expect(webSocket, isInstanceOf<VMWebSocket>());
       await webSocket.close();
       // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(wSocket, new isInstanceOf<VMWebSocket>());
+      expect(wSocket, isInstanceOf<VMWebSocket>());
       await wSocket.close();
     });
 
@@ -69,24 +67,22 @@ void main() {
 
       // Properly constructs VM implementations of HTTP classes
       // ignore: deprecated_member_use
-      expect(new transport.Client(), new isInstanceOf<VMHttpClient>());
-      expect(new transport.HttpClient(), new isInstanceOf<VMHttpClient>());
-      expect(new transport.FormRequest(), new isInstanceOf<VMFormRequest>());
-      expect(new transport.JsonRequest(), new isInstanceOf<VMJsonRequest>());
-      expect(new transport.MultipartRequest(),
-          new isInstanceOf<VMMultipartRequest>());
-      expect(new transport.Request(), new isInstanceOf<VMPlainTextRequest>());
-      expect(new transport.StreamedRequest(),
-          new isInstanceOf<VMStreamedRequest>());
+      expect(transport.Client(), isInstanceOf<VMHttpClient>());
+      expect(transport.HttpClient(), isInstanceOf<VMHttpClient>());
+      expect(transport.FormRequest(), isInstanceOf<VMFormRequest>());
+      expect(transport.JsonRequest(), isInstanceOf<VMJsonRequest>());
+      expect(transport.MultipartRequest(), isInstanceOf<VMMultipartRequest>());
+      expect(transport.Request(), isInstanceOf<VMPlainTextRequest>());
+      expect(transport.StreamedRequest(), isInstanceOf<VMStreamedRequest>());
 
       // Properly constructs VM implementation of WebSocket
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, new isInstanceOf<VMWebSocket>());
+      expect(webSocket, isInstanceOf<VMWebSocket>());
       await webSocket.close();
       // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(wSocket, new isInstanceOf<VMWebSocket>());
+      expect(wSocket, isInstanceOf<VMWebSocket>());
       await wSocket.close();
     });
 
@@ -103,39 +99,39 @@ void main() {
 
         test('requests with matching expectation should be handled', () async {
           final formRequest =
-              new transport.FormRequest(transportPlatform: vmTransportPlatform);
+              transport.FormRequest(transportPlatform: vmTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final jsonRequest =
-              new transport.JsonRequest(transportPlatform: vmTransportPlatform);
+              transport.JsonRequest(transportPlatform: vmTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)
-            ..fields['foo'] = 'bar';
+          final multipartRequest =
+              transport.MultipartRequest(transportPlatform: vmTransportPlatform)
+                ..fields['foo'] = 'bar';
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final request =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
-              transportPlatform: vmTransportPlatform);
+          final streamedRequest =
+              transport.StreamedRequest(transportPlatform: vmTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final requestWithStreamedResponse =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
           final httpClient =
-              new transport.HttpClient(transportPlatform: vmTransportPlatform);
+              transport.HttpClient(transportPlatform: vmTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
@@ -168,36 +164,36 @@ void main() {
 
         test('requests with matching handler should be handled', () async {
           MockTransports.http.when(IntegrationPaths.pingEndpointUri,
-              (request) async => new MockResponse.ok());
+              (request) async => MockResponse.ok());
 
           final formRequest =
-              new transport.FormRequest(transportPlatform: vmTransportPlatform);
+              transport.FormRequest(transportPlatform: vmTransportPlatform);
           await formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final jsonRequest =
-              new transport.JsonRequest(transportPlatform: vmTransportPlatform);
+              transport.JsonRequest(transportPlatform: vmTransportPlatform);
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)
-            ..fields['foo'] = 'bar';
+          final multipartRequest =
+              transport.MultipartRequest(transportPlatform: vmTransportPlatform)
+                ..fields['foo'] = 'bar';
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final request =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           await request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
-              transportPlatform: vmTransportPlatform);
+          final streamedRequest =
+              transport.StreamedRequest(transportPlatform: vmTransportPlatform);
           await streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final requestWithStreamedResponse =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           await requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
           final httpClient =
-              new transport.HttpClient(transportPlatform: vmTransportPlatform);
+              transport.HttpClient(transportPlatform: vmTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           await clientFormRequest.get(uri: IntegrationPaths.pingEndpointUri);
@@ -224,7 +220,7 @@ void main() {
 
         test('websockets with matching expectation should be handled',
             () async {
-          final mockWebSocketServer = new MockWebSocketServer();
+          final mockWebSocketServer = MockWebSocketServer();
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
@@ -237,7 +233,7 @@ void main() {
         });
 
         test('websockets with matching handler should be handled', () async {
-          final mockWebSocketServer = new MockWebSocketServer();
+          final mockWebSocketServer = MockWebSocketServer();
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
@@ -256,39 +252,39 @@ void main() {
         test('requests without expectation or handler should be pending',
             () async {
           final formRequest =
-              new transport.FormRequest(transportPlatform: vmTransportPlatform);
+              transport.FormRequest(transportPlatform: vmTransportPlatform);
           // ignore: unawaited_futures
           formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final jsonRequest =
-              new transport.JsonRequest(transportPlatform: vmTransportPlatform);
+              transport.JsonRequest(transportPlatform: vmTransportPlatform);
           // ignore: unawaited_futures
           jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)
-            ..fields['foo'] = 'bar';
+          final multipartRequest =
+              transport.MultipartRequest(transportPlatform: vmTransportPlatform)
+                ..fields['foo'] = 'bar';
           // ignore: unawaited_futures
           multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final request =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           // ignore: unawaited_futures
           request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
-              transportPlatform: vmTransportPlatform);
+          final streamedRequest =
+              transport.StreamedRequest(transportPlatform: vmTransportPlatform);
           // ignore: unawaited_futures
           streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final requestWithStreamedResponse =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           // ignore: unawaited_futures
           requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
           final httpClient =
-              new transport.HttpClient(transportPlatform: vmTransportPlatform);
+              transport.HttpClient(transportPlatform: vmTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           // ignore: unawaited_futures
@@ -316,7 +312,7 @@ void main() {
           clientRequestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
-          await new Future.delayed(const Duration(milliseconds: 50));
+          await Future.delayed(const Duration(milliseconds: 50));
           expect(MockTransports.http.numPendingRequests, equals(12));
           await MockTransports.reset();
         });
@@ -338,39 +334,39 @@ void main() {
 
         test('requests with matching expectation should be handled', () async {
           final formRequest =
-              new transport.FormRequest(transportPlatform: vmTransportPlatform);
+              transport.FormRequest(transportPlatform: vmTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final jsonRequest =
-              new transport.JsonRequest(transportPlatform: vmTransportPlatform);
+              transport.JsonRequest(transportPlatform: vmTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)
-            ..fields['foo'] = 'bar';
+          final multipartRequest =
+              transport.MultipartRequest(transportPlatform: vmTransportPlatform)
+                ..fields['foo'] = 'bar';
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final request =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
-              transportPlatform: vmTransportPlatform);
+          final streamedRequest =
+              transport.StreamedRequest(transportPlatform: vmTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final requestWithStreamedResponse =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
           await requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
           final httpClient =
-              new transport.HttpClient(transportPlatform: vmTransportPlatform);
+              transport.HttpClient(transportPlatform: vmTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           MockTransports.http.expect('GET', IntegrationPaths.pingEndpointUri);
@@ -403,36 +399,36 @@ void main() {
 
         test('requests with matching handler should be handled', () async {
           MockTransports.http.when(IntegrationPaths.pingEndpointUri,
-              (request) async => new MockResponse.ok());
+              (request) async => MockResponse.ok());
 
           final formRequest =
-              new transport.FormRequest(transportPlatform: vmTransportPlatform);
+              transport.FormRequest(transportPlatform: vmTransportPlatform);
           await formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final jsonRequest =
-              new transport.JsonRequest(transportPlatform: vmTransportPlatform);
+              transport.JsonRequest(transportPlatform: vmTransportPlatform);
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)
-            ..fields['foo'] = 'bar';
+          final multipartRequest =
+              transport.MultipartRequest(transportPlatform: vmTransportPlatform)
+                ..fields['foo'] = 'bar';
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final request =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           await request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
-              transportPlatform: vmTransportPlatform);
+          final streamedRequest =
+              transport.StreamedRequest(transportPlatform: vmTransportPlatform);
           await streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final requestWithStreamedResponse =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           await requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
           final httpClient =
-              new transport.HttpClient(transportPlatform: vmTransportPlatform);
+              transport.HttpClient(transportPlatform: vmTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           await clientFormRequest.get(uri: IntegrationPaths.pingEndpointUri);
@@ -459,7 +455,7 @@ void main() {
 
         test('websockets with matching expectation should be handled',
             () async {
-          final mockWebSocketServer = new MockWebSocketServer();
+          final mockWebSocketServer = MockWebSocketServer();
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
@@ -472,7 +468,7 @@ void main() {
         });
 
         test('websockets with matching handler should be handled', () async {
-          final mockWebSocketServer = new MockWebSocketServer();
+          final mockWebSocketServer = MockWebSocketServer();
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
@@ -492,33 +488,33 @@ void main() {
             'requests without expectation or handler should switch to real request',
             () async {
           final formRequest =
-              new transport.FormRequest(transportPlatform: vmTransportPlatform);
+              transport.FormRequest(transportPlatform: vmTransportPlatform);
           await formRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final jsonRequest =
-              new transport.JsonRequest(transportPlatform: vmTransportPlatform);
+              transport.JsonRequest(transportPlatform: vmTransportPlatform);
           await jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final multipartRequest = new transport.MultipartRequest(
-              transportPlatform: vmTransportPlatform)
-            ..fields['foo'] = 'bar';
+          final multipartRequest =
+              transport.MultipartRequest(transportPlatform: vmTransportPlatform)
+                ..fields['foo'] = 'bar';
           await multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final request =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           await request.get(uri: IntegrationPaths.pingEndpointUri);
 
-          final streamedRequest = new transport.StreamedRequest(
-              transportPlatform: vmTransportPlatform);
+          final streamedRequest =
+              transport.StreamedRequest(transportPlatform: vmTransportPlatform);
           await streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
 
           final requestWithStreamedResponse =
-              new transport.Request(transportPlatform: vmTransportPlatform);
+              transport.Request(transportPlatform: vmTransportPlatform);
           await requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri);
 
           final httpClient =
-              new transport.HttpClient(transportPlatform: vmTransportPlatform);
+              transport.HttpClient(transportPlatform: vmTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
           await clientFormRequest.get(uri: IntegrationPaths.pingEndpointUri);

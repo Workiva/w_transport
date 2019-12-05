@@ -278,8 +278,7 @@ class Http {
       Map<String, String> headers,
       TransportPlatform transportPlatform,
       bool withCredentials}) {
-    final request = new Request(transportPlatform: transportPlatform)
-      ..uri = uri;
+    final request = Request(transportPlatform: transportPlatform)..uri = uri;
     if (body != null) {
       request.body = body;
     }

@@ -23,7 +23,7 @@ import 'package:w_transport/src/http/http_interceptor.dart' show Pathway;
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -39,17 +39,15 @@ void main() {
       });
 
       test('default implementations should not modify the payloads', () async {
-        final req = new transport.Request()..uri = Uri.parse('/test');
-        final body = new transport.HttpBody.fromString(
-            new MediaType('text', 'plain'), 'body');
-        final finalizedReq =
-            new FinalizedRequest('GET', req.uri, {}, body, false);
-        final resp = new MockResponse.ok();
-        final reqPayload =
-            new transport.RequestPayload(new transport.Request());
-        final respPayload = new transport.ResponsePayload(finalizedReq, resp);
+        final req = transport.Request()..uri = Uri.parse('/test');
+        final body =
+            transport.HttpBody.fromString(MediaType('text', 'plain'), 'body');
+        final finalizedReq = FinalizedRequest('GET', req.uri, {}, body, false);
+        final resp = MockResponse.ok();
+        final reqPayload = transport.RequestPayload(transport.Request());
+        final respPayload = transport.ResponsePayload(finalizedReq, resp);
 
-        final interceptor = new transport.HttpInterceptor();
+        final interceptor = transport.HttpInterceptor();
         expect(
             identical(
                 reqPayload, await interceptor.interceptRequest(reqPayload)),
@@ -63,7 +61,7 @@ void main() {
 
     group('Pathway', () {
       test('waits for Futures to resolve', () async {
-        final pathway = new Pathway<String>();
+        final pathway = Pathway<String>();
         pathway.addInterceptor((String input) async => input * 2);
         pathway.addInterceptor((String input) async => input + 'b');
         final result = await pathway.process('a');
@@ -71,7 +69,7 @@ void main() {
       });
 
       test('handles values returned immediately (no Future)', () async {
-        final pathway = new Pathway<String>();
+        final pathway = Pathway<String>();
         pathway.addInterceptor((String input) => input * 2);
         pathway.addInterceptor((String input) => input + 'b');
         final result = await pathway.process('a');
@@ -79,7 +77,7 @@ void main() {
       });
 
       test('handles a mix of immediate values and Futures', () async {
-        final pathway = new Pathway<String>();
+        final pathway = Pathway<String>();
         pathway.addInterceptor((String input) async => input * 2);
         pathway.addInterceptor((String input) => input + 'b');
         final result = await pathway.process('a');
@@ -87,7 +85,7 @@ void main() {
       });
 
       test('throws if an invalid value is returned', () async {
-        final pathway = new Pathway<String>();
+        final pathway = Pathway<String>();
         pathway.addInterceptor((String input) async => input * 2);
         pathway.addInterceptor((String input) => input + 'b');
         pathway.addInterceptor((String input) => 10);

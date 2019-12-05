@@ -28,7 +28,7 @@ class BrowserHttpClient extends CommonHttpClient implements HttpClient {
   @override
   FormRequest newFormRequest() {
     verifyNotClosed();
-    final request = new BrowserFormRequest.fromClient(this);
+    final request = BrowserFormRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -38,7 +38,7 @@ class BrowserHttpClient extends CommonHttpClient implements HttpClient {
   @override
   JsonRequest newJsonRequest() {
     verifyNotClosed();
-    final request = new BrowserJsonRequest.fromClient(this);
+    final request = BrowserJsonRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -48,7 +48,7 @@ class BrowserHttpClient extends CommonHttpClient implements HttpClient {
   @override
   MultipartRequest newMultipartRequest() {
     verifyNotClosed();
-    final request = new BrowserMultipartRequest.fromClient(this);
+    final request = BrowserMultipartRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -58,7 +58,7 @@ class BrowserHttpClient extends CommonHttpClient implements HttpClient {
   @override
   Request newRequest() {
     verifyNotClosed();
-    final request = new BrowserPlainTextRequest.fromClient(this);
+    final request = BrowserPlainTextRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }
@@ -68,7 +68,7 @@ class BrowserHttpClient extends CommonHttpClient implements HttpClient {
   @override
   StreamedRequest newStreamedRequest() {
     verifyNotClosed();
-    final request = new BrowserStreamedRequest.fromClient(this);
+    final request = BrowserStreamedRequest.fromClient(this);
     registerAndDecorateRequest(request);
     return request;
   }

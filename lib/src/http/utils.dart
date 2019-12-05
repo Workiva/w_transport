@@ -17,14 +17,13 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 
 import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 
 /// RegExp that only matches strings containing only ASCII-compatible chars.
-final _asciiOnly = new RegExp(r'^[\x00-\x7F]+$');
+final _asciiOnly = RegExp(r'^[\x00-\x7F]+$');
 
 /// Base used when calculating the exponential backoff.
 const _exponentialBase = 2;
@@ -53,18 +52,18 @@ Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry) {
   backOffInMs = min(autoRetry.backOff.maxInterval.inMilliseconds, backOffInMs);
 
   if (autoRetry.backOff.withJitter == true) {
-    final random = new Random();
+    final random = Random();
     backOffInMs = random.nextInt(backOffInMs);
   }
-  return new Duration(milliseconds: backOffInMs);
+  return Duration(milliseconds: backOffInMs);
 }
 
 Duration _calculateFixedBackOff(RequestAutoRetry autoRetry) {
   Duration backOff;
 
   if (autoRetry.backOff.withJitter == true) {
-    final random = new Random();
-    backOff = new Duration(
+    final random = Random();
+    backOff = Duration(
         milliseconds: autoRetry.backOff.interval.inMilliseconds ~/ 2 +
             random.nextInt(autoRetry.backOff.interval.inMilliseconds).toInt());
   } else {
@@ -88,8 +87,8 @@ String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
     final valueList = value is List ? value : [value];
     for (final v in valueList) {
       final encoded = <String>[
-        Uri.encodeQueryComponent(key, encoding: encoding ?? convert.utf8),
-        Uri.encodeQueryComponent(v, encoding: encoding ?? convert.utf8),
+        Uri.encodeQueryComponent(key, encoding: encoding ?? utf8),
+        Uri.encodeQueryComponent(v, encoding: encoding ?? utf8),
       ];
       params.add(encoded.join('='));
     }
@@ -104,11 +103,11 @@ String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
 /// http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html#sec7.2.1).
 MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
   // Ensure the headers are case-insensitive.
-  headers = new CaseInsensitiveMap<String>.from(headers);
+  headers = CaseInsensitiveMap<String>.from(headers);
   if (headers['content-type'] != null) {
-    return new MediaType.parse(headers['content-type']);
+    return MediaType.parse(headers['content-type']);
   }
-  return new MediaType('application', 'octet-stream');
+  return MediaType('application', 'octet-stream');
 }
 
 /// Returns the [Encoding] specified by the `charset` parameter of
@@ -139,7 +138,7 @@ Encoding parseEncodingFromContentTypeOrFail(MediaType contentType,
   if (encoding != null) return encoding;
   final charset =
       contentType != null ? contentType.parameters['charset'] : null;
-  throw new FormatException('Unsupported charset: $charset');
+  throw FormatException('Unsupported charset: $charset');
 }
 
 /// Parses the content-type from [headers] and uses its `charset` parameter to
@@ -166,8 +165,8 @@ Map<String, Object> queryToMap(String query, {Encoding encoding}) {
     String key = pieces.first;
     String value = pieces.length > 1 ? pieces.sublist(1).join('') : '';
 
-    key = Uri.decodeQueryComponent(key, encoding: encoding ?? convert.utf8);
-    value = Uri.decodeQueryComponent(value, encoding: encoding ?? convert.utf8);
+    key = Uri.decodeQueryComponent(key, encoding: encoding ?? utf8);
+    value = Uri.decodeQueryComponent(value, encoding: encoding ?? utf8);
 
     if (fields.containsKey(key)) {
       if (fields[key] is! List) {
@@ -186,18 +185,18 @@ Map<String, Object> queryToMap(String query, {Encoding encoding}) {
 Future<Uint8List> reduceByteStream(Stream<List<int>> byteStream) async {
   try {
     final bytes = await byteStream.reduce((prev, next) {
-      return new List<int>.from(prev)..addAll(next);
+      return List<int>.from(prev)..addAll(next);
     });
-    return new Uint8List.fromList(bytes);
+    return Uint8List.fromList(bytes);
   } on StateError {
     // StateError is thrown if stream was empty.
-    return new Uint8List.fromList([]);
+    return Uint8List.fromList([]);
   }
 }
 
 class ByteStreamProgressListener {
   StreamController<RequestProgress> _progressController =
-      new StreamController<RequestProgress>();
+      StreamController<RequestProgress>();
 
   Stream<List<int>> _transformed;
 
@@ -212,18 +211,18 @@ class ByteStreamProgressListener {
   Stream<List<int>> _listenTo(Stream<List<int>> byteStream, {int total}) {
     int loaded = 0;
 
-    final progressListener = new StreamTransformer<List<int>, List<int>>(
+    final progressListener = StreamTransformer<List<int>, List<int>>(
         (Stream<List<int>> input, bool cancelOnError) {
       StreamController<List<int>> controller;
       StreamSubscription<List<int>> subscription;
 
-      controller = new StreamController<List<int>>(onListen: () {
+      controller = StreamController<List<int>>(onListen: () {
         subscription = input.listen(
             (bytes) {
               controller.add(bytes);
               try {
                 loaded += bytes.length;
-                _progressController.add(new RequestProgress(loaded, total));
+                _progressController.add(RequestProgress(loaded, total));
               } catch (e) {
                 // If one item from the stream is not of type List<int>,
                 // attempting to add the length to the `loaded` counter would

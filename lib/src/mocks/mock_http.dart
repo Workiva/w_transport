@@ -14,8 +14,9 @@
 
 part of w_transport.src.mocks.mock_transports;
 
-typedef Future<BaseResponse> RequestHandler(FinalizedRequest request);
-typedef Future<BaseResponse> PatternRequestHandler(
+typedef RequestHandler = Future<BaseResponse> Function(
+    FinalizedRequest request);
+typedef PatternRequestHandler = Future<BaseResponse> Function(
     FinalizedRequest request, Match match);
 
 class MockHttp {
@@ -89,7 +90,7 @@ class MockHttp {
       errorMsg += requestLines.join('\n');
       errorMsg += '\n';
     }
-    if (errorMsg.isNotEmpty) throw new StateError(errorMsg);
+    if (errorMsg.isNotEmpty) throw StateError(errorMsg);
   }
 
   MockHttpHandler when(Uri uri, RequestHandler handler, {String method}) {
@@ -98,7 +99,7 @@ class MockHttp {
     }
     final methodKey = method == null ? '*' : method.toUpperCase();
     MockHttpInternal._requestHandlers[uri][methodKey] = handler;
-    return new MockHttpHandler._(() {
+    return MockHttpHandler._(() {
       final handlers = MockHttpInternal._requestHandlers[uri];
       if (handlers != null &&
           handlers[methodKey] != null &&
@@ -115,7 +116,7 @@ class MockHttp {
     }
     final methodKey = method == null ? '*' : method.toUpperCase();
     MockHttpInternal._patternRequestHandlers[uriPattern][methodKey] = handler;
-    return new MockHttpHandler._(() {
+    return MockHttpHandler._(() {
       final handlers = MockHttpInternal._patternRequestHandlers[uriPattern];
       if (handlers != null &&
           handlers[methodKey] != null &&
@@ -207,19 +208,19 @@ class MockHttpInternal {
       Map<String, String> headers,
       BaseResponse respondWith}) {
     if (failWith != null && respondWith != null) {
-      throw new ArgumentError('Use failWith OR respondWith, but not both.');
+      throw ArgumentError('Use failWith OR respondWith, but not both.');
     }
     if (failWith == null && respondWith == null) {
-      respondWith = new MockResponse.ok();
+      respondWith = MockResponse.ok();
     }
-    _expectations.add(new _RequestExpectation(method, uri,
-        headers == null ? null : new CaseInsensitiveMap<String>.from(headers),
+    _expectations.add(_RequestExpectation(method, uri,
+        headers == null ? null : CaseInsensitiveMap<String>.from(headers),
         failWith: failWith, respondWith: respondWith));
   }
 
   static Iterable<_RequestExpectation> _getMatchingExpectations(
       String method, Uri uri, Map<String, String> headers) {
-    headers = new CaseInsensitiveMap<String>.from(headers);
+    headers = CaseInsensitiveMap<String>.from(headers);
 
     return _expectations.where((e) {
       final methodMatches = e.method == method;
@@ -283,14 +284,14 @@ class MockHttpInternal {
       }
     }
     if (handler == null) return null;
-    return new _RequestHandlerMatch(handler,
+    return _RequestHandlerMatch(handler,
         match: handler is PatternRequestHandler ? match : null);
   }
 
   static void _verifyRequestIsMock(BaseRequest request) {
     // ignore: deprecated_member_use
     if (request is! MockBaseRequest) {
-      throw new ArgumentError.value(
+      throw ArgumentError.value(
           'Request must be of type MockBaseRequest. Make sure you configured w_transport for testing.');
     }
   }

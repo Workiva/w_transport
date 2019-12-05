@@ -44,7 +44,7 @@ abstract class HttpClient extends Client {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
       // successfully construct an HttpClient.
-      throw new TransportPlatformMissing.httpClientFailed();
+      throw TransportPlatformMissing.httpClientFailed();
     }
   }
 }

@@ -22,42 +22,40 @@ import 'package:w_transport/w_transport.dart' as transport;
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
   group(naming.toString(), () {
     group('MultipartFile', () {
       test('content-type set explicitly', () {
-        final contentType = new MediaType('application', 'json');
-        final file = new transport.MultipartFile(new Stream.fromIterable([]), 0,
+        final contentType = MediaType('application', 'json');
+        final file = transport.MultipartFile(Stream.fromIterable([]), 0,
             contentType: contentType, filename: 'page.html');
         expect(file.contentType.mimeType, 'application/json');
       });
 
       test('content-type should be based on a mimetype lookup', () {
-        final stream = new Stream<List<int>>.fromIterable([]);
+        final stream = Stream<List<int>>.fromIterable([]);
 
         final jsonFile =
-            new transport.MultipartFile(stream, 0, filename: 'data.json');
+            transport.MultipartFile(stream, 0, filename: 'data.json');
         expect(jsonFile.contentType.mimeType, equals('application/json'));
 
         final zipFile =
-            new transport.MultipartFile(stream, 0, filename: 'compressed.zip');
+            transport.MultipartFile(stream, 0, filename: 'compressed.zip');
         expect(zipFile.contentType.mimeType, equals('application/zip'));
 
-        final imgFile =
-            new transport.MultipartFile(stream, 0, filename: 'img.png');
+        final imgFile = transport.MultipartFile(stream, 0, filename: 'img.png');
         expect(imgFile.contentType.mimeType, equals('image/png'));
 
         final htmlFile =
-            new transport.MultipartFile(stream, 0, filename: 'page.html');
+            transport.MultipartFile(stream, 0, filename: 'page.html');
         expect(htmlFile.contentType.mimeType, equals('text/html'));
       });
 
       test('content-type default to application/octet-stream', () {
-        final file =
-            new transport.MultipartFile(new Stream.fromIterable([]), 0);
+        final file = transport.MultipartFile(Stream.fromIterable([]), 0);
         expect(file.contentType.mimeType, equals('application/octet-stream'));
       });
     });

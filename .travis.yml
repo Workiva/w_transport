@@ -10,17 +10,25 @@ cache:
   directories:
     - $HOME/.pub-cache
 
-dart:
-  - 1.24.3
-  - stable
-
 before_script:
   - npm install
 
-script:
-  - pub run dart_dev analyze
-#  - cd example && pub get && dartanalyzer .; cd ..
-  - pub run dart_dev dart2-only -- format --check
-  - pub run dependency_validator -i build_runner,build_test,build_web_compilers,coverage,dart_style --exclude-dir=example
-  - pub run dart_dev dart1-only -- test -P integration -P travis
-  - pub run dart_dev dart2-only -- test -P integration -P travis -P dart2
+jobs:
+  include:
+    - dart: 2.4.0
+      name: "SDK: 2.4.0"
+      script:
+        - pub run dart_dev analyze
+        - pub run dart_dev test -P integration -P travis
+    - dart: stable
+      name: "SDK: stable"
+      script:
+        - pub run dart_dev analyze
+        - pub run dart_dev format --check
+        - pub run dependency_validator --exclude-dir=example
+        - pub run dart_dev test -P integration -P travis
+    - dart: dev
+      name: "SDK: dev"
+      script:
+        - pub run dart_dev analyze
+        - pub run dart_dev test -P integration -P travis

@@ -23,7 +23,7 @@ import 'package:w_transport/src/web_socket/w_socket_subscription.dart';
 import '../../naming.dart';
 
 void main() {
-  Naming naming = new Naming()
+  Naming naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicWebSocket;
 
@@ -31,12 +31,12 @@ void main() {
     group('WSocketSubscription', () {
       test('cancel() should cancel underlying subscription and call callback',
           () async {
-        final onCancelCalled = new Completer<Null>();
+        final onCancelCalled = Completer<Null>();
 
-        final sc = new StreamController<dynamic>();
+        final sc = StreamController<dynamic>();
         final sub = sc.stream.listen((_) {});
-        final wsub = new WSocketSubscription(sub, () {},
-            onCancel: onCancelCalled.complete);
+        final wsub =
+            WSocketSubscription(sub, () {}, onCancel: onCancelCalled.complete);
 
         await Future.wait([
           wsub.cancel(),
@@ -48,9 +48,9 @@ void main() {
 
       test('isPaused should return the status of the underlying subscription',
           () async {
-        final sc = new StreamController<dynamic>();
+        final sc = StreamController<dynamic>();
         final sub = sc.stream.listen((_) {});
-        final wsub = new WSocketSubscription(sub, () {});
+        final wsub = WSocketSubscription(sub, () {});
 
         expect(sub.isPaused, isFalse);
         expect(wsub.isPaused, isFalse);
@@ -68,8 +68,8 @@ void main() {
       });
 
       test('onDone() should update the done handler', () async {
-        final sub = new MockStreamSubscription();
-        final wsub = new WSocketSubscription(sub, () {});
+        final sub = MockStreamSubscription();
+        final wsub = WSocketSubscription(sub, () {});
         final doneHandler = () {};
 
         wsub.onDone(doneHandler);
@@ -80,8 +80,8 @@ void main() {
 
       test('onError() should call onError() on the underlying subscription',
           () async {
-        final sub = new MockStreamSubscription();
-        final wsub = new WSocketSubscription(sub, () {});
+        final sub = MockStreamSubscription();
+        final wsub = WSocketSubscription(sub, () {});
         final errorHandler = (_) {};
 
         wsub.onError(errorHandler);
@@ -93,8 +93,8 @@ void main() {
 
       test('onData() should call onData() on the underlying subscription',
           () async {
-        final sub = new MockStreamSubscription();
-        final wsub = new WSocketSubscription(sub, () {});
+        final sub = MockStreamSubscription();
+        final wsub = WSocketSubscription(sub, () {});
         final dataHandler = (_) {};
 
         wsub.onData(dataHandler);

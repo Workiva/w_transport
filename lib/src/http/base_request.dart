@@ -15,7 +15,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:fluri/fluri.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -26,8 +25,8 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/response.dart';
 
-typedef Future<Null> RequestInterceptor(BaseRequest request);
-typedef Future<BaseResponse> ResponseInterceptor(
+typedef RequestInterceptor = Future<Null> Function(BaseRequest request);
+typedef ResponseInterceptor = Future<BaseResponse> Function(
     FinalizedRequest request, BaseResponse response,
     [RequestException error]);
 
@@ -69,7 +68,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// will also update the [contentType]'s charset.
   ///
   /// Defaults to utf-8.
-  Encoding encoding = convert.utf8;
+  Encoding encoding = utf8;
 
   /// Headers to send with the HTTP request. Headers are case-insensitive.
   ///

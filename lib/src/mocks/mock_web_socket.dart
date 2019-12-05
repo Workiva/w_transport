@@ -14,15 +14,14 @@
 
 part of w_transport.src.mocks.mock_transports;
 
-typedef Future<dynamic /*WSocket|MockWebSocketServer*/ > WebSocketConnectHandler(
-    Uri uri,
-    {Map<String, dynamic> headers,
-    Iterable<String> protocols});
-typedef Future<dynamic /*WSocket|MockWebSocketServer*/ > WebSocketPatternConnectHandler(
-    Uri uri,
-    {Map<String, dynamic> headers,
-    Match match,
-    Iterable<String> protocols});
+typedef WebSocketConnectHandler
+    = Future<dynamic /*WSocket|MockWebSocketServer*/ > Function(Uri uri,
+        {Map<String, dynamic> headers, Iterable<String> protocols});
+typedef WebSocketPatternConnectHandler
+    = Future<dynamic /*WSocket|MockWebSocketServer*/ > Function(Uri uri,
+        {Map<String, dynamic> headers,
+        Match match,
+        Iterable<String> protocols});
 
 class MockWebSockets {
   const MockWebSockets();
@@ -49,12 +48,12 @@ class MockWebSockets {
     MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
     if (reject != null && reject) {
       handler = (uri, {protocols, headers}) {
-        throw new WebSocketException('Mock connection to $uri rejected.');
+        throw WebSocketException('Mock connection to $uri rejected.');
       };
     }
     MockWebSocketInternal._handlers[uri.toString()] = handler;
 
-    return new MockWebSocketHandler._(() {
+    return MockWebSocketHandler._(() {
       final currentHandler = MockWebSocketInternal._handlers[uri.toString()];
       if (currentHandler != null && currentHandler == handler) {
         MockWebSocketInternal._handlers.remove(uri.toString());
@@ -67,12 +66,12 @@ class MockWebSockets {
     MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
     if (reject == true) {
       handler = (uri, {protocols, headers, match}) {
-        throw new WebSocketException('Mock connection to $uri rejected.');
+        throw WebSocketException('Mock connection to $uri rejected.');
       };
     }
     MockWebSocketInternal._patternHandlers[uriPattern] = handler;
 
-    return new MockWebSocketHandler._(() {
+    return MockWebSocketHandler._(() {
       final currentHandler = MockWebSocketInternal._patternHandlers[uriPattern];
       if (currentHandler != null && currentHandler == handler) {
         MockWebSocketInternal._patternHandlers.remove(uriPattern);
@@ -104,7 +103,7 @@ class MockWebSocketInternal {
       _WebSocketConnectExpectation expectation = matchingExpectations.first;
       _expectations.remove(expectation);
       if (expectation.reject != null && expectation.reject) {
-        throw new WebSocketException('Mock connection to $uri rejected.');
+        throw WebSocketException('Mock connection to $uri rejected.');
       }
 
       // For backwards compatibility, it is still allowed to pass in a `WSocket`
@@ -118,7 +117,7 @@ class MockWebSocketInternal {
       // `WebSocket` instance, return it, and notify the mock server that this
       // new client has connected.
       // ignore: deprecated_member_use
-      final mockWebSocket = new MockWSocket();
+      final mockWebSocket = MockWSocket();
       MockWebSocketServer mockWebSocketServer = expectation.connectTo;
       mockWebSocketServer._connectClient(mockWebSocket, uri,
           headers: headers, protocols: protocols);
@@ -142,7 +141,7 @@ class MockWebSocketInternal {
       }
       // ignore: deprecated_member_use
       if (result is! WSocket && result is! MockWebSocketServer) {
-        throw new ArgumentError('Mock WebSocket handlers must return an '
+        throw ArgumentError('Mock WebSocket handlers must return an '
             'instance of MockWSocket or MockWebSocketServer.');
       }
 
@@ -157,7 +156,7 @@ class MockWebSocketInternal {
       // return it, and notify the mock server that this new client has
       // connected.
       // ignore: deprecated_member_use
-      final mockWebSocket = new MockWSocket();
+      final mockWebSocket = MockWSocket();
       MockWebSocketServer mockWebSocketServer = result;
       mockWebSocketServer._connectClient(mockWebSocket, uri,
           headers: headers, protocols: protocols);
@@ -176,19 +175,19 @@ class MockWebSocketInternal {
   static void _expect(Object uri,
       {dynamic /*MockWSocket|MockWebSocketServer*/ connectTo, bool reject}) {
     if (connectTo != null && reject != null) {
-      throw new ArgumentError('Use connectTo OR reject, but not both.');
+      throw ArgumentError('Use connectTo OR reject, but not both.');
     }
     if (connectTo == null && reject == null) {
-      throw new ArgumentError('Either connectTo OR reject must be set.');
+      throw ArgumentError('Either connectTo OR reject must be set.');
     }
     if (connectTo != null &&
         // ignore: deprecated_member_use
         connectTo is! MockWSocket &&
         connectTo is! MockWebSocketServer) {
-      throw new ArgumentError(
+      throw ArgumentError(
           'connectTo must be an MockWSocket instance or a MockWebSocketServer instance.');
     }
-    _expectations.add(new _WebSocketConnectExpectation(uri,
+    _expectations.add(_WebSocketConnectExpectation(uri,
         connectTo: connectTo, reject: reject));
   }
 
@@ -206,7 +205,7 @@ class MockWebSocketInternal {
 
   static _WebSocketHandlerMatch _getMatchingHandler(Uri uri) {
     if (_handlers.containsKey(uri.toString())) {
-      return new _WebSocketHandlerMatch(_handlers[uri.toString()]);
+      return _WebSocketHandlerMatch(_handlers[uri.toString()]);
     }
 
     Match match;
@@ -220,7 +219,7 @@ class MockWebSocketInternal {
     }, orElse: () => null);
 
     if (matchingHandlerKey != null) {
-      return new _WebSocketHandlerMatch(_patternHandlers[matchingHandlerKey],
+      return _WebSocketHandlerMatch(_patternHandlers[matchingHandlerKey],
           match: match);
     }
 
@@ -229,10 +228,10 @@ class MockWebSocketInternal {
 
   static void _validateWhenParams({dynamic handler, bool reject}) {
     if (handler != null && reject != null) {
-      throw new ArgumentError('Use handler OR reject, but not both.');
+      throw ArgumentError('Use handler OR reject, but not both.');
     }
     if (handler == null && reject == null) {
-      throw new ArgumentError('Either handler OR reject must be set.');
+      throw ArgumentError('Either handler OR reject must be set.');
     }
   }
 }

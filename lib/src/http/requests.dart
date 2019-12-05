@@ -45,7 +45,7 @@ abstract class FormRequest extends BaseRequest {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
       // successfully construct a FormRequest.
-      throw new TransportPlatformMissing.httpRequestFailed('FormRequest');
+      throw TransportPlatformMissing.httpRequestFailed('FormRequest');
     }
   }
 
@@ -108,7 +108,7 @@ abstract class JsonRequest extends BaseRequest {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
       // successfully construct a JsonRequest.
-      throw new TransportPlatformMissing.httpRequestFailed('JsonRequest');
+      throw TransportPlatformMissing.httpRequestFailed('JsonRequest');
     }
   }
 
@@ -185,7 +185,7 @@ abstract class MultipartRequest extends BaseRequest {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
       // successfully construct a MultipartRequest.
-      throw new TransportPlatformMissing.httpRequestFailed('MultipartRequest');
+      throw TransportPlatformMissing.httpRequestFailed('MultipartRequest');
     }
   }
 
@@ -215,7 +215,7 @@ abstract class Request extends BaseRequest {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
       // successfully construct a Request.
-      throw new TransportPlatformMissing.httpRequestFailed('Request');
+      throw TransportPlatformMissing.httpRequestFailed('Request');
     }
   }
 
@@ -264,7 +264,7 @@ abstract class StreamedRequest extends BaseRequest {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
       // successfully construct a StreamedRequest.
-      throw new TransportPlatformMissing.httpRequestFailed('StreamedRequest');
+      throw TransportPlatformMissing.httpRequestFailed('StreamedRequest');
     }
   }
 

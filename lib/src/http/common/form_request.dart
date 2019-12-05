@@ -37,12 +37,12 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
   int get contentLength => _encodedQuery.length;
 
   @override
-  MediaType get defaultContentType => new MediaType(
+  MediaType get defaultContentType => MediaType(
       'application', 'x-www-form-urlencoded', {'charset': encoding.name});
 
   @override
   Map<String, dynamic> get fields =>
-      isSent ? new Map<String, dynamic>.unmodifiable(_fields) : _fields;
+      isSent ? Map<String, dynamic>.unmodifiable(_fields) : _fields;
 
   @override
   set fields(Map<String, dynamic> fields) {
@@ -53,7 +53,7 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
   Uint8List get _encodedQuery {
     fields.forEach((key, value) {
       if (value is! String && value is! Iterable<String>) {
-        throw new ArgumentError('FormRequest: value of "$key" field must be of '
+        throw ArgumentError('FormRequest: value of "$key" field must be of '
             'type `String` or `Iterable<String>`');
       }
     });
@@ -72,11 +72,11 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
       if (body is Map<String, dynamic>) {
         fields = body;
       } else {
-        throw new ArgumentError.value(
+        throw ArgumentError.value(
             body, 'body', 'Body must be of type Map<String, dynamic>');
       }
     }
-    return new HttpBody.fromBytes(contentType, _encodedQuery,
+    return HttpBody.fromBytes(contentType, _encodedQuery,
         fallbackEncoding: encoding);
   }
 }

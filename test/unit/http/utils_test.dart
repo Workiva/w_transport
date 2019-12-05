@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
@@ -27,7 +27,7 @@ import 'package:w_transport/src/http/utils.dart' as http_utils;
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -45,10 +45,10 @@ void main() {
 
         group('exponential', () {
           test('maxInterval should not be exceeded (no jitter)', () async {
-            final request = new transport.Request();
-            final interval = new Duration(milliseconds: 5);
-            final maxInterval = new Duration(milliseconds: 400);
-            request.autoRetry.backOff = new transport.RetryBackOff.exponential(
+            final request = transport.Request();
+            final interval = Duration(milliseconds: 5);
+            final maxInterval = Duration(milliseconds: 400);
+            request.autoRetry.backOff = transport.RetryBackOff.exponential(
                 interval,
                 withJitter: false,
                 maxInterval: maxInterval);
@@ -74,10 +74,10 @@ void main() {
           });
 
           test('maxInterval should not be exceeded (with jitter)', () async {
-            final request = new transport.Request();
-            final interval = new Duration(milliseconds: 5);
-            final maxInterval = new Duration(milliseconds: 400);
-            request.autoRetry.backOff = new transport.RetryBackOff.exponential(
+            final request = transport.Request();
+            final interval = Duration(milliseconds: 5);
+            final maxInterval = Duration(milliseconds: 400);
+            request.autoRetry.backOff = transport.RetryBackOff.exponential(
                 interval,
                 withJitter: true,
                 maxInterval: maxInterval);
@@ -103,11 +103,11 @@ void main() {
           });
 
           test('maxInterval should be exceeded (no jitter)', () async {
-            final request = new transport.Request();
-            final interval = new Duration(milliseconds: 5);
-            final maxInterval = new Duration(milliseconds: 20);
+            final request = transport.Request();
+            final interval = Duration(milliseconds: 5);
+            final maxInterval = Duration(milliseconds: 20);
             const withJitter = false;
-            request.autoRetry.backOff = new transport.RetryBackOff.exponential(
+            request.autoRetry.backOff = transport.RetryBackOff.exponential(
                 interval,
                 withJitter: withJitter,
                 maxInterval: maxInterval);
@@ -139,11 +139,11 @@ void main() {
           });
 
           test('maxInterval should be exceeded (with jitter)', () async {
-            final request = new transport.Request();
-            final interval = new Duration(milliseconds: 5);
-            final maxInterval = new Duration(milliseconds: 20);
+            final request = transport.Request();
+            final interval = Duration(milliseconds: 5);
+            final maxInterval = Duration(milliseconds: 20);
             const withJitter = true;
-            request.autoRetry.backOff = new transport.RetryBackOff.exponential(
+            request.autoRetry.backOff = transport.RetryBackOff.exponential(
                 interval,
                 withJitter: withJitter,
                 maxInterval: maxInterval);
@@ -178,12 +178,11 @@ void main() {
 
         group('fixed', () {
           test('no jitter', () async {
-            final request = new transport.Request();
-            final interval = new Duration(milliseconds: 5);
+            final request = transport.Request();
+            final interval = Duration(milliseconds: 5);
             const withJitter = false;
-            request.autoRetry.backOff = new transport.RetryBackOff.fixed(
-                interval,
-                withJitter: withJitter);
+            request.autoRetry.backOff =
+                transport.RetryBackOff.fixed(interval, withJitter: withJitter);
 
             for (int i = 0; i < 5; i++) {
               request.autoRetry.numAttempts = i;
@@ -199,12 +198,11 @@ void main() {
           });
 
           test('with jitter', () async {
-            final request = new transport.Request();
-            final interval = new Duration(milliseconds: 5);
+            final request = transport.Request();
+            final interval = Duration(milliseconds: 5);
             const withJitter = true;
-            request.autoRetry.backOff = new transport.RetryBackOff.fixed(
-                interval,
-                withJitter: withJitter);
+            request.autoRetry.backOff =
+                transport.RetryBackOff.fixed(interval, withJitter: withJitter);
 
             for (int i = 0; i < 5; i++) {
               final backOff =
@@ -251,8 +249,7 @@ void main() {
           'sentence=words+with+spaces',
           'chars=%E7%25%2F%5C%7B%5D.%2B%22%27'
         ].join('&');
-        expect(http_utils.mapToQuery(map, encoding: convert.latin1),
-            equals(expected));
+        expect(http_utils.mapToQuery(map, encoding: latin1), equals(expected));
       });
 
       test('queryToMap() with default encoding (UTF8)', () {
@@ -284,8 +281,8 @@ void main() {
           'sentence': 'words with spaces',
           'chars': 'ç%/\\{].+"\''
         };
-        expect(http_utils.queryToMap(query, encoding: convert.latin1),
-            equals(expected));
+        expect(
+            http_utils.queryToMap(query, encoding: latin1), equals(expected));
       });
 
       test('parseContentTypeFromHeaders()', () {
@@ -322,49 +319,40 @@ void main() {
 
       test('parseEncodingFromContentType()', () {
         MediaType ct;
-        ct = new MediaType('text', 'plain', {'charset': convert.utf8.name});
-        expect(
-            http_utils.parseEncodingFromContentType(ct), equals(convert.utf8));
-        ct = new MediaType('text', 'plain', {'charset': convert.latin1.name});
-        expect(http_utils.parseEncodingFromContentType(ct),
-            equals(convert.latin1));
+        ct = MediaType('text', 'plain', {'charset': utf8.name});
+        expect(http_utils.parseEncodingFromContentType(ct), equals(utf8));
+        ct = MediaType('text', 'plain', {'charset': latin1.name});
+        expect(http_utils.parseEncodingFromContentType(ct), equals(latin1));
       });
 
       test('parseEncodingFromContentType() no charset', () {
-        final ct = new MediaType('text', 'plain');
-        expect(
-            http_utils.parseEncodingFromContentType(ct,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+        final ct = MediaType('text', 'plain');
+        expect(http_utils.parseEncodingFromContentType(ct, fallback: ascii),
+            equals(ascii));
       });
 
       test('parseEncodingFromContentType() null content-type', () {
-        expect(
-            http_utils.parseEncodingFromContentType(null,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+        expect(http_utils.parseEncodingFromContentType(null, fallback: ascii),
+            equals(ascii));
       });
 
       test('parseEncodingFromContentType() unrecognized charset', () {
-        final ct = new MediaType('text', 'plain', {'charset': 'unknown'});
-        expect(
-            http_utils.parseEncodingFromContentType(ct,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+        final ct = MediaType('text', 'plain', {'charset': 'unknown'});
+        expect(http_utils.parseEncodingFromContentType(ct, fallback: ascii),
+            equals(ascii));
       });
 
       test('parseEncodingFromContentTypeOrFail()', () {
         MediaType ct;
-        ct = new MediaType('text', 'plain', {'charset': convert.utf8.name});
-        expect(http_utils.parseEncodingFromContentTypeOrFail(ct),
-            equals(convert.utf8));
-        ct = new MediaType('text', 'plain', {'charset': convert.latin1.name});
-        expect(http_utils.parseEncodingFromContentTypeOrFail(ct),
-            equals(convert.latin1));
+        ct = MediaType('text', 'plain', {'charset': utf8.name});
+        expect(http_utils.parseEncodingFromContentTypeOrFail(ct), equals(utf8));
+        ct = MediaType('text', 'plain', {'charset': latin1.name});
+        expect(
+            http_utils.parseEncodingFromContentTypeOrFail(ct), equals(latin1));
       });
 
       test('parseEncodingFromContentTypeOrFail() no charset', () {
-        final ct = new MediaType('text', 'plain');
+        final ct = MediaType('text', 'plain');
         expect(() {
           http_utils.parseEncodingFromContentTypeOrFail(ct);
         }, throwsFormatException);
@@ -377,7 +365,7 @@ void main() {
       });
 
       test('parseEncodingFromContentTypeOrFail() unrecognized charset', () {
-        final ct = new MediaType('text', 'plain', {'charset': 'unknown'});
+        final ct = MediaType('text', 'plain', {'charset': 'unknown'});
         expect(() {
           http_utils.parseEncodingFromContentTypeOrFail(ct);
         }, throwsFormatException);
@@ -386,78 +374,69 @@ void main() {
       test('parseEncodingFromHeaders()', () {
         Map<String, String> headers;
         headers = {'content-type': 'text/plain; charset=utf-8'};
-        expect(
-            http_utils.parseEncodingFromHeaders(headers), equals(convert.utf8));
+        expect(http_utils.parseEncodingFromHeaders(headers), equals(utf8));
         headers = {'content-type': 'text/plain; charset=iso-8859-1'};
-        expect(http_utils.parseEncodingFromHeaders(headers),
-            equals(convert.latin1));
+        expect(http_utils.parseEncodingFromHeaders(headers), equals(latin1));
       });
 
       test('parseEncodingFromHeaders() case mismatch', () {
         final headers = <String, String>{
           'cOnteNt-tYPe': 'text/plain; charset=utf-8'
         };
-        expect(
-            http_utils.parseEncodingFromHeaders(headers), equals(convert.utf8));
+        expect(http_utils.parseEncodingFromHeaders(headers), equals(utf8));
       });
 
       test('parseEncodingFromHeaders() no charset', () {
         final headers = <String, String>{'content-type': 'text/plain'};
-        expect(
-            http_utils.parseEncodingFromHeaders(headers,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+        expect(http_utils.parseEncodingFromHeaders(headers, fallback: ascii),
+            equals(ascii));
       });
 
       test('parseEncodingFromHeaders() no content-type', () {
         final headers = <String, String>{};
-        expect(
-            http_utils.parseEncodingFromHeaders(headers,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+        expect(http_utils.parseEncodingFromHeaders(headers, fallback: ascii),
+            equals(ascii));
       });
 
       test('parseEncodingFromHeaders() unrecognized charset', () {
         final headers = <String, String>{
           'content-type': 'text/plain; charset=unknown'
         };
-        expect(
-            http_utils.parseEncodingFromHeaders(headers,
-                fallback: convert.ascii),
-            equals(convert.ascii));
+        expect(http_utils.parseEncodingFromHeaders(headers, fallback: ascii),
+            equals(ascii));
       });
 
       test('reduceByteStream()', () async {
-        final byteStream = new Stream.fromIterable([
+        final byteStream = Stream.fromIterable([
           [1, 2, 3],
           [4, 5],
           [6, 7, 8]
         ]);
-        final expected = new Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8]);
+        final expected = Uint8List.fromList([1, 2, 3, 4, 5, 6, 7, 8]);
         expect(await http_utils.reduceByteStream(byteStream), equals(expected));
       });
 
       test('reduceByteStream() empty', () async {
-        final byteStream = new Stream<List<int>>.fromIterable([]);
+        final byteStream = Stream<List<int>>.fromIterable([]);
         expect(await http_utils.reduceByteStream(byteStream), isEmpty);
       });
 
       test('reduceByteStream() single element', () async {
-        final byteStream = new Stream.fromIterable([
+        final byteStream = Stream.fromIterable([
           [1, 2]
         ]);
-        final expected = new Uint8List.fromList([1, 2]);
+        final expected = Uint8List.fromList([1, 2]);
         expect(await http_utils.reduceByteStream(byteStream), equals(expected));
       });
 
       test('ByteStreamProgressListener', () async {
-        final byteStream = new Stream.fromIterable([
+        final byteStream = Stream.fromIterable([
           [1, 2, 3],
           [4, 5, 6],
           [7, 8, 9, 10]
         ]);
         final listener =
-            new http_utils.ByteStreamProgressListener(byteStream, total: 10);
+            http_utils.ByteStreamProgressListener(byteStream, total: 10);
 
         final chunks = <List<int>>[];
         await for (final chunk in listener.byteStream) {
@@ -479,13 +458,13 @@ void main() {
       });
 
       test('ByteStreamProgressListener pause/resume', () async {
-        final byteStream = new Stream.fromIterable([
+        final byteStream = Stream.fromIterable([
           [1, 2, 3],
           [4, 5, 6],
         ]);
-        final listener = new http_utils.ByteStreamProgressListener(byteStream);
+        final listener = http_utils.ByteStreamProgressListener(byteStream);
 
-        final done = new Completer<Null>();
+        final done = Completer<Null>();
         final sub = listener.byteStream.listen((_) {}, onDone: done.complete);
         sub.pause();
         sub.resume();

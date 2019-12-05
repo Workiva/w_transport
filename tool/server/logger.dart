@@ -16,13 +16,13 @@ import 'dart:async';
 import 'dart:io';
 
 class Logger implements Function {
-  StreamController<String> _controller = new StreamController<String>();
+  StreamController<String> _controller = StreamController<String>();
 
   Logger();
 
   Stream get stream => _controller.stream;
 
-  void call(String message, {bool isError: false}) {
+  void call(String message, {bool isError = false}) {
     if (isError) {
       _controller.add('[ERROR] $message');
     } else {
@@ -40,12 +40,12 @@ class Logger implements Function {
   }
 
   void logRequest(HttpRequest request) {
-    final time = new DateTime.now();
+    final time = DateTime.now();
     this(
         '$time\t${request.method}\t${request.response.statusCode}\t${request.uri.path}');
   }
 
-  void withTime(String msg, {bool isError: false}) {
-    this('${new DateTime.now()}  $msg', isError: isError);
+  void withTime(String msg, {bool isError = false}) {
+    this('${DateTime.now()}  $msg', isError: isError);
   }
 }

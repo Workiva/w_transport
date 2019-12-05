@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:dart2_constant/convert.dart' as convert;
+import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -23,7 +23,7 @@ void runJsonRequestSuite([transport.TransportPlatform transportPlatform]) {
   group('JsonRequest', () {
     test('contentLength should be set automatically', () async {
       final emptyRequest =
-          new transport.JsonRequest(transportPlatform: transportPlatform);
+          transport.JsonRequest(transportPlatform: transportPlatform);
       final response =
           await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
       final contentLength =
@@ -32,7 +32,7 @@ void runJsonRequestSuite([transport.TransportPlatform transportPlatform]) {
           reason: 'Empty JSON request\'s content-length should be 0.');
 
       final nonEmptyRequest =
-          new transport.JsonRequest(transportPlatform: transportPlatform)
+          transport.JsonRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..body = {'field1': 'value1', 'field2': 'value2'};
       final response2 = await nonEmptyRequest.post();
@@ -45,60 +45,60 @@ void runJsonRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('content-type should be set automatically', () async {
       final request =
-          new transport.JsonRequest(transportPlatform: transportPlatform)
+          transport.JsonRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..body = {'field1': 'value1', 'field2': 'value2'};
       final response = await request.post();
-      final contentType = new MediaType.parse(
-          response.body.asJson()['headers']['content-type']);
+      final contentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('application/json'));
     });
 
     test('content-type should be overridable', () async {
-      final contentType = new MediaType('application', 'x-custom');
+      final contentType = MediaType('application', 'x-custom');
       final request =
-          new transport.JsonRequest(transportPlatform: transportPlatform)
+          transport.JsonRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..body = {'field1': 'value1', 'field2': 'value2'}
             ..contentType = contentType;
       final response = await request.post();
-      final reflectedContentType = new MediaType.parse(
-          response.body.asJson()['headers']['content-type']);
+      final reflectedContentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(reflectedContentType.mimeType, equals(contentType.mimeType));
     });
 
     test('UTF8', () async {
       final request =
-          new transport.JsonRequest(transportPlatform: transportPlatform)
+          transport.JsonRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.utf8
+            ..encoding = utf8
             ..body = {'field1': 'value1', 'field2': 'ç®å'};
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.utf8.name));
+      expect(response.encoding.name, equals(utf8.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'ç®å'));
     });
 
     test('LATIN1', () async {
       final request =
-          new transport.JsonRequest(transportPlatform: transportPlatform)
+          transport.JsonRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.latin1
+            ..encoding = latin1
             ..body = {'field1': 'value1', 'field2': 'ç®å'};
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.latin1.name));
+      expect(response.encoding.name, equals(latin1.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'ç®å'));
     });
 
     test('ASCII', () async {
       final request =
-          new transport.JsonRequest(transportPlatform: transportPlatform)
+          transport.JsonRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.ascii
+            ..encoding = ascii
             ..body = {'field1': 'value1', 'field2': 'value2'};
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.ascii.name));
+      expect(response.encoding.name, equals(ascii.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'value2'));
     });

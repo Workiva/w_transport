@@ -24,8 +24,8 @@ class MockWebSocketConnection {
 
   MockWebSocketConnection._(this._connectedClient, this.uri,
       {Map<String, dynamic> headers, Iterable<String> protocols})
-      : headers = new Map.unmodifiable(headers ?? {}),
-        protocols = new List.unmodifiable(protocols ?? []);
+      : headers = Map.unmodifiable(headers ?? {}),
+        protocols = List.unmodifiable(protocols ?? []);
 
   Future<Null> get done => _connectedClient.done;
 
@@ -49,7 +49,7 @@ class MockWebSocketServer {
   List<MockWSocket> _connectedClients = [];
 
   StreamController<MockWebSocketConnection> _onClientConnected =
-      new StreamController<MockWebSocketConnection>();
+      StreamController<MockWebSocketConnection>();
 
   Stream<MockWebSocketConnection> get onClientConnected =>
       _onClientConnected.stream;
@@ -68,7 +68,7 @@ class MockWebSocketServer {
     }).catchError((_) {
       _connectedClients.remove(client);
     });
-    _onClientConnected.add(new MockWebSocketConnection._(client, uri,
+    _onClientConnected.add(MockWebSocketConnection._(client, uri,
         headers: headers, protocols: protocols));
   }
 }

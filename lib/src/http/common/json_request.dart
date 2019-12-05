@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart' show MediaType;
 
 import 'package:w_transport/src/http/client.dart';
@@ -46,8 +46,8 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
 
     // Encode immediately so that we can attempt decoding it such that invalid
     // JSON will result in an exception now rather than later.
-    _encodedJson = convert.json.encode(jsonBody);
-    convert.json.decode(_encodedJson);
+    _encodedJson = json.encode(jsonBody);
+    json.decode(_encodedJson);
   }
 
   @override
@@ -55,12 +55,12 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
 
   @override
   MediaType get defaultContentType =>
-      new MediaType('application', 'json', {'charset': encoding.name});
+      MediaType('application', 'json', {'charset': encoding.name});
 
   // Calculate each time because body can be modified outside of the setter.
   Uint8List get _bytes => _encodedJson != null
       ? encoding.encode(_encodedJson)
-      : new Uint8List.fromList([]);
+      : Uint8List.fromList([]);
 
   @override
   JsonRequest clone() {
@@ -73,6 +73,6 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
     if (body != null) {
       this.body = body;
     }
-    return new HttpBody.fromBytes(contentType, _bytes);
+    return HttpBody.fromBytes(contentType, _bytes);
   }
 }

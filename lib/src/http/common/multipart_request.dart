@@ -16,7 +16,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart' show MediaType;
 
 import 'package:w_transport/src/http/client.dart';
@@ -52,9 +51,9 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   static const String _crlf = '\r\n';
 
-  static final RegExp _crlfPattern = new RegExp(r'\r\n|\r|\n');
+  static final RegExp _crlfPattern = RegExp(r'\r\n|\r|\n');
 
-  static final Random _random = new Random();
+  static final Random _random = Random();
 
   String _boundary;
 
@@ -71,10 +70,10 @@ abstract class CommonMultipartRequest extends CommonRequest
   static String _generateBoundaryString() {
     const senderPrefix = 'dart-w-transport-boundary-';
     final boundaryChars =
-        new List<int>.generate(_boundaryLength - senderPrefix.length, (_) {
+        List<int>.generate(_boundaryLength - senderPrefix.length, (_) {
       return _boundaryChars[_random.nextInt(_boundaryChars.length)];
     }, growable: false);
-    return '$senderPrefix${new String.fromCharCodes(boundaryChars)}';
+    return '$senderPrefix${String.fromCharCodes(boundaryChars)}';
   }
 
   String get boundary {
@@ -88,16 +87,16 @@ abstract class CommonMultipartRequest extends CommonRequest
 
     fields.forEach((name, value) {
       length += _boundaryDelimiterLength;
-      length += convert.utf8.encode(_multipartFieldHeaders(name, value)).length;
-      length += convert.utf8.encode(value).length;
+      length += utf8.encode(_multipartFieldHeaders(name, value)).length;
+      length += utf8.encode(value).length;
       length += _crlf.length;
     });
 
     files.forEach((name, file) {
       if (file is! MultipartFile)
-        throw new UnsupportedError('Illegal multipart file type: $file');
+        throw UnsupportedError('Illegal multipart file type: $file');
       length += _boundaryDelimiterLength;
-      length += convert.utf8.encode(_multipartFileHeaders(name, file)).length;
+      length += utf8.encode(_multipartFileHeaders(name, file)).length;
       length += file.length;
       length += _crlf.length;
     });
@@ -108,45 +107,45 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   @override
   set contentLength(int contentLength) {
-    throw new UnsupportedError(
+    throw UnsupportedError(
         'The content-length of a multipart request cannot be set manually.');
   }
 
   @override
   set contentType(MediaType contentType) {
-    throw new UnsupportedError(
+    throw UnsupportedError(
         'The content-type of a multipart request cannot be set manually.');
   }
 
   @override
   MediaType get defaultContentType =>
-      new MediaType('multipart', 'form-data', {'boundary': boundary});
+      MediaType('multipart', 'form-data', {'boundary': boundary});
 
   @override
   set encoding(Encoding encoding) {
-    throw new UnsupportedError(
+    throw UnsupportedError(
         'A multipart request has many individually-encoded parts. An encoding '
         'cannot be set for the entire request.');
   }
 
   @override
   Map<String, String> get fields =>
-      isSent ? new Map<String, String>.unmodifiable(_fields) : _fields;
+      isSent ? Map<String, String>.unmodifiable(_fields) : _fields;
 
   @override
   set fields(Map<String, String> fields) {
     verifyUnsent();
-    _fields = new Map<String, String>.from(fields);
+    _fields = Map<String, String>.from(fields);
   }
 
   @override
   Map<String, dynamic> get files =>
-      isSent ? new Map<String, dynamic>.unmodifiable(_files) : _files;
+      isSent ? Map<String, dynamic>.unmodifiable(_files) : _files;
 
   @override
   set files(Map<String, dynamic> files) {
     verifyUnsent();
-    _files = new Map<String, dynamic>.from(files);
+    _files = Map<String, dynamic>.from(files);
   }
 
   @override
@@ -160,30 +159,30 @@ abstract class CommonMultipartRequest extends CommonRequest
   @override
   Map<String, String> finalizeHeaders() {
     final headers = super.finalizeHeaders();
-    final finalizedHeaders = new Map<String, String>.from(headers);
+    final finalizedHeaders = Map<String, String>.from(headers);
     finalizedHeaders['content-transfer-encoding'] = 'binary';
-    return new Map<String, String>.unmodifiable(finalizedHeaders);
+    return Map<String, String>.unmodifiable(finalizedHeaders);
   }
 
   @override
   Future<StreamedHttpBody> finalizeBody([dynamic body]) async {
     if (body != null) {
-      throw new UnsupportedError(
+      throw UnsupportedError(
           'The body of a Multipart request must be set via `fields` and/or `files`.');
     }
 
     if (fields.isEmpty && files.isEmpty) {
-      throw new UnsupportedError(
+      throw UnsupportedError(
           'The body of a Multipart request cannot be empty.');
     }
 
-    final controller = new StreamController<List<int>>();
+    final controller = StreamController<List<int>>();
     void write(String content) {
-      controller.add(convert.utf8.encode(content));
+      controller.add(utf8.encode(content));
     }
 
     Future<Null> writeByteStream(Stream<List<int>> byteStream) {
-      final c = new Completer<Null>();
+      final c = Completer<Null>();
       byteStream.listen(controller.add,
           onError: controller.addError, onDone: c.complete);
       return c.future;
@@ -212,7 +211,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       if (bs is Stream<List<int>>) {
         byteStream = bs;
       } else {
-        throw new Exception('Expected Multipart file to have a '
+        throw Exception('Expected Multipart file to have a '
             '`Stream<List<int>> byteStream` property.');
       }
 
@@ -228,7 +227,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       controller.close();
     });
 
-    return new StreamedHttpBody.fromByteStream(contentType, controller.stream,
+    return StreamedHttpBody.fromByteStream(contentType, controller.stream,
         contentLength: contentLength);
   }
 

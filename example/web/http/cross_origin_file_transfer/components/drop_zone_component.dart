@@ -22,8 +22,8 @@ import '../services/file_transfer.dart';
 // ignore: uri_has_not_been_generated
 part 'drop_zone_component.over_react.g.dart';
 
-typedef dynamic NewUploadsCallback(List<Upload> uploads);
-typedef dynamic DragEventCallback(Event event);
+typedef NewUploadsCallback = dynamic Function(List<Upload> uploads);
+typedef DragEventCallback = dynamic Function(Event event);
 
 /// File drop zone.
 ///
@@ -98,7 +98,7 @@ class DropZoneComponent
     // Delay this action slightly to allow it to be canceled.
     // This helps prevent a flicker when moving from the drop zone
     // to the drop target.
-    _hideDropTargetTimer = new Timer(const Duration(milliseconds: 100), () {
+    _hideDropTargetTimer = Timer(const Duration(milliseconds: 100), () {
       props.onNativeDragEnd(e);
 
       if (state.overDropZone) {
@@ -182,7 +182,7 @@ class DropZoneComponent
       ..add('drop-zone')
       ..add('active', state.overDropZone || state.overDropTarget);
 
-    var dropTargetClasses = new ClassNameBuilder()
+    var dropTargetClasses = ClassNameBuilder()
       ..add('drop-target')
       ..add('show', state.overDropZone || state.overDropTarget)
       ..add('over', state.overDropTarget);

@@ -42,9 +42,9 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
   static Future<WebSocket> connect(Uri uri,
       {Map<String, dynamic> headers, Iterable<String> protocols}) async {
     // Establish a Web Socket connection.
-    final webSocket = new html.WebSocket(uri.toString(), protocols);
+    final webSocket = html.WebSocket(uri.toString(), protocols);
     if (webSocket == null) {
-      throw new WebSocketException('Could not connect to $uri');
+      throw WebSocketException('Could not connect to $uri');
     }
 
     // Listen for and store the close event. This will determine whether or
@@ -54,7 +54,7 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
 
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
-    final connected = new Completer<Null>();
+    final connected = Completer<Null>();
     // ignore: unawaited_futures
     webSocket.onOpen.first.then((_) {
       connected.complete();
@@ -65,14 +65,14 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
     closedFuture.then((_) {
       if (!connected.isCompleted) {
         connected
-            .completeError(new WebSocketException('Could not connect to $uri'));
+            .completeError(WebSocketException('Could not connect to $uri'));
         emitWebSocketConnectEvent(newWebSocketConnectEvent(
             url: uri.toString(), wasSuccessful: false));
       }
     });
 
     await connected.future;
-    return new BrowserWebSocket._(webSocket, closedFuture);
+    return BrowserWebSocket._(webSocket, closedFuture);
   }
 
   @override
@@ -115,7 +115,7 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
         data is! ByteBuffer &&
         data is! String &&
         data is! TypedData) {
-      throw new ArgumentError(
+      throw ArgumentError(
           'WSocket data type must be a String, Blob, ByteBuffer, or an instance of TypedData.');
     }
   }

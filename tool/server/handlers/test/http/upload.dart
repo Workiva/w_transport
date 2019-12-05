@@ -15,7 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:http_server/http_server.dart';
 import 'package:mime/mime.dart';
 
@@ -31,7 +30,7 @@ class UploadHandler extends Handler {
     final contentType =
         ContentType.parse(request.headers.value('content-type'));
     final boundary = contentType.parameters['boundary'];
-    final stream = new MimeMultipartTransformer(boundary)
+    final stream = MimeMultipartTransformer(boundary)
         .bind(request)
         .map(HttpMultipartFormData.parse);
 
@@ -39,11 +38,11 @@ class UploadHandler extends Handler {
       if (formData.isText) {
         await formData.toList();
       } else {
-        throw new Exception('Unknown multipart formdata.');
+        throw Exception('Unknown multipart formdata.');
       }
     }
 
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
   }
 

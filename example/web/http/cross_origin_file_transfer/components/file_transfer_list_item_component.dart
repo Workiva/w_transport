@@ -22,8 +22,8 @@ import '../services/file_transfer.dart';
 // ignore: uri_has_not_been_generated
 part 'file_transfer_list_item_component.over_react.g.dart';
 
-const Duration _transferCompleteLingerDuration = const Duration(seconds: 4);
-const Duration _transferCompleteFadeoutDuration = const Duration(seconds: 2);
+const Duration _transferCompleteLingerDuration = Duration(seconds: 4);
+const Duration _transferCompleteFadeoutDuration = Duration(seconds: 2);
 
 /// A single file upload or download.
 ///
@@ -103,12 +103,12 @@ class FileTransferListItemComponent extends UiStatefulComponent<
 
   Future<Null> _fadeTransferOut() async {
     // wait a few seconds before beginning to fade the item out
-    await new Future.delayed(_transferCompleteLingerDuration);
+    await Future.delayed(_transferCompleteLingerDuration);
 
     setState(newState()..status = FileTransferItemStatus.willRemove);
 
     // wait for the css transition to complete
-    await new Future.delayed(_transferCompleteFadeoutDuration);
+    await Future.delayed(_transferCompleteFadeoutDuration);
   }
 
   void _removeTransfer() {

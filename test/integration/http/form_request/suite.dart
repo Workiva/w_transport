@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:dart2_constant/convert.dart' as convert;
+import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -26,7 +26,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
     test('content-length should be set automatically', () async {
       // Empty request.
       final emptyRequest =
-          new transport.FormRequest(transportPlatform: transportPlatform);
+          transport.FormRequest(transportPlatform: transportPlatform);
       final response =
           await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
       final contentLength =
@@ -36,7 +36,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
 
       // Non-empty request.
       final nonEmptyRequest =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'value2';
@@ -50,37 +50,37 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('content-type should be set automatically', () async {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..fields['field'] = 'value';
       final response = await request.post();
-      final contentType = new MediaType.parse(
-          response.body.asJson()['headers']['content-type']);
+      final contentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('application/x-www-form-urlencoded'));
     });
 
     test('content-type should be overridable', () async {
-      final contentType = new MediaType('application', 'x-custom');
+      final contentType = MediaType('application', 'x-custom');
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri
             ..fields['field'] = 'value'
             ..contentType = contentType;
       final response = await request.post();
-      final reflectedContentType = new MediaType.parse(
-          response.body.asJson()['headers']['content-type']);
+      final reflectedContentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(reflectedContentType.mimeType, equals(contentType.mimeType));
     });
 
     test('UTF8', () async {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.utf8
+            ..encoding = utf8
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'ç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.utf8.name));
+      expect(response.encoding.name, equals(utf8.name));
       final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
@@ -89,13 +89,13 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('LATIN1', () async {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.latin1
+            ..encoding = latin1
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'ç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.latin1.name));
+      expect(response.encoding.name, equals(latin1.name));
       final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
@@ -104,13 +104,13 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('ASCII', () async {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
-            ..encoding = convert.ascii
+            ..encoding = ascii
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'value2';
       final response = await request.post();
-      expect(response.encoding.name, equals(convert.ascii.name));
+      expect(response.encoding.name, equals(ascii.name));
       final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
@@ -119,7 +119,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
 
     test('should support multiple values for a single field', () async {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
             ..fields['items'] = ['one', 'two'];
       final response = await request.post();
@@ -131,7 +131,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
         'should prevent unsupported value types (anything other than String and List<String>)',
         () {
       final request =
-          new transport.FormRequest(transportPlatform: transportPlatform)
+          transport.FormRequest(transportPlatform: transportPlatform)
             ..uri = IntegrationPaths.echoEndpointUri
             ..fields['invalid'] = 10;
 

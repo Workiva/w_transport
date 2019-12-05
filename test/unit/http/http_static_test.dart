@@ -23,7 +23,7 @@ import '../../naming.dart';
 
 // TODO: tests with headers
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -46,14 +46,14 @@ void main() {
       });
 
       test('DELETE withCredentials', () async {
-        final c = new Completer<Null>();
+        final c = Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
             c.completeError('withCredentials should be true');
           }
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'DELETE');
         await Future.wait([
           transport.Http.delete(requestUri, withCredentials: true),
@@ -67,14 +67,14 @@ void main() {
       });
 
       test('GET withCredentials', () async {
-        final c = new Completer<Null>();
+        final c = Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
             c.completeError('withCredentials should be true');
           }
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'GET');
         await Future.wait(
             [transport.Http.get(requestUri, withCredentials: true), c.future]);
@@ -86,14 +86,14 @@ void main() {
       });
 
       test('HEAD withCredentials', () async {
-        final c = new Completer<Null>();
+        final c = Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
             c.completeError('withCredentials should be true');
           }
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'HEAD');
         await Future.wait(
             [transport.Http.head(requestUri, withCredentials: true), c.future]);
@@ -105,14 +105,14 @@ void main() {
       });
 
       test('OPTIONS withCredentials', () async {
-        final c = new Completer<Null>();
+        final c = Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
             c.completeError('withCredentials should be true');
           }
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'OPTIONS');
         await Future.wait([
           transport.Http.options(requestUri, withCredentials: true),
@@ -126,11 +126,11 @@ void main() {
       });
 
       test('PATCH with body', () async {
-        final c = new Completer<String>();
+        final c = Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           transport.HttpBody body = request.body;
           c.complete(body.asString());
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'PATCH');
         // ignore: unawaited_futures
         transport.Http.patch(requestUri, body: 'body');
@@ -138,14 +138,14 @@ void main() {
       });
 
       test('PATCH withCredentials', () async {
-        final c = new Completer<Null>();
+        final c = Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
             c.completeError('withCredentials should be true');
           }
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'PATCH');
         await Future.wait([
           transport.Http.patch(requestUri, withCredentials: true),
@@ -159,11 +159,11 @@ void main() {
       });
 
       test('POST with body', () async {
-        final c = new Completer<String>();
+        final c = Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           transport.HttpBody body = request.body;
           c.complete(body.asString());
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'POST');
         // ignore: unawaited_futures
         transport.Http.post(requestUri, body: 'body');
@@ -171,14 +171,14 @@ void main() {
       });
 
       test('POST withCredentials', () async {
-        final c = new Completer<Null>();
+        final c = Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
             c.completeError('withCredentials should be true');
           }
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'POST');
         await Future.wait(
             [transport.Http.post(requestUri, withCredentials: true), c.future]);
@@ -190,11 +190,11 @@ void main() {
       });
 
       test('PUT with body', () async {
-        final c = new Completer<String>();
+        final c = Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           transport.HttpBody body = request.body;
           c.complete(body.asString());
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'PATCH');
         // ignore: unawaited_futures
         transport.Http.patch(requestUri, body: 'body');
@@ -202,14 +202,14 @@ void main() {
       });
 
       test('PUT withCredentials', () async {
-        final c = new Completer<Null>();
+        final c = Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
             c.completeError('withCredentials should be true');
           }
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'PUT');
         await Future.wait(
             [transport.Http.put(requestUri, withCredentials: true), c.future]);
@@ -221,11 +221,11 @@ void main() {
       });
 
       test('custom method with body', () async {
-        final c = new Completer<String>();
+        final c = Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           transport.HttpBody body = request.body;
           c.complete(body.asString());
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'COPY');
         // ignore: unawaited_futures
         transport.Http.send('COPY', requestUri, body: 'body');
@@ -233,14 +233,14 @@ void main() {
       });
 
       test('custom method withCredentials', () async {
-        final c = new Completer<Null>();
+        final c = Completer<Null>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
             c.completeError('withCredentials should be true');
           }
-          return new MockResponse.ok();
+          return MockResponse.ok();
         }, method: 'COPY');
         await Future.wait([
           transport.Http.send('COPY', requestUri, withCredentials: true),

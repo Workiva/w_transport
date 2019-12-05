@@ -13,7 +13,7 @@
 // limitations under the License.
 
 @TestOn('browser')
-import 'package:dart2_constant/convert.dart' as convert;
+import 'dart:convert';
 import 'package:test/test.dart';
 import 'package:w_transport/browser.dart' show browserTransportPlatform;
 import 'package:w_transport/src/http/browser/form_data_body.dart';
@@ -23,7 +23,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -32,15 +32,13 @@ void main() {
       group('finalizeBody', () {
         test('does not include duplicate ascii fields', () async {
           const key = 'ascii';
-          final value =
-              convert.ascii.decode(convert.ascii.encode('This is ASCII!'));
+          final value = ascii.decode(ascii.encode('This is ASCII!'));
 
-          final BrowserMultipartRequest request =
-              new transport.MultipartRequest(
-                  transportPlatform: browserTransportPlatform)
-                ..fields = {
-                  key: value,
-                };
+          final BrowserMultipartRequest request = transport.MultipartRequest(
+              transportPlatform: browserTransportPlatform)
+            ..fields = {
+              key: value,
+            };
 
           final FormDataBody body = await request.finalizeBody();
           expect(body.formData.getAll(key), equals([value]));
@@ -50,12 +48,11 @@ void main() {
           const key = 'unicode';
           const value = '藤原とうふ店（自家用）';
 
-          final BrowserMultipartRequest request =
-              new transport.MultipartRequest(
-                  transportPlatform: browserTransportPlatform)
-                ..fields = {
-                  key: value,
-                };
+          final BrowserMultipartRequest request = transport.MultipartRequest(
+              transportPlatform: browserTransportPlatform)
+            ..fields = {
+              key: value,
+            };
 
           final FormDataBody body = await request.finalizeBody();
           expect(body.formData.getAll(key).length, equals(1));

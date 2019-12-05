@@ -144,7 +144,7 @@ class DownloadPageComponent
   }
 
   void _downloadFile(RemoteFileDescription rfd) {
-    final downloads = new List<Download>.from(state.downloads);
+    final downloads = List<Download>.from(state.downloads);
     downloads.add(Download.start(rfd));
     setState(newState()..downloads = downloads);
   }

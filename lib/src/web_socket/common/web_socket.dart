@@ -41,11 +41,11 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// A completer that completes when both the outgoing stream sink and the
   /// incoming stream have been closed. This is used to determine when this
   /// [WebSocket] instance can be considered completely closed.
-  Completer<Null> _allClosed = new Completer<Null>();
+  Completer<Null> _allClosed = Completer<Null>();
 
   /// A completer that completes when this [WebSocket] instance is completely
   /// "done" - both outgoing and incoming.
-  Completer<Null> _done = new Completer<Null>();
+  Completer<Null> _done = Completer<Null>();
 
   /// Any error that may be caught during the life of the underlying WebSocket.
   Object _error;
@@ -89,14 +89,14 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
     });
 
     // Outgoing communication will be handled by this stream controller.
-    _outgoing = new StreamController<dynamic>();
+    _outgoing = StreamController<dynamic>();
     _outgoing.stream.listen(onOutgoingData,
         onError: onOutgoingError, onDone: onOutgoingDone);
 
     // Map events from the underlying socket to the incoming controller.
     // It is important to have handlers for start/stop/pause/resume so that the
     // controller properly respects the StreamSubscription API.
-    _incoming = new StreamController<dynamic>(
+    _incoming = StreamController<dynamic>(
         onListen: onIncomingListen,
         onPause: onIncomingPause,
         onResume: onIncomingResume,
@@ -159,7 +159,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
     // ignore: cancel_subscriptions
     final sub = _incoming.stream
         .listen(onData, onError: onError, cancelOnError: cancelOnError);
-    _incomingSubscription = new WSocketSubscription(sub, onDone, onCancel: () {
+    _incomingSubscription = WSocketSubscription(sub, onDone, onCancel: () {
       _incomingSubscription = null;
     });
     return _incomingSubscription;
@@ -236,7 +236,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
     // Calling close() during a in-progress call to addStream() will result in a
     // StateError being thrown. Avoid this by waiting for the in-progress
     // addStream() call to complete first, if applicable.
-    (_inProgressAddStream ?? new Future(() {})).catchError((_) {}).then((_) {
+    (_inProgressAddStream ?? Future(() {})).catchError((_) {}).then((_) {
       // Close both incoming and outgoing communication.
       _outgoing.close();
       closeWebSocket(code ?? 1000, reason);

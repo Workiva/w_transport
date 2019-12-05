@@ -81,14 +81,14 @@ Future<Null> _serveExamples() {
   io.Process.start('pub', ['serve', '--port=9000'],
       workingDirectory: 'example');
 
-  return new Completer<Null>().future;
+  return Completer<Null>().future;
 }
 
 /// Start the server needed for integration tests and examples and stream the
 /// server output as it arrives. The output will be mixed in with output from
 /// whichever task is running.
 Future<Null> _streamServer() async {
-  _server = new Server();
+  _server = Server();
   _server.output.listen((line) {
     reporter.log(reporter.colorBlue('    $line'));
   });
@@ -96,7 +96,7 @@ Future<Null> _streamServer() async {
 }
 
 Future<Null> _streamSockJSServer() async {
-  _sockJSServer = new TaskProcess('node', ['tool/server/sockjs.js']);
+  _sockJSServer = TaskProcess('node', ['tool/server/sockjs.js']);
   _sockJSServer.stdout.listen((line) {
     reporter.log(reporter.colorBlue('    $line'));
   });

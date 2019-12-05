@@ -14,8 +14,8 @@
 
 @TestOn('browser || vm')
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
@@ -24,7 +24,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..testType = testTypeUnit
     ..topic = topicHttp;
 
@@ -40,11 +40,11 @@ void main() {
       });
 
       test('setting body (string)', () {
-        final request = new transport.Request();
+        final request = transport.Request();
 
         request.body = 'body';
         expect(request.body, equals('body'));
-        expect(request.bodyBytes, equals(convert.utf8.encode('body')));
+        expect(request.bodyBytes, equals(utf8.encode('body')));
 
         request.body = null;
         expect(request.body, equals(''));
@@ -52,10 +52,10 @@ void main() {
       });
 
       test('setting body (bytes)', () {
-        final request = new transport.Request();
+        final request = transport.Request();
 
-        request.bodyBytes = convert.utf8.encode('body');
-        expect(request.bodyBytes, equals(convert.utf8.encode('body')));
+        request.bodyBytes = utf8.encode('body');
+        expect(request.bodyBytes, equals(utf8.encode('body')));
         expect(request.body, equals('body'));
 
         request.bodyBytes = null;
@@ -67,14 +67,14 @@ void main() {
           () async {
         final uri = Uri.parse('/test');
 
-        final c = new Completer<String>();
+        final c = Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
           transport.HttpBody body = request.body;
           c.complete(body.asString());
-          return new MockResponse.ok();
+          return MockResponse.ok();
         });
 
-        final request = new transport.Request();
+        final request = transport.Request();
         await request.post(uri: uri, body: 'body');
         expect(await c.future, equals('body'));
       });
@@ -82,15 +82,15 @@ void main() {
       test('setting body in request dispatcher is supported (bytes)', () async {
         final uri = Uri.parse('/test');
 
-        final c = new Completer<String>();
+        final c = Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
           transport.HttpBody body = request.body;
           c.complete(body.asString());
-          return new MockResponse.ok();
+          return MockResponse.ok();
         });
 
-        final request = new transport.Request();
-        await request.post(uri: uri, body: convert.utf8.encode('body'));
+        final request = transport.Request();
+        await request.post(uri: uri, body: utf8.encode('body'));
         expect(await c.future, equals('body'));
       });
 
@@ -98,7 +98,7 @@ void main() {
           () async {
         final uri = Uri.parse('/test');
 
-        final request = new transport.Request();
+        final request = transport.Request();
         expect(request.post(uri: uri, body: {'invalid': 'map'}),
             throwsArgumentError);
       });
@@ -106,101 +106,95 @@ void main() {
       test('body should be unmodifiable once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        final request = new transport.Request();
+        final request = transport.Request();
         await request.post(uri: uri);
         expect(() {
           request.body = 'too late';
         }, throwsStateError);
         expect(() {
-          request.bodyBytes = convert.utf8.encode('too late');
+          request.bodyBytes = utf8.encode('too late');
         }, throwsStateError);
       });
 
       test('content-length cannot be set manually', () {
-        final request = new transport.Request();
+        final request = transport.Request();
         expect(() {
           request.contentLength = 10;
         }, throwsUnsupportedError);
       });
 
       test('setting encoding to null should throw', () {
-        final request = new transport.Request();
+        final request = transport.Request();
         expect(() {
           request.encoding = null;
         }, throwsArgumentError);
       });
 
       test('setting encoding should update content-type', () {
-        final request = new transport.Request();
-        expect(request.contentType.parameters['charset'],
-            equals(convert.utf8.name));
+        final request = transport.Request();
+        expect(request.contentType.parameters['charset'], equals(utf8.name));
 
-        request.encoding = convert.latin1;
-        expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+        request.encoding = latin1;
+        expect(request.contentType.parameters['charset'], equals(latin1.name));
 
-        request.encoding = convert.ascii;
-        expect(request.contentType.parameters['charset'],
-            equals(convert.ascii.name));
+        request.encoding = ascii;
+        expect(request.contentType.parameters['charset'], equals(ascii.name));
       });
 
       test(
           'setting encoding should not update content-type if content-type has been set manually',
           () {
-        final request = new transport.Request();
-        expect(request.contentType.parameters['charset'],
-            equals(convert.utf8.name));
+        final request = transport.Request();
+        expect(request.contentType.parameters['charset'], equals(utf8.name));
 
         // Manually override content-type.
-        request.contentType = new MediaType(
-            'application', 'x-custom', {'charset': convert.latin1.name});
+        request.contentType =
+            MediaType('application', 'x-custom', {'charset': latin1.name});
         expect(request.contentType.mimeType, equals('application/x-custom'));
-        expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+        expect(request.contentType.parameters['charset'], equals(latin1.name));
 
         // Changes to encoding should no longer update the content-type.
-        request.encoding = convert.ascii;
-        expect(request.contentType.parameters['charset'],
-            equals(convert.latin1.name));
+        request.encoding = ascii;
+        expect(request.contentType.parameters['charset'], equals(latin1.name));
       });
 
       test('setting content-type should not be allowed once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        final request = new transport.Request();
+        final request = transport.Request();
         await request.get(uri: uri);
         expect(() {
-          request.contentType = new MediaType('application', 'x-custom');
+          request.contentType = MediaType('application', 'x-custom');
         }, throwsStateError);
       });
 
       test('setting encoding should not be allowed once sent', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('GET', uri);
-        final request = new transport.Request();
+        final request = transport.Request();
         await request.get(uri: uri);
         expect(() {
-          request.encoding = convert.latin1;
+          request.encoding = latin1;
         }, throwsStateError);
       });
 
       test('custom content-type without inferrable encoding', () async {
         final uri = Uri.parse('/test');
         MockTransports.http.expect('POST', uri);
-        final request = new transport.Request()
-          ..contentType = new MediaType('application', 'x-custom')
+        final request = transport.Request()
+          ..contentType = MediaType('application', 'x-custom')
           ..body = 'body';
         await request.post(uri: uri);
       });
 
       test('clone()', () {
         const body = 'body';
-        final orig = new transport.Request()..body = body;
+        final orig = transport.Request()..body = body;
         final clone = orig.clone();
         expect(clone.body, equals(body));
 
-        final bodyBytes = convert.utf8.encode('bytes');
-        final orig2 = new transport.Request()..bodyBytes = bodyBytes;
+        final bodyBytes = utf8.encode('bytes');
+        final orig2 = transport.Request()..bodyBytes = bodyBytes;
         final clone2 = orig2.clone();
         expect(clone2.bodyBytes, equals(bodyBytes));
       });

@@ -39,8 +39,8 @@ part 'package:w_transport/src/mocks/mock_web_socket.dart';
 part 'package:w_transport/src/mocks/mock_web_socket_server.dart';
 
 class MockTransports {
-  static const MockHttp http = const MockHttp();
-  static const MockWebSockets webSocket = const MockWebSockets();
+  static const MockHttp http = MockHttp();
+  static const MockWebSockets webSocket = MockWebSockets();
 
   /// Install mocking logic & controls for all transports. This will effectively
   /// wrap all [BaseRequest], [HttpClient], and [WebSocket] instances in a
@@ -52,7 +52,7 @@ class MockTransports {
   /// a mock expectation or handler is not set up to handle it. This enables
   /// selective mocking - certain requests or WebSockets can be mocked while
   /// the rest will be handled by a real transport platform.
-  static void install({bool fallThrough: false}) {
+  static void install({bool fallThrough = false}) {
     MockTransportsInternal.isInstalled = true;
     MockTransportsInternal.fallThrough = fallThrough ?? false;
   }
@@ -60,7 +60,7 @@ class MockTransports {
   static Future<Null> reset() {
     http.reset();
     webSocket.reset();
-    return new Future.value();
+    return Future.value();
   }
 
   static Future<Null> uninstall() async {

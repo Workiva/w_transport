@@ -27,17 +27,17 @@ class Server {
   final String host;
   final int port;
 
-  Logger _logger = new Logger();
+  Logger _logger = Logger();
   HttpServer _server;
   StreamSubscription _subscription;
 
-  Server({this.host: defaultHost, this.port: defaultPort});
+  Server({this.host = defaultHost, this.port = defaultPort});
 
   static Future<Null> run(
-      {bool dumpOutput: false,
-      String host: defaultHost,
-      int port: defaultPort}) {
-    final server = new Server(host: host, port: port);
+      {bool dumpOutput = false,
+      String host = defaultHost,
+      int port = defaultPort}) {
+    final server = Server(host: host, port: port);
     server.output.listen(print);
     return server.start();
   }
@@ -45,7 +45,7 @@ class Server {
   Stream get output => _logger.stream;
 
   Future<Null> start() async {
-    final router = new Router(_logger);
+    final router = Router(_logger);
 
     try {
       _server = await HttpServer.bind(host, port);

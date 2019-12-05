@@ -22,7 +22,7 @@ import 'package:w_transport/src/web_socket/web_socket.dart';
 
 @Deprecated(v3Deprecation)
 abstract class MockWSocket extends MockWebSocket implements WebSocket {
-  factory MockWSocket() => new MockWebSocket();
+  factory MockWSocket() => MockWebSocket();
 
   static Future<WebSocket> connect(Uri uri,
           {Map<String, dynamic> headers, Iterable<String> protocols}) =>

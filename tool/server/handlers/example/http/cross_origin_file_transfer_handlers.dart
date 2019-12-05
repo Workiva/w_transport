@@ -13,10 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart2_constant/convert.dart' as convert_constant;
-import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:http_server/http_server.dart';
 import 'package:mime/mime.dart';
 
@@ -25,13 +24,13 @@ import '../../../handler.dart';
 String pathPrefix = '/example/http/cross_origin_file_transfer';
 
 Map<String, Handler> exampleHttpCrossOriginFileTransferRoutes = {
-  '$pathPrefix/files/': new FilesHandler(),
-  '$pathPrefix/download': new DownloadHandler(),
-  '$pathPrefix/upload': new UploadHandler()
+  '$pathPrefix/files/': FilesHandler(),
+  '$pathPrefix/download': DownloadHandler(),
+  '$pathPrefix/upload': UploadHandler()
 };
 
 Directory filesDirectory =
-    new Directory('example/web/http/cross_origin_file_transfer/files');
+    Directory('example/web/http/cross_origin_file_transfer/files');
 
 Future<String> _readFileUploadAsString(HttpMultipartFormData formData) async {
   final parts = await formData.toList();
@@ -52,7 +51,7 @@ void _writeFileUploadAsString(String filename, String contents) {
   _createUploadDirectory();
   final uploadDestination =
       Uri.parse('example/web/http/cross_origin_file_transfer/files/$filename');
-  final upload = new File.fromUri(uploadDestination);
+  final upload = File.fromUri(uploadDestination);
   upload.writeAsStringSync(contents);
 }
 
@@ -60,7 +59,7 @@ void _writeFileUploadAsBytes(String filename, List<int> bytes) {
   _createUploadDirectory();
   final uploadDestination =
       Uri.parse('example/web/http/cross_origin_file_transfer/files/$filename');
-  final upload = new File.fromUri(uploadDestination);
+  final upload = File.fromUri(uploadDestination);
   upload.writeAsBytesSync(bytes);
 }
 
@@ -86,7 +85,7 @@ class FileWatcher {
   }
 
   static FileWatcher start(Directory directory) {
-    return new FileWatcher(directory);
+    return FileWatcher(directory);
   }
 
   void close() {
@@ -96,7 +95,7 @@ class FileWatcher {
   void _startWatching() {
     if (!_watching) return;
     _listFiles();
-    new Future.delayed(new Duration(seconds: 2)).then((_) => _startWatching());
+    Future.delayed(Duration(seconds: 2)).then((_) => _startWatching());
   }
 
   void _endWatching() {
@@ -117,7 +116,7 @@ class UploadHandler extends Handler {
   @override
   Future<Null> post(HttpRequest request) async {
     if (request.headers['content-type'] == null) {
-      request.response.statusCode = io_constant.HttpStatus.badRequest;
+      request.response.statusCode = HttpStatus.badRequest;
       setCorsHeaders(request);
       return;
     }
@@ -125,7 +124,7 @@ class UploadHandler extends Handler {
     final contentType =
         ContentType.parse(request.headers.value('content-type'));
     final boundary = contentType.parameters['boundary'];
-    final stream = new MimeMultipartTransformer(boundary)
+    final stream = MimeMultipartTransformer(boundary)
         .bind(request)
         .map(HttpMultipartFormData.parse);
 
@@ -134,7 +133,7 @@ class UploadHandler extends Handler {
         case 'file':
           String filename =
               formData.contentDisposition.parameters['filename'] ??
-                  new DateTime.now().toString();
+                  DateTime.now().toString();
 
           if (formData.isText) {
             final contents = await _readFileUploadAsString(formData);
@@ -146,7 +145,7 @@ class UploadHandler extends Handler {
       }
     }
 
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
   }
 }
@@ -154,7 +153,7 @@ class UploadHandler extends Handler {
 class FilesHandler extends Handler {
   FileWatcher fw;
   FilesHandler()
-      : fw = new FileWatcher(filesDirectory),
+      : fw = FileWatcher(filesDirectory),
         super() {
     enableCors();
   }
@@ -169,10 +168,9 @@ class FilesHandler extends Handler {
               'size': entity.lengthSync()
             })
         .toList();
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
-    request.response
-        .write(convert_constant.json.encode({'results': filesPayload}));
+    request.response.write(json.encode({'results': filesPayload}));
   }
 
   @override
@@ -182,7 +180,7 @@ class FilesHandler extends Handler {
     for (final entity in files) {
       entity.deleteSync();
     }
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
   }
 }
@@ -195,14 +193,14 @@ class DownloadHandler extends Handler {
   @override
   Future<Null> get(HttpRequest request) async {
     if (request.uri.queryParameters['file'] == null) {
-      request.response.statusCode = io_constant.HttpStatus.notFound;
+      request.response.statusCode = HttpStatus.notFound;
       setCorsHeaders(request);
       return;
     }
     final requestedFile =
         Uri.parse(request.uri.queryParameters['file']).pathSegments.last;
     if (requestedFile == '' || requestedFile == null) {
-      request.response.statusCode = io_constant.HttpStatus.notFound;
+      request.response.statusCode = HttpStatus.notFound;
       setCorsHeaders(request);
       return;
     }
@@ -211,9 +209,9 @@ class DownloadHandler extends Handler {
 
     final fileUri = Uri.parse(
         'example/web/http/cross_origin_file_transfer/files/$requestedFile');
-    final file = new File.fromUri(fileUri);
+    final file = File.fromUri(fileUri);
     if (!file.existsSync()) {
-      request.response.statusCode = io_constant.HttpStatus.notFound;
+      request.response.statusCode = HttpStatus.notFound;
       setCorsHeaders(request);
       return;
     }
@@ -227,7 +225,7 @@ class DownloadHandler extends Handler {
       headers['content-disposition'] = 'attachment; filename=$requestedFile';
     }
 
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
     headers.forEach((h, v) {
       request.response.headers.set(h, v);

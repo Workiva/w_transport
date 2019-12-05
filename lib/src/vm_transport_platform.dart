@@ -23,34 +23,34 @@ import 'package:w_transport/src/transport_platform.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 import 'package:w_transport/src/web_socket/vm/web_socket.dart';
 
-const VMTransportPlatform vmTransportPlatform = const VMTransportPlatform();
+const VMTransportPlatform vmTransportPlatform = VMTransportPlatform();
 
 class VMTransportPlatform implements TransportPlatform {
   const VMTransportPlatform();
 
   /// Construct an [HttpClient] instance for use in the Dart VM.
   @override
-  HttpClient newHttpClient() => new VMHttpClient();
+  HttpClient newHttpClient() => VMHttpClient();
 
   /// Construct a [FormRequest] instance for use in the Dart VM.
   @override
-  FormRequest newFormRequest() => new VMFormRequest(this);
+  FormRequest newFormRequest() => VMFormRequest(this);
 
   /// Construct a [JsonRequest] instance for use in the Dart VM.
   @override
-  JsonRequest newJsonRequest() => new VMJsonRequest(this);
+  JsonRequest newJsonRequest() => VMJsonRequest(this);
 
   /// Construct a [MultipartRequest] instance for use in the Dart VM.
   @override
-  MultipartRequest newMultipartRequest() => new VMMultipartRequest(this);
+  MultipartRequest newMultipartRequest() => VMMultipartRequest(this);
 
   /// Construct a [Request] instance for use in the Dart VM.
   @override
-  Request newRequest() => new VMPlainTextRequest(this);
+  Request newRequest() => VMPlainTextRequest(this);
 
   /// Construct a [StreamedRequest] instance for use in the Dart VM.
   @override
-  StreamedRequest newStreamedRequest() => new VMStreamedRequest(this);
+  StreamedRequest newStreamedRequest() => VMStreamedRequest(this);
 
   /// Construct a [WebSocket] instance for use in the Dart VM.
   @override

@@ -53,8 +53,8 @@ class SockJSPortWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   static Future<WebSocket> connect(Uri uri,
-      {bool debug: false,
-      bool noCredentials: false,
+      {bool debug = false,
+      bool noCredentials = false,
       List<String> protocolsWhitelist,
       Duration timeout}) async {
     Uri sockjsUri;
@@ -64,7 +64,7 @@ class SockJSPortWebSocket extends CommonWebSocket implements WebSocket {
       sockjsUri = uri.replace(scheme: 'https');
     }
 
-    final client = new sockjs.Client(sockjsUri.toString(),
+    final client = sockjs.Client(sockjsUri.toString(),
         debug: debug == true,
         noCredentials: noCredentials == true,
         protocolsWhitelist: protocolsWhitelist,
@@ -73,13 +73,13 @@ class SockJSPortWebSocket extends CommonWebSocket implements WebSocket {
     // Listen for and store the close event. This will determine whether or
     // not the socket connected successfully, and will also be used later
     // to handle the web socket closing.
-    final closed = new Completer<Object /* CloseEvent */ >();
+    final closed = Completer<Object /* CloseEvent */ >();
     // ignore: unawaited_futures
     client.onClose.first.then(closed.complete);
 
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
-    final connected = new Completer<Null>();
+    final connected = Completer<Null>();
     // ignore: unawaited_futures
     client.onOpen.first.then((_) {
       connected.complete();
@@ -93,7 +93,7 @@ class SockJSPortWebSocket extends CommonWebSocket implements WebSocket {
     closed.future.then((_) {
       if (!connected.isCompleted) {
         connected
-            .completeError(new WebSocketException('Could not connect to $uri'));
+            .completeError(WebSocketException('Could not connect to $uri'));
         emitWebSocketConnectEvent(newWebSocketConnectEvent(
             url: uri.toString(),
             wasSuccessful: false,
@@ -102,7 +102,7 @@ class SockJSPortWebSocket extends CommonWebSocket implements WebSocket {
     });
 
     await connected.future;
-    return new SockJSPortWebSocket._(client, closed.future);
+    return SockJSPortWebSocket._(client, closed.future);
   }
 
   @override
@@ -148,7 +148,7 @@ class SockJSPortWebSocket extends CommonWebSocket implements WebSocket {
   @override
   void validateOutgoingData(Object data) {
     if (data is! String) {
-      throw new ArgumentError(
+      throw ArgumentError(
           'WSocket data type must be a String when using SockJS.');
     }
   }

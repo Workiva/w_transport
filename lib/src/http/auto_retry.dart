@@ -22,7 +22,7 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
 
-typedef Future<bool> RetryTest(
+typedef RetryTest = Future<bool> Function(
     FinalizedRequest request, BaseResponse response, bool willRetry);
 
 /// The valid retry back-off methods.
@@ -162,7 +162,7 @@ class RequestAutoRetry extends AutoRetryConfig {
 /// attempts so far.
 class RetryBackOff {
   /// The default maximum duration between retries. (5 minutes)
-  static const Duration defaultMaxInterval = const Duration(minutes: 5);
+  static const Duration defaultMaxInterval = Duration(minutes: 5);
 
   /// The base duration from which the delay between retries will be calculated.
   /// For fixed back-off, the delay will always be this value. For exponential
@@ -182,13 +182,13 @@ class RetryBackOff {
   /// Construct a new exponential back-off representation where [interval] is
   /// the base duration from which each delay will be calculated.
   const RetryBackOff.exponential(this.interval,
-      {this.withJitter: true, Duration maxInterval})
+      {this.withJitter = true, Duration maxInterval})
       : method = RetryBackOffMethod.exponential,
         maxInterval = maxInterval ?? defaultMaxInterval;
 
   /// Construct a new fixed back-off representation where [interval] is the
   /// delay between each retry.
-  const RetryBackOff.fixed(this.interval, {this.withJitter: true})
+  const RetryBackOff.fixed(this.interval, {this.withJitter = true})
       : method = RetryBackOffMethod.fixed,
         maxInterval = null;
 

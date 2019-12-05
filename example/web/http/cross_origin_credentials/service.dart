@@ -27,7 +27,7 @@ final _credentialedEndpointUrl =
 /// Send a request to the /session endpoint to check authentication status.
 /// Returns true if authenticated, false otherwise.
 Future<bool> checkStatus() async {
-  final req = new Request()..withCredentials = true;
+  final req = Request()..withCredentials = true;
 
   try {
     final response = await req.get(uri: _sessionUrl);
@@ -40,7 +40,7 @@ Future<bool> checkStatus() async {
 
 /// Login by sending a POST request to the /session endpoint.
 Future<bool> login() async {
-  final req = new Request()..withCredentials = true;
+  final req = Request()..withCredentials = true;
   Response response;
   try {
     response = await req.post(uri: _sessionUrl);
@@ -52,7 +52,7 @@ Future<bool> login() async {
 
 /// Logout by sending a request to the /logout endpoint.
 Future<bool> logout() async {
-  final req = new Request()..withCredentials = true;
+  final req = Request()..withCredentials = true;
   Response response;
   try {
     response = await req.delete(uri: _sessionUrl);
@@ -67,7 +67,7 @@ Future<bool> logout() async {
 /// means the session HTTP cookie (if set) will be included.
 /// Thus, if authenticated, this request should succeed.
 Future<String> makeCredentialedRequest() async {
-  final req = new Request()..withCredentials = true;
+  final req = Request()..withCredentials = true;
   final response = await req.get(uri: _credentialedEndpointUrl);
   return response.body.asString();
 }

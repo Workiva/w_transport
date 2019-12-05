@@ -24,7 +24,7 @@ import 'package:w_transport/src/http/browser/utils.dart'
 import '../../naming.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformBrowser
     ..testType = testTypeUnit
     ..topic = topicHttp;
@@ -34,12 +34,12 @@ void main() {
       test(
           'should convert computable ProgressEvents to WProgress instances with correct values',
           () async {
-        final eventStream = new Stream<ProgressEvent>.fromIterable([
-          new MockProgressEvent.computable(0, 100),
-          new MockProgressEvent.computable(10, 100),
-          new MockProgressEvent.computable(50, 100),
-          new MockProgressEvent.computable(73, 100),
-          new MockProgressEvent.computable(100, 100),
+        final eventStream = Stream<ProgressEvent>.fromIterable([
+          MockProgressEvent.computable(0, 100),
+          MockProgressEvent.computable(10, 100),
+          MockProgressEvent.computable(50, 100),
+          MockProgressEvent.computable(73, 100),
+          MockProgressEvent.computable(100, 100),
         ]);
         final requestProgressStream =
             eventStream.transform(transformProgressEvents);
@@ -54,9 +54,9 @@ void main() {
       test(
           'should convert non-computable ProgressEvents to WProgress instances with 0% values',
           () async {
-        final events = new Stream<ProgressEvent>.fromIterable([
-          new MockProgressEvent.nonComputable(),
-          new MockProgressEvent.nonComputable(),
+        final events = Stream<ProgressEvent>.fromIterable([
+          MockProgressEvent.nonComputable(),
+          MockProgressEvent.nonComputable(),
         ]);
         final wEventStream = events.transform(transformProgressEvents);
         final wEvents = await wEventStream.toList();
@@ -65,22 +65,22 @@ void main() {
       });
 
       test('should support pausing and resuming a subscription', () async {
-        final eventController = new StreamController<ProgressEvent>();
+        final eventController = StreamController<ProgressEvent>();
         final wEventStream =
             eventController.stream.transform(transformProgressEvents);
 
-        final c = new Completer<Null>();
+        final c = Completer<Null>();
         int eventCount = 0;
         StreamSubscription subscription = wEventStream.listen((_) {
           eventCount++;
         }, onDone: c.complete);
 
-        eventController.add(new MockProgressEvent.nonComputable());
+        eventController.add(MockProgressEvent.nonComputable());
         subscription.pause();
-        eventController.add(new MockProgressEvent.nonComputable());
-        eventController.add(new MockProgressEvent.nonComputable());
+        eventController.add(MockProgressEvent.nonComputable());
+        eventController.add(MockProgressEvent.nonComputable());
         subscription.resume();
-        eventController.add(new MockProgressEvent.nonComputable());
+        eventController.add(MockProgressEvent.nonComputable());
 
         await eventController.close();
         await c.future;

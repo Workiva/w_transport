@@ -15,7 +15,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart2_constant/io.dart' as io_constant;
 import 'package:w_transport/w_transport.dart' as transport;
 import 'package:w_transport/vm.dart' show vmTransportPlatform;
 
@@ -23,9 +22,9 @@ import '../../../handler.dart';
 
 String pathPrefix = '/proxy/example/http/cross_origin_file_transfer';
 Map<String, Handler> proxyExampleHttpCrossOriginFileTransferRoutes = {
-  '$pathPrefix/files/': new FilesProxy(),
-  '$pathPrefix/download': new DownloadProxy(),
-  '$pathPrefix/upload': new UploadProxy()
+  '$pathPrefix/files/': FilesProxy(),
+  '$pathPrefix/download': DownloadProxy(),
+  '$pathPrefix/upload': UploadProxy()
 };
 
 Uri filesEndpoint = Uri.parse(
@@ -38,7 +37,7 @@ Uri downloadEndpoint = Uri.parse(
 transport.HttpClient client;
 transport.HttpClient getHttpClient() {
   if (client == null) {
-    client = new transport.HttpClient(transportPlatform: vmTransportPlatform);
+    client = transport.HttpClient(transportPlatform: vmTransportPlatform);
   }
   return client;
 }
@@ -57,7 +56,7 @@ class FilesProxy extends Handler {
     final proxyRequest = getHttpClient().newRequest()..headers = headers;
 
     final proxyResponse = await proxyRequest.streamGet(uri: filesEndpoint);
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
       request.response.headers.set(h, v);
@@ -74,7 +73,7 @@ class FilesProxy extends Handler {
     final proxyRequest = getHttpClient().newRequest()..headers = headers;
 
     final proxyResponse = await proxyRequest.streamDelete(uri: filesEndpoint);
-    request.response.statusCode = io_constant.HttpStatus.ok;
+    request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
     proxyResponse.headers.forEach((h, v) {
       request.response.headers.set(h, v);
@@ -95,7 +94,7 @@ class UploadProxy extends Handler {
       headers[name] = values.join(', ');
     });
     final contentType =
-        new transport.MediaType.parse(request.headers.value('content-type'));
+        transport.MediaType.parse(request.headers.value('content-type'));
     final proxyRequest = getHttpClient().newStreamedRequest()
       ..headers = headers
       ..body = request
@@ -109,7 +108,7 @@ class UploadProxy extends Handler {
     transport.StreamedResponse proxyResponse;
     try {
       proxyResponse = await proxyRequest.streamPost(uri: uploadEndpoint);
-      request.response.statusCode = io_constant.HttpStatus.ok;
+      request.response.statusCode = HttpStatus.ok;
       setCorsHeaders(request);
       proxyResponse.headers.forEach((h, v) {
         request.response.headers.set(h, v);
@@ -117,7 +116,7 @@ class UploadProxy extends Handler {
       await request.response.addStream(proxyResponse.body.byteStream);
     } on HttpException catch (e) {
       proxyRequest.abort(e);
-      request.response.statusCode = io_constant.HttpStatus.internalServerError;
+      request.response.statusCode = HttpStatus.internalServerError;
       setCorsHeaders(request);
     }
   }
@@ -147,7 +146,7 @@ class DownloadProxy extends Handler {
     transport.StreamedResponse proxyResponse;
     try {
       proxyResponse = await proxyRequest.streamGet();
-      request.response.statusCode = io_constant.HttpStatus.ok;
+      request.response.statusCode = HttpStatus.ok;
       setCorsHeaders(request);
       proxyResponse.headers.forEach((h, v) {
         request.response.headers.set(h, v);
@@ -155,7 +154,7 @@ class DownloadProxy extends Handler {
       await request.response.addStream(proxyResponse.body.byteStream);
     } on HttpException catch (e) {
       proxyRequest.abort(e);
-      request.response.statusCode = io_constant.HttpStatus.internalServerError;
+      request.response.statusCode = HttpStatus.internalServerError;
       setCorsHeaders(request);
     }
   }

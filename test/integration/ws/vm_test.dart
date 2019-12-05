@@ -22,7 +22,7 @@ import '../integration_paths.dart';
 import 'common.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformVM
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;

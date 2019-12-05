@@ -29,7 +29,7 @@ import '../../naming.dart';
 import '../integration_paths.dart';
 
 void main() {
-  final naming = new Naming()
+  final naming = Naming()
     ..platform = platformMock
     ..testType = testTypeIntegration
     ..topic = topicTransportPlatform;
@@ -40,36 +40,36 @@ void main() {
 
       // Properly constructs mock-aware implementations of HTTP classes
       // ignore: deprecated_member_use
-      expect(new transport.Client(), new isInstanceOf<MockHttpClient>());
-      expect(new transport.HttpClient(), new isInstanceOf<MockHttpClient>());
+      expect(transport.Client(), isInstanceOf<MockHttpClient>());
+      expect(transport.HttpClient(), isInstanceOf<MockHttpClient>());
       // ignore: deprecated_member_use
-      expect(new transport.FormRequest(), new isInstanceOf<MockFormRequest>());
+      expect(transport.FormRequest(), isInstanceOf<MockFormRequest>());
       // ignore: deprecated_member_use
-      expect(new transport.JsonRequest(), new isInstanceOf<MockJsonRequest>());
+      expect(transport.JsonRequest(), isInstanceOf<MockJsonRequest>());
       expect(
-          new transport.MultipartRequest(),
+          transport.MultipartRequest(),
           // ignore: deprecated_member_use
-          new isInstanceOf<MockMultipartRequest>());
+          isInstanceOf<MockMultipartRequest>());
       // ignore: deprecated_member_use
-      expect(new transport.Request(), new isInstanceOf<MockPlainTextRequest>());
+      expect(transport.Request(), isInstanceOf<MockPlainTextRequest>());
       expect(
-          new transport.StreamedRequest(),
+          transport.StreamedRequest(),
           // ignore: deprecated_member_use
-          new isInstanceOf<MockStreamedRequest>());
+          isInstanceOf<MockStreamedRequest>());
 
       // Properly constructs a mock-aware implementation of WebSocket
-      final mockWebSocketServer = new MockWebSocketServer();
+      final mockWebSocketServer = MockWebSocketServer();
       MockTransports.webSocket
           .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, new isInstanceOf<MockWebSocket>());
+      expect(webSocket, isInstanceOf<MockWebSocket>());
       await webSocket.close();
       MockTransports.webSocket
           .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
       // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, new isInstanceOf<MockWebSocket>());
+      expect(webSocket, isInstanceOf<MockWebSocket>());
       await wSocket.close();
       await mockWebSocketServer.shutDown();
 
@@ -82,36 +82,36 @@ void main() {
 
       // Properly constructs mock-aware implementations of HTTP classes
       // ignore: deprecated_member_use
-      expect(new transport.Client(), new isInstanceOf<MockHttpClient>());
-      expect(new transport.HttpClient(), new isInstanceOf<MockHttpClient>());
+      expect(transport.Client(), isInstanceOf<MockHttpClient>());
+      expect(transport.HttpClient(), isInstanceOf<MockHttpClient>());
       // ignore: deprecated_member_use
-      expect(new transport.FormRequest(), new isInstanceOf<MockFormRequest>());
+      expect(transport.FormRequest(), isInstanceOf<MockFormRequest>());
       // ignore: deprecated_member_use
-      expect(new transport.JsonRequest(), new isInstanceOf<MockJsonRequest>());
+      expect(transport.JsonRequest(), isInstanceOf<MockJsonRequest>());
       expect(
-          new transport.MultipartRequest(),
+          transport.MultipartRequest(),
           // ignore: deprecated_member_use
-          new isInstanceOf<MockMultipartRequest>());
+          isInstanceOf<MockMultipartRequest>());
       // ignore: deprecated_member_use
-      expect(new transport.Request(), new isInstanceOf<MockPlainTextRequest>());
+      expect(transport.Request(), isInstanceOf<MockPlainTextRequest>());
       expect(
-          new transport.StreamedRequest(),
+          transport.StreamedRequest(),
           // ignore: deprecated_member_use
-          new isInstanceOf<MockStreamedRequest>());
+          isInstanceOf<MockStreamedRequest>());
 
       // Properly constructs a mock-aware implementation of WebSocket
-      final mockWebSocketServer = new MockWebSocketServer();
+      final mockWebSocketServer = MockWebSocketServer();
       MockTransports.webSocket
           .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, new isInstanceOf<MockWebSocket>());
+      expect(webSocket, isInstanceOf<MockWebSocket>());
       await webSocket.close();
       MockTransports.webSocket
           .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
       // ignore: deprecated_member_use
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, new isInstanceOf<MockWebSocket>());
+      expect(webSocket, isInstanceOf<MockWebSocket>());
       await wSocket.close();
       await mockWebSocketServer.shutDown();
 
@@ -123,61 +123,61 @@ void main() {
         () async {
       MockTransports.install(fallThrough: true);
 
-      final formRequest = new transport.FormRequest();
+      final formRequest = transport.FormRequest();
       expect(formRequest.get(uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
-      final jsonRequest = new transport.JsonRequest();
+      final jsonRequest = transport.JsonRequest();
       expect(jsonRequest.get(uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
-      final multipartRequest = new transport.MultipartRequest()
+      final multipartRequest = transport.MultipartRequest()
         ..fields['foo'] = 'bar';
       expect(multipartRequest.get(uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
-      final request = new transport.Request();
+      final request = transport.Request();
       expect(request.get(uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
-      final streamedRequest = new transport.StreamedRequest();
+      final streamedRequest = transport.StreamedRequest();
       expect(streamedRequest.get(uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
-      final requestWithStreamedResponse = new transport.Request();
+      final requestWithStreamedResponse = transport.Request();
       expect(
           requestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
-      final httpClient = new transport.HttpClient();
+      final httpClient = transport.HttpClient();
 
       final clientFormRequest = httpClient.newFormRequest();
       expect(clientFormRequest.get(uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
       final clientJsonRequest = httpClient.newJsonRequest();
       expect(clientJsonRequest.get(uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
       final clientMultipartRequest = httpClient.newMultipartRequest()
         ..fields['foo'] = 'bar';
       expect(clientMultipartRequest.get(uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
       final clientRequest = httpClient.newRequest();
       expect(clientRequest.get(uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
       final clientStreamedRequest = httpClient.newStreamedRequest();
       expect(clientStreamedRequest.get(uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
       final clientRequestWithStreamedResponse = httpClient.newRequest();
       expect(
           clientRequestWithStreamedResponse.streamGet(
               uri: IntegrationPaths.pingEndpointUri),
-          throwsA(new isInstanceOf<transport.TransportPlatformMissing>()));
+          throwsA(isInstanceOf<transport.TransportPlatformMissing>()));
 
       await MockTransports.uninstall();
     });
@@ -192,16 +192,15 @@ void main() {
               FinalizedRequest request, transport.BaseResponse response,
               [transport.RequestException error]) async =>
           null;
-      final request =
-          new transport.Request(transportPlatform: vmTransportPlatform)
-            ..autoRetry.enabled = true
-            ..contentType = new transport.MediaType('application', 'json')
-            ..headers['x-custom'] = 'test'
-            ..requestInterceptor = requestInterceptor
-            ..responseInterceptor = responseInterceptor
-            ..timeoutThreshold = const Duration(seconds: 5)
-            ..uri = IntegrationPaths.reflectEndpointUri
-            ..withCredentials = true;
+      final request = transport.Request(transportPlatform: vmTransportPlatform)
+        ..autoRetry.enabled = true
+        ..contentType = transport.MediaType('application', 'json')
+        ..headers['x-custom'] = 'test'
+        ..requestInterceptor = requestInterceptor
+        ..responseInterceptor = responseInterceptor
+        ..timeoutThreshold = const Duration(seconds: 5)
+        ..uri = IntegrationPaths.reflectEndpointUri
+        ..withCredentials = true;
 
       // ignore: avoid_as
       final realRequest = (request as MockRequestMixin).switchToRealRequest();
@@ -219,7 +218,7 @@ void main() {
 
       // Content-length should be copied as well (only works with streamed).
       final streamedRequest =
-          new transport.StreamedRequest(transportPlatform: vmTransportPlatform)
+          transport.StreamedRequest(transportPlatform: vmTransportPlatform)
             ..contentLength = 10;
       // ignore: avoid_as
       final realStreamedRequest =

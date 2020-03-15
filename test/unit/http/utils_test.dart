@@ -159,7 +159,7 @@ void main() {
                 withJitter: true,
                 maxInterval: maxInterval);
 
-            for (int i = 1; i < 5; i++) {
+            for (int i = 1; i < 50; i++) {
               // We start at 1, since the advanced backoff/jitter algorithm
               // only activates once we've had one attempt, so it expects
               // `numAttempts` to be at least 1

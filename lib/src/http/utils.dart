@@ -31,7 +31,8 @@ const _exponentialBase = 2;
 
 /// Calculate the backoff duration based on [RequestAutoRetry] configuration.
 /// Returns [null] if backoff is not applicable.
-Duration calculateBackOff(RequestAutoRetry autoRetry, {@visibleForTesting Random random}) {
+Duration calculateBackOff(RequestAutoRetry autoRetry,
+    {@visibleForTesting Random random}) {
   Duration backOff;
   switch (autoRetry.backOff.method) {
     case RetryBackOffMethod.exponential:
@@ -47,22 +48,25 @@ Duration calculateBackOff(RequestAutoRetry autoRetry, {@visibleForTesting Random
   return backOff;
 }
 
-Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry, {@visibleForTesting Random random}) {
-  switch (autoRetry.backOff.jitter) {
-    case RetryJitterMethod.advanced:
-      return Duration(milliseconds: _calculateAdvancedExponentialJitteredBackOffInMs(autoRetry, random: random));
-    case RetryJitterMethod.full:
-      return Duration(milliseconds: _calculateFullJitteredBackOffInMs(_calculateUnjitteredExponentialBackOffInMs(autoRetry)));
-    case RetryJitterMethod.none:
-      return Duration(milliseconds: _calculateUnjitteredExponentialBackOffInMs(autoRetry));
-      break;
-    default:
-      var backOffInMs = _calculateUnjitteredExponentialBackOffInMs(autoRetry);
-      if (autoRetry.backOff.withJitter ?? false) {
-        backOffInMs = _calculateFullJitteredBackOffInMs(backOffInMs);
-      }
-      return Duration(milliseconds: backOffInMs);
+Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry,
+    {@visibleForTesting Random random}) {
+  if (autoRetry.backOff.withJitter ?? false) {
+    final jitteredBackOff = _calculateAdvancedExponentialJitteredBackOffInMs(
+        autoRetry,
+        random: random);
+    // If we're over the maximum duration, fall back to a fixed maxInterval with full jitter
+    if (jitteredBackOff > autoRetry.backOff.maxInterval.inMilliseconds) {
+      return Duration(
+          milliseconds:
+              (autoRetry.backOff.maxInterval.inMilliseconds.toDouble() *
+                      (random ?? Random()).nextDouble())
+                  .toInt());
+    }
+    return Duration(milliseconds: jitteredBackOff);
   }
+
+  return Duration(
+      milliseconds: _calculateUnjitteredExponentialBackOffInMs(autoRetry));
 }
 
 int _calculateUnjitteredExponentialBackOffInMs(autoRetry) {
@@ -71,25 +75,24 @@ int _calculateUnjitteredExponentialBackOffInMs(autoRetry) {
   return min(autoRetry.backOff.maxInterval.inMilliseconds, backOffInMs);
 }
 
-int _calculateFullJitteredBackOffInMs(int backOffInMs) {
-  final random = Random();
-  return random.nextInt(backOffInMs);
-}
-
 /// Returns the jittered backoff delay in ms using an advanced jittering algorithm.
 ///
 /// Taken from https://github.com/Polly-Contrib/Polly.Contrib.WaitAndRetry/blob/master/src/Polly.Contrib.WaitAndRetry/Backoff.DecorrelatedJitterV2.cs#L35-L65
 /// See the details here: https://github.com/Polly-Contrib/Polly.Contrib.WaitAndRetry#wait-and-retry-with-jittered-back-off
 ///
 /// See RFD 277 where this was originally proposed: https://sandbox.wdesk.com/a/QWNjb3VudB82NzE5NTMwMjcyOTQ4MjI0/doc/0c0c78a2bba448babb8bb2e45ba62f7b/r/-1/v/1/sec/0c0c78a2bba448babb8bb2e45ba62f7b_4
-int _calculateAdvancedExponentialJitteredBackOffInMs(RequestAutoRetry autoRetry, {@visibleForTesting Random random}) {
+int _calculateAdvancedExponentialJitteredBackOffInMs(RequestAutoRetry autoRetry,
+    {@visibleForTesting Random random}) {
   // We subtract 1 from the numAttempts since the algorithm uses previous
   // _retry_ attempts, and [tracker.numAttempts] is _total_ attempts, meaning
   // it will always be 1 greater than the number of _retry_ attempts.
-  final t = autoRetry.numAttempts.toDouble() - 1.0 + (random ?? Random()).nextDouble();
-  final next = pow(2, t) * _tanh(sqrt(4.0*t));
-  final unscaledBackoff = next - autoRetry.previous;
-  final backoffInMs = unscaledBackoff * 1/1.4 * (autoRetry.backOff.interval.inMilliseconds);
+  final t = autoRetry.numAttempts.toDouble() -
+      1.0 +
+      (random ?? Random()).nextDouble();
+  final next = pow(2, t) * _tanh(sqrt(4.0 * t));
+  final unscaledBackOff = next - autoRetry.previous;
+  final backoffInMs =
+      unscaledBackOff * 1 / 1.4 * (autoRetry.backOff.interval.inMilliseconds);
   autoRetry.previous = next;
   return backoffInMs.toInt();
 }
@@ -115,7 +118,7 @@ double _tanh(double angle) {
 Duration _calculateFixedBackOff(RequestAutoRetry autoRetry) {
   Duration backOff;
 
-  if (autoRetry.backOff.withJitter == true || autoRetry.backOff.jitter != RetryJitterMethod.none) {
+  if (autoRetry.backOff.withJitter ?? false) {
     final random = Random();
     backOff = Duration(
         milliseconds: autoRetry.backOff.interval.inMilliseconds ~/ 2 +

@@ -18,13 +18,18 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
+import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
+import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
 import 'package:w_transport/src/http/utils.dart' as http_utils;
+import 'package:w_transport/w_transport.dart';
 
 import '../../naming.dart';
+
+class MockRandom extends Mock implements Random {}
 
 void main() {
   final naming = Naming()
@@ -43,6 +48,60 @@ void main() {
           await MockTransports.uninstall();
         });
 
+        group('advanced jitter', () {
+          Request request;
+          final random = MockRandom();
+          // Return the mean/median value of this random so we have a deterministic output
+          when(random.nextDouble()).thenReturn(0.5);
+
+          void expectBackOffOf(int backOffInMs) {
+                expect(
+                    http_utils
+                        .calculateBackOff(request.autoRetry, random: random)
+                        .inMilliseconds,
+                    equals(backOffInMs));
+          }
+
+          tearDown(() {
+            request = null;
+          });
+
+          test('produces expected delays without hitting maxInterval', () async {
+            request = transport.Request();
+            final interval = Duration(seconds: 1);
+            final maxInterval = Duration(seconds: 15);
+            request.autoRetry.backOff = transport.RetryBackOff.exponential(
+                interval,
+                jitter: RetryJitterMethod.advanced,
+                maxInterval: maxInterval);
+
+            for (int i = 1; i <= 5; i++) {
+              // We start at 1, since the advanced backoff/jitter algorithm
+              // only activates once we've had one attempt, so it expects
+              // `numAttempts` to be at least 1
+              request.autoRetry.numAttempts = i;
+
+              switch (i) {
+                case 1:
+                  expectBackOffOf(897);
+                  break;
+                case 2:
+                  expectBackOffOf(1093);
+                  break;
+                case 3:
+                  expectBackOffOf(2035);
+                  break;
+                case 4:
+                  expectBackOffOf(4045);
+                  break;
+                case 5:
+                  expectBackOffOf(8083);
+                  break;
+              }
+            }
+          });
+        });
+
         group('exponential', () {
           test('maxInterval should not be exceeded (no jitter)', () async {
             final request = transport.Request();
@@ -50,7 +109,6 @@ void main() {
             final maxInterval = Duration(milliseconds: 400);
             request.autoRetry.backOff = transport.RetryBackOff.exponential(
                 interval,
-                withJitter: false,
                 maxInterval: maxInterval);
 
             for (int i = 0; i < 5; i++) {
@@ -73,7 +131,7 @@ void main() {
             }
           });
 
-          test('maxInterval should not be exceeded (with jitter)', () async {
+          test('maxInterval should not be exceeded (with full jitter)', () async {
             final request = transport.Request();
             final interval = Duration(milliseconds: 5);
             final maxInterval = Duration(milliseconds: 400);

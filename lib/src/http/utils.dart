@@ -18,6 +18,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
+import 'package:meta/meta.dart';
 
 import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/request_progress.dart';
@@ -30,11 +31,11 @@ const _exponentialBase = 2;
 
 /// Calculate the backoff duration based on [RequestAutoRetry] configuration.
 /// Returns [null] if backoff is not applicable.
-Duration calculateBackOff(RequestAutoRetry autoRetry) {
+Duration calculateBackOff(RequestAutoRetry autoRetry, {@visibleForTesting Random random}) {
   Duration backOff;
   switch (autoRetry.backOff.method) {
     case RetryBackOffMethod.exponential:
-      backOff = _calculateExponentialBackOff(autoRetry);
+      backOff = _calculateExponentialBackOff(autoRetry, random: random);
       break;
     case RetryBackOffMethod.fixed:
       backOff = _calculateFixedBackOff(autoRetry);
@@ -46,22 +47,75 @@ Duration calculateBackOff(RequestAutoRetry autoRetry) {
   return backOff;
 }
 
-Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry) {
+Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry, {@visibleForTesting Random random}) {
+  switch (autoRetry.backOff.jitter) {
+    case RetryJitterMethod.advanced:
+      return Duration(milliseconds: _calculateAdvancedExponentialJitteredBackOffInMs(autoRetry, random: random));
+    case RetryJitterMethod.full:
+      return Duration(milliseconds: _calculateFullJitteredBackOffInMs(_calculateUnjitteredExponentialBackOffInMs(autoRetry)));
+    case RetryJitterMethod.none:
+      return Duration(milliseconds: _calculateUnjitteredExponentialBackOffInMs(autoRetry));
+      break;
+    default:
+      var backOffInMs = _calculateUnjitteredExponentialBackOffInMs(autoRetry);
+      if (autoRetry.backOff.withJitter ?? false) {
+        backOffInMs = _calculateFullJitteredBackOffInMs(backOffInMs);
+      }
+      return Duration(milliseconds: backOffInMs);
+  }
+}
+
+int _calculateUnjitteredExponentialBackOffInMs(autoRetry) {
   int backOffInMs = autoRetry.backOff.interval.inMilliseconds *
       pow(_exponentialBase, autoRetry.numAttempts);
-  backOffInMs = min(autoRetry.backOff.maxInterval.inMilliseconds, backOffInMs);
+  return min(autoRetry.backOff.maxInterval.inMilliseconds, backOffInMs);
+}
 
-  if (autoRetry.backOff.withJitter == true) {
-    final random = Random();
-    backOffInMs = random.nextInt(backOffInMs);
+int _calculateFullJitteredBackOffInMs(int backOffInMs) {
+  final random = Random();
+  return random.nextInt(backOffInMs);
+}
+
+/// Returns the jittered backoff delay in ms using an advanced jittering algorithm.
+///
+/// Taken from https://github.com/Polly-Contrib/Polly.Contrib.WaitAndRetry/blob/master/src/Polly.Contrib.WaitAndRetry/Backoff.DecorrelatedJitterV2.cs#L35-L65
+/// See the details here: https://github.com/Polly-Contrib/Polly.Contrib.WaitAndRetry#wait-and-retry-with-jittered-back-off
+///
+/// See RFD 277 where this was originally proposed: https://sandbox.wdesk.com/a/QWNjb3VudB82NzE5NTMwMjcyOTQ4MjI0/doc/0c0c78a2bba448babb8bb2e45ba62f7b/r/-1/v/1/sec/0c0c78a2bba448babb8bb2e45ba62f7b_4
+int _calculateAdvancedExponentialJitteredBackOffInMs(RequestAutoRetry autoRetry, {@visibleForTesting Random random}) {
+  // We subtract 1 from the numAttempts since the algorithm uses previous
+  // _retry_ attempts, and [tracker.numAttempts] is _total_ attempts, meaning
+  // it will always be 1 greater than the number of _retry_ attempts.
+  final t = autoRetry.numAttempts.toDouble() - 1.0 + (random ?? Random()).nextDouble();
+  final next = pow(2, t) * _tanh(sqrt(4.0*t));
+  final unscaledBackoff = next - autoRetry.previous;
+  final backoffInMs = unscaledBackoff * 1/1.4 * (autoRetry.backOff.interval.inMilliseconds);
+  autoRetry.previous = next;
+  return backoffInMs.toInt();
+}
+
+/// Calculate the hyperbolic tangent of [angle] in radians.
+///
+/// Taken from `dart_numerics` package, which is not used here because it is not
+/// supported for web applications.
+double _tanh(double angle) {
+  if (angle > 19.1) {
+    return 1.0;
   }
-  return Duration(milliseconds: backOffInMs);
+
+  if (angle < -19.1) {
+    return -1.0;
+  }
+
+  final e1 = exp(angle);
+  final e2 = exp(-angle);
+  return (e1 - e2) / (e1 + e2);
 }
 
 Duration _calculateFixedBackOff(RequestAutoRetry autoRetry) {
   Duration backOff;
 
-  if (autoRetry.backOff.withJitter == true) {
+  if (autoRetry.backOff.withJitter == true || autoRetry.backOff.jitter != RetryJitterMethod.none) {
     final random = Random();
     backOff = Duration(
         milliseconds: autoRetry.backOff.interval.inMilliseconds ~/ 2 +

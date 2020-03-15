@@ -28,6 +28,20 @@ typedef RetryTest = Future<bool> Function(
 /// The valid retry back-off methods.
 enum RetryBackOffMethod { exponential, fixed, none }
 
+/// The valid jitter back-off methods.
+///
+/// [RetryJitterMethod.none] applies no jitter. [RetryJitterMethod.full]
+/// applies the "Full jitter" approach outline here:
+///   https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
+/// and can be used with both [RetryBackOffMethod.exponential] and
+/// [RetryBackOffMethod.fixed].
+///
+/// [RetryJitterMethod.advanced] uses a jitter algorithm which produces a
+/// smoother delay distribution than [RetryJitterMethod.full]. Is only valid
+/// with [RetryBackOffMethod.exponential], and has no effect with
+/// [RetryBackOffMethod.fixed].
+enum RetryJitterMethod { advanced, full, none }
+
 /// Deciding whether or not to retry a failed request is determined by the
 /// settings defined in fields in this class.
 ///
@@ -129,6 +143,12 @@ class RequestAutoRetry extends AutoRetryConfig {
   /// This will be incremented each time an attempt is sent.
   int numAttempts = 0;
 
+  /// This number is used in the advanced jitter algorithm, and has no
+  /// meaningful value outside of that context.
+  ///
+  /// Do not modify this value.
+  double previous = 0.0;
+
   /// The _original_ request instance with which this information is associated.
   BaseRequest _request;
 
@@ -177,19 +197,47 @@ class RetryBackOff {
   final RetryBackOffMethod method;
 
   /// Whether to enable jitter or not.
+  ///
+  /// Deprecated: 3.3.0
+  /// To be removed: 4.0.0
+  ///
+  /// Use [jitter] instead, which takes an instance of [RetryJitterMethod]
+  /// [RetryJitterMethod.full] corresponds to a true value of [withJitter], and
+  /// [RetryJitterMethod.none] corresponds to a false value of [withJitter].
+  @Deprecated('4.0.0')
   final bool withJitter;
+
+  /// The jitter method used to randomize the retry delay durations.
+  ///
+  /// Set to [RetryJitterMethod.none] to specify no jitter.
+  ///
+  /// Set to [RetryJitterMethod.full] to use the "Full jitter" strategy outlined
+  /// here:
+  ///   https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
+  ///
+  /// Use [RetryJitterMethod.advanced] to use the "Advanced jitter" strategy
+  /// described here:
+  ///   https://github.com/Polly-Contrib/Polly.Contrib.WaitAndRetry#new-jitter-recommendation
+  /// This jitter methodology only applies if [method] is set to
+  /// [RetryBackOffMethod.exponential].
+  /// If [jitter] is set to [RetryJitterMethod.advanced] and if [method] is set
+  /// to [RetryBackOffMethod.fixed], the "Full jitter" approach will be used
+  /// instead.
+  final RetryJitterMethod jitter;
 
   /// Construct a new exponential back-off representation where [interval] is
   /// the base duration from which each delay will be calculated.
   const RetryBackOff.exponential(this.interval,
-      {this.withJitter = true, Duration maxInterval})
-      : method = RetryBackOffMethod.exponential,
+      {this.withJitter = true, Duration maxInterval, RetryJitterMethod jitter})
+      : jitter = jitter ?? (withJitter ? RetryJitterMethod.full : RetryJitterMethod.none),
+        method = RetryBackOffMethod.exponential,
         maxInterval = maxInterval ?? defaultMaxInterval;
 
   /// Construct a new fixed back-off representation where [interval] is the
   /// delay between each retry.
-  const RetryBackOff.fixed(this.interval, {this.withJitter = true})
-      : method = RetryBackOffMethod.fixed,
+  const RetryBackOff.fixed(this.interval, {this.withJitter = true, RetryJitterMethod jitter})
+      : jitter = jitter ?? (withJitter ? RetryJitterMethod.full : RetryJitterMethod.none),
+        method = RetryBackOffMethod.fixed,
         maxInterval = null;
 
   /// Construct a null back-off representation, meaning no delay between retry
@@ -198,6 +246,7 @@ class RetryBackOff {
       : interval = null,
         method = RetryBackOffMethod.none,
         withJitter = false,
+        jitter = RetryJitterMethod.none,
         maxInterval = null;
 
   /// Use [interval] instead.

@@ -47,22 +47,22 @@ class _$FileTransferListItemState extends UiState {
   FileTransferItemStatus status;
 }
 
-@Component()
-class FileTransferListItemComponent extends UiStatefulComponent<
+@Component2()
+class FileTransferListItemComponent extends UiStatefulComponent2<
     FileTransferListItemProps, FileTransferListItemState> {
   bool get fileTransferIsDone =>
       state.status == FileTransferItemStatus.doneSuccess ||
       state.status == FileTransferItemStatus.doneFailure;
 
   @override
-  Map getInitialState() => newState()..status = FileTransferItemStatus.idle;
+  get initialState => (newState()..status = FileTransferItemStatus.idle);
 
   @override
-  void componentWillMount() {
-    super.componentWillMount();
+  void componentDidMount() {
+    super.componentDidMount();
 
     if (props.transfer != null) {
-      props.transfer.progressStream.listen((_) => redraw());
+      props.transfer.progressStream.listen((_) => forceUpdate());
       props.transfer.done
           .then((_) => _transferSucceeded())
           .catchError((error, sT) => _transferFailed(error, sT));
@@ -125,7 +125,7 @@ class FileTransferListItemComponent extends UiStatefulComponent<
       ..add('hide', state.status == FileTransferItemStatus.willRemove);
 
     return (Dom.li()
-      ..addProps(copyUnconsumedDomProps())
+      ..modifyProps(addUnconsumedDomProps)
       ..className = classes.toClassName())(
       (Dom.div()..className = 'name')(
         _renderTransferItemLabel(),
@@ -167,8 +167,8 @@ enum FileTransferItemStatus {
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 class FileTransferListItemProps extends _$FileTransferListItemProps
-    // ignore: mixin_of_non_class, undefined_class
     with
+        // ignore: mixin_of_non_class, undefined_class
         _$FileTransferListItemPropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const PropsMeta meta = _$metaForFileTransferListItemProps;
@@ -176,8 +176,8 @@ class FileTransferListItemProps extends _$FileTransferListItemProps
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 class FileTransferListItemState extends _$FileTransferListItemState
-    // ignore: mixin_of_non_class, undefined_class
     with
+        // ignore: mixin_of_non_class, undefined_class
         _$FileTransferListItemStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const StateMeta meta = _$metaForFileTransferListItemState;

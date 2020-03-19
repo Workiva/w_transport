@@ -399,7 +399,7 @@ void _runCommonRequestSuiteFor(
 
       // Abort the request now that it is in flight.
       request.abort();
-      expect(future, throwsA(isInstanceOf<transport.RequestException>()));
+      expect(future, throwsA(isA<transport.RequestException>()));
     });
 
     test('timeoutThreshold does nothing if request completes in time',
@@ -429,8 +429,7 @@ void _runAutoRetryTestSuiteFor(
 
         defineResponseChain(request, [500]);
 
-        expect(
-            request.get(), throwsA(isInstanceOf<transport.RequestException>()));
+        expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -483,8 +482,7 @@ void _runAutoRetryTestSuiteFor(
 
         defineResponseChain(request, [500, 500, 500]);
 
-        expect(
-            request.get(), throwsA(isInstanceOf<transport.RequestException>()));
+        expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(3));
         expect(request.autoRetry.failures.length, equals(3));
@@ -496,7 +494,7 @@ void _runAutoRetryTestSuiteFor(
 void defineResponseChain(transport.BaseRequest request, List<int> statusCodes) {
   request
     ..uri = IntegrationPaths.customEndpointUri
-    ..requestInterceptor = (transport.BaseRequest request) {
+    ..requestInterceptor = (transport.BaseRequest request) async {
       request.updateQuery({'status': statusCodes.removeAt(0).toString()});
     };
 }

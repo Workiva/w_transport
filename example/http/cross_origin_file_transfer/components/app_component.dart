@@ -41,12 +41,12 @@ class _$AppState extends UiState {
   bool isProxyEnabled;
 }
 
-@Component()
-class AppComponent extends UiStatefulComponent<AppProps, AppState> {
+@Component2()
+class AppComponent extends UiStatefulComponent2<AppProps, AppState> {
   @override
-  Map getInitialState() => newState()
+  get initialState => (newState()
     ..page = AppPage.upload
-    ..isProxyEnabled = proxy.proxyEnabled;
+    ..isProxyEnabled = proxy.proxyEnabled);
 
   void _goToUploadPage(SyntheticMouseEvent event) {
     event.preventDefault();
@@ -74,7 +74,7 @@ class AppComponent extends UiStatefulComponent<AppProps, AppState> {
 
   @override
   dynamic render() {
-    return (Dom.div()..addProps(copyUnconsumedDomProps()))(
+    return (Dom.div()..modifyProps(addUnconsumedDomProps))(
       Dom.p()(
         (Dom.label()..htmlFor = 'proxy')(
           (Dom.input()

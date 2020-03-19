@@ -28,6 +28,6 @@ void main() {
   configureWTransportForBrowser();
   renderGlobalExampleMenu(includeServerStatus: true);
   Element container = querySelector('#app');
-  react_dom.render(App()(), container);
+  react_dom.render(ErrorBoundary()(App()()), container);
   removeLoadingOverlay();
 }

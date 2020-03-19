@@ -37,13 +37,13 @@ class _$FileTransferListProps extends UiProps {
   TransferDoneCallback onTransferDone;
 }
 
-@Component()
-class FileTransferListComponent extends UiComponent<FileTransferListProps> {
+@Component2()
+class FileTransferListComponent extends UiComponent2<FileTransferListProps> {
   @override
-  Map getDefaultProps() => newProps()
+  get defaultProps => (newProps()
     ..transfers = const <FileTransfer>[]
     ..noTransfersMessage = 'There are no pending transfers.'
-    ..hideChildrenFromPointerEvents = false;
+    ..hideChildrenFromPointerEvents = false);
 
   @override
   dynamic render() {
@@ -56,7 +56,7 @@ class FileTransferListComponent extends UiComponent<FileTransferListProps> {
       ..add('no-pointer-events', props.hideChildrenFromPointerEvents);
 
     return (Dom.ul()
-      ..addProps(copyUnconsumedDomProps())
+      ..modifyProps(addUnconsumedDomProps)
       ..className = classes.toClassName())(
       _renderFileTransferItems(),
     );
@@ -74,8 +74,8 @@ class FileTransferListComponent extends UiComponent<FileTransferListProps> {
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 class FileTransferListProps extends _$FileTransferListProps
-    // ignore: mixin_of_non_class, undefined_class
     with
+        // ignore: mixin_of_non_class, undefined_class
         _$FileTransferListPropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const PropsMeta meta = _$metaForFileTransferListProps;

@@ -27,9 +27,10 @@ void main() {
 
   group(naming.toString(), () {
     test('WSocketException should support toString()', () {
-      // ignore: deprecated_member_use
       expect(
-          WSocketException('test').toString(), contains('WSocketException:'));
+          // ignore: deprecated_member_use_from_same_package
+          WSocketException('test').toString(),
+          contains('WSocketException:'));
     });
 
     test('WebSocketException should support toString()', () {
@@ -40,8 +41,8 @@ void main() {
     test('WebSocketException extends WSocketException', () {
       expect(
           WebSocketException('test'),
-          // ignore: deprecated_member_use
-          isInstanceOf<WSocketException>());
+          // ignore: deprecated_member_use_from_same_package
+          isA<WSocketException>());
     });
   });
 }

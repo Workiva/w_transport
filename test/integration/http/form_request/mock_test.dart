@@ -18,8 +18,8 @@ import 'package:w_transport/mock.dart';
 
 import '../../../naming.dart';
 import '../../integration_paths.dart';
-import '../mock_endpoints/404.dart';
 import '../mock_endpoints/echo.dart';
+import '../mock_endpoints/not_found.dart';
 import '../mock_endpoints/reflect.dart';
 import 'suite.dart';
 

@@ -33,7 +33,7 @@ class BrowserMultipartRequest extends CommonRequest
     implements MultipartRequest {
   BrowserMultipartRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   BrowserMultipartRequest.fromClient(Client wTransportClient)
       : super.fromClient(wTransportClient, null);
 

@@ -36,8 +36,8 @@ void runCommonWebSocketIntegrationTests(
   }
 
   test('should throw if connection cannot be established', () async {
-    expect(connect(fourOhFourUri),
-        throwsA(isInstanceOf<transport.WebSocketException>()));
+    expect(
+        connect(fourOhFourUri), throwsA(isA<transport.WebSocketException>()));
   });
 
   test('add() should send a message', () async {

@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import '../../../handler.dart';
-import '404_handler.dart';
 import 'custom.dart';
 import 'download.dart';
 import 'echo.dart';
 import 'error.dart';
+import 'not_found_handler.dart';
 import 'ping_handler.dart';
 import 'reflect_handler.dart';
 import 'timeout_handler.dart';

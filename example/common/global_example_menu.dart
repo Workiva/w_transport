@@ -1,3 +1,4 @@
+import 'package:over_react/over_react.dart';
 import 'dart:html';
 
 import 'package:over_react/react_dom.dart' as react_dom;
@@ -15,5 +16,5 @@ void renderGlobalExampleMenu(
   final menu = (GlobalExampleMenu()
     ..nav = nav
     ..includeServerStatus = includeServerStatus)();
-  react_dom.render(menu, container);
+  react_dom.render(ErrorBoundary()(menu), container);
 }

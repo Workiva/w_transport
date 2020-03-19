@@ -60,7 +60,7 @@ abstract class MockWebSocket implements WebSocket {
 class _MockWebSocket extends CommonWebSocket
     implements
         MockWebSocket,
-        // ignore: deprecated_member_use
+        // ignore: deprecated_member_use_from_same_package
         MockWSocket,
         WebSocket {
   /// List of "onOutgoing" callbacks that have been registered. Any time a piece

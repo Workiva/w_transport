@@ -181,7 +181,7 @@ void main() {
         }
         expect(exception, isNotNull,
             reason: 'should throw if body cannot be encoded');
-        expect(exception, isInstanceOf<transport.ResponseFormatException>(),
+        expect(exception, isA<transport.ResponseFormatException>(),
             reason:
                 'should throw ResponseFormatException if body cannot be encoded');
         expect(exception.toString(), contains('Body could not be encoded'));
@@ -204,7 +204,7 @@ void main() {
         }
         expect(exception, isNotNull,
             reason: 'should throw if bytes cannot be decoded');
-        expect(exception, isInstanceOf<transport.ResponseFormatException>(),
+        expect(exception, isA<transport.ResponseFormatException>(),
             reason:
                 'should throw ResponseFormatException if bytes cannot be decoded');
         expect(exception.toString(), contains('Bytes could not be decoded'));

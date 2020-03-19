@@ -78,24 +78,24 @@ class _$DownloadPageState extends UiState {
   List<RemoteFileDescription> fileDescriptions;
 }
 
-@Component()
+@Component2()
 class DownloadPageComponent
-    extends UiStatefulComponent<DownloadPageProps, DownloadPageState> {
+    extends UiStatefulComponent2<DownloadPageProps, DownloadPageState> {
   RemoteFiles remoteFiles;
   StreamSubscription fileStreamSubscription;
   StreamSubscription fileStreamErrorSubscription;
 
   @override
-  Map getDefaultProps() => newProps()..isActive = false;
+  get defaultProps => (newProps()..isActive = false);
 
   @override
-  Map getInitialState() => newState()
+  get initialState => (newState()
     ..downloads = const <Download>[]
-    ..fileDescriptions = const <RemoteFileDescription>[];
+    ..fileDescriptions = const <RemoteFileDescription>[]);
 
   @override
-  void componentWillMount() {
-    super.componentWillMount();
+  void componentDidMount() {
+    super.componentDidMount();
 
     remoteFiles = RemoteFiles.connect();
     fileStreamSubscription = remoteFiles.stream
@@ -164,7 +164,7 @@ class DownloadPageComponent
     var classes = forwardingClassNameBuilder()..add('hidden', !props.isActive);
 
     return (Dom.div()
-      ..addProps(copyUnconsumedDomProps())
+      ..modifyProps(addUnconsumedDomProps)
       ..className = classes.toClassName()
       ..aria.hidden = !props.isActive)(
       Dom.h2()('File Downloads'),
@@ -227,8 +227,8 @@ class DownloadPageComponent
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 class DownloadPageProps extends _$DownloadPageProps
-    // ignore: mixin_of_non_class, undefined_class
     with
+        // ignore: mixin_of_non_class, undefined_class
         _$DownloadPagePropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const PropsMeta meta = _$metaForDownloadPageProps;
@@ -236,8 +236,8 @@ class DownloadPageProps extends _$DownloadPageProps
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 class DownloadPageState extends _$DownloadPageState
-    // ignore: mixin_of_non_class, undefined_class
     with
+        // ignore: mixin_of_non_class, undefined_class
         _$DownloadPageStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const StateMeta meta = _$metaForDownloadPageState;

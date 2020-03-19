@@ -36,3 +36,4 @@ dev_dependencies:
   over_react: ^3.4.1
   test: ^1.9.1
   uuid: ^2.0.4
+  workiva_analysis_options: ^1.0.2

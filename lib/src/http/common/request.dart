@@ -43,7 +43,7 @@ abstract class CommonRequest extends Object
     autoRetry = RequestAutoRetry(this);
   }
 
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   CommonRequest.fromClient(Client wTransportClient, this.client)
       : this._wTransportClient = wTransportClient {
     autoRetry = RequestAutoRetry(this);
@@ -151,7 +151,7 @@ abstract class CommonRequest extends Object
 
   /// HttpClient instance from which this request was created. Used in [clone]
   /// to correctly tie the clone to the same client.
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   Client _wTransportClient;
 
   /// Gets the content length of the request. If the size of the request is not
@@ -350,14 +350,8 @@ abstract class CommonRequest extends Object
   /// Check if this request has been canceled.
   void checkForCancellation({BaseResponse response}) {
     if (isCanceled) {
-      final error = RequestException(
-          method,
-          uri,
-          this,
-          response,
-          _cancellationError != null
-              ? _cancellationError
-              : Exception('Request canceled'));
+      final error = RequestException(method, uri, this, response,
+          _cancellationError ?? Exception('Request canceled'));
       autoRetry.failures.add(error);
       throw error;
     }

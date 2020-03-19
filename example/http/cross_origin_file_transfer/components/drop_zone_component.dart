@@ -54,19 +54,19 @@ class _$DropZoneState extends UiState {
   bool overDropTarget;
 }
 
-@Component()
+@Component2()
 class DropZoneComponent
-    extends UiStatefulComponent<DropZoneProps, DropZoneState> {
+    extends UiStatefulComponent2<DropZoneProps, DropZoneState> {
   Timer _hideDropTargetTimer;
 
   @override
-  Map getInitialState() => newState()
+  get initialState => (newState()
     ..overDropZone = false
-    ..overDropTarget = false;
+    ..overDropTarget = false);
 
   @override
-  void componentWillMount() {
-    super.componentWillMount();
+  void componentDidMount() {
+    super.componentDidMount();
 
     // Show the drop zone and drop target whenever a user
     // drags something onto the document.
@@ -188,7 +188,7 @@ class DropZoneComponent
       ..add('over', state.overDropTarget);
 
     return (Dom.div()
-      ..addProps(copyUnconsumedDomProps())
+      ..modifyProps(addUnconsumedDomProps)
       ..className = dropZoneClasses.toClassName())((Dom.div()
       ..className = dropTargetClasses.toClassName()
       ..onDragOver = enlargeDropTarget

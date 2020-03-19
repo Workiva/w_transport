@@ -38,16 +38,16 @@ class _$UploadPageState extends UiState {
   List<Upload> uploads;
 }
 
-@Component()
+@Component2()
 class UploadPageComponent
-    extends UiStatefulComponent<UploadPageProps, UploadPageState> {
+    extends UiStatefulComponent2<UploadPageProps, UploadPageState> {
   @override
-  Map getDefaultProps() => newProps()..isActive = true;
+  get defaultProps => (newProps()..isActive = true);
 
   @override
-  Map getInitialState() => newState()
+  get initialState => (newState()
     ..isDragging = false
-    ..uploads = const <Upload>[];
+    ..uploads = const <Upload>[]);
 
   /// Listen for new file uploads and forward them to the file transfer list component.
   void _newUploads(List<Upload> newUploads) {
@@ -84,7 +84,7 @@ class UploadPageComponent
     var classes = forwardingClassNameBuilder()..add('hidden', !props.isActive);
 
     return (Dom.div()
-      ..addProps(copyUnconsumedDomProps())
+      ..modifyProps(addUnconsumedDomProps)
       ..className = classes.toClassName()
       ..aria.hidden = !props.isActive)(
       Dom.h2()('File Uploads'),
@@ -104,8 +104,8 @@ class UploadPageComponent
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 class UploadPageProps extends _$UploadPageProps
-    // ignore: mixin_of_non_class, undefined_class
     with
+        // ignore: mixin_of_non_class, undefined_class
         _$UploadPagePropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const PropsMeta meta = _$metaForUploadPageProps;
@@ -113,8 +113,8 @@ class UploadPageProps extends _$UploadPageProps
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 class UploadPageState extends _$UploadPageState
-    // ignore: mixin_of_non_class, undefined_class
     with
+        // ignore: mixin_of_non_class, undefined_class
         _$UploadPageStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
   static const StateMeta meta = _$metaForUploadPageState;

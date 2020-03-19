@@ -46,25 +46,23 @@ void main() {
       transport.globalTransportPlatform = browserTransportPlatform;
 
       // Properly constructs browser implementations of HTTP classes
-      // ignore: deprecated_member_use
-      expect(transport.Client(), isInstanceOf<BrowserHttpClient>());
-      expect(transport.HttpClient(), isInstanceOf<BrowserHttpClient>());
-      expect(transport.FormRequest(), isInstanceOf<BrowserFormRequest>());
-      expect(transport.JsonRequest(), isInstanceOf<BrowserJsonRequest>());
-      expect(transport.MultipartRequest(),
-          isInstanceOf<BrowserMultipartRequest>());
-      expect(transport.Request(), isInstanceOf<BrowserPlainTextRequest>());
-      expect(
-          transport.StreamedRequest(), isInstanceOf<BrowserStreamedRequest>());
+      // ignore: deprecated_member_use_from_same_package
+      expect(transport.Client(), isA<BrowserHttpClient>());
+      expect(transport.HttpClient(), isA<BrowserHttpClient>());
+      expect(transport.FormRequest(), isA<BrowserFormRequest>());
+      expect(transport.JsonRequest(), isA<BrowserJsonRequest>());
+      expect(transport.MultipartRequest(), isA<BrowserMultipartRequest>());
+      expect(transport.Request(), isA<BrowserPlainTextRequest>());
+      expect(transport.StreamedRequest(), isA<BrowserStreamedRequest>());
 
       // Properly constructs browser implementation of WebSocket
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, isInstanceOf<BrowserWebSocket>());
+      expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(wSocket, isInstanceOf<BrowserWebSocket>());
+      expect(wSocket, isA<BrowserWebSocket>());
       await wSocket.close();
     });
 
@@ -83,11 +81,11 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, isInstanceOf<SockJSWrapperWebSocket>());
+      expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, isInstanceOf<SockJSWrapperWebSocket>());
+      expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
@@ -111,11 +109,11 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, isInstanceOf<SockJSWrapperWebSocket>());
+      expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, isInstanceOf<SockJSWrapperWebSocket>());
+      expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
@@ -126,15 +124,15 @@ void main() {
 
       // Properly constructs Browser implementation of WebSocket
       final webSocket = await transport.WebSocket
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           .connect(IntegrationPaths.pingUri, useSockJS: false);
-      expect(webSocket, isInstanceOf<BrowserWebSocket>());
+      expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           .connect(IntegrationPaths.pingUri, useSockJS: false);
-      expect(wSocket, isInstanceOf<BrowserWebSocket>());
+      expect(wSocket, isA<BrowserWebSocket>());
       await wSocket.close();
     });
 
@@ -142,30 +140,28 @@ void main() {
       configureWTransportForBrowser();
 
       // Properly constructs browser implementations of HTTP classes
-      // ignore: deprecated_member_use
-      expect(transport.Client(), isInstanceOf<BrowserHttpClient>());
-      expect(transport.HttpClient(), isInstanceOf<BrowserHttpClient>());
-      expect(transport.FormRequest(), isInstanceOf<BrowserFormRequest>());
-      expect(transport.JsonRequest(), isInstanceOf<BrowserJsonRequest>());
-      expect(transport.MultipartRequest(),
-          isInstanceOf<BrowserMultipartRequest>());
-      expect(transport.Request(), isInstanceOf<BrowserPlainTextRequest>());
-      expect(
-          transport.StreamedRequest(), isInstanceOf<BrowserStreamedRequest>());
+      // ignore: deprecated_member_use_from_same_package
+      expect(transport.Client(), isA<BrowserHttpClient>());
+      expect(transport.HttpClient(), isA<BrowserHttpClient>());
+      expect(transport.FormRequest(), isA<BrowserFormRequest>());
+      expect(transport.JsonRequest(), isA<BrowserJsonRequest>());
+      expect(transport.MultipartRequest(), isA<BrowserMultipartRequest>());
+      expect(transport.Request(), isA<BrowserPlainTextRequest>());
+      expect(transport.StreamedRequest(), isA<BrowserStreamedRequest>());
 
       // Properly constructs browser implementation of WebSocket
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, isInstanceOf<BrowserWebSocket>());
+      expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(wSocket, isInstanceOf<BrowserWebSocket>());
+      expect(wSocket, isA<BrowserWebSocket>());
       await wSocket.close();
     });
 
     test('configureWTransportForBrowser(useSockJS: true) custom', () async {
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       configureWTransportForBrowser(useSockJS: true);
 
       BrowserTransportPlatformWithSockJS btpwsj =
@@ -179,23 +175,23 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, isInstanceOf<SockJSWrapperWebSocket>());
+      expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, isInstanceOf<SockJSWrapperWebSocket>());
+      expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
     test('configureWTransportForBrowser(useSockJS: true) custom', () async {
       configureWTransportForBrowser(
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           useSockJS: true,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSDebug: true,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSNoCredentials: true,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming']);
 
       BrowserTransportPlatformWithSockJS btpwsj =
@@ -210,11 +206,11 @@ void main() {
 
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, isInstanceOf<SockJSWrapperWebSocket>());
+      expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, isInstanceOf<SockJSWrapperWebSocket>());
+      expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
@@ -709,22 +705,22 @@ void main() {
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatform);
-          expect(webSocket, isInstanceOf<BrowserWebSocket>());
+          expect(webSocket, isA<BrowserWebSocket>());
           await webSocket.close();
 
           final pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
           final sockJS = await transport.WebSocket.connect(pingUri,
               transportPlatform: browserTransportPlatformWithSockJS);
-          expect(sockJS, isInstanceOf<SockJSWrapperWebSocket>());
+          expect(sockJS, isA<SockJSWrapperWebSocket>());
           await sockJS.close();
 
           // This verifies the ability to override the transport platform's
           // "useSockJS" value when constructing a single WebSocket instance.
           final singleSockJS = await transport.WebSocket.connect(pingUri,
               transportPlatform: browserTransportPlatform,
-              // ignore: deprecated_member_use
+              // ignore: deprecated_member_use_from_same_package
               useSockJS: true);
-          expect(singleSockJS, isInstanceOf<SockJSWrapperWebSocket>());
+          expect(singleSockJS, isA<SockJSWrapperWebSocket>());
           await singleSockJS.close();
         });
       });

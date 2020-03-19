@@ -50,4 +50,10 @@ class Router implements Function {
       await request.response.close();
     }
   }
+
+  void close() {
+    for (final handler in routes.values) {
+      handler.close();
+    }
+  }
 }

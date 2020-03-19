@@ -152,10 +152,10 @@ class DownloadPageComponent
   /// Called when the file transfer list component is done with the transfer
   /// and no longer needs to display it, meaning we can remove it
   /// from memory.
-  void _removeDownload(Download download) {
+  void _removeDownload(FileTransfer transfer) {
     final downloads = <Download>[];
     downloads.addAll(state.downloads);
-    downloads.remove(download);
+    downloads.remove(transfer);
     setState(newState()..downloads = downloads);
   }
 
@@ -226,17 +226,19 @@ class DownloadPageComponent
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
-// ignore: mixin_of_non_class, undefined_class
 class DownloadPageProps extends _$DownloadPageProps
-    with _$DownloadPagePropsAccessorsMixin {
+    // ignore: mixin_of_non_class, undefined_class
+    with
+        _$DownloadPagePropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const PropsMeta meta = $metaForDownloadPageProps;
+  static const PropsMeta meta = _$metaForDownloadPageProps;
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
-// ignore: mixin_of_non_class, undefined_class
 class DownloadPageState extends _$DownloadPageState
-    with _$DownloadPageStateAccessorsMixin {
+    // ignore: mixin_of_non_class, undefined_class
+    with
+        _$DownloadPageStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const StateMeta meta = $metaForDownloadPageState;
+  static const StateMeta meta = _$metaForDownloadPageState;
 }

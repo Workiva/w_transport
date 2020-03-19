@@ -97,7 +97,7 @@ class UploadProxy extends Handler {
         transport.MediaType.parse(request.headers.value('content-type'));
     final proxyRequest = getHttpClient().newStreamedRequest()
       ..headers = headers
-      ..body = request
+      ..body = request.cast<List<int>>()
       ..contentLength = request.contentLength
       ..contentType = contentType;
 

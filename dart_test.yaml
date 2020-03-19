@@ -2,22 +2,10 @@ platforms:
   - chrome
   - vm
 
-paths:
-  - test/unit/http
-  - test/unit/mocks
-  - test/unit/ws
+# The SockJS integration test server sometimes gets overloaded and rejects
+# connections. To mitigate this, retries are enabled.
+retry: 3
 
 presets:
-  integration:
-    concurrency: 1
-    paths:
-      - test/integration/global_web_socket_monitor
-      - test/integration/http
-      - test/integration/platforms
-      - test/integration/ws
-
   travis:
     reporter: expanded
-    # The SockJS integration test server sometimes gets overloaded and rejects
-    # connections. Retries are enabled during CI to mitigate these failures.
-    retry: 3

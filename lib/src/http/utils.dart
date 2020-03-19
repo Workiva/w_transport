@@ -77,7 +77,15 @@ Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry,
       milliseconds: _calculateUnjitteredExponentialBackOffInMs(autoRetry));
 }
 
+/// Use this class to calculate exponential backoff with jitter.
+///
+/// This is wrapped in a class because the algorithm used uses values from
+/// previous calculations in future calculations, and therefore must carry some
+/// state.
 class AdvancedBackOffCalculator {
+  /// This number is used in the advanced jitter algorithm to carry some state
+  /// between subsequent calls on the same request, and has no meaningful value
+  /// outside of that context.
   double _previous = 0.0;
 
   /// Returns the jittered backoff delay in ms using an advanced jittering algorithm.

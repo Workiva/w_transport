@@ -129,12 +129,6 @@ class RequestAutoRetry extends AutoRetryConfig {
   /// This will be incremented each time an attempt is sent.
   int numAttempts = 0;
 
-  /// This number is used in the advanced jitter algorithm, and has no
-  /// meaningful value outside of that context.
-  ///
-  /// Do not modify this value.
-  double previous = 0.0;
-
   /// The _original_ request instance with which this information is associated.
   BaseRequest _request;
 

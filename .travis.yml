@@ -15,8 +15,8 @@ before_script:
 
 jobs:
   include:
-    - dart: 2.4.0
-      name: "SDK: 2.4.0"
+    - dart: 2.7.0
+      name: "SDK: 2.7.0"
       script:
         - pub run dart_dev analyze
         - pub run dart_dev test -P travis

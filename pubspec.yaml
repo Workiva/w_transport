@@ -4,7 +4,7 @@ description: Transport library for sending HTTP requests and opening WebSockets.
 homepage: https://github.com/Workiva/w_transport
 
 environment:
-  sdk: '>=2.4.0 <3.0.0'
+  sdk: '>=2.7.0 <3.0.0'
 
 dependencies:
   fluri: ^1.2.6

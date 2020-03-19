@@ -54,11 +54,14 @@ void main() {
           // Return the mean/median value of this random so we have a deterministic output
           when(random.nextDouble()).thenReturn(0.5);
 
-          void expectBackOffOf(Matcher matcher, {bool useMockRandom = true}) {
+          void expectBackOffOf(Matcher matcher,
+              {http_utils.AdvancedBackOffCalculator calculator,
+              bool useMockRandom = true}) {
             expect(
                 http_utils
                     .calculateBackOff(request.autoRetry,
-                        random: useMockRandom ? random : null)
+                        random: useMockRandom ? random : null,
+                        calculator: calculator)
                     .inMilliseconds,
                 matcher);
           }
@@ -78,6 +81,8 @@ void main() {
                 withJitter: true,
                 maxInterval: maxInterval);
 
+            final calculator = http_utils.AdvancedBackOffCalculator();
+
             for (int i = 1; i <= 5; i++) {
               // We start at 1, since the advanced backoff/jitter algorithm
               // only activates once we've had one attempt, so it expects
@@ -88,19 +93,19 @@ void main() {
               // expected delay values
               switch (i) {
                 case 1:
-                  expectBackOffOf(equals(897));
+                  expectBackOffOf(equals(897), calculator: calculator);
                   break;
                 case 2:
-                  expectBackOffOf(equals(1093));
+                  expectBackOffOf(equals(1093), calculator: calculator);
                   break;
                 case 3:
-                  expectBackOffOf(equals(2035));
+                  expectBackOffOf(equals(2035), calculator: calculator);
                   break;
                 case 4:
-                  expectBackOffOf(equals(4045));
+                  expectBackOffOf(equals(4045), calculator: calculator);
                   break;
                 case 5:
-                  expectBackOffOf(equals(8083));
+                  expectBackOffOf(equals(8083), calculator: calculator);
                   break;
               }
             }
@@ -159,6 +164,8 @@ void main() {
                 withJitter: true,
                 maxInterval: maxInterval);
 
+            final calculator = http_utils.AdvancedBackOffCalculator();
+
             for (int i = 1; i < 50; i++) {
               // We start at 1, since the advanced backoff/jitter algorithm
               // only activates once we've had one attempt, so it expects
@@ -168,11 +175,13 @@ void main() {
               if (i == 1) {
                 // For an interval of 50 ms, the valid outputs from the advanced jitter are
                 // between 0 and 69ms
-                expectBackOffOf(lessThanOrEqualTo(69), useMockRandom: false);
+                expectBackOffOf(lessThanOrEqualTo(69),
+                    calculator: calculator, useMockRandom: false);
               } else {
                 expectBackOffOf(
                     lessThanOrEqualTo(
                         request.autoRetry.backOff.maxInterval.inMilliseconds),
+                    calculator: calculator,
                     useMockRandom: false);
               }
             }

@@ -863,9 +863,7 @@ abstract class CommonRequest extends Object
         final retryCompleter = Completer<BaseResponse>();
 
         // If retry back-off is configured, wait as necessary.
-        if (_backOffCalculator == null) {
-          _backOffCalculator = utils.AdvancedBackOffCalculator();
-        }
+        _backOffCalculator ??= utils.AdvancedBackOffCalculator();
         final backOff =
             utils.calculateBackOff(autoRetry, calculator: _backOffCalculator);
 

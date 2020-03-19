@@ -112,6 +112,8 @@ int _calculateUnjitteredExponentialBackOffInMs(autoRetry) {
 ///
 /// Taken from `dart_numerics` package, which is not used here because it is not
 /// supported for web applications.
+///
+/// Original source: https://github.com/zlumyo/dart_numerics/blob/7d872186c800e92dbfeff408d109a9138f126f63/lib/src/trigonometry.dart#L119-L131
 double _tanh(double angle) {
   if (angle > 19.1) {
     return 1.0;

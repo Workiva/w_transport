@@ -129,6 +129,10 @@ abstract class CommonRequest extends Object
   /// or otherwise).
   Completer<Null> _done = Completer<Null>();
 
+  /// Object used to carry state through multiple retries, if retries are
+  /// specified.
+  utils.AdvancedBackOffCalculator _backOffCalculator;
+
   /// Request body encoding.
   Encoding _encoding = utf8;
 
@@ -859,7 +863,9 @@ abstract class CommonRequest extends Object
         final retryCompleter = Completer<BaseResponse>();
 
         // If retry back-off is configured, wait as necessary.
-        final backOff = utils.calculateBackOff(autoRetry);
+        _backOffCalculator ??= utils.AdvancedBackOffCalculator();
+        final backOff =
+            utils.calculateBackOff(autoRetry, calculator: _backOffCalculator);
 
         if (backOff != null) {
           await Future.delayed(backOff);
@@ -897,6 +903,7 @@ abstract class CommonRequest extends Object
           ? c.complete()
           : c.completeError(requestException, stackTrace);
     } finally {
+      _backOffCalculator = null;
       cleanUp();
       if (!_done.isCompleted) {
         _done.complete();

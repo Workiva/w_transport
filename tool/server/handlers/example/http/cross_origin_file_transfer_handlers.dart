@@ -30,7 +30,7 @@ Map<String, Handler> exampleHttpCrossOriginFileTransferRoutes = {
 };
 
 Directory filesDirectory =
-    Directory('example/web/http/cross_origin_file_transfer/files');
+    Directory('example/http/cross_origin_file_transfer/files');
 
 Future<String> _readFileUploadAsString(HttpMultipartFormData formData) async {
   final parts = await formData.toList();
@@ -50,7 +50,7 @@ Future<List<int>> _readFileUploadAsBytes(HttpMultipartFormData formData) async {
 void _writeFileUploadAsString(String filename, String contents) {
   _createUploadDirectory();
   final uploadDestination =
-      Uri.parse('example/web/http/cross_origin_file_transfer/files/$filename');
+      Uri.parse('example/http/cross_origin_file_transfer/files/$filename');
   final upload = File.fromUri(uploadDestination);
   upload.writeAsStringSync(contents);
 }
@@ -58,7 +58,7 @@ void _writeFileUploadAsString(String filename, String contents) {
 void _writeFileUploadAsBytes(String filename, List<int> bytes) {
   _createUploadDirectory();
   final uploadDestination =
-      Uri.parse('example/web/http/cross_origin_file_transfer/files/$filename');
+      Uri.parse('example/http/cross_origin_file_transfer/files/$filename');
   final upload = File.fromUri(uploadDestination);
   upload.writeAsBytesSync(bytes);
 }
@@ -159,18 +159,22 @@ class FilesHandler extends Handler {
   }
 
   @override
+  void close() => fw.close();
+
+  @override
   Future<Null> get(HttpRequest request) async {
-    Iterable<File> files = fw.files.where(
-        (FileSystemEntity entity) => entity is File && entity.existsSync());
-    List<Map> filesPayload = files
-        .map((File entity) => {
-              'name': Uri.parse(entity.path).pathSegments.last,
-              'size': entity.lengthSync()
-            })
-        .toList();
     request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
-    request.response.write(json.encode({'results': filesPayload}));
+    request.response.write(json.encode({
+      'results': fw.files
+          .whereType<File>()
+          .where((file) => file.existsSync())
+          .map((file) => {
+                'name': Uri.parse(file.path).pathSegments.last,
+                'size': file.lengthSync()
+              })
+          .toList()
+    }));
   }
 
   @override
@@ -208,7 +212,7 @@ class DownloadHandler extends Handler {
     final shouldForceDownload = request.uri.queryParameters['dl'] == '1';
 
     final fileUri = Uri.parse(
-        'example/web/http/cross_origin_file_transfer/files/$requestedFile');
+        'example/http/cross_origin_file_transfer/files/$requestedFile');
     final file = File.fromUri(fileUri);
     if (!file.existsSync()) {
       request.response.statusCode = HttpStatus.notFound;

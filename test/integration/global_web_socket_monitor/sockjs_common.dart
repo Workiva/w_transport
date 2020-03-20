@@ -53,11 +53,11 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
     _sockJSSuite(
         protocolsToTest,
         (Uri uri, String protocol) => transport.WebSocket.connect(uri,
-            // ignore: deprecated_member_use
+            // ignore: deprecated_member_use_from_same_package
             useSockJS: true,
-            // ignore: deprecated_member_use
+            // ignore: deprecated_member_use_from_same_package
             sockJSNoCredentials: true,
-            // ignore: deprecated_member_use
+            // ignore: deprecated_member_use_from_same_package
             sockJSProtocolsWhitelist: [protocol],
             transportPlatform: browserTransportPlatform));
   });

@@ -73,7 +73,7 @@ class AsyncInt extends transport.HttpInterceptor {
   }
 }
 
-// ignore: deprecated_member_use
+// ignore: deprecated_member_use_from_same_package
 Iterable<transport.BaseRequest> createAllRequestTypes(transport.Client client) {
   return <transport.BaseRequest>[
     client.newFormRequest(),
@@ -100,7 +100,7 @@ void main() {
     });
 
     group('Client', () {
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       _runHttpClientSuite(() => transport.Client());
     });
 
@@ -110,9 +110,9 @@ void main() {
   });
 }
 
-// ignore: deprecated_member_use
+// ignore: deprecated_member_use_from_same_package
 void _runHttpClientSuite(transport.Client getClient()) {
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   transport.Client client;
 
   setUp(() {
@@ -120,7 +120,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('newFormRequest() should create a new request', () async {
-    expect(client.newFormRequest(), isInstanceOf<transport.FormRequest>());
+    expect(client.newFormRequest(), isA<transport.FormRequest>());
   });
 
   test('newFormRequest() should throw if closed', () async {
@@ -129,7 +129,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('newJsonRequest() should create a new request', () async {
-    expect(client.newJsonRequest(), isInstanceOf<transport.JsonRequest>());
+    expect(client.newJsonRequest(), isA<transport.JsonRequest>());
   });
 
   test('newJsonRequest() should throw if closed', () async {
@@ -138,8 +138,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('newMultipartRequest() should create a new request', () async {
-    expect(client.newMultipartRequest(),
-        isInstanceOf<transport.MultipartRequest>());
+    expect(client.newMultipartRequest(), isA<transport.MultipartRequest>());
   });
 
   test('newMultipartRequest() should throw if closed', () async {
@@ -148,7 +147,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('newRequest() should create a new request', () async {
-    expect(client.newRequest(), isInstanceOf<transport.Request>());
+    expect(client.newRequest(), isA<transport.Request>());
   });
 
   test('newRequest() should throw if closed', () async {
@@ -157,8 +156,7 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('newStreamedRequest() should create a new request', () async {
-    expect(
-        client.newStreamedRequest(), isInstanceOf<transport.StreamedRequest>());
+    expect(client.newStreamedRequest(), isA<transport.StreamedRequest>());
   });
 
   test('newStreamedRequest() should throw if closed', () async {
@@ -313,6 +311,6 @@ void _runHttpClientSuite(transport.Client getClient()) {
   test('close()', () async {
     final future = client.newRequest().get(uri: Uri.parse('/test'));
     client.close();
-    expect(future, throwsA(isInstanceOf<transport.RequestException>()));
+    expect(future, throwsA(isA<transport.RequestException>()));
   });
 }

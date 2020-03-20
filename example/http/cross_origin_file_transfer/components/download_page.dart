@@ -78,24 +78,24 @@ class _$DownloadPageState extends UiState {
   List<RemoteFileDescription> fileDescriptions;
 }
 
-@Component()
+@Component2()
 class DownloadPageComponent
-    extends UiStatefulComponent<DownloadPageProps, DownloadPageState> {
+    extends UiStatefulComponent2<DownloadPageProps, DownloadPageState> {
   RemoteFiles remoteFiles;
   StreamSubscription fileStreamSubscription;
   StreamSubscription fileStreamErrorSubscription;
 
   @override
-  Map getDefaultProps() => newProps()..isActive = false;
+  get defaultProps => (newProps()..isActive = false);
 
   @override
-  Map getInitialState() => newState()
+  get initialState => (newState()
     ..downloads = const <Download>[]
-    ..fileDescriptions = const <RemoteFileDescription>[];
+    ..fileDescriptions = const <RemoteFileDescription>[]);
 
   @override
-  void componentWillMount() {
-    super.componentWillMount();
+  void componentDidMount() {
+    super.componentDidMount();
 
     remoteFiles = RemoteFiles.connect();
     fileStreamSubscription = remoteFiles.stream
@@ -152,10 +152,10 @@ class DownloadPageComponent
   /// Called when the file transfer list component is done with the transfer
   /// and no longer needs to display it, meaning we can remove it
   /// from memory.
-  void _removeDownload(Download download) {
+  void _removeDownload(FileTransfer transfer) {
     final downloads = <Download>[];
     downloads.addAll(state.downloads);
-    downloads.remove(download);
+    downloads.remove(transfer);
     setState(newState()..downloads = downloads);
   }
 
@@ -164,7 +164,7 @@ class DownloadPageComponent
     var classes = forwardingClassNameBuilder()..add('hidden', !props.isActive);
 
     return (Dom.div()
-      ..addProps(copyUnconsumedDomProps())
+      ..modifyProps(addUnconsumedDomProps)
       ..className = classes.toClassName()
       ..aria.hidden = !props.isActive)(
       Dom.h2()('File Downloads'),
@@ -226,17 +226,19 @@ class DownloadPageComponent
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
-// ignore: mixin_of_non_class, undefined_class
 class DownloadPageProps extends _$DownloadPageProps
-    with _$DownloadPagePropsAccessorsMixin {
+    with
+        // ignore: mixin_of_non_class, undefined_class
+        _$DownloadPagePropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const PropsMeta meta = $metaForDownloadPageProps;
+  static const PropsMeta meta = _$metaForDownloadPageProps;
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
-// ignore: mixin_of_non_class, undefined_class
 class DownloadPageState extends _$DownloadPageState
-    with _$DownloadPageStateAccessorsMixin {
+    with
+        // ignore: mixin_of_non_class, undefined_class
+        _$DownloadPageStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const StateMeta meta = $metaForDownloadPageState;
+  static const StateMeta meta = _$metaForDownloadPageState;
 }

@@ -70,16 +70,16 @@ class BrowserTransportPlatform implements TransportPlatform {
     // that for backwards compatibility.
 
     // If useSockJS is enabled, switch to a SockJS WebSocket.
-    // ignore: deprecated_member_use
+    // ignore: deprecated_member_use_from_same_package
     if (useSockJS == true) {
       return SockJSWebSocket.connect(uri,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           debug: sockJSDebug,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           noCredentials: sockJSNoCredentials,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           protocolsWhitelist: sockJSProtocolsWhitelist,
-          // ignore: deprecated_member_use
+          // ignore: deprecated_member_use_from_same_package
           timeout: sockJSTimeout);
     }
 

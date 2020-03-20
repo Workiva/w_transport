@@ -28,6 +28,7 @@ class Server {
   final int port;
 
   Logger _logger = Logger();
+  Router _router;
   HttpServer _server;
   StreamSubscription _subscription;
 
@@ -45,13 +46,13 @@ class Server {
   Stream get output => _logger.stream;
 
   Future<Null> start() async {
-    final router = Router(_logger);
+    _router = Router(_logger);
 
     try {
       _server = await HttpServer.bind(host, port);
       _subscription = _server.listen((request) async {
         try {
-          await router(request);
+          await _router(request);
           _logger.logRequest(request);
         } catch (e, stackTrace) {
           _logger.logError(e, stackTrace);
@@ -68,6 +69,7 @@ class Server {
   }
 
   Future<Null> stop() async {
+    _router.close();
     await Future.wait(
         [_server.close(force: true), _subscription.cancel(), _logger.close()]);
   }

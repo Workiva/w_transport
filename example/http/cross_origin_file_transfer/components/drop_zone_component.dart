@@ -54,19 +54,19 @@ class _$DropZoneState extends UiState {
   bool overDropTarget;
 }
 
-@Component()
+@Component2()
 class DropZoneComponent
-    extends UiStatefulComponent<DropZoneProps, DropZoneState> {
+    extends UiStatefulComponent2<DropZoneProps, DropZoneState> {
   Timer _hideDropTargetTimer;
 
   @override
-  Map getInitialState() => newState()
+  get initialState => (newState()
     ..overDropZone = false
-    ..overDropTarget = false;
+    ..overDropTarget = false);
 
   @override
-  void componentWillMount() {
-    super.componentWillMount();
+  void componentDidMount() {
+    super.componentDidMount();
 
     // Show the drop zone and drop target whenever a user
     // drags something onto the document.
@@ -188,7 +188,7 @@ class DropZoneComponent
       ..add('over', state.overDropTarget);
 
     return (Dom.div()
-      ..addProps(copyUnconsumedDomProps())
+      ..modifyProps(addUnconsumedDomProps)
       ..className = dropZoneClasses.toClassName())((Dom.div()
       ..className = dropTargetClasses.toClassName()
       ..onDragOver = enlargeDropTarget
@@ -201,12 +201,12 @@ class DropZoneComponent
 // ignore: mixin_of_non_class, undefined_class
 class DropZoneProps extends _$DropZoneProps with _$DropZonePropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const PropsMeta meta = $metaForDropZoneProps;
+  static const PropsMeta meta = _$metaForDropZoneProps;
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 // ignore: mixin_of_non_class, undefined_class
 class DropZoneState extends _$DropZoneState with _$DropZoneStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const StateMeta meta = $metaForDropZoneState;
+  static const StateMeta meta = _$metaForDropZoneState;
 }

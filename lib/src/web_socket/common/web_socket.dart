@@ -72,6 +72,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
 
   /// The custom `StreamSubscription` that is used to proxy the subscription to
   /// the underlying WebSocket.
+  // ignore: cancel_subscriptions
   WSocketSubscription _incomingSubscription;
 
   CommonWebSocket() {

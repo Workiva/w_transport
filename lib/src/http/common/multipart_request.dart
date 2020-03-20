@@ -63,7 +63,7 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   CommonMultipartRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   CommonMultipartRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 

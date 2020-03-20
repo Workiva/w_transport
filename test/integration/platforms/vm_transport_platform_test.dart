@@ -42,23 +42,23 @@ void main() {
       transport.globalTransportPlatform = vmTransportPlatform;
 
       // Properly constructs VM implementations of HTTP classes
-      // ignore: deprecated_member_use
-      expect(transport.Client(), isInstanceOf<VMHttpClient>());
-      expect(transport.HttpClient(), isInstanceOf<VMHttpClient>());
-      expect(transport.FormRequest(), isInstanceOf<VMFormRequest>());
-      expect(transport.JsonRequest(), isInstanceOf<VMJsonRequest>());
-      expect(transport.MultipartRequest(), isInstanceOf<VMMultipartRequest>());
-      expect(transport.Request(), isInstanceOf<VMPlainTextRequest>());
-      expect(transport.StreamedRequest(), isInstanceOf<VMStreamedRequest>());
+      // ignore: deprecated_member_use_from_same_package
+      expect(transport.Client(), isA<VMHttpClient>());
+      expect(transport.HttpClient(), isA<VMHttpClient>());
+      expect(transport.FormRequest(), isA<VMFormRequest>());
+      expect(transport.JsonRequest(), isA<VMJsonRequest>());
+      expect(transport.MultipartRequest(), isA<VMMultipartRequest>());
+      expect(transport.Request(), isA<VMPlainTextRequest>());
+      expect(transport.StreamedRequest(), isA<VMStreamedRequest>());
 
       // Properly constructs VM implementation of WebSocket
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, isInstanceOf<VMWebSocket>());
+      expect(webSocket, isA<VMWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(wSocket, isInstanceOf<VMWebSocket>());
+      expect(wSocket, isA<VMWebSocket>());
       await wSocket.close();
     });
 
@@ -66,23 +66,23 @@ void main() {
       configureWTransportForVM();
 
       // Properly constructs VM implementations of HTTP classes
-      // ignore: deprecated_member_use
-      expect(transport.Client(), isInstanceOf<VMHttpClient>());
-      expect(transport.HttpClient(), isInstanceOf<VMHttpClient>());
-      expect(transport.FormRequest(), isInstanceOf<VMFormRequest>());
-      expect(transport.JsonRequest(), isInstanceOf<VMJsonRequest>());
-      expect(transport.MultipartRequest(), isInstanceOf<VMMultipartRequest>());
-      expect(transport.Request(), isInstanceOf<VMPlainTextRequest>());
-      expect(transport.StreamedRequest(), isInstanceOf<VMStreamedRequest>());
+      // ignore: deprecated_member_use_from_same_package
+      expect(transport.Client(), isA<VMHttpClient>());
+      expect(transport.HttpClient(), isA<VMHttpClient>());
+      expect(transport.FormRequest(), isA<VMFormRequest>());
+      expect(transport.JsonRequest(), isA<VMJsonRequest>());
+      expect(transport.MultipartRequest(), isA<VMMultipartRequest>());
+      expect(transport.Request(), isA<VMPlainTextRequest>());
+      expect(transport.StreamedRequest(), isA<VMStreamedRequest>());
 
       // Properly constructs VM implementation of WebSocket
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, isInstanceOf<VMWebSocket>());
+      expect(webSocket, isA<VMWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use
+      // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(wSocket, isInstanceOf<VMWebSocket>());
+      expect(wSocket, isA<VMWebSocket>());
       await wSocket.close();
     });
 

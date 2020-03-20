@@ -40,8 +40,7 @@ void main() {
           ..enabled = true
           ..maxRetries = 2;
 
-        expect(
-            request.get(), throwsA(isInstanceOf<transport.RequestException>()));
+        expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(1));
         expect(request.autoRetry.failures.length, equals(1));
@@ -62,8 +61,7 @@ void main() {
             return willRetry;
           };
 
-        expect(
-            request.get(), throwsA(isInstanceOf<transport.RequestException>()));
+        expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
         expect(request.autoRetry.numAttempts, equals(3));
         expect(request.autoRetry.failures.length, equals(3));

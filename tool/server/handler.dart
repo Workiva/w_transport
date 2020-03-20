@@ -25,6 +25,8 @@ abstract class Handler {
 
   Handler() : _corsEnabled = false;
 
+  void close() {}
+
   /// Main entry point for request handling.
   /// Sub-classes should implement only the necessary REST method handlers.
   Future<Null> processRequest(HttpRequest request) async {

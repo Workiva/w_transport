@@ -27,7 +27,7 @@ import 'package:w_transport/src/transport_platform.dart';
 abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
   CommonJsonRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use
+  // ignore: deprecated_member_use_from_same_package
   CommonJsonRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 

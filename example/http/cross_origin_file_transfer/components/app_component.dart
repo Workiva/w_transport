@@ -41,12 +41,12 @@ class _$AppState extends UiState {
   bool isProxyEnabled;
 }
 
-@Component()
-class AppComponent extends UiStatefulComponent<AppProps, AppState> {
+@Component2()
+class AppComponent extends UiStatefulComponent2<AppProps, AppState> {
   @override
-  Map getInitialState() => newState()
+  get initialState => (newState()
     ..page = AppPage.upload
-    ..isProxyEnabled = proxy.proxyEnabled;
+    ..isProxyEnabled = proxy.proxyEnabled);
 
   void _goToUploadPage(SyntheticMouseEvent event) {
     event.preventDefault();
@@ -74,7 +74,7 @@ class AppComponent extends UiStatefulComponent<AppProps, AppState> {
 
   @override
   dynamic render() {
-    return (Dom.div()..addProps(copyUnconsumedDomProps()))(
+    return (Dom.div()..modifyProps(addUnconsumedDomProps))(
       Dom.p()(
         (Dom.label()..htmlFor = 'proxy')(
           (Dom.input()
@@ -115,12 +115,12 @@ enum AppPage {
 // ignore: mixin_of_non_class, undefined_class
 class AppProps extends _$AppProps with _$AppPropsAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const PropsMeta meta = $metaForAppProps;
+  static const PropsMeta meta = _$metaForAppProps;
 }
 
 // AF-3369 This will be removed once the transition to Dart 2 is complete.
 // ignore: mixin_of_non_class, undefined_class
 class AppState extends _$AppState with _$AppStateAccessorsMixin {
   // ignore: undefined_identifier, undefined_class, const_initialized_with_non_constant_value
-  static const StateMeta meta = $metaForAppState;
+  static const StateMeta meta = _$metaForAppState;
 }

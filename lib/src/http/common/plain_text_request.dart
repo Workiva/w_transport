@@ -17,17 +17,17 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 
-import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
+import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   CommonPlainTextRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use_from_same_package
-  CommonPlainTextRequest.fromClient(Client wTransportClient, client)
+
+  CommonPlainTextRequest.fromClient(HttpClient wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
   String _body;

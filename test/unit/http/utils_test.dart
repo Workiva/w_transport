@@ -21,7 +21,6 @@ import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
-import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
 import 'package:w_transport/src/http/utils.dart' as http_utils;

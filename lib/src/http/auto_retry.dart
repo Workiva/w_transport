@@ -14,8 +14,6 @@
 
 import 'dart:async';
 
-import 'package:w_transport/src/constants.dart' show v3Deprecation;
-
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/request_exception.dart';
@@ -199,8 +197,4 @@ class RetryBackOff {
         method = RetryBackOffMethod.none,
         withJitter = false,
         maxInterval = null;
-
-  /// Use [interval] instead.
-  @Deprecated(v3Deprecation)
-  Duration get duration => interval;
 }

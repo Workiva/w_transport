@@ -99,8 +99,6 @@ export 'package:w_transport/src/transport_platform.dart'
 export 'package:w_transport/src/http/auto_retry.dart'
     show RetryBackOff, RetryBackOffMethod;
 export 'package:w_transport/src/http/base_request.dart' show BaseRequest;
-export 'package:w_transport/src/http/client.dart'
-    show Client; // ignore: deprecated_member_use_from_same_package
 export 'package:w_transport/src/http/finalized_request.dart'
     show FinalizedRequest;
 export 'package:w_transport/src/http/http.dart' show Http;
@@ -122,12 +120,6 @@ export 'package:w_transport/src/http/response_format_exception.dart'
     show ResponseFormatException;
 
 // WebSocket
-export 'package:w_transport/src/web_socket/w_socket.dart'
-    show WSocket; // ignore: deprecated_member_use_from_same_package
-export 'package:w_transport/src/web_socket/w_socket_close_event.dart'
-    show WSocketCloseEvent; // ignore: deprecated_member_use_from_same_package
-export 'package:w_transport/src/web_socket/w_socket_exception.dart'
-    show WSocketException; // ignore: deprecated_member_use_from_same_package
 export 'package:w_transport/src/web_socket/web_socket_exception.dart'
     show WebSocketException;
 export 'package:w_transport/src/web_socket/web_socket.dart' show WebSocket;

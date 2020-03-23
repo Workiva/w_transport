@@ -17,12 +17,13 @@ import 'dart:convert';
 
 import 'package:fluri/fluri.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:pedantic/pedantic.dart';
 
 import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/base_request.dart';
-import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/http_body.dart';
+import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/request_dispatchers.dart';
 import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/request_progress.dart';
@@ -43,8 +44,7 @@ abstract class CommonRequest extends Object
     autoRetry = RequestAutoRetry(this);
   }
 
-  // ignore: deprecated_member_use_from_same_package
-  CommonRequest.fromClient(Client wTransportClient, this.client)
+  CommonRequest.fromClient(HttpClient wTransportClient, this.client)
       : this._wTransportClient = wTransportClient {
     autoRetry = RequestAutoRetry(this);
   }
@@ -155,8 +155,7 @@ abstract class CommonRequest extends Object
 
   /// HttpClient instance from which this request was created. Used in [clone]
   /// to correctly tie the clone to the same client.
-  // ignore: deprecated_member_use_from_same_package
-  Client _wTransportClient;
+  HttpClient _wTransportClient;
 
   /// Gets the content length of the request. If the size of the request is not
   /// known in advance, the content length should be null.
@@ -773,8 +772,7 @@ abstract class CommonRequest extends Object
       }
 
       // Attempt to fetch the response.
-      // ignore: unawaited_futures
-      sendRequestAndFetchResponse(finalizedRequest,
+      unawaited(sendRequestAndFetchResponse(finalizedRequest,
               streamResponse: streamResponse)
           .then((response) {
         if (!responseCompleter.isCompleted) {
@@ -784,7 +782,7 @@ abstract class CommonRequest extends Object
         if (!responseCompleter.isCompleted) {
           responseCompleter.completeError(error, stackTrace);
         }
-      });
+      }));
 
       // Listen for cancellation and request timeout and break out of the
       // response fetching early if it occurs before the request has finished.
@@ -795,10 +793,8 @@ abstract class CommonRequest extends Object
         }
       }
 
-      // ignore: unawaited_futures
-      _cancellationCompleter.future.then(breakOutOfResponseFetching);
-      // ignore: unawaited_futures
-      _timeoutCompleter.future.then(breakOutOfResponseFetching);
+      unawaited(_cancellationCompleter.future.then(breakOutOfResponseFetching));
+      unawaited(_timeoutCompleter.future.then(breakOutOfResponseFetching));
 
       response = await responseCompleter.future;
       if (response == null) {
@@ -865,8 +861,7 @@ abstract class CommonRequest extends Object
           await Future.delayed(backOff);
         }
 
-        // ignore: unawaited_futures
-        _retry(streamResponse).then((retryResponse) {
+        unawaited(_retry(streamResponse).then((retryResponse) {
           if (!retryCompleter.isCompleted) {
             response = retryResponse;
             retrySucceeded = true;
@@ -878,16 +873,15 @@ abstract class CommonRequest extends Object
             // TODO: Combine stack trace from above with the retry stack trace?
             retryCompleter.complete();
           }
-        });
+        }));
 
         // Listen for cancellation and break out of the retry early if
         // cancellation occurs before the retry has finished.
-        // ignore: unawaited_futures
-        _cancellationCompleter.future.then((_) {
+        unawaited(_cancellationCompleter.future.then((_) {
           if (!retryCompleter.isCompleted) {
             retryCompleter.complete();
           }
-        });
+        }));
 
         await retryCompleter.future;
         checkForCancellation(response: response);

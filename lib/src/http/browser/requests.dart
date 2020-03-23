@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import 'package:w_transport/src/http/browser/request_mixin.dart';
-import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/form_request.dart';
 import 'package:w_transport/src/http/common/json_request.dart';
 import 'package:w_transport/src/http/common/plain_text_request.dart';
 import 'package:w_transport/src/http/common/streamed_request.dart';
+import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/transport_platform.dart';
 
 export 'package:w_transport/src/http/browser/multipart_request.dart'
@@ -26,16 +26,16 @@ export 'package:w_transport/src/http/browser/multipart_request.dart'
 class BrowserFormRequest extends CommonFormRequest with BrowserRequestMixin {
   BrowserFormRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use_from_same_package
-  BrowserFormRequest.fromClient(Client wTransportClient)
+
+  BrowserFormRequest.fromClient(HttpClient wTransportClient)
       : super.fromClient(wTransportClient, null);
 }
 
 class BrowserJsonRequest extends CommonJsonRequest with BrowserRequestMixin {
   BrowserJsonRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use_from_same_package
-  BrowserJsonRequest.fromClient(Client wTransportClient)
+
+  BrowserJsonRequest.fromClient(HttpClient wTransportClient)
       : super.fromClient(wTransportClient, null);
 }
 
@@ -43,8 +43,8 @@ class BrowserPlainTextRequest extends CommonPlainTextRequest
     with BrowserRequestMixin {
   BrowserPlainTextRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use_from_same_package
-  BrowserPlainTextRequest.fromClient(Client wTransportClient)
+
+  BrowserPlainTextRequest.fromClient(HttpClient wTransportClient)
       : super.fromClient(wTransportClient, null);
 }
 
@@ -52,7 +52,7 @@ class BrowserStreamedRequest extends CommonStreamedRequest
     with BrowserRequestMixin {
   BrowserStreamedRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use_from_same_package
-  BrowserStreamedRequest.fromClient(Client wTransportClient)
+
+  BrowserStreamedRequest.fromClient(HttpClient wTransportClient)
       : super.fromClient(wTransportClient, null);
 }

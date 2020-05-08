@@ -138,4 +138,7 @@ class BrowserMultipartRequest extends CommonRequest
 
     return FormDataBody(formData);
   }
+
+  @override
+  dynamic toJs() => multipartRequestToJs(this);
 }

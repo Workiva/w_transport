@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:js/js.dart';
+import 'package:js/js_util.dart';
+import 'package:js_bridge/js_bridge.dart';
+import 'package:js_bridge/js_bridge_util.dart';
+
 import 'package:w_transport/src/global_transport_platform.dart';
 import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/http_interceptor.dart';
@@ -20,12 +25,15 @@ import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 import 'package:w_transport/src/transport_platform.dart';
 
+part 'http_client.g.dart';
+
 /// An HTTP client acts as a single point from which many requests can be
 /// constructed. All requests constructed from a client will inherit [headers],
 /// the [withCredentials] flag, and the [timeoutThreshold].
 ///
 /// On the server, the Dart VM will also be able to take advantage of cached
 /// network connections between requests that share a client.
+@JsBridge()
 abstract class HttpClient {
   factory HttpClient({TransportPlatform transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
@@ -104,4 +112,8 @@ abstract class HttpClient {
   /// Constructs a new [StreamedRequest] that will use this client to send the
   /// request. Throws a [StateError] if this client has been closed.
   StreamedRequest newStreamedRequest();
+
+  dynamic toJs();
 }
+
+dynamic httpClientToJs(HttpClient client) => _$bridgeHttpClientToJs(client);

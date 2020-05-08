@@ -18,6 +18,7 @@ import 'package:w_transport/src/http/common/json_request.dart';
 import 'package:w_transport/src/http/common/plain_text_request.dart';
 import 'package:w_transport/src/http/common/streamed_request.dart';
 import 'package:w_transport/src/http/http_client.dart';
+import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/transport_platform.dart';
 
 export 'package:w_transport/src/http/browser/multipart_request.dart'
@@ -29,6 +30,9 @@ class BrowserFormRequest extends CommonFormRequest with BrowserRequestMixin {
 
   BrowserFormRequest.fromClient(HttpClient wTransportClient)
       : super.fromClient(wTransportClient, null);
+
+  @override
+  dynamic toJs() => formRequestToJs(this);
 }
 
 class BrowserJsonRequest extends CommonJsonRequest with BrowserRequestMixin {
@@ -37,6 +41,9 @@ class BrowserJsonRequest extends CommonJsonRequest with BrowserRequestMixin {
 
   BrowserJsonRequest.fromClient(HttpClient wTransportClient)
       : super.fromClient(wTransportClient, null);
+
+  @override
+  dynamic toJs() => jsonRequestToJs(this);
 }
 
 class BrowserPlainTextRequest extends CommonPlainTextRequest
@@ -46,6 +53,9 @@ class BrowserPlainTextRequest extends CommonPlainTextRequest
 
   BrowserPlainTextRequest.fromClient(HttpClient wTransportClient)
       : super.fromClient(wTransportClient, null);
+
+  @override
+  dynamic toJs() => requestToJs(this);
 }
 
 class BrowserStreamedRequest extends CommonStreamedRequest
@@ -55,4 +65,7 @@ class BrowserStreamedRequest extends CommonStreamedRequest
 
   BrowserStreamedRequest.fromClient(HttpClient wTransportClient)
       : super.fromClient(wTransportClient, null);
+
+  @override
+  dynamic toJs() => streamedRequestToJs(this);
 }

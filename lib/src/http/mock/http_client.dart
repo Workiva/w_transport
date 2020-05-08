@@ -76,4 +76,7 @@ class MockHttpClient extends CommonHttpClient implements HttpClient {
     registerAndDecorateRequest(request);
     return request;
   }
+
+  @override
+  dynamic toJs() {}
 }

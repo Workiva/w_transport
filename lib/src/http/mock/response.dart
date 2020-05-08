@@ -125,6 +125,9 @@ class MockResponse implements Response {
         statusText: statusText,
         headers: headers);
   }
+
+  @override
+  dynamic toJs() {}
 }
 
 class MockStreamedResponse implements StreamedResponse {
@@ -250,6 +253,9 @@ class MockStreamedResponse implements StreamedResponse {
         statusText: statusText,
         headers: headers);
   }
+
+  @override
+  dynamic toJs() {}
 }
 
 String _mapStatusToText(int status) {

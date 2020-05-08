@@ -72,4 +72,7 @@ class BrowserHttpClient extends CommonHttpClient implements HttpClient {
     registerAndDecorateRequest(request);
     return request;
   }
+
+  @override
+  dynamic toJs() => httpClientToJs(this);
 }

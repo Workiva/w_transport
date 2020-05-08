@@ -81,4 +81,9 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
     registerAndDecorateRequest(request);
     return request;
   }
+
+  @override
+  dynamic toJs() {
+    throw Exception('cannot convert to JS in the VM');
+  }
 }

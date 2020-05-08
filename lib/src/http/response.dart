@@ -17,9 +17,15 @@ import 'dart:convert';
 
 import 'package:http_parser/http_parser.dart'
     show CaseInsensitiveMap, MediaType;
+import 'package:js/js.dart';
+import 'package:js/js_util.dart';
+import 'package:js_bridge/js_bridge.dart';
+import 'package:js_bridge/js_bridge_util.dart';
 
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
+
+part 'response.g.dart';
 
 abstract class BaseResponse {
   /// Status code of the response to the HTTP request.
@@ -70,6 +76,7 @@ abstract class BaseResponse {
 /// - bytes (`Uint8List`)
 /// - text (`String`)
 /// - JSON (`Map` or `List`) - assuming the response content type is JSON
+@JsBridge()
 class Response extends BaseResponse {
   HttpBody _body;
 
@@ -120,12 +127,15 @@ class Response extends BaseResponse {
       return Response.fromBytes(status, statusText, headers, bodyBytes);
     }
   }
+
+  dynamic toJs() => _$bridgeResponseToJs(this);
 }
 
 /// An HTTP response where the entire contents of the response body are not
 /// immediately known. Meta data about a response to an HTTP request (headers,
 /// status, statusText) are available immediately and synchronously. The
 /// response body is available as a stream of bytes.
+@JsBridge()
 class StreamedResponse extends BaseResponse {
   StreamedHttpBody _body;
 
@@ -169,4 +179,6 @@ class StreamedResponse extends BaseResponse {
           status, statusText, headers, byteStream);
     }
   }
+
+  dynamic toJs() => _$bridgeStreamedResponseToJs(this);
 }

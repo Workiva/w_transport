@@ -144,4 +144,8 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
     return Response.fromBytes(response.statusCode, response.reasonPhrase,
         responseHeaders, await streamedResponse.body.toBytes());
   }
+
+  dynamic toJs() {
+    throw Exception('cannot convert to JS in the VM');
+  }
 }

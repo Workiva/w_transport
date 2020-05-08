@@ -15,18 +15,27 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:js/js.dart';
+import 'package:js/js_util.dart';
+import 'package:js_bridge/js_bridge.dart';
+import 'package:js_bridge/js_bridge_util.dart';
+
 import 'package:w_transport/src/global_transport_platform.dart';
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/multipart_file.dart';
+import 'package:w_transport/src/http/response.dart';
 import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 import 'package:w_transport/src/transport_platform.dart';
+
+part 'requests.g.dart';
 
 /// Representation of an HTTP request where the request body is a form that will
 /// be encoded as a url query string.
 ///
 /// This request will be sent with content-type:
 /// application/x-www-form-urlencoded
+@JsBridge()
 abstract class FormRequest extends BaseRequest {
   factory FormRequest({TransportPlatform transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
@@ -84,12 +93,15 @@ abstract class FormRequest extends BaseRequest {
   /// Returns an clone of this request.
   @override
   FormRequest clone();
+
+  dynamic toJs();
 }
 
 /// Representation of an HTTP request where the request body is a json-encodable
 /// Map or List.
 ///
 /// This request will be sent with content-type: application/json
+@JsBridge()
 abstract class JsonRequest extends BaseRequest {
   factory JsonRequest({TransportPlatform transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
@@ -141,12 +153,15 @@ abstract class JsonRequest extends BaseRequest {
   /// Returns an clone of this request.
   @override
   JsonRequest clone();
+
+  dynamic toJs();
 }
 
 /// Representation of an HTTP request where the request body is comprised of
 /// one or more parts. Each part can be either a field name and value or a file.
 ///
 /// This request will be sent with content-type: multipart/form-data
+@JsBridge()
 abstract class MultipartRequest extends BaseRequest {
   /// Get and set this request's text fields as a Map of field names to their
   /// values.
@@ -192,11 +207,14 @@ abstract class MultipartRequest extends BaseRequest {
   /// Returns an clone of this request.
   @override
   MultipartRequest clone();
+
+  dynamic toJs();
 }
 
 /// Representation of an HTTP request where the request body is plain-text.
 ///
 /// This request will be sent with content-type: text/plain
+@JsBridge()
 abstract class Request extends BaseRequest {
   factory Request({TransportPlatform transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
@@ -242,10 +260,13 @@ abstract class Request extends BaseRequest {
   /// Returns an clone of this request.
   @override
   Request clone();
+
+  dynamic toJs();
 }
 
 /// Representation of an HTTP request where the request body is sent
 /// asynchronously as a stream. The [content-type] should be set manually.
+@JsBridge()
 abstract class StreamedRequest extends BaseRequest {
   factory StreamedRequest({TransportPlatform transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
@@ -283,4 +304,12 @@ abstract class StreamedRequest extends BaseRequest {
   /// [UnsupportedError].
   @override
   StreamedRequest clone();
+
+  dynamic toJs();
 }
+
+dynamic formRequestToJs(FormRequest request) => _$bridgeFormRequestToJs(request);
+dynamic jsonRequestToJs(JsonRequest request) => _$bridgeJsonRequestToJs(request);
+dynamic multipartRequestToJs(MultipartRequest request) => _$bridgeMultipartRequestToJs(request);
+dynamic requestToJs(Request request) => _$bridgeRequestToJs(request);
+dynamic streamedRequestToJs(StreamedRequest request) => _$bridgeStreamedRequestToJs(request);

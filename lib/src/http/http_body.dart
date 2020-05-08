@@ -17,9 +17,15 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
+import 'package:js/js.dart';
+import 'package:js/js_util.dart';
+import 'package:js_bridge/js_bridge.dart';
+import 'package:js_bridge/js_bridge_util.dart';
 
 import 'package:w_transport/src/http/response_format_exception.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
+
+part 'http_body.g.dart';
 
 abstract class BaseHttpBody {
   /// The size of this request/response body in bytes.
@@ -41,6 +47,7 @@ abstract class BaseHttpBody {
 /// - bytes (`Uint8List`)
 /// - text (`String`)
 /// - JSON (`Map` or `List`) - assuming the content-type is JSON
+@JsBridge()
 class HttpBody extends BaseHttpBody {
   /// The content type of this request/response. Includes the mime-type and
   /// parameters such as charset.
@@ -136,6 +143,8 @@ class HttpBody extends BaseHttpBody {
   /// it to a JSON object. Throws a [FormatException] if this request/response
   /// body cannot be decoded to text or if the text is not valid JSON.
   dynamic asJson() => json.decode(asString());
+
+  dynamic toJs() => _$bridgeHttpBodyToJs(this);
 }
 
 /// Representation of an HTTP request body or an HTTP response body where the

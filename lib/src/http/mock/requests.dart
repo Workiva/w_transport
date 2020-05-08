@@ -38,6 +38,9 @@ class MockFormRequest extends CommonFormRequest with MockRequestMixin {
     }
     return _realTransport.newFormRequest()..fields = fields;
   }
+
+  @override
+  dynamic toJs() {}
 }
 
 class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {
@@ -56,6 +59,9 @@ class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {
     }
     return _realTransport.newJsonRequest()..body = body;
   }
+
+  @override
+  dynamic toJs() {}
 }
 
 class MockMultipartRequest extends CommonMultipartRequest
@@ -78,6 +84,9 @@ class MockMultipartRequest extends CommonMultipartRequest
       ..fields = fields
       ..files = files;
   }
+
+  @override
+  dynamic toJs() {}
 }
 
 class MockPlainTextRequest extends CommonPlainTextRequest
@@ -98,6 +107,9 @@ class MockPlainTextRequest extends CommonPlainTextRequest
     }
     return _realTransport.newRequest()..body = body;
   }
+
+  @override
+  dynamic toJs() {}
 }
 
 class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {
@@ -120,4 +132,7 @@ class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {
       ..contentType = contentType
       ..body = body;
   }
+
+  @override
+  dynamic toJs() {}
 }

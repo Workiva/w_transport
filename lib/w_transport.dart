@@ -120,6 +120,7 @@ export 'package:w_transport/src/http/response.dart'
     show BaseResponse, Response, StreamedResponse;
 export 'package:w_transport/src/http/response_format_exception.dart'
     show ResponseFormatException;
+export 'package:w_transport/src/http/utils.dart' show AdvancedBackOffCalculator;
 
 // WebSocket
 export 'package:w_transport/src/web_socket/w_socket.dart'
@@ -136,3 +137,4 @@ export 'package:w_transport/src/web_socket/global_web_socket_monitor.dart'
 
 // Third-party
 export 'package:http_parser/http_parser.dart' show MediaType;
+

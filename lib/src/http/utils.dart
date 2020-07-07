@@ -60,7 +60,8 @@ Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry,
           'Cannot calculate advanced jitter without an instance of AdvancedBackOffCalculator');
     }
     final jitteredBackOff =
-        calculator.calculateAdvancedExponentialJitteredBackOffInMs(autoRetry.numAttempts, autoRetry.backOff.interval,
+        calculator.calculateAdvancedExponentialJitteredBackOffInMs(
+            autoRetry.numAttempts, autoRetry.backOff.interval,
             random: random);
     // If we're over the maximum duration, fall back to a fixed maxInterval with full jitter
     if (jitteredBackOff > autoRetry.backOff.maxInterval.inMilliseconds) {
@@ -93,15 +94,13 @@ class AdvancedBackOffCalculator {
   /// Taken from https://github.com/Polly-Contrib/Polly.Contrib.WaitAndRetry/blob/master/src/Polly.Contrib.WaitAndRetry/Backoff.DecorrelatedJitterV2.cs#L35-L65
   /// See the details here: https://github.com/Polly-Contrib/Polly.Contrib.WaitAndRetry#wait-and-retry-with-jittered-back-off
   int calculateAdvancedExponentialJitteredBackOffInMs(
-      int numTotalAttempts,
-      Duration backOffInterval,
+      int numTotalAttempts, Duration backOffInterval,
       {@visibleForTesting Random random}) {
     // We subtract 1 from the numAttempts since the algorithm uses previous
     // _retry_ attempts, and `numTotalAttempts` is _total_ attempts, meaning
     // it will always be 1 greater than the number of _retry_ attempts.
-    final t = numTotalAttempts.toDouble() -
-        1.0 +
-        (random ?? Random()).nextDouble();
+    final t =
+        numTotalAttempts.toDouble() - 1.0 + (random ?? Random()).nextDouble();
     final next = pow(2, t) * _tanh(sqrt(4.0 * t));
     final unscaledBackOff = next - _previous;
     final backoffInMs =

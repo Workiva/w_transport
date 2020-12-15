@@ -31,3 +31,13 @@ dev_dependencies:
   test: ^1.9.1
   uuid: ^2.0.4
   workiva_analysis_options: ^1.0.2
+
+dependency_overrides:
+  react:
+    git:
+      url: https://github.com/cleandart/react-dart.git
+      ref: 6.0.0-wip
+  over_react:
+    git:
+      url: https://github.com/Workiva/over_react.git
+      ref: release_over_react_4.0.0

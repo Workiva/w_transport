@@ -15,7 +15,6 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:over_react/over_react.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
@@ -53,7 +52,6 @@ void showFileContents(String contents) {
 }
 
 void main() {
-  setClientConfiguration();
   configureWTransportForBrowser();
 
   renderGlobalExampleMenu();

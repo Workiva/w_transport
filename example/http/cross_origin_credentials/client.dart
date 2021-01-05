@@ -14,7 +14,6 @@
 
 import 'dart:async';
 
-import 'package:over_react/over_react.dart';
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
 import '../../common/global_example_menu.dart';
@@ -25,7 +24,6 @@ import './status.dart' as status;
 
 /// Setup the example application.
 Future<Null> main() async {
-  setClientConfiguration();
   configureWTransportForBrowser();
   renderGlobalExampleMenu(includeServerStatus: true);
   await dom.setupControlBindings();

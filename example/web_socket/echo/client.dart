@@ -16,7 +16,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
 
-import 'package:over_react/over_react.dart';
 import 'package:w_transport/w_transport.dart';
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
@@ -42,7 +41,6 @@ CheckboxInputElement _sockJSXhrPolling = querySelector('#sockjs-xhr-polling');
 CheckboxInputElement _useSockJS = querySelector('#sockjs');
 
 Future<Null> main() async {
-  setClientConfiguration();
   configureWTransportForBrowser();
 
   renderGlobalExampleMenu(includeServerStatus: true);

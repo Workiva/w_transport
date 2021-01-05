@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:over_react/over_react.dart';
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
 import './common/global_example_menu.dart';
 import './common/loading_component.dart';
 
 void main() {
-  setClientConfiguration();
   configureWTransportForBrowser();
   renderGlobalExampleMenu(nav: false, includeServerStatus: true);
   removeLoadingOverlay();

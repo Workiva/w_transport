@@ -14,7 +14,7 @@
 
 import 'dart:html';
 
-import 'package:over_react/over_react.dart';
+import 'package:over_react/components.dart' show ErrorBoundary;
 import 'package:over_react/react_dom.dart' as react_dom;
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
@@ -24,7 +24,6 @@ import './components/app_component.dart';
 
 void main() {
   // Setup and bootstrap the react app
-  setClientConfiguration();
   configureWTransportForBrowser();
   renderGlobalExampleMenu(includeServerStatus: true);
   Element container = querySelector('#app');

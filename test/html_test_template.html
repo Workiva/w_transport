@@ -5,7 +5,6 @@
     <script>
         // Workaround to Chrome 86 DDC issues:
         // https://github.com/dart-lang/sdk/issues/43193
-
         if (typeof window.MemoryInfo == "undefined") {
           if (typeof window.performance.memory != "undefined") {
             window.MemoryInfo = function () {};
@@ -13,12 +12,9 @@
           }
         }
     </script>
-
     {{testScript}}
     <script src="packages/test/dart.js"></script>
   </head>
-  <body>
-    // ...
-  </body>
+  <body></body>
 </html>
 

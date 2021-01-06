@@ -1,3 +1,5 @@
+custom_html_template_path: test/html_test_template.html
+
 platforms:
   - chrome
   - vm

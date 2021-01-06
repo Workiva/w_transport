@@ -21,8 +21,8 @@ import 'package:http_parser/http_parser.dart'
 
 import 'package:w_transport/src/http/browser/form_data_body.dart';
 import 'package:w_transport/src/http/browser/request_mixin.dart';
-import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
+import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/multipart_file.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
@@ -33,8 +33,8 @@ class BrowserMultipartRequest extends CommonRequest
     implements MultipartRequest {
   BrowserMultipartRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use_from_same_package
-  BrowserMultipartRequest.fromClient(Client wTransportClient)
+
+  BrowserMultipartRequest.fromClient(HttpClient wTransportClient)
       : super.fromClient(wTransportClient, null);
 
   Map<String, String> _fields = {};

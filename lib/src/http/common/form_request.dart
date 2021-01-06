@@ -17,9 +17,9 @@ import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 
-import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
+import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
 import 'package:w_transport/src/transport_platform.dart';
@@ -27,8 +27,8 @@ import 'package:w_transport/src/transport_platform.dart';
 abstract class CommonFormRequest extends CommonRequest implements FormRequest {
   CommonFormRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use_from_same_package
-  CommonFormRequest.fromClient(Client wTransportClient, client)
+
+  CommonFormRequest.fromClient(HttpClient wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
   Map<String, dynamic> _fields = {};

@@ -15,6 +15,7 @@
 @TestOn('vm')
 import 'dart:async';
 
+import 'package:pedantic/pedantic.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/vm.dart';
@@ -42,8 +43,6 @@ void main() {
       transport.globalTransportPlatform = vmTransportPlatform;
 
       // Properly constructs VM implementations of HTTP classes
-      // ignore: deprecated_member_use_from_same_package
-      expect(transport.Client(), isA<VMHttpClient>());
       expect(transport.HttpClient(), isA<VMHttpClient>());
       expect(transport.FormRequest(), isA<VMFormRequest>());
       expect(transport.JsonRequest(), isA<VMJsonRequest>());
@@ -56,8 +55,8 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<VMWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
+      final wSocket =
+          await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(wSocket, isA<VMWebSocket>());
       await wSocket.close();
     });
@@ -66,8 +65,6 @@ void main() {
       configureWTransportForVM();
 
       // Properly constructs VM implementations of HTTP classes
-      // ignore: deprecated_member_use_from_same_package
-      expect(transport.Client(), isA<VMHttpClient>());
       expect(transport.HttpClient(), isA<VMHttpClient>());
       expect(transport.FormRequest(), isA<VMFormRequest>());
       expect(transport.JsonRequest(), isA<VMJsonRequest>());
@@ -80,8 +77,8 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<VMWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
+      final wSocket =
+          await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(wSocket, isA<VMWebSocket>());
       await wSocket.close();
     });
@@ -253,64 +250,57 @@ void main() {
             () async {
           final formRequest =
               transport.FormRequest(transportPlatform: vmTransportPlatform);
-          // ignore: unawaited_futures
-          formRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(formRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final jsonRequest =
               transport.JsonRequest(transportPlatform: vmTransportPlatform);
-          // ignore: unawaited_futures
-          jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(jsonRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final multipartRequest =
               transport.MultipartRequest(transportPlatform: vmTransportPlatform)
                 ..fields['foo'] = 'bar';
-          // ignore: unawaited_futures
-          multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(
+              multipartRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final request =
               transport.Request(transportPlatform: vmTransportPlatform);
-          // ignore: unawaited_futures
-          request.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(request.get(uri: IntegrationPaths.pingEndpointUri));
 
           final streamedRequest =
               transport.StreamedRequest(transportPlatform: vmTransportPlatform);
-          // ignore: unawaited_futures
-          streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(streamedRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final requestWithStreamedResponse =
               transport.Request(transportPlatform: vmTransportPlatform);
-          // ignore: unawaited_futures
-          requestWithStreamedResponse.streamGet(
-              uri: IntegrationPaths.pingEndpointUri);
+          unawaited(requestWithStreamedResponse.streamGet(
+              uri: IntegrationPaths.pingEndpointUri));
 
           final httpClient =
               transport.HttpClient(transportPlatform: vmTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
-          // ignore: unawaited_futures
-          clientFormRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(
+              clientFormRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final clientJsonRequest = httpClient.newJsonRequest();
-          // ignore: unawaited_futures
-          clientJsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(
+              clientJsonRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final clientMultipartRequest = httpClient.newMultipartRequest()
             ..fields['foo'] = 'bar';
-          // ignore: unawaited_futures
-          clientMultipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(clientMultipartRequest.get(
+              uri: IntegrationPaths.pingEndpointUri));
 
           final clientRequest = httpClient.newRequest();
-          // ignore: unawaited_futures
-          clientRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(clientRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final clientStreamedRequest = httpClient.newStreamedRequest();
-          // ignore: unawaited_futures
-          clientStreamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(
+              clientStreamedRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final clientRequestWithStreamedResponse = httpClient.newRequest();
-          // ignore: unawaited_futures
-          clientRequestWithStreamedResponse.streamGet(
-              uri: IntegrationPaths.pingEndpointUri);
+          unawaited(clientRequestWithStreamedResponse.streamGet(
+              uri: IntegrationPaths.pingEndpointUri));
 
           await Future.delayed(const Duration(milliseconds: 50));
           expect(MockTransports.http.numPendingRequests, equals(12));

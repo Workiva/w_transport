@@ -26,47 +26,19 @@ const _sockjsPort = 8026;
 
 void runCommonSockJSSuite(List<String> protocolsToTest,
     {bool usingSockjsPort = true}) {
-  final sockjsPortNaming = Naming()
-    ..platform = usingSockjsPort
-        ? platformBrowserSockjsPort
-        : platformBrowserSockjsWrapper
+  final naming = Naming()
+    ..platform = platformBrowserSockjsWrapper
     ..testType = testTypeIntegration
     ..topic = topicGlobalWebSocketMonitor;
 
-  final sockjsPortDeprecatedNaming = Naming()
-    ..platform = usingSockjsPort
-        ? platformBrowserSockjsPortDeprecated
-        : platformBrowserSockjsWrapperDeprecated
-    ..testType = testTypeIntegration
-    ..topic = topicGlobalWebSocketMonitor;
-
-  group(sockjsPortNaming.toString(), () {
-    _sockJSSuite(
-        protocolsToTest,
-        (Uri uri, String protocol) => transport.WebSocket.connect(uri,
+  for (final protocol in protocolsToTest) {
+    Future<transport.WebSocket> connect(Uri uri, String protocol) =>
+        transport.WebSocket.connect(uri,
             transportPlatform: BrowserTransportPlatformWithSockJS(
                 sockJSNoCredentials: true,
-                sockJSProtocolsWhitelist: [protocol])));
-  });
+                sockJSProtocolsWhitelist: [protocol]));
 
-  group(sockjsPortDeprecatedNaming.toString(), () {
-    _sockJSSuite(
-        protocolsToTest,
-        (Uri uri, String protocol) => transport.WebSocket.connect(uri,
-            // ignore: deprecated_member_use_from_same_package
-            useSockJS: true,
-            // ignore: deprecated_member_use_from_same_package
-            sockJSNoCredentials: true,
-            // ignore: deprecated_member_use_from_same_package
-            sockJSProtocolsWhitelist: [protocol],
-            transportPlatform: browserTransportPlatform));
-  });
-}
-
-void _sockJSSuite(List<String> protocolsToTest,
-    Future<transport.WebSocket> connect(Uri uri, String protocol)) {
-  for (final protocol in protocolsToTest) {
-    group('(protocol=$protocol)', () {
+    group('$naming (protocol=$protocol)', () {
       runCommonGlobalWebSocketMonitorIntegrationTests(
           (Uri uri) => connect(uri, protocol),
           port: _sockjsPort);

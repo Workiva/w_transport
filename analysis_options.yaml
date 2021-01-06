@@ -1,1 +1,9 @@
 include: package:workiva_analysis_options/v1.yaml
+
+analyzer:
+  errors:
+    unawaited_futures: warning
+
+linter:
+  rules:
+    - unawaited_futures

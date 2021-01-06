@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
@@ -28,47 +27,19 @@ const _sockjsPort = 8026;
 
 void runCommonSockJSSuite(List<String> protocolsToTest,
     {bool usingSockjsPort = true}) {
-  final sockjsNaming = Naming()
+  final naming = Naming()
     ..platform = usingSockjsPort
         ? platformBrowserSockjsPort
         : platformBrowserSockjsWrapper
     ..testType = testTypeIntegration
     ..topic = topicWebSocket;
 
-  final sockjsDeprecatedNaming = Naming()
-    ..platform = usingSockjsPort
-        ? platformBrowserSockjsPortDeprecated
-        : platformBrowserSockjsWrapperDeprecated
-    ..testType = testTypeIntegration
-    ..topic = topicWebSocket;
-
-  group(sockjsNaming.toString(), () {
-    _sockJSSuite(
-        protocolsToTest,
-        (Uri uri, String protocol) => transport.WebSocket.connect(uri,
-            transportPlatform: BrowserTransportPlatformWithSockJS(
-                sockJSNoCredentials: true,
-                sockJSProtocolsWhitelist: [protocol])));
-  });
-
-  group(sockjsDeprecatedNaming.toString(), () {
-    _sockJSSuite(
-        protocolsToTest,
-        (Uri uri, String protocol) => transport.WebSocket.connect(uri,
-            // ignore: deprecated_member_use_from_same_package
-            useSockJS: true,
-            // ignore: deprecated_member_use_from_same_package
-            sockJSNoCredentials: true,
-            // ignore: deprecated_member_use_from_same_package
-            sockJSProtocolsWhitelist: [protocol],
-            transportPlatform: browserTransportPlatform));
-  });
-}
-
-void _sockJSSuite(List<String> protocolsToTest,
-    Future<transport.WebSocket> connect(Uri uri, String protocol)) {
   for (final protocol in protocolsToTest) {
-    group('(protocol=$protocol)', () {
+    group('$naming (protocol=$protocol)', () {
+      connect(Uri uri, String protocol) => transport.WebSocket.connect(uri,
+          transportPlatform: BrowserTransportPlatformWithSockJS(
+              sockJSNoCredentials: true, sockJSProtocolsWhitelist: [protocol]));
+
       runCommonWebSocketIntegrationTests(
           connect: (Uri uri) => connect(uri, protocol), port: _sockjsPort);
 

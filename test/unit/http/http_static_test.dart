@@ -15,6 +15,7 @@
 @TestOn('vm || browser')
 import 'dart:async';
 
+import 'package:pedantic/pedantic.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -132,8 +133,7 @@ void main() {
           c.complete(body.asString());
           return MockResponse.ok();
         }, method: 'PATCH');
-        // ignore: unawaited_futures
-        transport.Http.patch(requestUri, body: 'body');
+        unawaited(transport.Http.patch(requestUri, body: 'body'));
         expect(await c.future, equals('body'));
       });
 
@@ -165,8 +165,7 @@ void main() {
           c.complete(body.asString());
           return MockResponse.ok();
         }, method: 'POST');
-        // ignore: unawaited_futures
-        transport.Http.post(requestUri, body: 'body');
+        unawaited(transport.Http.post(requestUri, body: 'body'));
         expect(await c.future, equals('body'));
       });
 
@@ -196,8 +195,7 @@ void main() {
           c.complete(body.asString());
           return MockResponse.ok();
         }, method: 'PATCH');
-        // ignore: unawaited_futures
-        transport.Http.patch(requestUri, body: 'body');
+        unawaited(transport.Http.patch(requestUri, body: 'body'));
         expect(await c.future, equals('body'));
       });
 
@@ -227,8 +225,7 @@ void main() {
           c.complete(body.asString());
           return MockResponse.ok();
         }, method: 'COPY');
-        // ignore: unawaited_futures
-        transport.Http.send('COPY', requestUri, body: 'body');
+        unawaited(transport.Http.send('COPY', requestUri, body: 'body'));
         expect(await c.future, equals('body'));
       });
 

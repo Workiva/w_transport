@@ -14,6 +14,7 @@
 
 import 'dart:async';
 
+import 'package:pedantic/pedantic.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
@@ -142,8 +143,7 @@ void runCommonWebSocketIntegrationTests(
     final controller = StreamController<dynamic>();
     controller.add('message1');
     controller.addError(Exception('addStream error, should close socket'));
-    // ignore: unawaited_futures
-    controller.close();
+    unawaited(controller.close());
     await webSocket.addStream(controller.stream);
     expect(webSocket.done, throwsException);
     await webSocket.close().catchError((_) {});
@@ -194,8 +194,7 @@ void runCommonWebSocketIntegrationTests(
       c.complete();
     });
 
-    // ignore: unawaited_futures
-    webSocket.close();
+    unawaited(webSocket.close());
 
     await c.future;
   });
@@ -514,8 +513,7 @@ void runCommonWebSocketIntegrationTests(
     final webSocket = await connect(pingUri);
     final sub = webSocket.listen((_) {});
     final future = sub.asFuture('futureValue');
-    // ignore: unawaited_futures
-    webSocket.close();
+    unawaited(webSocket.close());
     expect(await future, equals('futureValue'));
     await sub.cancel();
   });

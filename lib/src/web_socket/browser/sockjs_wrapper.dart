@@ -14,6 +14,7 @@
 
 import 'dart:async';
 
+import 'package:pedantic/pedantic.dart';
 import 'package:sockjs_client_wrapper/sockjs_client_wrapper.dart';
 
 import 'package:w_transport/src/web_socket/common/web_socket.dart';
@@ -72,8 +73,7 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
     // not the socket connected successfully, and will also be used later
     // to handle the web socket closing.
     final closed = Completer<SockJSCloseEvent>();
-    // ignore: unawaited_futures
-    client.onClose.first.then(closed.complete);
+    unawaited(client.onClose.first.then(closed.complete));
 
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
@@ -88,8 +88,7 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
           sockJsProtocolsWhitelist: protocolsWhitelist,
           sockJsSelectedProtocol: event.transport));
     });
-    // ignore: unawaited_futures
-    closed.future.then((_) {
+    unawaited(closed.future.then((_) {
       if (!connected.isCompleted) {
         connected
             .completeError(WebSocketException('Could not connect to $uri'));
@@ -98,7 +97,7 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
             wasSuccessful: false,
             sockJsProtocolsWhitelist: protocolsWhitelist));
       }
-    });
+    }));
 
     await connected.future;
     return SockJSWrapperWebSocket._(client, closed.future);

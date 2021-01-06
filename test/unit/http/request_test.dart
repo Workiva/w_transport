@@ -16,6 +16,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:pedantic/pedantic.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -102,29 +103,6 @@ void main() {
         })));
       }
       client.close();
-    });
-
-    test('RetryBackOff.duration (deprecated) should be forwarded to `interval`',
-        () {
-      final interval = Duration(seconds: 10);
-
-      final exponentialBackOff = transport.RetryBackOff.exponential(interval);
-      // ignore: deprecated_member_use_from_same_package
-      expect(exponentialBackOff.duration, equals(interval));
-      // ignore: deprecated_member_use_from_same_package
-      expect(exponentialBackOff.duration, equals(exponentialBackOff.interval));
-
-      final fixedBackOff = transport.RetryBackOff.fixed(interval);
-      // ignore: deprecated_member_use_from_same_package
-      expect(fixedBackOff.duration, equals(interval));
-      // ignore: deprecated_member_use_from_same_package
-      expect(fixedBackOff.duration, equals(exponentialBackOff.interval));
-
-      final noBackOff = transport.RetryBackOff.none();
-      // ignore: deprecated_member_use_from_same_package
-      expect(noBackOff.duration, isNull);
-      // ignore: deprecated_member_use_from_same_package
-      expect(noBackOff.duration, equals(noBackOff.interval));
     });
   });
 }
@@ -589,23 +567,23 @@ void _runCommonRequestSuiteFor(
     });
 
     test('timeoutThreshold is not enforced if not set', () async {
+      MockTransports.http.when(requestUri, (request) async {
+        await Future.delayed(Duration(milliseconds: 250));
+        return MockResponse.ok();
+      });
       final request = requestFactory();
-      final future = request.get(uri: requestUri);
-      await Future.delayed(Duration(milliseconds: 250));
-      // ignore: deprecated_member_use_from_same_package
-      MockTransports.http.completeRequest(request);
-      await future;
+      await request.get(uri: requestUri);
     });
 
     test('timeoutThreshold does nothing if request completes in time',
         () async {
+      MockTransports.http.when(requestUri, (request) async {
+        await Future.delayed(Duration(milliseconds: 250));
+        return MockResponse.ok();
+      });
       final request = requestFactory()
         ..timeoutThreshold = Duration(milliseconds: 500);
-      final future = request.get(uri: requestUri);
-      await Future.delayed(Duration(milliseconds: 250));
-      // ignore: deprecated_member_use_from_same_package
-      MockTransports.http.completeRequest(request);
-      await future;
+      await request.get(uri: requestUri);
     });
 
     test('timeoutThreshold cancels the request if exceeded', () async {
@@ -1102,8 +1080,7 @@ void _runAutoRetryTestSuiteFor(
           ..enabled = true
           ..maxRetries = 3;
 
-        // ignore: unawaited_futures
-        request.get(uri: requestUri);
+        unawaited(request.get(uri: requestUri));
 
         // Wait an arbitrarily short amount of time to allow all retries to
         // complete with confidence that no back-off occurred.
@@ -1127,8 +1104,7 @@ void _runAutoRetryTestSuiteFor(
           ..backOff = transport.RetryBackOff.fixed(Duration(milliseconds: 50),
               withJitter: false);
 
-        // ignore: unawaited_futures
-        request.get(uri: requestUri);
+        unawaited(request.get(uri: requestUri));
 
         // < 50ms = 1 attempt
         // < 100ms = 2 attempts
@@ -1159,8 +1135,7 @@ void _runAutoRetryTestSuiteFor(
           ..maxRetries = 3
           ..backOff = transport.RetryBackOff.fixed(Duration(milliseconds: 15),
               withJitter: true);
-        // ignore: unawaited_futures
-        request.get(uri: requestUri);
+        unawaited(request.get(uri: requestUri));
 
         // 1st attempt = immediate
         // 2nd attempt = +0 to 15s
@@ -1187,8 +1162,7 @@ void _runAutoRetryTestSuiteFor(
               Duration(milliseconds: 25),
               withJitter: false);
 
-        // ignore: unawaited_futures
-        request.get(uri: requestUri);
+        unawaited(request.get(uri: requestUri));
 
         // 1st attempt = immediate
         // 2nd attempt = +50s (25*2^1)
@@ -1221,8 +1195,7 @@ void _runAutoRetryTestSuiteFor(
               Duration(milliseconds: 25),
               withJitter: true);
 
-        // ignore: unawaited_futures
-        request.get(uri: requestUri);
+        unawaited(request.get(uri: requestUri));
 
         // 1st attempt = immediate
         // 2nd attempt = +0 to 50s (25*2^1)
@@ -1293,8 +1266,7 @@ void _runAutoRetryTestSuiteFor(
         MockTransports.http.when(requestUri,
             (request) => Completer<transport.BaseResponse>().future);
         final request = requestFactory();
-        // ignore: unawaited_futures
-        request.get(uri: requestUri);
+        unawaited(request.get(uri: requestUri));
         await Future.delayed(Duration(milliseconds: 10));
         expect(request.retry, throwsStateError);
       });
@@ -1324,8 +1296,8 @@ void _runAutoRetryTestSuiteFor(
         MockTransports.http.when(requestUri,
             (request) => Completer<transport.BaseResponse>().future);
         final request = requestFactory();
-        // ignore: unawaited_futures
-        request.get(uri: requestUri);
+        // ignore:
+        unawaited(request.get(uri: requestUri));
         await Future.delayed(Duration(milliseconds: 10));
         expect(request.streamRetry, throwsStateError);
       });

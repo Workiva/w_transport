@@ -14,11 +14,9 @@
 
 import 'dart:async';
 
-import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockWebSocketInternal;
 import 'package:w_transport/src/web_socket/common/web_socket.dart';
-import 'package:w_transport/src/web_socket/mock/w_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
 
 abstract class MockWebSocket implements WebSocket {
@@ -31,7 +29,6 @@ abstract class MockWebSocket implements WebSocket {
 
   /// Simulate an incoming message that the owner of this [WSocket] instance
   /// will receive if listening.
-  @Deprecated(v3Deprecation)
   void addIncoming(dynamic data);
 
   /// Register a callback that will be called for every outgoing data event that
@@ -39,30 +36,11 @@ abstract class MockWebSocket implements WebSocket {
   ///
   /// [data] will either be the single data item or the stream, depending on
   /// whether `add()` or `addStream()` was called.
-  @Deprecated(v3Deprecation)
   void onOutgoing(callback(dynamic data));
-
-  /// Cause the "server" to close, effectively severing the connection between
-  /// the server and client.
-  @Deprecated(v3Deprecation)
-  void triggerServerClose([int code, String reason]);
-
-  /// Cause the "server" to add an error to the stream.
-  ///
-  /// In practice, this cannot happen. If an error is added to the stream on the
-  /// server side, it will cause the connection to close, but it will not send
-  /// the error and thus an error will not be received by the client. For this
-  /// reason, this method has been deprecated. Use [triggerServerClose] instead.
-  @Deprecated('in 3.0.0. Use triggerServerClose() instead.')
-  void triggerServerError(Object error, [StackTrace stackTrace]);
 }
 
 class _MockWebSocket extends CommonWebSocket
-    implements
-        MockWebSocket,
-        // ignore: deprecated_member_use_from_same_package
-        MockWSocket,
-        WebSocket {
+    implements MockWebSocket, WebSocket {
   /// List of "onOutgoing" callbacks that have been registered. Any time a piece
   /// of data is added to the mock [WSocket], all callbacks in this list will be
   /// called with said data, allowing them to react and mock out the server.
@@ -84,16 +62,6 @@ class _MockWebSocket extends CommonWebSocket
   @override
   void onOutgoing(callback(dynamic data)) {
     _callbacks.add(callback);
-  }
-
-  @override
-  void triggerServerClose([int code, String reason]) {
-    close(code, reason);
-  }
-
-  @override
-  void triggerServerError(Object error, [StackTrace stackTrace]) {
-    close();
   }
 
   @override

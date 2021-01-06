@@ -30,7 +30,6 @@ void main() {
     ..topic = topicGlobalWebSocketMonitor;
 
   group(naming.toString(), () {
-    // ignore: deprecated_member_use_from_same_package
     Future<transport.WebSocket> connect(Uri uri) =>
         transport.WebSocket.connect(uri,
             transportPlatform: vmTransportPlatform);

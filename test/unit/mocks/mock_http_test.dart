@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:pedantic/pedantic.dart';
 @TestOn('browser')
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
+import 'package:w_transport/src/http/mock/requests.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
-import 'package:w_transport/src/http/mock/http_client.dart';
 import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockHttpInternal;
 
@@ -41,43 +42,12 @@ void main() {
       await MockTransports.uninstall();
     });
 
-    test('MockClient extends MockHttpClient', () {
-      // ignore: deprecated_member_use_from_same_package
-      expect(MockClient(null), isA<MockHttpClient>());
-    });
-
     group('TransportMocks.http', () {
       test('causeFailureOnOpen() should cause request to throw', () async {
         final request = transport.Request();
         MockTransports.http.causeFailureOnOpen(request);
         expect(request.get(uri: requestUri),
             throwsA(isA<transport.RequestException>()));
-      });
-
-      test('verifies that requests are mock requests before controlling them',
-          () {
-        transport.BaseRequest request;
-        expect(() {
-          // ignore: deprecated_member_use_from_same_package
-          MockTransports.http.completeRequest(request);
-        }, throwsArgumentError);
-      });
-
-      group('completeRequest()', () {
-        test('completes a request with 200 OK by default', () async {
-          final request = transport.Request();
-          // ignore: deprecated_member_use_from_same_package
-          MockTransports.http.completeRequest(request);
-          expect((await request.get(uri: requestUri)).status, equals(200));
-        });
-
-        test('can complete a request with custom response', () async {
-          final request = transport.Request();
-          final response = MockResponse(202);
-          // ignore: deprecated_member_use_from_same_package
-          MockTransports.http.completeRequest(request, response: response);
-          expect((await request.get(uri: requestUri)).status, equals(202));
-        });
       });
 
       group('expect()', () {
@@ -103,10 +73,8 @@ void main() {
 
         test('expected request has to match URI and method', () async {
           MockTransports.http.expect('GET', requestUri);
-          // ignore: unawaited_futures
-          transport.Http.delete(requestUri); // Wrong method
-          // ignore: unawaited_futures
-          transport.Http.get(Uri.parse('/wrong')); // Wrong URI
+          unawaited(transport.Http.delete(requestUri)); // Wrong method
+          unawaited(transport.Http.get(Uri.parse('/wrong'))); // Wrong URI
           await transport.Http.get(requestUri); // Correct
           expect(MockTransports.http.numPendingRequests, equals(2));
           await MockTransports.reset();
@@ -146,10 +114,8 @@ void main() {
 
         test('expected request has to match URI and method', () async {
           MockTransports.http.expectPattern('GET', requestUri.toString());
-          // ignore: unawaited_futures
-          transport.Http.delete(requestUri); // Wrong method
-          // ignore: unawaited_futures
-          transport.Http.get(Uri.parse('/wrong')); // Wrong URI
+          unawaited(transport.Http.delete(requestUri)); // Wrong method
+          unawaited(transport.Http.get(Uri.parse('/wrong'))); // Wrong URI
           await transport.Http.get(requestUri); // Correct
           expect(MockTransports.http.numPendingRequests, equals(2));
           await MockTransports.reset();
@@ -166,8 +132,8 @@ void main() {
         test('handles requests that match a pattern', () async {
           final pattern = RegExp('https:\/\/(google|github)\.com');
 
-          // ignore: unawaited_futures
-          transport.Http.get(Uri.parse('https://example.com')); // Wrong URI.
+          unawaited(transport.Http.get(
+              Uri.parse('https://example.com'))); // Wrong URI.
 
           MockTransports.http.expectPattern('GET', pattern);
           await transport.Http.get(Uri.parse('https://google.com'));
@@ -180,37 +146,6 @@ void main() {
         });
       });
 
-      group('failRequest()', () {
-        test('causes request to throw', () async {
-          final request = transport.Request();
-          // ignore: deprecated_member_use_from_same_package
-          MockTransports.http.failRequest(request);
-          expect(request.get(uri: requestUri),
-              throwsA(isA<transport.RequestException>()));
-        });
-
-        test('can include a custom exception', () async {
-          final request = transport.Request();
-          MockTransports.http
-              // ignore: deprecated_member_use_from_same_package
-              .failRequest(request, error: Exception('Custom exception'));
-          expect(request.get(uri: requestUri), throwsA(predicate((error) {
-            return error.toString().contains('Custom exception');
-          })));
-        });
-
-        test('can include a custom response', () async {
-          final request = transport.Request();
-          final response = MockResponse.internalServerError();
-          // ignore: deprecated_member_use_from_same_package
-          MockTransports.http.failRequest(request, response: response);
-          expect(request.get(uri: requestUri), throwsA(predicate((error) {
-            return error is transport.RequestException &&
-                error.response.status == 500;
-          })));
-        });
-      });
-
       test(
           'reset() should clear all expectations, pending requests, and handlers',
           () async {
@@ -220,9 +155,7 @@ void main() {
         MockTransports.http.expect('GET', Uri.parse('/expected'));
         MockTransports.http.expectPattern('GET', '/expected');
         final request = transport.Request();
-        // ignore: unawaited_futures
-        request.get(uri: Uri.parse('/other'));
-        // ignore: deprecated_member_use_from_same_package
+        unawaited(request.get(uri: Uri.parse('/other')));
         MockPlainTextRequest mockRequest = request;
         await mockRequest.onSent;
         expect(MockTransports.http.numPendingRequests, equals(1));
@@ -232,17 +165,13 @@ void main() {
         // Would have been handled by either of the handlers, but should no
         // longer be:
         final request2 = transport.Request();
-        // ignore: unawaited_futures
-        request2.delete(uri: requestUri);
-        // ignore: deprecated_member_use_from_same_package
+        unawaited(request2.delete(uri: requestUri));
         MockPlainTextRequest mockRequest2 = request2;
         await mockRequest2.onSent;
 
         // Would have been expected, but should no longer be:
         final request3 = transport.Request();
-        // ignore: unawaited_futures
-        request3.get(uri: Uri.parse('/expected'));
-        // ignore: deprecated_member_use_from_same_package
+        unawaited(request3.get(uri: Uri.parse('/expected')));
         MockPlainTextRequest mockRequest3 = request3;
         await mockRequest3.onSent;
 
@@ -259,9 +188,7 @@ void main() {
 
         test('throws if requests are pending', () async {
           final request = transport.Request();
-          // ignore: unawaited_futures
-          request.get(uri: requestUri);
-          // ignore: deprecated_member_use_from_same_package
+          unawaited(request.get(uri: requestUri));
           MockPlainTextRequest mockRequest = request;
           await mockRequest.onSent;
           expect(() {
@@ -287,10 +214,8 @@ void main() {
             () async {
           final ok = MockResponse.ok();
           MockTransports.http.when(requestUri, (_) async => ok, method: 'GET');
-          // ignore: unawaited_futures
-          transport.Http.get(Uri.parse('/wrong')); // Wrong URI.
-          // ignore: unawaited_futures
-          transport.Http.delete(requestUri); // Wrong method.
+          unawaited(transport.Http.get(Uri.parse('/wrong'))); // Wrong URI.
+          unawaited(transport.Http.delete(requestUri)); // Wrong method.
           await transport.Http.get(requestUri); // Matches.
           await transport.Http.get(requestUri); // Matches again.
           expect(MockTransports.http.numPendingRequests, equals(2));
@@ -303,8 +228,7 @@ void main() {
             () async {
           final ok = MockResponse.ok();
           MockTransports.http.when(requestUri, (_) async => ok);
-          // ignore: unawaited_futures
-          transport.Http.get(Uri.parse('/wrong')); // Wrong URI.
+          unawaited(transport.Http.get(Uri.parse('/wrong'))); // Wrong URI.
           await transport.Http.delete(requestUri); // Matches.
           await transport.Http.get(requestUri); // Matches.
           await transport.Http.get(requestUri); // Matches again.
@@ -353,8 +277,7 @@ void main() {
           final handler = MockTransports.http.when(requestUri, (_) async => ok);
           await transport.Http.get(requestUri);
           handler.cancel();
-          // ignore: unawaited_futures
-          transport.Http.get(requestUri);
+          unawaited(transport.Http.get(requestUri));
           await nextTick();
           expect(MockTransports.http.numPendingRequests, equals(1));
 
@@ -391,8 +314,7 @@ void main() {
             oldHandler.cancel();
           }, returnsNormally);
 
-          // ignore: unawaited_futures
-          transport.Http.get(requestUri);
+          unawaited(transport.Http.get(requestUri));
           await nextTick();
           expect(MockTransports.http.numPendingRequests, equals(1));
 
@@ -408,10 +330,8 @@ void main() {
           MockTransports.http.whenPattern(
               requestUri.toString(), (_a, _b) async => ok,
               method: 'GET');
-          // ignore: unawaited_futures
-          transport.Http.get(Uri.parse('/wrong')); // Wrong URI.
-          // ignore: unawaited_futures
-          transport.Http.delete(requestUri); // Wrong method.
+          unawaited(transport.Http.get(Uri.parse('/wrong'))); // Wrong URI.
+          unawaited(transport.Http.delete(requestUri)); // Wrong method.
           await transport.Http.get(requestUri); // Matches.
           await transport.Http.get(requestUri); // Matches again.
           expect(MockTransports.http.numPendingRequests, equals(2));
@@ -425,8 +345,7 @@ void main() {
           final ok = MockResponse.ok();
           MockTransports.http
               .whenPattern(requestUri.toString(), (_a, _b) async => ok);
-          // ignore: unawaited_futures
-          transport.Http.get(Uri.parse('/wrong')); // Wrong URI.
+          unawaited(transport.Http.get(Uri.parse('/wrong'))); // Wrong URI.
           await transport.Http.delete(requestUri); // Matches.
           await transport.Http.get(requestUri); // Matches.
           await transport.Http.get(requestUri); // Matches again.
@@ -449,8 +368,7 @@ void main() {
           final pattern = RegExp('https:\/\/(google|github)\.com.*');
           final ok = MockResponse.ok();
           MockTransports.http.whenPattern(pattern, (_a, _b) async => ok);
-          // ignore: unawaited_futures
-          transport.Http.get(Uri.parse('/wrong')); // Wrong URI.
+          unawaited(transport.Http.get(Uri.parse('/wrong'))); // Wrong URI.
           await transport.Http.get(Uri.parse('https://google.com'));
           await transport.Http.get(
               Uri.parse('https://github.com/Workiva/w_transport'));
@@ -483,8 +401,7 @@ void main() {
               .whenPattern(requestUri.toString(), (_a, _b) async => ok);
           await transport.Http.get(requestUri);
           handler.cancel();
-          // ignore: unawaited_futures
-          transport.Http.get(requestUri);
+          unawaited(transport.Http.get(requestUri));
           await nextTick();
           expect(MockTransports.http.numPendingRequests, equals(1));
 
@@ -523,8 +440,7 @@ void main() {
             oldHandler.cancel();
           }, returnsNormally);
 
-          // ignore: unawaited_futures
-          transport.Http.get(requestUri);
+          unawaited(transport.Http.get(requestUri));
           await nextTick();
           expect(MockTransports.http.numPendingRequests, equals(1));
 

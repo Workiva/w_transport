@@ -16,9 +16,9 @@ import 'dart:async';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 
-import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
+import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/transport_platform.dart';
 
@@ -26,8 +26,8 @@ abstract class CommonStreamedRequest extends CommonRequest
     implements StreamedRequest {
   CommonStreamedRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use_from_same_package
-  CommonStreamedRequest.fromClient(Client wTransportClient, client)
+
+  CommonStreamedRequest.fromClient(HttpClient wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
   Stream<List<int>> _body;

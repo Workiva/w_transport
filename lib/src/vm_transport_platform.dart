@@ -14,7 +14,6 @@
 
 import 'dart:async';
 
-import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/vm/http_client.dart';
@@ -55,12 +54,6 @@ class VMTransportPlatform implements TransportPlatform {
   /// Construct a [WebSocket] instance for use in the Dart VM.
   @override
   Future<WebSocket> newWebSocket(Uri uri,
-          {Map<String, dynamic> headers,
-          Iterable<String> protocols,
-          @Deprecated(v3Deprecation) bool sockJSDebug,
-          @Deprecated(v3Deprecation) bool sockJSNoCredentials,
-          @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist,
-          @Deprecated(v3Deprecation) Duration sockJSTimeout,
-          @Deprecated(v3Deprecation) bool useSockJS}) =>
+          {Map<String, dynamic> headers, Iterable<String> protocols}) =>
       VMWebSocket.connect(uri, headers: headers, protocols: protocols);
 }

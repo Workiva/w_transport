@@ -15,6 +15,7 @@
 import 'dart:async';
 import 'dart:html';
 
+import 'package:pedantic/pedantic.dart';
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/browser/form_data_body.dart';
 import 'package:w_transport/src/http/browser/utils.dart' as browser_utils;
@@ -60,16 +61,13 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     }
 
     // Pipe onProgress events to the progress controllers.
-
-    // ignore: unawaited_futures
-    _request.onProgress
+    unawaited(_request.onProgress
         .transform(browser_utils.transformProgressEvents)
-        .pipe(downloadProgressController);
+        .pipe(downloadProgressController));
 
-    // ignore: unawaited_futures
-    _request.upload.onProgress
+    unawaited(_request.upload.onProgress
         .transform(browser_utils.transformProgressEvents)
-        .pipe(uploadProgressController);
+        .pipe(uploadProgressController));
 
     // Listen for request completion/errors.
     _request.onLoad.listen((event) {
@@ -123,12 +121,10 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     if (streamResponse) {
       final result = Completer<List<int>>();
       final reader = FileReader();
-      // ignore: unawaited_futures
-      reader.onLoad.first.then((_) {
+      unawaited(reader.onLoad.first.then((_) {
         result.complete(reader.result);
-      });
-      // ignore: unawaited_futures
-      reader.onError.first.then(result.completeError);
+      }));
+      unawaited(reader.onError.first.then(result.completeError));
       reader.readAsArrayBuffer(_request.response ?? Blob([]));
       final bytes = await result.future;
       final byteStream = Stream.fromIterable([bytes]);

@@ -540,7 +540,7 @@ abstract class CommonRequest extends Object
   @override
   Future<Response> send(String method,
       {dynamic body, Map<String, String> headers, Uri uri}) async {
-    final r = await _send(method, headers: headers, uri: uri);
+    final r = await _send(method, body: body, headers: headers, uri: uri);
     assert(r is Response, 'delete() should return a Response');
     Response response = r;
     return response;

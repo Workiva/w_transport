@@ -32,7 +32,7 @@ dependencies:
   sockjs_client_wrapper:
     git:
       url: git://github.com/Workiva/sockjs_client_wrapper.git
-      ref: flutter-fix
+      ref: flutter-fix-new
 
 dev_dependencies:
   build_runner: ">=0.6.0 <2.0.0"

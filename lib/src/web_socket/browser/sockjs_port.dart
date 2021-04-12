@@ -66,9 +66,7 @@ class SockJSPortWebSocket extends CommonWebSocket implements WebSocket {
 
     final client = new sockjs.Client(sockjsUri.toString(),
         debug: debug == true,
-        noCredentials: noCredentials == true,
-        protocolsWhitelist: protocolsWhitelist,
-        timeout: timeout?.inMilliseconds);
+        protocolsWhitelist: protocolsWhitelist);
 
     // Listen for and store the close event. This will determine whether or
     // not the socket connected successfully, and will also be used later
@@ -107,7 +105,8 @@ class SockJSPortWebSocket extends CommonWebSocket implements WebSocket {
 
   @override
   void closeWebSocket(int code, String reason) {
-    _webSocket.close(code, reason);
+    // todo: Close method no longer implemented???
+    // _webSocket.close(code, reason);
   }
 
   @override

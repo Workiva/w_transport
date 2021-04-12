@@ -22,13 +22,13 @@ environment:
 dependencies:
   dart2_constant: ^1.0.1
   fluri: ^1.2.2
-  http_parser: '>=2.2.0 <4.0.0'
+  http_parser: ^4.0.0
   meta: ^1.1.0
   mime: ^0.9.3
   sockjs_client:
     git:
-      url: git://github.com/Workiva/sockjs-dart-client.git
-      ref: 0.3.5
+      url: git@github.com:kyleferguson-wk/sockjs-dart-client.git
+      ref: flutter-fix
   sockjs_client_wrapper:
     git:
       url: git://github.com/Workiva/sockjs_client_wrapper.git
@@ -36,16 +36,22 @@ dependencies:
 
 dev_dependencies:
   build_runner: ">=0.6.0 <2.0.0"
-  build_test: ">=0.9.0 <1.0.0"
-  build_web_compilers: ">=0.2.0 <1.0.0"
-  coverage: ">=0.10.0 <0.13.0"
-  dart_dev: ^2.0.0
+  build_test: ^2.0.0
+  build_web_compilers: ^2.16.5
+  coverage: ^1.0.2
+  dart_dev:
+    git:
+      url: git@github.com:kyleferguson-wk/dart_dev.git
+      ref: master
   dart_style: ^1.0.8
-  dependency_validator: ^1.2.1
+  dependency_validator:
+    git:
+      url: git@github.com:kyleferguson-wk/dependency_validator.git
+      ref: master
   http_server: ^0.9.6
   mockito: ">=2.0.2 <4.0.0"
   test: ">=0.12.30 <2.0.0"
-  uuid: ">=0.5.3 <2.0.0"
+  uuid: ^3.0.0
 
 # Need to retain this transformers section until we drop Dart1 support completely.
 transformers:

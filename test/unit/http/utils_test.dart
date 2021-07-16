@@ -328,6 +328,16 @@ void main() {
         expect(ct.parameters, containsPair('charset', 'utf-8'));
       });
 
+      test(
+          'parseContentTypeFromHeaders() with whitespace falls back to default',
+          () {
+        final headers = <String, String>{'content-type': ' '};
+        final ct = http_utils.parseContentTypeFromHeaders(headers);
+        expect(ct.mimeType, equals('application/octet-stream'),
+            reason:
+                'application/octet-stream content-type should be assumed if header is missing.');
+      });
+
       test('parseEncodingFromContentType()', () {
         MediaType ct;
         ct = MediaType('text', 'plain', {'charset': utf8.name});

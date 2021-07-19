@@ -335,7 +335,7 @@ void main() {
         final ct = http_utils.parseContentTypeFromHeaders(headers);
         expect(ct.mimeType, equals('application/octet-stream'),
             reason:
-                'application/octet-stream content-type should be assumed if header is missing.');
+                'application/octet-stream content-type should be assumed if header is empty.');
       });
 
       test('parseEncodingFromContentType()', () {

@@ -56,10 +56,6 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<VMWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(wSocket, isA<VMWebSocket>());
-      await wSocket.close();
     });
 
     test('configureWTransportForVM()', () async {
@@ -80,10 +76,6 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<VMWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(wSocket, isA<VMWebSocket>());
-      await wSocket.close();
     });
 
     group('mock-aware', () {

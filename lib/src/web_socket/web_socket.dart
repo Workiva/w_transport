@@ -25,7 +25,6 @@ import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 import 'package:w_transport/src/transport_platform.dart';
 import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
-import 'package:w_transport/src/web_socket/w_socket.dart';
 
 /// A two-way communication object for WebSocket clients. Establishes
 /// a WebSocket connection, sends data or streams of data to the server,
@@ -81,9 +80,7 @@ import 'package:w_transport/src/web_socket/w_socket.dart';
 ///
 /// **Note:** In order to leverage SockJS, you will need to load the `sockjs.js`
 /// library first. See https://github.com/workiva/sockjs_client_wrapper#usage
-///
-// ignore: deprecated_member_use_from_same_package
-abstract class WebSocket extends WSocket implements Stream, StreamSink {
+abstract class WebSocket implements Stream, StreamSink {
   /// Create a new WebSocket connection. The given [uri] must use the scheme
   /// `ws` or `wss`.
   ///
@@ -127,12 +124,10 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
 
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
-  @override
   int get closeCode;
 
   /// The close reason set when the WebSocket connection is closed. If there is
   /// no close reason available this property will be `null`.
-  @override
   String get closeReason;
 
   /// Future that resolves when this WebSocket connection has completely closed.

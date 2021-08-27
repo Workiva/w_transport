@@ -60,8 +60,8 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
+      final wSocket =
+          await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(wSocket, isA<BrowserWebSocket>());
       await wSocket.close();
     });
@@ -83,8 +83,7 @@ void main() {
       final webSocket = await transport.WebSocket.connect(pingUri);
       expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(pingUri);
+      final wSocket = await transport.WebSocket.connect(pingUri);
       expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
@@ -111,8 +110,7 @@ void main() {
       final webSocket = await transport.WebSocket.connect(pingUri);
       expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(pingUri);
+      final wSocket = await transport.WebSocket.connect(pingUri);
       expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
@@ -153,8 +151,8 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
+      final wSocket =
+          await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(wSocket, isA<BrowserWebSocket>());
       await wSocket.close();
     });

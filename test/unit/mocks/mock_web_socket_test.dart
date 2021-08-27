@@ -54,24 +54,20 @@ void main() {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
           MockTransports.webSocket.expect(webSocketUri, connectTo: webSocket);
-          expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(webSocketUri),
+          expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
         });
 
         test('expected web socket connection rejected', () async {
           MockTransports.webSocket.expect(webSocketUri, reject: true);
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri),
+          expect(transport.WebSocket.connect(webSocketUri),
               throwsA(predicate((error) {
             return error.toString().contains('rejected');
           })));
         });
 
         test('unexpected web socket connection throws', () async {
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri),
+          expect(transport.WebSocket.connect(webSocketUri),
               throwsA(isA<transport.TransportPlatformMissing>()));
         });
 
@@ -105,17 +101,14 @@ void main() {
           final webSocket = MockWSocket();
           MockTransports.webSocket
               .expectPattern(webSocketUri.toString(), connectTo: webSocket);
-          expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(webSocketUri),
+          expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
         });
 
         test('expected web socket connection rejected', () async {
           MockTransports.webSocket
               .expectPattern(webSocketUri.toString(), reject: true);
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri),
+          expect(transport.WebSocket.connect(webSocketUri),
               throwsA(predicate((error) {
             return error.toString().contains('rejected');
           })));
@@ -146,14 +139,12 @@ void main() {
       });
 
       test('reset() should clear all expectations and handlers', () async {
-        // ignore: deprecated_member_use_from_same_package
-        Future<transport.WSocket> handler(Uri uri,
+        Future<transport.WebSocket> handler(Uri uri,
                 {Map<String, dynamic> headers,
                 Iterable<String> protocols}) async =>
             // ignore: deprecated_member_use_from_same_package
             MockWSocket();
-        // ignore: deprecated_member_use_from_same_package
-        Future<transport.WSocket> patternHandler(Uri uri,
+        Future<transport.WebSocket> patternHandler(Uri uri,
                 {Map<String, dynamic> headers,
                 Match match,
                 Iterable<String> protocols}) async =>
@@ -171,8 +162,7 @@ void main() {
 
         MockTransports.webSocket.reset();
 
-        // ignore: deprecated_member_use_from_same_package
-        expect(transport.WSocket.connect(webSocketUri), throwsA(anything));
+        expect(transport.WebSocket.connect(webSocketUri), throwsA(anything));
       });
 
       group('when()', () {
@@ -181,26 +171,20 @@ void main() {
             () async {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
-          // ignore: deprecated_member_use_from_same_package
-          Future<transport.WSocket> handler(Uri uri,
+          Future<transport.WebSocket> handler(Uri uri,
                   {Map<String, dynamic> headers,
                   Iterable<String> protocols}) async =>
               webSocket;
           MockTransports.webSocket.when(webSocketUri, handler: handler);
 
           // Multiple matching connections succeed.
-          expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(webSocketUri),
+          expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
-          expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(webSocketUri),
+          expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
 
           // Non-matching connection fails.
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(Uri.parse('/other')),
+          expect(transport.WebSocket.connect(Uri.parse('/other')),
               throwsA(anything));
         });
 
@@ -209,20 +193,17 @@ void main() {
           MockTransports.webSocket.when(webSocketUri, reject: true);
 
           // Multiple matching connections work as expected.
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri),
+          expect(transport.WebSocket.connect(webSocketUri),
               throwsA(predicate((error) {
             return error.toString().contains('rejected');
           })));
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri),
+          expect(transport.WebSocket.connect(webSocketUri),
               throwsA(predicate((error) {
             return error.toString().contains('rejected');
           })));
 
           // Non-matching connection fails correctly.
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(Uri.parse('/other')),
+          expect(transport.WebSocket.connect(Uri.parse('/other')),
               throwsA(isA<transport.TransportPlatformMissing>()));
         });
 
@@ -259,13 +240,11 @@ void main() {
           final handler = MockTransports.webSocket.when(webSocketUri,
               handler: (uri, {protocols, headers}) async => webSocket);
 
-          expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(webSocketUri),
+          expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
           handler.cancel();
           // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri), throwsStateError);
+          expect(transport.WebSocket.connect(webSocketUri), throwsStateError);
         });
 
         test('canceling a handler does nothing if handler no longer exists',
@@ -280,9 +259,7 @@ void main() {
           expect(() {
             oldHandler.cancel();
           }, returnsNormally);
-          expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(webSocketUri),
+          expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
         });
 
@@ -297,8 +274,7 @@ void main() {
             oldHandler.cancel();
           }, returnsNormally);
 
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri), throwsStateError);
+          expect(transport.WebSocket.connect(webSocketUri), throwsStateError);
           await webSocket.close();
         });
       });
@@ -309,8 +285,7 @@ void main() {
             () async {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
-          // ignore: deprecated_member_use_from_same_package
-          Future<transport.WSocket> handler(Uri uri,
+          Future<transport.WebSocket> handler(Uri uri,
                   {Map<String, dynamic> headers,
                   Match match,
                   Iterable<String> protocols}) async =>
@@ -319,18 +294,13 @@ void main() {
               .whenPattern(webSocketUri.toString(), handler: handler);
 
           // Multiple matching connections succeed.
-          expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(webSocketUri),
+          expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
-          expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(webSocketUri),
+          expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
 
           // Non-matching connection fails.
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(Uri.parse('/other')),
+          expect(transport.WebSocket.connect(Uri.parse('/other')),
               throwsA(anything));
         });
 
@@ -340,20 +310,17 @@ void main() {
               .whenPattern(webSocketUri.toString(), reject: true);
 
           // Multiple matching connections work as expected.
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri),
+          expect(transport.WebSocket.connect(webSocketUri),
               throwsA(predicate((error) {
             return error.toString().contains('rejected');
           })));
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri),
+          expect(transport.WebSocket.connect(webSocketUri),
               throwsA(predicate((error) {
             return error.toString().contains('rejected');
           })));
 
           // Non-matching connection fails correctly.
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(Uri.parse('/other')),
+          expect(transport.WebSocket.connect(Uri.parse('/other')),
               throwsA(isA<transport.TransportPlatformMissing>()));
         });
 
@@ -382,8 +349,9 @@ void main() {
                       Match match,
                       Iterable<String> protocols}) async =>
                   'invalid');
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri), throwsArgumentError);
+          // ignore:
+          expect(
+              transport.WebSocket.connect(webSocketUri), throwsArgumentError);
         });
 
         test(
@@ -392,8 +360,7 @@ void main() {
           final uriPattern = RegExp('ws:\/\/(google|github)\.com\/ws.*');
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
-          // ignore: deprecated_member_use_from_same_package
-          Future<transport.WSocket> handler(Uri uri,
+          Future<transport.WebSocket> handler(Uri uri,
                   {Map<String, dynamic> headers,
                   Match match,
                   Iterable<String> protocols}) async =>
@@ -402,18 +369,16 @@ void main() {
 
           // Multiple matching connections succeed.
           expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(Uri.parse('ws://google.com/ws')),
+              await transport.WebSocket.connect(
+                  Uri.parse('ws://google.com/ws')),
               equals(webSocket));
           expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(
+              await transport.WebSocket.connect(
                   Uri.parse('ws://github.com/ws/listen')),
               equals(webSocket));
 
           // Non-matching connection fails.
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(Uri.parse('/other')),
+          expect(transport.WebSocket.connect(Uri.parse('/other')),
               throwsA(anything));
         });
 
@@ -422,8 +387,7 @@ void main() {
             () async {
           final uriPattern = RegExp('ws:\/\/(google|github)\.com\/ws.*');
           Match uriMatch;
-          // ignore: deprecated_member_use_from_same_package
-          Future<transport.WSocket> handler(Uri uri,
+          Future<transport.WebSocket> handler(Uri uri,
               {Map<String, dynamic> headers,
               Match match,
               Iterable<String> protocols}) async {
@@ -434,8 +398,7 @@ void main() {
 
           MockTransports.webSocket.whenPattern(uriPattern, handler: handler);
 
-          // ignore: deprecated_member_use_from_same_package
-          await transport.WSocket.connect(
+          await transport.WebSocket.connect(
               Uri.parse('ws://github.com/ws/listen'));
           expect(uriMatch.group(0), equals('ws://github.com/ws/listen'));
           expect(uriMatch.group(1), equals('github'));
@@ -448,13 +411,10 @@ void main() {
               webSocketUri.toString(),
               handler: (uri, {protocols, headers, match}) async => webSocket);
 
-          expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(webSocketUri),
+          expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
           handler.cancel();
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri), throwsStateError);
+          expect(transport.WebSocket.connect(webSocketUri), throwsStateError);
         });
 
         test('canceling a handler does nothing if handler no longer exists',
@@ -469,9 +429,7 @@ void main() {
           expect(() {
             oldHandler.cancel();
           }, returnsNormally);
-          expect(
-              // ignore: deprecated_member_use_from_same_package
-              await transport.WSocket.connect(webSocketUri),
+          expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
         });
 
@@ -487,8 +445,7 @@ void main() {
             oldHandler.cancel();
           }, returnsNormally);
 
-          // ignore: deprecated_member_use_from_same_package
-          expect(transport.WSocket.connect(webSocketUri), throwsStateError);
+          expect(transport.WebSocket.connect(webSocketUri), throwsStateError);
           await webSocket.close();
         });
       });
@@ -529,8 +486,7 @@ void main() {
 
         MockTransports.webSocket
             .expect(webSocketUri, connectTo: mockWebSocketServer);
-        // ignore: deprecated_member_use_from_same_package
-        final webSocket = await transport.WSocket.connect(webSocketUri);
+        final webSocket = await transport.WebSocket.connect(webSocketUri);
         await webSocket.close();
         await c.future;
       });

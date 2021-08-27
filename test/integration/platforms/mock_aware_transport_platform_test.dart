@@ -65,12 +65,6 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<MockWebSocket>());
       await webSocket.close();
-      MockTransports.webSocket
-          .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, isA<MockWebSocket>());
-      await wSocket.close();
       await mockWebSocketServer.shutDown();
 
       MockTransports.verifyNoOutstandingExceptions();
@@ -107,12 +101,6 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<MockWebSocket>());
       await webSocket.close();
-      MockTransports.webSocket
-          .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
-      expect(webSocket, isA<MockWebSocket>());
-      await wSocket.close();
       await mockWebSocketServer.shutDown();
 
       MockTransports.verifyNoOutstandingExceptions();

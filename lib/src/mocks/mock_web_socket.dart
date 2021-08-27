@@ -106,11 +106,10 @@ class MockWebSocketInternal {
         throw WebSocketException('Mock connection to $uri rejected.');
       }
 
-      // For backwards compatibility, it is still allowed to pass in a `WSocket`
+      // For backwards compatibility, it is still allowed to pass in a WebSocket
       // instance for the `connectTo` param. If that happens, return it here and
       // it should function as expected.
-      // ignore: deprecated_member_use_from_same_package
-      if (expectation.connectTo is WSocket) return expectation.connectTo;
+      if (expectation.connectTo is WebSocket) return expectation.connectTo;
 
       // The new behavior is to pass in a `MockWebSocketServer` for the
       // `connectTo` param. When this is done, we have to create a mock
@@ -139,17 +138,15 @@ class MockWebSocketInternal {
       if (result is Future) {
         result = await result;
       }
-      // ignore: deprecated_member_use_from_same_package
-      if (result is! WSocket && result is! MockWebSocketServer) {
+      if (result is! WebSocket && result is! MockWebSocketServer) {
         throw ArgumentError('Mock WebSocket handlers must return an '
             'instance of MockWSocket or MockWebSocketServer.');
       }
 
-      // For backwards compatibility, it is still allowed to return a `WSocket`
+      // For backwards compatibility, it is still allowed to return a WebSocket
       // instance from the handler. If that happens, return it here and it
       // should function as expected.
-      // ignore: deprecated_member_use_from_same_package
-      if (result is WSocket) return result;
+      if (result is WebSocket) return result;
 
       // The new behavior is to return a `MockWebSocketServer` from the handler.
       // When this is done, we have to create a mock `WebSocket` instance,

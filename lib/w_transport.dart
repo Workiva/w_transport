@@ -125,8 +125,6 @@ export 'package:w_transport/src/http/utils.dart' show AdvancedBackOffCalculator;
 // WebSocket
 export 'package:w_transport/src/web_socket/w_socket.dart'
     show WSocket; // ignore: deprecated_member_use_from_same_package
-export 'package:w_transport/src/web_socket/w_socket_exception.dart'
-    show WSocketException; // ignore: deprecated_member_use_from_same_package
 export 'package:w_transport/src/web_socket/web_socket_exception.dart'
     show WebSocketException;
 export 'package:w_transport/src/web_socket/web_socket.dart' show WebSocket;

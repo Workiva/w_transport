@@ -118,20 +118,19 @@ void main() {
     });
 
     test(
-        'globalTransportPlatform = BrowserTransportPlatformWithSockJS (useSockJS: false)',
+        'globalTransportPlatform = BrowserTransportPlatformWithSockJS, connect with override',
         () async {
       transport.globalTransportPlatform = browserTransportPlatformWithSockJS;
 
       // Properly constructs Browser implementation of WebSocket
-      final webSocket = await transport.WebSocket
-          // ignore: deprecated_member_use_from_same_package
-          .connect(IntegrationPaths.pingUri, useSockJS: false);
+      final webSocket = await transport.WebSocket.connect(
+          IntegrationPaths.pingUri,
+          transportPlatform: browserTransportPlatform);
       expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket
-          // ignore: deprecated_member_use_from_same_package
-          .connect(IntegrationPaths.pingUri, useSockJS: false);
+      final wSocket = await transport.WebSocket.connect(
+          IntegrationPaths.pingUri,
+          transportPlatform: browserTransportPlatform);
       expect(wSocket, isA<BrowserWebSocket>());
       await wSocket.close();
     });
@@ -157,60 +156,6 @@ void main() {
       // ignore: deprecated_member_use_from_same_package
       final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
       expect(wSocket, isA<BrowserWebSocket>());
-      await wSocket.close();
-    });
-
-    test('configureWTransportForBrowser(useSockJS: true) custom', () async {
-      // ignore: deprecated_member_use_from_same_package
-      configureWTransportForBrowser(useSockJS: true);
-
-      BrowserTransportPlatformWithSockJS btpwsj =
-          transport.globalTransportPlatform;
-      expect(btpwsj.sockJSDebug, isFalse);
-      expect(btpwsj.sockJSNoCredentials, isFalse);
-      expect(btpwsj.sockJSProtocolsWhitelist, isNull);
-      expect(btpwsj.sockJSTimeout, isNull);
-
-      final pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
-
-      // Properly constructs SockJS implementation of WebSocket
-      final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, isA<SockJSWrapperWebSocket>());
-      await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, isA<SockJSWrapperWebSocket>());
-      await wSocket.close();
-    });
-
-    test('configureWTransportForBrowser(useSockJS: true) custom', () async {
-      configureWTransportForBrowser(
-          // ignore: deprecated_member_use_from_same_package
-          useSockJS: true,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSDebug: true,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSNoCredentials: true,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming']);
-
-      BrowserTransportPlatformWithSockJS btpwsj =
-          transport.globalTransportPlatform;
-      expect(btpwsj.sockJSDebug, isTrue);
-      expect(btpwsj.sockJSNoCredentials, isTrue);
-      expect(btpwsj.sockJSProtocolsWhitelist,
-          unorderedEquals(['websocket', 'xhr-streaming']));
-      expect(btpwsj.sockJSTimeout, isNull);
-
-      final pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
-
-      // Properly constructs SockJS implementation of WebSocket
-      final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, isA<SockJSWrapperWebSocket>());
-      await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
@@ -713,15 +658,6 @@ void main() {
               transportPlatform: browserTransportPlatformWithSockJS);
           expect(sockJS, isA<SockJSWrapperWebSocket>());
           await sockJS.close();
-
-          // This verifies the ability to override the transport platform's
-          // "useSockJS" value when constructing a single WebSocket instance.
-          final singleSockJS = await transport.WebSocket.connect(pingUri,
-              transportPlatform: browserTransportPlatform,
-              // ignore: deprecated_member_use_from_same_package
-              useSockJS: true);
-          expect(singleSockJS, isA<SockJSWrapperWebSocket>());
-          await singleSockJS.close();
         });
       });
     });

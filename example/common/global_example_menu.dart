@@ -2,6 +2,7 @@ import 'dart:html';
 
 import 'package:over_react/components.dart' show ErrorBoundary;
 import 'package:over_react/react_dom.dart' as react_dom;
+import 'package:react_material_ui/styles/theme_provider.dart';
 
 import './global_example_menu_component.dart';
 
@@ -16,5 +17,6 @@ void renderGlobalExampleMenu(
   final menu = (GlobalExampleMenu()
     ..nav = nav
     ..includeServerStatus = includeServerStatus)();
-  react_dom.render(ErrorBoundary()(menu), container);
+  react_dom.render(
+      ErrorBoundary()((ThemeProvider()..theme = wkTheme)(menu)), container);
 }

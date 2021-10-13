@@ -16,6 +16,7 @@ import 'dart:html';
 
 import 'package:over_react/components.dart' show ErrorBoundary;
 import 'package:over_react/react_dom.dart' as react_dom;
+import 'package:react_material_ui/styles/theme_provider.dart';
 import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
 
 import '../../common/global_example_menu.dart';
@@ -27,6 +28,7 @@ void main() {
   configureWTransportForBrowser();
   renderGlobalExampleMenu(includeServerStatus: true);
   Element container = querySelector('#app');
-  react_dom.render(ErrorBoundary()(App()()), container);
+  react_dom.render(
+      ErrorBoundary()((ThemeProvider()..theme = wkTheme)(App()())), container);
   removeLoadingOverlay();
 }

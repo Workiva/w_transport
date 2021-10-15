@@ -1,3 +1,90 @@
+## [4.0.0](https://github.com/Workiva/w_transport/compare/3.2.9...4.0.0)
+
+This is a major release with breaking changes.
+
+[pub]: https://pub.dev
+
+Previously, this project included a `sockjs_client` dependency via a git
+reference, but in July of 2019 [pub.dev][pub] began disallowing the publishing
+of packages with git dependencies. Additionally, this package included public
+APIs that depended on this git dependency. We are unable to get this dependency
+moved to [pub.dev][pub], so our only option is to release a major version and
+remove our usage of this dependency and any relevant APIs.
+
+We also had several pre-existing deprecations that we are removing in this major
+release.
+
+With only a couple of exceptions, this 4.0.0 version should be backwards-
+compatible with 3.x.x as long as uses of deprecated APIs have been resolved.
+
+### Breaking Changes
+
+- Consumers of the SockJS implementation behind `WebSocket` must now include
+`sockjs.js` on the page:
+  - [SockJS usage][sockjs-usage]
+- Tests using `MockWSocket` or `MockWebSocket` must now use a
+`MockWebSocketServer` instead. Additionally, if you were using the `closeCode`
+and `closeReason` getters, they have been added to `MockWebSocketServer` as of
+this release.
+  - [`MockWebSocketServer` guide][ws-server-guide]
+  - [Mock WebSocket expectations guide][ws-expectations-guide]
+  - [Mock WebSocket handlers guide][ws-handlers-guide]
+
+[sockjs-usage]: https://github.com/workiva/sockjs_client_wrapper#usage
+[ws-server-guide]: https://github.com/Workiva/w_transport/blob/master/docs/guides/MockWebSocketServer.md
+[ws-expectations-guide]: https://github.com/Workiva/w_transport/blob/master/docs/guides/MockWebSocketExpectations.md
+[ws-handlers-guide]: https://github.com/Workiva/w_transport/blob/master/docs/guides/MockWebSocketHandlers.md
+
+### Removals of deprecated APIs
+
+- Entrypoints that were renamed:
+  - `package:w_transport/w_transport_browser.dart` - use
+`package:w_transport/browser.dart` instead.
+  - `package:w_transport/w_transport_mock.dart` - use
+`package:w_transport/mock.dart` instead.
+  - `package:w_transport/w_transport_vm.dart` - use
+`package:w_transport/vm.dart` instead.
+- The `Client` class. Use `HttpClient` instead.
+- The `WSocket` class. Use `WebSocket` instead.
+- `RetryBackOff.duration` - use `RetryBackOff.interval` instead.
+- The SockJS optional parameters (e.g. `useSockJS` or
+`sockJSProtocolsWhitelist`) for:
+  - `configureWTransportForBrowser()`
+  - `WebSocket.connect()`
+- `MockTransports.http.completeRequest()` and
+`MockTransports.http.failRequest()` - use `MockTransports.http.expect()` or
+`MockTransports.http.when()` instead.
+- Several mock classes that are intended only for internal use:
+  - `MockBaseRequest`
+  - `MockClient`
+  - `MockFormRequest`
+  - `MockJsonRequest`
+  - `MockPlainTextRequest`
+  - `MockStreamedRequest`
+  - `MockWSocket` and `MockWebSocket` - use `MockWebSocketServer` instead.
+- The unused `WSocketCloseEvent` and `WSocketException` classes.
+
+### Additional Changes
+
+- **Improvement:** The jitter approach used previously for exponential backoffs
+still leads to peaks in server load. This is now improved by adopting a more
+[advanced backoff algorithm from Polly][polly-backoff].
+- **Tech-debt:** upgrade to `dart_dev` v3
+- **Tech-debt:** use `workiva_analysis_options` to simplify linter/analysis
+configuration.
+
+[polly-backoff]: https://github.com/Polly-Contrib/Polly.Contrib.WaitAndRetry#new-jitter-recommendation
+
+## [3.2.9](https://github.com/Workiva/w_transport/compare/3.2.8...3.2.9)
+
+- **Tech-debt:** remove Dart 1 support
+- **Improvement:** prep for a breaking change in Dart SDK to `HttpRequest` and
+`HttpClientResponse`
+
+## [3.2.8](https://github.com/Workiva/w_transport/compare/3.2.7...3.2.8)
+
+- **Tech-debt:** upgrade to `dart_dev` v2
+
 ## [3.2.7](https://github.com/Workiva/w_transport/compare/3.2.6...3.2.7)
 _October 10th, 2018_
 

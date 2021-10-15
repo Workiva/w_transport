@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:w_transport/src/constants.dart' show v3Deprecation;
-import 'package:w_transport/src/http/client.dart';
+import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/common/form_request.dart';
 import 'package:w_transport/src/http/common/json_request.dart';
 import 'package:w_transport/src/http/common/multipart_request.dart';
@@ -23,14 +22,13 @@ import 'package:w_transport/src/http/mock/request_mixin.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/transport_platform.dart';
 
-@Deprecated(v3Deprecation)
 class MockFormRequest extends CommonFormRequest with MockRequestMixin {
   TransportPlatform _realTransport;
 
   MockFormRequest(TransportPlatform realTransport)
       : _realTransport = realTransport,
         super(realTransport);
-  MockFormRequest.fromClient(Client wTransportClient, this._realTransport)
+  MockFormRequest.fromClient(HttpClient wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
 
   @override
@@ -42,14 +40,13 @@ class MockFormRequest extends CommonFormRequest with MockRequestMixin {
   }
 }
 
-@Deprecated(v3Deprecation)
 class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {
   TransportPlatform _realTransport;
 
   MockJsonRequest(TransportPlatform realTransport)
       : _realTransport = realTransport,
         super(realTransport);
-  MockJsonRequest.fromClient(Client wTransportClient, this._realTransport)
+  MockJsonRequest.fromClient(HttpClient wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
 
   @override
@@ -61,7 +58,6 @@ class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {
   }
 }
 
-@Deprecated(v3Deprecation)
 class MockMultipartRequest extends CommonMultipartRequest
     with MockRequestMixin {
   TransportPlatform _realTransport;
@@ -69,7 +65,8 @@ class MockMultipartRequest extends CommonMultipartRequest
   MockMultipartRequest(TransportPlatform realTransport)
       : _realTransport = realTransport,
         super(realTransport);
-  MockMultipartRequest.fromClient(Client wTransportClient, this._realTransport)
+  MockMultipartRequest.fromClient(
+      HttpClient wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
 
   @override
@@ -83,7 +80,6 @@ class MockMultipartRequest extends CommonMultipartRequest
   }
 }
 
-@Deprecated(v3Deprecation)
 class MockPlainTextRequest extends CommonPlainTextRequest
     with MockRequestMixin {
   TransportPlatform _realTransport;
@@ -91,7 +87,8 @@ class MockPlainTextRequest extends CommonPlainTextRequest
   MockPlainTextRequest(TransportPlatform realTransport)
       : _realTransport = realTransport,
         super(realTransport);
-  MockPlainTextRequest.fromClient(Client wTransportClient, this._realTransport)
+  MockPlainTextRequest.fromClient(
+      HttpClient wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
 
   @override
@@ -103,14 +100,14 @@ class MockPlainTextRequest extends CommonPlainTextRequest
   }
 }
 
-@Deprecated(v3Deprecation)
 class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {
   TransportPlatform _realTransport;
 
   MockStreamedRequest(TransportPlatform realTransport)
       : _realTransport = realTransport,
         super(realTransport);
-  MockStreamedRequest.fromClient(Client wTransportClient, this._realTransport)
+  MockStreamedRequest.fromClient(
+      HttpClient wTransportClient, this._realTransport)
       : super.fromClient(wTransportClient, null);
 
   @override

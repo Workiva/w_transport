@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:w_transport/src/web_socket/w_socket_exception.dart';
-
 /// Represents an exception in the connection process of a Web Socket.
-// ignore: deprecated_member_use_from_same_package
-class WebSocketException extends WSocketException {
-  WebSocketException([String message]) : super(message);
+class WebSocketException implements Exception {
+  WebSocketException([this.message]);
+
+  final String message;
+
   @override
   String toString() => 'WebSocketException: $message';
 }

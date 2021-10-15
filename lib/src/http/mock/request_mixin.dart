@@ -27,7 +27,6 @@ import 'package:w_transport/src/http/utils.dart' as http_utils;
 import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockHttpInternal;
 
-// ignore: deprecated_member_use_from_same_package
 abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   Completer<Null> _canceled = Completer<Null>();
   bool _mockHandlersRegistered = false;

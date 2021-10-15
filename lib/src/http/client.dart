@@ -1,90 +1,21 @@
-// Copyright 2015 Workiva Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+import '../transport_platform.dart';
+import 'http_client.dart';
 
-import 'package:w_transport/src/constants.dart' show v3Deprecation;
-import 'package:w_transport/src/http/auto_retry.dart';
-import 'package:w_transport/src/http/http_client.dart';
-import 'package:w_transport/src/http/http_interceptor.dart';
-import 'package:w_transport/src/http/requests.dart';
-import 'package:w_transport/src/transport_platform.dart';
-
-/// An HTTP client acts as a single point from which many requests can be
-/// constructed. All requests constructed from a client will inherit [headers],
-/// the [withCredentials] flag, and the [timeoutThreshold].
+/// This class is here solely to help with certain transitions from v3 to v4.
 ///
-/// On the server, the Dart VM will also be able to take advantage of cached
-/// network connections between requests that share a client.
+/// This class is not publicly exported (it was intentionally removed in favor
+/// of [HttpClient]), and it now extends from [HttpClient] instead of the
+/// inverse. The use case here is for certain consumers who cannot change from
+/// [Client] to [HttpClient] in places where that would be a breaking change
+/// (e.g. the type of a public constructor param). These consumers may
+/// temporarily import [Client] using an internal import like so:
 ///
-/// TODO: Remove this class in 4.0.0 and move the abstract definition into the `HttpClient` class.
-@Deprecated(v3Deprecation + 'Use `HttpClient` instead.')
-abstract class Client {
+///     import 'package:w_transport/src/http/client.dart';
+///
+/// This import will work in v3 and v4 (at first). In v4, since we've inverted
+/// the inheritence, changing from [Client] to [HttpClient] will no longer be a
+/// breaking change.
+abstract class Client extends HttpClient {
   factory Client({TransportPlatform transportPlatform}) =>
       HttpClient(transportPlatform: transportPlatform);
-
-  /// Configuration of automatic request retrying for failed requests. Use this
-  /// object to enable or disable automatic retrying, configure the criteria
-  /// that determines whether or not a request should be retried, as well as the
-  /// number of retries to attempt.
-  ///
-  /// Every request created by this client will inherit this automatic retry
-  /// configuration.
-  AutoRetryConfig autoRetry;
-
-  /// A base URI that all requests from this client should inherit.
-  Uri baseUri;
-
-  /// Get and set request headers that will be applied to all requests created
-  /// by this HTTP client.
-  Map<String, String> headers;
-
-  /// Whether or not the HTTP client has been closed.
-  bool get isClosed;
-
-  /// Amount of time to wait for a request created by this client to finish
-  /// before canceling it and considering it "timed out" (results in a
-  /// [RequestException] being thrown).
-  ///
-  /// If null, no timeout threshold will be enforced.
-  Duration timeoutThreshold;
-
-  /// Whether or not to send requests from this client with credentials. Only
-  /// applicable to requests in the browser, but does not adversely affect any
-  /// other platform.
-  bool withCredentials;
-
-  void addInterceptor(HttpInterceptor interceptor);
-
-  /// Closes the client, cancelling or closing any outstanding connections.
-  void close();
-
-  /// Constructs a new [FormRequest] that will use this client to send the
-  /// request. Throws a [StateError] if this client has been closed.
-  FormRequest newFormRequest();
-
-  /// Constructs a new [JsonRequest] that will use this client to send the
-  /// request. Throws a [StateError] if this client has been closed.
-  JsonRequest newJsonRequest();
-
-  /// Constructs a new [MultipartRequest] that will use this client to send the
-  /// request. Throws a [StateError] if this client has been closed.
-  MultipartRequest newMultipartRequest();
-
-  /// Constructs a new [Request] that will use this client to send the request.
-  /// Throws a [StateError] if this client has been closed.
-  Request newRequest();
-
-  /// Constructs a new [StreamedRequest] that will use this client to send the
-  /// request. Throws a [StateError] if this client has been closed.
-  StreamedRequest newStreamedRequest();
 }

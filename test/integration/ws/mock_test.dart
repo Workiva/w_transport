@@ -111,60 +111,49 @@ void main() {
       MockTransports.webSocket
           .when(IntegrationPaths.fourOhFourUri, reject: true);
 
+      final closeServer = MockWebSocketServer()
+        ..onClientConnected.listen((connection) {
+          connection.onData((data) {
+            if (data.startsWith('close')) {
+              final parts = data.split(':');
+              int closeCode;
+              String closeReason;
+              if (parts.length >= 2) {
+                closeCode = int.parse(parts[1]);
+              }
+              if (parts.length >= 3) {
+                closeReason = parts[2];
+              }
+              connection.close(closeCode, closeReason);
+            }
+          });
+        });
       MockTransports.webSocket.when(IntegrationPaths.closeUri,
-          handler: (Uri uri, {protocols, headers}) async {
-        // ignore: deprecated_member_use_from_same_package
-        final webSocket = MockWSocket();
+          handler: (Uri uri, {protocols, headers}) async => closeServer);
 
-        // ignore: deprecated_member_use_from_same_package
-        webSocket.onOutgoing((data) {
-          if (data.startsWith('close')) {
-            final parts = data.split(':');
-            int closeCode;
-            String closeReason;
-            if (parts.length >= 2) {
-              closeCode = int.parse(parts[1]);
-            }
-            if (parts.length >= 3) {
-              closeReason = parts[2];
-            }
-            webSocket.close(closeCode, closeReason);
-          }
+      final echoServer = MockWebSocketServer()
+        ..onClientConnected.listen((connection) {
+          connection.onData(connection.send);
         });
-
-        return webSocket;
-      });
-
       MockTransports.webSocket.when(IntegrationPaths.echoUri,
-          handler: (Uri uri, {protocols, headers}) async {
-        // ignore: deprecated_member_use_from_same_package
-        final webSocket = MockWSocket();
-        // ignore: deprecated_member_use_from_same_package
-        webSocket.onOutgoing(webSocket.addIncoming);
-        return webSocket;
-      });
+          handler: (Uri uri, {protocols, headers}) async => echoServer);
 
-      MockTransports.webSocket.when(IntegrationPaths.pingUri,
-          handler: (Uri uri, {protocols, headers}) async {
-        // ignore: deprecated_member_use_from_same_package
-        final webSocket = MockWSocket();
-
-        // ignore: deprecated_member_use_from_same_package
-        webSocket.onOutgoing((data) async {
-          data = data.replaceAll('ping', '');
-          int numPongs = 1;
-          try {
-            numPongs = int.parse(data);
-          } catch (_) {}
-          for (int i = 0; i < numPongs; i++) {
-            await Future.delayed(Duration(milliseconds: 5));
-            // ignore: deprecated_member_use_from_same_package
-            webSocket.addIncoming('pong');
-          }
+      final pingServer = MockWebSocketServer()
+        ..onClientConnected.listen((connection) {
+          connection.onData((data) async {
+            data = data.replaceAll('ping', '');
+            int numPongs = 1;
+            try {
+              numPongs = int.parse(data);
+            } catch (_) {}
+            for (int i = 0; i < numPongs; i++) {
+              await Future.delayed(Duration(milliseconds: 5));
+              connection.send('pong');
+            }
+          });
         });
-
-        return webSocket;
-      });
+      MockTransports.webSocket.when(IntegrationPaths.pingUri,
+          handler: (Uri uri, {protocols, headers}) async => pingServer);
     });
 
     tearDown(() async {

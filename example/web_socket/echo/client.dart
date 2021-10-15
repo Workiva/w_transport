@@ -17,7 +17,7 @@ import 'dart:convert';
 import 'dart:html';
 
 import 'package:w_transport/w_transport.dart';
-import 'package:w_transport/browser.dart' show configureWTransportForBrowser;
+import 'package:w_transport/browser.dart';
 
 import '../../common/global_example_menu.dart';
 import '../../common/loading_component.dart';
@@ -45,8 +45,8 @@ Future<Null> main() async {
 
   renderGlobalExampleMenu(includeServerStatus: true);
 
-  // ignore: close_sinks,deprecated_member_use_from_same_package
-  WSocket webSocket;
+  // ignore: close_sinks
+  WebSocket webSocket;
 
   // Connect (or reconnect) when the connect button is clicked.
   _connect.onClick.listen((e) async {
@@ -66,17 +66,21 @@ Future<Null> main() async {
     if (_sockJSXhrPolling.checked) {
       protocols.add('xhr-polling');
     }
-    final uri = sockjs ? _sockJSServer : _wsServer;
+
+    Uri uri;
+    TransportPlatform transportPlatform;
+    if (sockjs) {
+      uri = _sockJSServer;
+      transportPlatform = BrowserTransportPlatformWithSockJS(
+          sockJSTimeout: timeout, sockJSProtocolsWhitelist: protocols);
+    } else {
+      uri = _sockJSServer;
+      transportPlatform = browserTransportPlatform;
+    }
 
     try {
-      // ignore: deprecated_member_use_from_same_package
-      webSocket = await WSocket.connect(uri,
-          // ignore: deprecated_member_use_from_same_package
-          useSockJS: sockjs,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSTimeout: timeout,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSProtocolsWhitelist: protocols);
+      webSocket =
+          await WebSocket.connect(uri, transportPlatform: transportPlatform);
 
       // Display messages from web socket
       webSocket.listen((message) {

@@ -16,6 +16,7 @@
 import 'dart:async';
 import 'dart:html' as html;
 
+import 'package:pedantic/pedantic.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/browser.dart';
 import 'package:w_transport/mock.dart';
@@ -46,8 +47,6 @@ void main() {
       transport.globalTransportPlatform = browserTransportPlatform;
 
       // Properly constructs browser implementations of HTTP classes
-      // ignore: deprecated_member_use_from_same_package
-      expect(transport.Client(), isA<BrowserHttpClient>());
       expect(transport.HttpClient(), isA<BrowserHttpClient>());
       expect(transport.FormRequest(), isA<BrowserFormRequest>());
       expect(transport.JsonRequest(), isA<BrowserJsonRequest>());
@@ -60,8 +59,8 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
+      final wSocket =
+          await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(wSocket, isA<BrowserWebSocket>());
       await wSocket.close();
     });
@@ -83,8 +82,7 @@ void main() {
       final webSocket = await transport.WebSocket.connect(pingUri);
       expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(pingUri);
+      final wSocket = await transport.WebSocket.connect(pingUri);
       expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
@@ -111,27 +109,25 @@ void main() {
       final webSocket = await transport.WebSocket.connect(pingUri);
       expect(webSocket, isA<SockJSWrapperWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(pingUri);
+      final wSocket = await transport.WebSocket.connect(pingUri);
       expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
     test(
-        'globalTransportPlatform = BrowserTransportPlatformWithSockJS (useSockJS: false)',
+        'globalTransportPlatform = BrowserTransportPlatformWithSockJS, connect with override',
         () async {
       transport.globalTransportPlatform = browserTransportPlatformWithSockJS;
 
       // Properly constructs Browser implementation of WebSocket
-      final webSocket = await transport.WebSocket
-          // ignore: deprecated_member_use_from_same_package
-          .connect(IntegrationPaths.pingUri, useSockJS: false);
+      final webSocket = await transport.WebSocket.connect(
+          IntegrationPaths.pingUri,
+          transportPlatform: browserTransportPlatform);
       expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket
-          // ignore: deprecated_member_use_from_same_package
-          .connect(IntegrationPaths.pingUri, useSockJS: false);
+      final wSocket = await transport.WebSocket.connect(
+          IntegrationPaths.pingUri,
+          transportPlatform: browserTransportPlatform);
       expect(wSocket, isA<BrowserWebSocket>());
       await wSocket.close();
     });
@@ -140,8 +136,6 @@ void main() {
       configureWTransportForBrowser();
 
       // Properly constructs browser implementations of HTTP classes
-      // ignore: deprecated_member_use_from_same_package
-      expect(transport.Client(), isA<BrowserHttpClient>());
       expect(transport.HttpClient(), isA<BrowserHttpClient>());
       expect(transport.FormRequest(), isA<BrowserFormRequest>());
       expect(transport.JsonRequest(), isA<BrowserJsonRequest>());
@@ -154,63 +148,9 @@ void main() {
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<BrowserWebSocket>());
       await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(IntegrationPaths.pingUri);
+      final wSocket =
+          await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(wSocket, isA<BrowserWebSocket>());
-      await wSocket.close();
-    });
-
-    test('configureWTransportForBrowser(useSockJS: true) custom', () async {
-      // ignore: deprecated_member_use_from_same_package
-      configureWTransportForBrowser(useSockJS: true);
-
-      BrowserTransportPlatformWithSockJS btpwsj =
-          transport.globalTransportPlatform;
-      expect(btpwsj.sockJSDebug, isFalse);
-      expect(btpwsj.sockJSNoCredentials, isFalse);
-      expect(btpwsj.sockJSProtocolsWhitelist, isNull);
-      expect(btpwsj.sockJSTimeout, isNull);
-
-      final pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
-
-      // Properly constructs SockJS implementation of WebSocket
-      final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, isA<SockJSWrapperWebSocket>());
-      await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, isA<SockJSWrapperWebSocket>());
-      await wSocket.close();
-    });
-
-    test('configureWTransportForBrowser(useSockJS: true) custom', () async {
-      configureWTransportForBrowser(
-          // ignore: deprecated_member_use_from_same_package
-          useSockJS: true,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSDebug: true,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSNoCredentials: true,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming']);
-
-      BrowserTransportPlatformWithSockJS btpwsj =
-          transport.globalTransportPlatform;
-      expect(btpwsj.sockJSDebug, isTrue);
-      expect(btpwsj.sockJSNoCredentials, isTrue);
-      expect(btpwsj.sockJSProtocolsWhitelist,
-          unorderedEquals(['websocket', 'xhr-streaming']));
-      expect(btpwsj.sockJSTimeout, isNull);
-
-      final pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
-
-      // Properly constructs SockJS implementation of WebSocket
-      final webSocket = await transport.WebSocket.connect(pingUri);
-      expect(webSocket, isA<SockJSWrapperWebSocket>());
-      await webSocket.close();
-      // ignore: deprecated_member_use_from_same_package
-      final wSocket = await transport.WSocket.connect(pingUri);
-      expect(wSocket, isA<SockJSWrapperWebSocket>());
       await wSocket.close();
     });
 
@@ -393,64 +333,57 @@ void main() {
             () async {
           final formRequest = transport.FormRequest(
               transportPlatform: browserTransportPlatform);
-          // ignore: unawaited_futures
-          formRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(formRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final jsonRequest = transport.JsonRequest(
               transportPlatform: browserTransportPlatform);
-          // ignore: unawaited_futures
-          jsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(jsonRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final multipartRequest = transport.MultipartRequest(
               transportPlatform: browserTransportPlatform)
             ..fields['foo'] = 'bar';
-          // ignore: unawaited_futures
-          multipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(
+              multipartRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final request =
               transport.Request(transportPlatform: browserTransportPlatform);
-          // ignore: unawaited_futures
-          request.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(request.get(uri: IntegrationPaths.pingEndpointUri));
 
           final streamedRequest = transport.StreamedRequest(
               transportPlatform: browserTransportPlatform);
-          // ignore: unawaited_futures
-          streamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(streamedRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final requestWithStreamedResponse =
               transport.Request(transportPlatform: browserTransportPlatform);
-          // ignore: unawaited_futures
-          requestWithStreamedResponse.streamGet(
-              uri: IntegrationPaths.pingEndpointUri);
+          unawaited(requestWithStreamedResponse.streamGet(
+              uri: IntegrationPaths.pingEndpointUri));
 
           final httpClient =
               transport.HttpClient(transportPlatform: browserTransportPlatform);
 
           final clientFormRequest = httpClient.newFormRequest();
-          // ignore: unawaited_futures
-          clientFormRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(
+              clientFormRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final clientJsonRequest = httpClient.newJsonRequest();
-          // ignore: unawaited_futures
-          clientJsonRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(
+              clientJsonRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final clientMultipartRequest = httpClient.newMultipartRequest()
             ..fields['foo'] = 'bar';
-          // ignore: unawaited_futures
-          clientMultipartRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(clientMultipartRequest.get(
+              uri: IntegrationPaths.pingEndpointUri));
 
           final clientRequest = httpClient.newRequest();
-          // ignore: unawaited_futures
-          clientRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(clientRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final clientStreamedRequest = httpClient.newStreamedRequest();
-          // ignore: unawaited_futures
-          clientStreamedRequest.get(uri: IntegrationPaths.pingEndpointUri);
+          unawaited(
+              clientStreamedRequest.get(uri: IntegrationPaths.pingEndpointUri));
 
           final clientRequestWithStreamedResponse = httpClient.newRequest();
-          // ignore: unawaited_futures
-          clientRequestWithStreamedResponse.streamGet(
-              uri: IntegrationPaths.pingEndpointUri);
+          unawaited(clientRequestWithStreamedResponse.streamGet(
+              uri: IntegrationPaths.pingEndpointUri));
 
           await Future.delayed(const Duration(milliseconds: 50));
           expect(MockTransports.http.numPendingRequests, equals(12));
@@ -713,15 +646,6 @@ void main() {
               transportPlatform: browserTransportPlatformWithSockJS);
           expect(sockJS, isA<SockJSWrapperWebSocket>());
           await sockJS.close();
-
-          // This verifies the ability to override the transport platform's
-          // "useSockJS" value when constructing a single WebSocket instance.
-          final singleSockJS = await transport.WebSocket.connect(pingUri,
-              transportPlatform: browserTransportPlatform,
-              // ignore: deprecated_member_use_from_same_package
-              useSockJS: true);
-          expect(singleSockJS, isA<SockJSWrapperWebSocket>());
-          await singleSockJS.close();
         });
       });
     });

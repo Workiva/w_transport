@@ -16,6 +16,7 @@ import 'dart:async';
 import 'dart:html' as html;
 import 'dart:typed_data';
 
+import 'package:pedantic/pedantic.dart';
 import 'package:w_transport/src/web_socket/common/web_socket.dart';
 import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
@@ -55,21 +56,19 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
     // Will complete if the socket successfully opens, or complete with
     // an error if the socket moves straight to the closed state.
     final connected = Completer<Null>();
-    // ignore: unawaited_futures
-    webSocket.onOpen.first.then((_) {
+    unawaited(webSocket.onOpen.first.then((_) {
       connected.complete();
       emitWebSocketConnectEvent(
           newWebSocketConnectEvent(url: uri.toString(), wasSuccessful: true));
-    });
-    // ignore: unawaited_futures
-    closedFuture.then((_) {
+    }));
+    unawaited(closedFuture.then((_) {
       if (!connected.isCompleted) {
         connected
             .completeError(WebSocketException('Could not connect to $uri'));
         emitWebSocketConnectEvent(newWebSocketConnectEvent(
             url: uri.toString(), wasSuccessful: false));
       }
-    });
+    }));
 
     await connected.future;
     return BrowserWebSocket._(webSocket, closedFuture);

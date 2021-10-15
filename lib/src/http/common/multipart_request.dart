@@ -17,10 +17,11 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
+import 'package:pedantic/pedantic.dart';
 
-import 'package:w_transport/src/http/client.dart';
 import 'package:w_transport/src/http/common/request.dart';
 import 'package:w_transport/src/http/http_body.dart';
+import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/multipart_file.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
@@ -63,8 +64,8 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   CommonMultipartRequest(TransportPlatform transportPlatform)
       : super(transportPlatform);
-  // ignore: deprecated_member_use_from_same_package
-  CommonMultipartRequest.fromClient(Client wTransportClient, client)
+
+  CommonMultipartRequest.fromClient(HttpClient wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
   static String _generateBoundaryString() {
@@ -203,8 +204,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       });
     });
 
-    // ignore: unawaited_futures
-    Future.forEach(fileList, (Map file) {
+    unawaited(Future.forEach(fileList, (Map file) {
       // TODO: make this better
       Stream<List<int>> byteStream;
       final bs = file['byteStream'];
@@ -225,7 +225,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       write('$_boundaryHyphens$boundary$_boundaryHyphens$_crlf');
 
       controller.close();
-    });
+    }));
 
     return StreamedHttpBody.fromByteStream(contentType, controller.stream,
         contentLength: contentLength);

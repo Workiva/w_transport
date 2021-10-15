@@ -15,6 +15,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:pedantic/pedantic.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
@@ -83,8 +84,7 @@ void _runCommonRequestSuiteFor(
 
     test('"done" should complete when the request succeeds', () async {
       final request = requestFactory();
-      // ignore: unawaited_futures
-      request.post(uri: IntegrationPaths.reflectEndpointUri);
+      unawaited(request.post(uri: IntegrationPaths.reflectEndpointUri));
       await request.done;
     });
 

@@ -1,3 +1,6 @@
+## [3.3.2](https://github.com/Workiva/w_transport/compare/3.3.2...3.3.1)
+- Change sockjs-dart-client dependency to use HTTPS URL instead.
+
 ## [3.2.7](https://github.com/Workiva/w_transport/compare/3.2.6...3.2.7)
 _October 10th, 2018_
 

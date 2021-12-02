@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Transport for the browser. Exposes a single configuration method that must
-/// be called before instantiating any of the transport classes.
+/// Transport for the browser.
+///
+/// Before instantiating any of the transport classes, the transport platform
+/// should be configured. For simple use cases, use
+/// [configureWTransportForBrowser]:
 ///
 ///     import 'package:w_transport/browser.dart'
 ///         show configureWTransportForBrowser;
@@ -22,54 +25,28 @@
 ///       configureWTransportForBrowser();
 ///     }
 ///
-/// If you'd like WebSocket to fall back to XHR-streaming if native WebSockets
-/// are not available, w_transport can be configured to use a SockJS client.
+/// This is equivalent to:
 ///
-///     import 'package:w_transport/browser.dart'
-///         show configureWTransportForBrowser;
+///     globalTransportPlatform = browserTransportPlatform;
 ///
-///     void main() {
-///       configureWTransportForBrowser(
-///           useSockJS: true,
-///           sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming']);
-///     }
+/// Or, if you'd like to use SockJS for WebSocket transports:
+///
+///     globalTransportPlatform = browserTransportPlatformWithSockJS;
+///
+/// You may also build your own configurations.
 library w_transport.browser;
 
 import 'package:w_transport/src/browser_transport_platform.dart';
-import 'package:w_transport/src/browser_transport_platform_with_sockjs.dart';
-import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/global_transport_platform.dart';
 
 export 'package:w_transport/src/browser_transport_platform.dart'
     show BrowserTransportPlatform, browserTransportPlatform;
 export 'package:w_transport/src/browser_transport_platform_with_sockjs.dart'
     show BrowserTransportPlatformWithSockJS, browserTransportPlatformWithSockJS;
+export 'package:w_transport/src/web_socket/browser/sockjs.dart'
+    show MissingSockJSException;
 
 /// Configures w_transport for use in the browser via dart:html.
-void configureWTransportForBrowser(
-    {@Deprecated(v3Deprecation) bool useSockJS = false,
-    @Deprecated(v3Deprecation) bool sockJSDebug = false,
-    @Deprecated(v3Deprecation) bool sockJSNoCredentials = false,
-    @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist}) {
-  // Configuring SockJS at this level is deprecated. SockJS configuration should
-  // occur on a per-socket basis.
-  // ignore: deprecated_member_use_from_same_package
-  if (useSockJS == true) {
-    print('Deprecation Warning: Configuring all w_transport sockets to use '
-        'SockJS is deprecated. Instead, SockJS usage should be configured on a '
-        'per-socket basis via the optional parameters in WSocket.connect().');
-  }
-
-  // ignore: deprecated_member_use_from_same_package
-  if (useSockJS == true) {
-    globalTransportPlatform = BrowserTransportPlatformWithSockJS(
-        // ignore: deprecated_member_use_from_same_package
-        sockJSNoCredentials: sockJSNoCredentials,
-        // ignore: deprecated_member_use_from_same_package
-        sockJSDebug: sockJSDebug,
-        // ignore: deprecated_member_use_from_same_package
-        sockJSProtocolsWhitelist: sockJSProtocolsWhitelist);
-  } else {
-    globalTransportPlatform = browserTransportPlatform;
-  }
+void configureWTransportForBrowser() {
+  globalTransportPlatform = browserTransportPlatform;
 }

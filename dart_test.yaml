@@ -9,5 +9,5 @@ platforms:
 retry: 3
 
 presets:
-  travis:
+  ci:
     reporter: expanded

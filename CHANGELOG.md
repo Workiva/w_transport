@@ -1,3 +1,58 @@
+## [4.0.0](https://github.com/Workiva/w_transport/compare/3.2.8...4.0.0)
+
+This is a major release with breaking changes.
+
+[pub]: https://pub.dev
+
+Previously, this project included a `sockjs_client` dependency via a git
+reference, but in July of 2019 [pub.dev][pub] began disallowing the publishing
+of packages with git dependencies. Additionally, this package included public
+APIs that depended on this git dependency. We are unable to get this dependency
+moved to [pub.dev][pub], so our only option is to release a major version and
+remove our usage of this dependency and any relevant APIs.
+
+We also had some pre-existing deprecations that we are removing in this major
+release.
+
+With only a couple of exceptions, this 4.0.0 version should be backwards-
+compatible with 3.x.x as long as uses of deprecated APIs have been resolved.
+
+### Breaking Changes
+
+- **Breaking:** Consumers of the SockJS implementation behind `WebSocket` must
+now include `sockjs.js` on the page:
+  - [SockJS usage][sockjs-usage]
+- **Breaking:** Removed the following deprecated APIs:
+  - The `WSocket` class. Use `WebSocket` instead.
+  - `WSocketCloseEvent`
+  - `WSocketException`
+  - The SockJS optional parameters (e.g. `useSockJS` or
+  `sockJSProtocolsWhitelist`) for:
+    - `configureWTransportForBrowser()`
+    - `WebSocket.connect()`
+
+### Additional Changes
+
+- **Improvement:** Be robust to empty contentType header on response.
+- **Improvement:** The jitter approach used previously for exponential backoffs
+still leads to peaks in server load. This is now improved by adopting a more
+[advanced backoff algorithm from Polly][polly-backoff].
+- **Improvement:** Added `closeCode` and `closeReason` getters to
+`MockWebSocketServer`.
+- **Improvement:** prep for a breaking change in Dart SDK to `HttpRequest` and
+`HttpClientResponse`
+- **Tech-debt:** upgrade to `dart_dev` v3
+- **Tech-debt:** use `workiva_analysis_options` to simplify linter/analysis
+configuration.
+- **Tech-debt:** remove Dart 1 support
+
+[polly-backoff]: https://github.com/Polly-Contrib/Polly.Contrib.WaitAndRetry#wait-and-retry-with-jittered-back-off
+[sockjs-usage]: https://github.com/workiva/sockjs_client_wrapper#usage
+
+## [3.2.8](https://github.com/Workiva/w_transport/compare/3.2.7...3.2.8)
+
+- **Tech-debt:** upgrade to `dart_dev` v2
+
 ## [3.2.7](https://github.com/Workiva/w_transport/compare/3.2.6...3.2.7)
 _October 10th, 2018_
 
@@ -111,7 +166,7 @@ To upgrade, check out the [v3.0.0 upgrade guide](/docs/upgrade-guides/v3.0.0.md)
 
 - There is a new pattern for configuring `w_transport` for a particular
   platform. Check out the [Transport Platform Configuration guide](/docs/TransportPlatformConfiguration.md).
-  
+
 - There is a new way to install the transport mocks (instead of
   `configureWTransportForTest()`). Check out the
   [Mock Transports Installation guide](/docs/guides/MockInstallation.md).
@@ -279,7 +334,7 @@ _June 20, 2016_
 
     // Capture any WS connection attempt to example.com/
     MockTransports.webSocket.expectPattern(uriPattern, connectTo: webSocket);
-    
+
     // Register a handler for an WS connection attempt to example.com/
     // The `Match` instance will be given to the handler, where it can be used
     // to read any of the captured groups.

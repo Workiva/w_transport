@@ -15,7 +15,6 @@
 import 'dart:async';
 import 'dart:js' as js;
 
-import 'package:w_transport/src/web_socket/browser/sockjs_port.dart';
 import 'package:w_transport/src/web_socket/browser/sockjs_wrapper.dart';
 import 'package:w_transport/src/web_socket/common/web_socket.dart';
 import 'package:w_transport/src/web_socket/web_socket.dart';
@@ -30,24 +29,23 @@ abstract class SockJSWebSocket extends CommonWebSocket implements WebSocket {
       bool noCredentials = false,
       List<String> protocolsWhitelist,
       Duration timeout}) async {
-    // The SockJS wrapper library is preferred because it uses the actual JS lib
-    // which is community-supported and fully-featured. But, it requires that
-    // the sockjs.js file is included. We can check for that by checking for the
-    // existence of a `SockJS` object on the window.
-    if (js.context.hasProperty('SockJS')) {
-      return SockJSWrapperWebSocket.connect(uri,
-          debug: debug,
-          noCredentials: noCredentials,
-          protocolsWhitelist: protocolsWhitelist,
-          timeout: timeout);
+    // This SockJS implementation of WebSocket requires that the sockjs.js file
+    // is loaded. We can check for that by checking for the existence of a
+    // `SockJS` object on the window.
+    if (!js.context.hasProperty('SockJS')) {
+      throw MissingSockJSException();
     }
 
-    // If the sockjs.js file wasn't detected, then we fallback to the original
-    // SockJS Dart port.
-    return SockJSPortWebSocket.connect(uri,
+    return SockJSWrapperWebSocket.connect(uri,
         debug: debug,
         noCredentials: noCredentials,
         protocolsWhitelist: protocolsWhitelist,
         timeout: timeout);
   }
+}
+
+class MissingSockJSException implements Exception {
+  @override
+  String toString() => 'sockjs.js must be loaded: '
+      'https://github.com/Workiva/sockjs_client_wrapper#usage';
 }

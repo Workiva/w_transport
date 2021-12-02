@@ -14,7 +14,6 @@
 
 import 'dart:async';
 
-import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/http/http_client.dart';
 import 'package:w_transport/src/http/mock/http_client.dart';
 import 'package:w_transport/src/http/mock/requests.dart';
@@ -45,13 +44,7 @@ abstract class TransportPlatform {
 
   /// Constructs a new [WebSocket] instance.
   Future<WebSocket> newWebSocket(Uri uri,
-      {Map<String, dynamic> headers,
-      Iterable<String> protocols,
-      @Deprecated(v3Deprecation) bool sockJSDebug,
-      @Deprecated(v3Deprecation) bool sockJSNoCredentials,
-      @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist,
-      @Deprecated(v3Deprecation) Duration sockJSTimeout,
-      @Deprecated(v3Deprecation) bool useSockJS});
+      {Map<String, dynamic> headers, Iterable<String> protocols});
 }
 
 class MockAwareTransportPlatform {
@@ -99,13 +92,7 @@ class MockAwareTransportPlatform {
   /// Construct a new [MockWebSocket] instance that implements [WebSocket].
   static Future<WebSocket> newWebSocket(
       TransportPlatform realTransportPlatform, Uri uri,
-      {Map<String, dynamic> headers,
-      Iterable<String> protocols,
-      @Deprecated(v3Deprecation) bool sockJSDebug,
-      @Deprecated(v3Deprecation) bool sockJSNoCredentials,
-      @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist,
-      @Deprecated(v3Deprecation) Duration sockJSTimeout,
-      @Deprecated(v3Deprecation) bool useSockJS}) {
+      {Map<String, dynamic> headers, Iterable<String> protocols}) {
     if (MockTransportsInternal.isInstalled &&
         MockWebSocketInternal.hasHandlerForWebSocket(uri)) {
       // ignore: deprecated_member_use_from_same_package
@@ -113,18 +100,7 @@ class MockAwareTransportPlatform {
     } else if (MockTransportsInternal.fallThrough &&
         realTransportPlatform != null) {
       return realTransportPlatform.newWebSocket(uri,
-          headers: headers,
-          protocols: protocols,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSDebug: sockJSDebug,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSNoCredentials: sockJSNoCredentials,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSTimeout: sockJSTimeout,
-          // ignore: deprecated_member_use_from_same_package
-          useSockJS: useSockJS);
+          headers: headers, protocols: protocols);
     } else {
       throw TransportPlatformMissing.webSocketFailed(uri);
     }

@@ -29,10 +29,9 @@ abstract class SockJSWebSocket extends CommonWebSocket implements WebSocket {
       bool noCredentials = false,
       List<String> protocolsWhitelist,
       Duration timeout}) async {
-    // The SockJS wrapper library is preferred because it uses the actual JS lib
-    // which is community-supported and fully-featured. But, it requires that
-    // the sockjs.js file is included. We can check for that by checking for the
-    // existence of a `SockJS` object on the window.
+    // This SockJS implementation of WebSocket requires that the sockjs.js file
+    // is loaded. We can check for that by checking for the existence of a
+    // `SockJS` object on the window.
     if (!js.context.hasProperty('SockJS')) {
       throw MissingSockJSException();
     }
@@ -48,5 +47,5 @@ abstract class SockJSWebSocket extends CommonWebSocket implements WebSocket {
 class MissingSockJSException implements Exception {
   @override
   String toString() => 'sockjs.js must be loaded: '
-      'https://github.com/workiva/sockjs_client_wrapper#usage';
+      'https://github.com/Workiva/sockjs_client_wrapper#usage';
 }

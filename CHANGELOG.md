@@ -46,6 +46,7 @@ still leads to peaks in server load. This is now improved by adopting a more
 configuration.
 - **Tech-debt:** remove Dart 1 support
 
+[polly-backoff]: https://github.com/Polly-Contrib/Polly.Contrib.WaitAndRetry#wait-and-retry-with-jittered-back-off
 [sockjs-usage]: https://github.com/workiva/sockjs_client_wrapper#usage
 
 ## [3.2.8](https://github.com/Workiva/w_transport/compare/3.2.7...3.2.8)

@@ -17,6 +17,7 @@ library w_transport.src.mocks.mock_transports;
 import 'dart:async';
 
 import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
+import 'package:quiver/core.dart';
 
 import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/http/base_request.dart' show BaseRequest;

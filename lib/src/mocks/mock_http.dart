@@ -111,19 +111,20 @@ class MockHttp {
 
   MockHttpHandler whenPattern(Pattern uriPattern, PatternRequestHandler handler,
       {String method}) {
-    if (!MockHttpInternal._patternRequestHandlers.containsKey(uriPattern)) {
-      MockHttpInternal._patternRequestHandlers[uriPattern] = {};
+    final patternKey = _Pattern(uriPattern);
+    if (!MockHttpInternal._patternRequestHandlers.containsKey(patternKey)) {
+      MockHttpInternal._patternRequestHandlers[patternKey] = {};
     }
     final methodKey = method == null ? '*' : method.toUpperCase();
-    MockHttpInternal._patternRequestHandlers[uriPattern][methodKey] = handler;
+    MockHttpInternal._patternRequestHandlers[patternKey][methodKey] = handler;
     return MockHttpHandler._(() {
-      final handlers = MockHttpInternal._patternRequestHandlers[uriPattern];
+      final handlers = MockHttpInternal._patternRequestHandlers[patternKey];
       if (handlers != null &&
           handlers[methodKey] != null &&
           handlers[methodKey] == handler) {
-        MockHttpInternal._patternRequestHandlers[uriPattern].remove(methodKey);
-        if (MockHttpInternal._patternRequestHandlers[uriPattern].isEmpty) {
-          MockHttpInternal._patternRequestHandlers.remove(uriPattern);
+        handlers.remove(methodKey);
+        if (handlers.isEmpty) {
+          MockHttpInternal._patternRequestHandlers.remove(patternKey);
         }
       }
     });
@@ -144,7 +145,7 @@ class MockHttpInternal {
   static List<_RequestExpectation> _expectations = [];
   static Map<Uri, Map<String /* method */, RequestHandler>> _requestHandlers =
       {};
-  static Map<Pattern, Map<String /* method */, PatternRequestHandler>>
+  static Map<_Pattern, Map<String /* method */, PatternRequestHandler>>
       _patternRequestHandlers = {};
   // ignore: deprecated_member_use_from_same_package
   static List<MockBaseRequest> _pending = [];
@@ -298,6 +299,55 @@ class MockHttpInternal {
           'Request must be of type MockBaseRequest. Make sure you configured w_transport for testing.');
     }
   }
+}
+
+class _Pattern implements Pattern {
+  final Pattern _pattern;
+
+  _Pattern(this._pattern);
+
+  @override
+  Iterable<Match> allMatches(String string, [int start = 0]) =>
+      _pattern.allMatches(string, start);
+
+  @override
+  Match matchAsPrefix(String string, [int start = 0]) =>
+      _pattern.matchAsPrefix(string, start);
+
+  @override
+  int get hashCode {
+    if (_pattern is RegExp) {
+      final RegExp r = _pattern;
+      return hashObjects([
+        r.pattern,
+        r.isCaseSensitive,
+        r.isDotAll,
+        r.isMultiLine,
+        r.isUnicode,
+      ]);
+    }
+    return _pattern.hashCode;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is _Pattern) {
+      if (_pattern is RegExp && other._pattern is RegExp) {
+        final RegExp a = _pattern;
+        final RegExp b = other._pattern;
+        return a.pattern == b.pattern &&
+            a.isCaseSensitive == b.isCaseSensitive &&
+            a.isDotAll == b.isDotAll &&
+            a.isMultiLine == b.isMultiLine &&
+            a.isUnicode == b.isUnicode;
+      }
+      return _pattern == other._pattern;
+    }
+    return _pattern == other;
+  }
+
+  @override
+  String toString() => _pattern.toString();
 }
 
 class _RequestHandlerMatch {

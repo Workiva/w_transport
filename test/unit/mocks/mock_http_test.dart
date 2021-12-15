@@ -477,6 +477,32 @@ void main() {
           expect(matches[1].group(1), equals('github'));
         });
 
+        test('registering handlers with identical RegExp patterns should work',
+            () async {
+          final pattern = 'https:\/\/(google|github)\.com';
+
+          Match getMatch;
+          MockTransports.http.whenPattern(RegExp(pattern), (_, match) async {
+            getMatch = match;
+            return MockResponse.ok();
+          }, method: 'GET');
+
+          Match postMatch;
+          MockTransports.http.whenPattern(RegExp(pattern), (_, match) async {
+            postMatch = match;
+            return MockResponse.ok();
+          }, method: 'POST');
+
+          await transport.Http.get(Uri.parse('https://google.com'));
+          await transport.Http.post(Uri.parse('https://github.com'));
+
+          expect(getMatch.group(0), equals('https://google.com'));
+          expect(getMatch.group(1), equals('google'));
+
+          expect(postMatch.group(0), equals('https://github.com'));
+          expect(postMatch.group(1), equals('github'));
+        });
+
         test('registers a handler that can be canceled', () async {
           final ok = MockResponse.ok();
           final handler = MockTransports.http

@@ -301,6 +301,12 @@ class MockHttpInternal {
   }
 }
 
+/// An implementation of [Pattern] that ensures 2 [RegExp]s with the same pattern
+/// and settings are treated as equal.
+///
+/// This allows us to store [Pattern]s in the keys of a [Map] with [RegExp]s
+/// behaving as a developer might expect. That is, 2 equal [RegExp]s, though
+/// perhaps not identical instances, will be interchangeable when used as keys.
 class _Pattern implements Pattern {
   final Pattern _pattern;
 

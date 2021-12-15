@@ -1,4 +1,4 @@
-## [4.0.0](https://github.com/Workiva/w_transport/compare/4.0.0...4.0.1)
+## [4.0.1](https://github.com/Workiva/w_transport/compare/4.0.0...4.0.1)
 
 - **Improvement:** Implement equality for `RegExp` to ensure 2 mock request
 handlers with the same pattern and regex settings are stored in a common map.

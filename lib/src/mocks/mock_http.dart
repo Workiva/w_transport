@@ -122,6 +122,9 @@ class MockHttp {
           handlers[methodKey] != null &&
           handlers[methodKey] == handler) {
         MockHttpInternal._patternRequestHandlers[uriPattern].remove(methodKey);
+        if (MockHttpInternal._patternRequestHandlers[uriPattern].isEmpty) {
+          MockHttpInternal._patternRequestHandlers.remove(uriPattern);
+        }
       }
     });
   }

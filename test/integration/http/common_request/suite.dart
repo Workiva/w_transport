@@ -72,8 +72,8 @@ void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
   });
 }
 
-void _runCommonRequestSuiteFor(
-    String name, transport.BaseRequest requestFactory({bool withBody})) {
+void _runCommonRequestSuiteFor(String name,
+    transport.BaseRequest Function({bool withBody}) requestFactory) {
   group(name, () {
     final headers = <String, String>{
       'authorization': 'test',
@@ -420,8 +420,8 @@ void _runCommonRequestSuiteFor(
   });
 }
 
-void _runAutoRetryTestSuiteFor(
-    String name, transport.BaseRequest requestFactory({bool withBody})) {
+void _runAutoRetryTestSuiteFor(String name,
+    transport.BaseRequest Function({bool withBody}) requestFactory) {
   group(name, () {
     group('auto retry', () {
       test('disabled', () async {

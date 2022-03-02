@@ -15,7 +15,6 @@
 @TestOn('vm || browser')
 import 'package:test/test.dart';
 
-import 'package:w_transport/src/web_socket/w_socket_exception.dart';
 import 'package:w_transport/src/web_socket/web_socket_exception.dart';
 
 import '../../naming.dart';
@@ -26,23 +25,9 @@ void main() {
     ..topic = topicWebSocket;
 
   group(naming.toString(), () {
-    test('WSocketException should support toString()', () {
-      expect(
-          // ignore: deprecated_member_use_from_same_package
-          WSocketException('test').toString(),
-          contains('WSocketException:'));
-    });
-
     test('WebSocketException should support toString()', () {
       expect(WebSocketException('test').toString(),
           contains('WebSocketException:'));
-    });
-
-    test('WebSocketException extends WSocketException', () {
-      expect(
-          WebSocketException('test'),
-          // ignore: deprecated_member_use_from_same_package
-          isA<WSocketException>());
     });
   });
 }

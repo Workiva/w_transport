@@ -1,8 +1,5 @@
-# w_transport 
+# w_transport
 [![Pub](https://img.shields.io/pub/v/w_transport.svg)](https://pub.dartlang.org/packages/w_transport)
-[![Build Status](https://travis-ci.org/Workiva/w_transport.svg?branch=travis-ci)](https://travis-ci.org/Workiva/w_transport)
-[![codecov.io](http://codecov.io/github/Workiva/w_transport/coverage.svg?branch=master)](http://codecov.io/github/Workiva/w_transport?branch=master)
-[![documentation](https://img.shields.io/badge/Documentation-w__transport-blue.svg)](https://www.dartdocs.org/documentation/w_transport/latest/)
 
 ---
 

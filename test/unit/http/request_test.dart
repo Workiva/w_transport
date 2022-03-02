@@ -129,8 +129,8 @@ void main() {
   });
 }
 
-void _runCommonRequestSuiteFor(
-    String name, transport.BaseRequest requestFactory({bool withBody})) {
+void _runCommonRequestSuiteFor(String name,
+    transport.BaseRequest Function({bool withBody}) requestFactory) {
   group(name, () {
     final requestUri = Uri.parse('/mock/request');
     final requestHeaders = <String, String>{'x-custom': 'header'};
@@ -652,8 +652,8 @@ void _runCommonRequestSuiteFor(
   });
 }
 
-void _runAutoRetryTestSuiteFor(
-    String name, transport.BaseRequest requestFactory({bool withBody})) {
+void _runAutoRetryTestSuiteFor(String name,
+    transport.BaseRequest Function({bool withBody}) requestFactory) {
   group(name, () {
     final requestUri = Uri.parse('/mock/request');
 

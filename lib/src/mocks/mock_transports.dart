@@ -17,6 +17,7 @@ library w_transport.src.mocks.mock_transports;
 import 'dart:async';
 
 import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
+import 'package:quiver/core.dart';
 
 import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/http/base_request.dart' show BaseRequest;
@@ -28,8 +29,6 @@ import 'package:w_transport/src/http/mock/response.dart' show MockResponse;
 import 'package:w_transport/src/http/response.dart' show BaseResponse;
 import 'package:w_transport/src/web_socket/mock/w_socket.dart'
     show MockWSocket; // ignore: deprecated_member_use_from_same_package
-import 'package:w_transport/src/web_socket/w_socket.dart'
-    show WSocket; // ignore: deprecated_member_use_from_same_package
 import 'package:w_transport/src/web_socket/web_socket.dart' show WebSocket;
 import 'package:w_transport/src/web_socket/web_socket_exception.dart'
     show WebSocketException;

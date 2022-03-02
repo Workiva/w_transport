@@ -20,13 +20,11 @@
 /// as it provides much greater reuse value.
 import 'dart:async';
 
-import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/global_transport_platform.dart';
 import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 import 'package:w_transport/src/transport_platform.dart';
 import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
-import 'package:w_transport/src/web_socket/w_socket.dart';
 
 /// A two-way communication object for WebSocket clients. Establishes
 /// a WebSocket connection, sends data or streams of data to the server,
@@ -82,9 +80,7 @@ import 'package:w_transport/src/web_socket/w_socket.dart';
 ///
 /// **Note:** In order to leverage SockJS, you will need to load the `sockjs.js`
 /// library first. See https://github.com/workiva/sockjs_client_wrapper#usage
-///
-// ignore: deprecated_member_use_from_same_package
-abstract class WebSocket extends WSocket implements Stream, StreamSink {
+abstract class WebSocket implements Stream, StreamSink {
   /// Create a new WebSocket connection. The given [uri] must use the scheme
   /// `ws` or `wss`.
   ///
@@ -96,12 +92,7 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
   static Future<WebSocket> connect(Uri uri,
       {Map<String, dynamic> headers,
       Iterable<String> protocols,
-      TransportPlatform transportPlatform,
-      @Deprecated(v3Deprecation) bool sockJSDebug,
-      @Deprecated(v3Deprecation) bool sockJSNoCredentials,
-      @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist,
-      @Deprecated(v3Deprecation) Duration sockJSTimeout,
-      @Deprecated(v3Deprecation) bool useSockJS}) async {
+      TransportPlatform transportPlatform}) async {
     // If a transport platform is not explicitly given, fallback to the globally
     // configured platform.
     transportPlatform ??= globalTransportPlatform;
@@ -111,33 +102,11 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
       // This mock-aware instance will be able to decide at the time of dispatch
       // whether or not the mock logic should handle the request.
       return MockAwareTransportPlatform.newWebSocket(transportPlatform, uri,
-          headers: headers,
-          protocols: protocols,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSDebug: sockJSDebug,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSNoCredentials: sockJSNoCredentials,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSTimeout: sockJSTimeout,
-          // ignore: deprecated_member_use_from_same_package
-          useSockJS: useSockJS);
+          headers: headers, protocols: protocols);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
       return transportPlatform.newWebSocket(uri,
-          headers: headers,
-          protocols: protocols,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSDebug: sockJSDebug,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSNoCredentials: sockJSNoCredentials,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSProtocolsWhitelist: sockJSProtocolsWhitelist,
-          // ignore: deprecated_member_use_from_same_package
-          sockJSTimeout: sockJSTimeout,
-          // ignore: deprecated_member_use_from_same_package
-          useSockJS: useSockJS);
+          headers: headers, protocols: protocols);
     } else {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
@@ -155,12 +124,10 @@ abstract class WebSocket extends WSocket implements Stream, StreamSink {
 
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
-  @override
   int get closeCode;
 
   /// The close reason set when the WebSocket connection is closed. If there is
   /// no close reason available this property will be `null`.
-  @override
   String get closeReason;
 
   /// Future that resolves when this WebSocket connection has completely closed.

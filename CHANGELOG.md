@@ -1,3 +1,8 @@
+## [4.0.2](https://github.com/Workiva/w_transport/compare/4.0.1...4.0.2)
+
+- **Bug Fix:** The `body` parameter given to `Request.send()` was being ignored.
+It should now be used as expected.
+
 ## [4.0.1](https://github.com/Workiva/w_transport/compare/4.0.0...4.0.1)
 
 - **Improvement:** Implement equality for `RegExp` to ensure 2 mock request

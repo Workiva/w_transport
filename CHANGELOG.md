@@ -1,3 +1,11 @@
+## [4.0.4](https://github.com/Workiva/w_transport/compare/4.0.3...4.0.4)
+
+- **Tech Debt:** Documentation updates.
+
+## [4.0.3](https://github.com/Workiva/w_transport/compare/4.0.2...4.0.3)
+
+- **Tech Debt:** Update deprecated dart CLI commands.
+
 ## [4.0.2](https://github.com/Workiva/w_transport/compare/4.0.1...4.0.2)
 
 - **Bug Fix:** The `body` parameter given to `Request.send()` was being ignored.

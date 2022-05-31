@@ -1,12 +1,11 @@
-name: unit-tests
-description: Unit tests
+name: verify-github-actions
+description: Verify that the github actions run passed, this is needed to make pipelines pass without manual intervention
 contact: 'Frontend Frameworks Architecture / #support-frontend-architecture'
-image: drydock.workiva.net/workiva/dart_unit_test_image:1
-size: large
+image: python:3.11
+size: small
 timeout: 600
 
-artifacts: /testing/test-reports
-test-reports: /testing/test-reports
 
 scripts:
-  - dart run dart_dev test --xunit
+  - pip install requests
+  - python3 skynet.py

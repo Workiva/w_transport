@@ -4,7 +4,7 @@ import time
 
 commit_hash = os.getenv("SKYNET_BUILD_COMMIT_HASH")
 branch_name = os.getenv("SKYNET_CHECKOUT_REF").split("/")[-1]
-github_token = os.getenv("GITHUB_TOKEN").split("/")[-1]
+github_token = os.getenv("GITHUB_TOKEN")
 res = requests.get(
         "https://api.github.com/users/octocat",
         params={"branch": branch_name},

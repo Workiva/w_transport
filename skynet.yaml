@@ -8,4 +8,5 @@ timeout: 600
 
 scripts:
   - pip install requests
+  - curl -H "Authorization: token $GITHUB_TOKEN" -I https://api.github.com/users/octocat
   - python3 skynet.py

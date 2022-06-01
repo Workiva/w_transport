@@ -5,6 +5,9 @@ image: python:3.10.0
 size: small
 timeout: 600
 
+env:
+ - secure: MVNO1YT2rPxvyjpUp+L+3L6Al9DUddsGL1Mks0Icgw6w7iaavObzFKR+rztAniV+JRxYoiV1hcHC6bPNA0tBeMIfx/Q=
+
 
 scripts:
   - pip install requests

@@ -6,6 +6,7 @@ size: small
 timeout: 600
 
 env:
+# encrypted github token used for requests to api.github.com
  - secure: MVNO1YT2rPxvyjpUp+L+3L6Al9DUddsGL1Mks0Icgw6w7iaavObzFKR+rztAniV+JRxYoiV1hcHC6bPNA0tBeMIfx/Q=
 
 

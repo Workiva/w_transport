@@ -1,5 +1,6 @@
 import os
 import requests
+from requests.exceptions import HTTPError
 import time
 
 commit_hash = os.getenv("SKYNET_BUILD_COMMIT_HASH")
@@ -15,10 +16,20 @@ res = requests.get(
 print(res.json())
 completed = False
 while not completed:
-    response = requests.get(
-        "https://api.github.com/repos/Workiva/w_transport/actions/runs",
-        params={"branch": branch_name},
-        headers={'Accept': 'application/vnd.github.v3+json'})
+    try:
+        response = requests.get(
+            "https://api.github.com/repos/Workiva/w_transport/actions/runs",
+            params={"branch": branch_name},
+            headers={
+                'Accept': 'application/vnd.github.v3+json', 
+                'Authorization': f'token {github_token}'
+            })
+        # If the response was successful, no Exception will be raised
+        response.raise_for_status()
+    except HTTPError as http_err:
+        print(f'HTTP error occurred: {http_err}')
+    except Exception as err:
+        print(f'Other error occurred: {err}')
     workflow_runs = response.json().get("workflow_runs")
 
     for run in workflow_runs:

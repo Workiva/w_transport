@@ -19,6 +19,3 @@ package-lock.json
 
 # Examples
 /example/http/cross_origin_file_transfer/files/
-
-# Test Reports
-test-reports/

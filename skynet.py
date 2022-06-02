@@ -6,13 +6,16 @@ import time
 commit_hash = os.getenv("SKYNET_BUILD_COMMIT_HASH")
 branch_name = os.getenv("SKYNET_CHECKOUT_REF").split("/")[-1]
 github_token = os.getenv("GITHUB_TOKEN")
+query = {"branch": branch_name}
+if "." in branch_name:
+    query = {"actor": "rmconsole-readonly-wk"}
 
 completed = False
 while not completed:
     try:
         response = requests.get(
             "https://api.github.com/repos/Workiva/w_transport/actions/runs",
-            params={"branch": branch_name},
+            params=query,
             headers={
                 'Accept': 'application/vnd.github.v3+json', 
                 'Authorization': f'token {github_token}'

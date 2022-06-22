@@ -1,7 +1,7 @@
 name: verify-github-actions
 description: Verify that the github actions run passed, this is needed to make pipelines pass without manual intervention
 contact: 'Frontend Frameworks Architecture / #support-frontend-architecture'
-image: python:3.10.0
+image: drydock.workiva.net/workiva/skynet-images:github_actions_verifier-latest
 size: small
 timeout: 600
 
@@ -11,5 +11,4 @@ env:
 
 
 scripts:
-  - pip install requests
-  - python3 skynet.py
+  - python3 /actions/verify_github_actions_.py

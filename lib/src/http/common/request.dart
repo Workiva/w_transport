@@ -172,6 +172,15 @@ abstract class CommonRequest extends Object
         'The content-length of a request cannot be set manually when the request body is known in advance.');
   }
 
+  Duration get retryTimeoutThreshold {
+    var threshold = timeoutThreshold;
+    if (autoRetry.increaseTimeoutOnRetry) {
+      threshold = timeoutThreshold * autoRetry.numAttempts;
+    }
+
+    return threshold;
+  }
+
   /// Content-type of this request. Set automatically based on the body type and
   /// the [encoding].
   @override
@@ -686,8 +695,9 @@ abstract class CommonRequest extends Object
       abortRequest();
     }
     isTimedOut = true;
+
     _timeoutError = TimeoutException(
-        'Request took too long to complete.', timeoutThreshold);
+        'Request took too long to complete.', retryTimeoutThreshold);
     _timeoutCompleter.complete();
   }
 
@@ -769,7 +779,7 @@ abstract class CommonRequest extends Object
       // Enforce a timeout threshold if set.
       Timer timeout;
       if (timeoutThreshold != null) {
-        timeout = Timer(timeoutThreshold, _timeoutRequest);
+        timeout = Timer(retryTimeoutThreshold, _timeoutRequest);
       }
 
       // Attempt to fetch the response.

@@ -28,3 +28,7 @@ dev_dependencies:
   test: ^1.16.5
   uuid: ^3.0.5
   workiva_analysis_options: ^1.0.2
+
+dependency_overrides:
+  uuid: 3.0.6
+  crypto: 3.0.1

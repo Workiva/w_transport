@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:math';
 
+import 'package:meta/meta.dart';
 import 'package:w_transport/src/constants.dart' show v3Deprecation;
 
 import 'package:w_transport/src/http/base_request.dart';
@@ -82,7 +84,8 @@ class AutoRetryConfig {
   int maxRetries = 2;
 
   /// increaseTimeoutOnRetry, when true, will multiply the request attempt number against the provided timeout.
-  /// For example, if timeout is set to be 10s, and this is the 3rd retry, the timeout will be 10*3s or 30s.
+  /// For example, if timeout is set to be 10s, and this is the 3rd attempt, the timeout will be 10*3s or 30s.
+  /// See [timeoutThreshold]
   bool increaseTimeoutOnRetry = false;
 
   /// A custom [test] function that decides whether or not a request should be
@@ -158,7 +161,26 @@ class RequestAutoRetry extends AutoRetryConfig {
     if (request is MultipartRequest && request.files.isNotEmpty) return false;
     return true;
   }
+
+  /// timeoutThreshold will not move beyond 60s or the [_request.timeoutThreshold], whichever is greater, when [increaseTimeoutOnRetry] is true.
+  Duration get timeoutThreshold {
+    if (increaseTimeoutOnRetry) {
+      return getRetryTimeoutThreshold(_request.timeoutThreshold, numAttempts);
+    }
+
+    return _request.timeoutThreshold;
+  }
 }
+
+@visibleForTesting
+Duration getRetryTimeoutThreshold(Duration timeoutThreshold, int numAttempts) {
+    if (numAttempts <= 0) return timeoutThreshold;
+    var threshold = timeoutThreshold * numAttempts;
+    var maxTimeout = max<int>(timeoutThreshold.inSeconds, 60);
+    threshold = Duration(seconds: min(threshold.inSeconds, maxTimeout));
+  return threshold;
+}
+
 
 /// Representation of the back-off method to use when retrying requests. A fixed
 /// back-off will space retries out by [interval]. An exponential back-off will

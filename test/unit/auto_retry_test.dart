@@ -20,17 +20,22 @@ import 'package:w_transport/src/http/auto_retry.dart';
 void main() {
   group('getRetryTimeoutThreshold', () {
     test('timeoutThreshold is less than 60', () {
-    expect(getRetryTimeoutThreshold(Duration(seconds: 30), 0), Duration(seconds:30));
-    expect(getRetryTimeoutThreshold(Duration(seconds: 30), 1), Duration(seconds:30));
-    expect(getRetryTimeoutThreshold(Duration(seconds: 30), 2), Duration(seconds:60));
-    expect(getRetryTimeoutThreshold(Duration(seconds: 30), 3), Duration(seconds:60));
+      expect(getRetryTimeoutThreshold(Duration(seconds: 30), 0),
+          Duration(seconds: 30));
+      expect(getRetryTimeoutThreshold(Duration(seconds: 30), 1),
+          Duration(seconds: 30));
+      expect(getRetryTimeoutThreshold(Duration(seconds: 30), 2),
+          Duration(seconds: 60));
+      expect(getRetryTimeoutThreshold(Duration(seconds: 30), 3),
+          Duration(seconds: 60));
     });
     test('timeoutThreshold is more than 60', () {
-      expect(getRetryTimeoutThreshold(Duration(seconds: 90), 0), Duration(seconds:90));
-      expect(getRetryTimeoutThreshold(Duration(seconds: 90), 1), Duration(seconds:90));
-      expect(getRetryTimeoutThreshold(Duration(seconds: 90), 2), Duration(seconds:90));
+      expect(getRetryTimeoutThreshold(Duration(seconds: 90), 0),
+          Duration(seconds: 90));
+      expect(getRetryTimeoutThreshold(Duration(seconds: 90), 1),
+          Duration(seconds: 90));
+      expect(getRetryTimeoutThreshold(Duration(seconds: 90), 2),
+          Duration(seconds: 90));
     });
-
   });
-
 }

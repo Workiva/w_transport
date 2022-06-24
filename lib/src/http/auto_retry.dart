@@ -174,13 +174,12 @@ class RequestAutoRetry extends AutoRetryConfig {
 
 @visibleForTesting
 Duration getRetryTimeoutThreshold(Duration timeoutThreshold, int numAttempts) {
-    if (numAttempts <= 0) return timeoutThreshold;
-    var threshold = timeoutThreshold * numAttempts;
-    var maxTimeout = max<int>(timeoutThreshold.inSeconds, 60);
-    threshold = Duration(seconds: min(threshold.inSeconds, maxTimeout));
+  if (numAttempts <= 0) return timeoutThreshold;
+  var threshold = timeoutThreshold * numAttempts;
+  var maxTimeout = max<int>(timeoutThreshold.inSeconds, 60);
+  threshold = Duration(seconds: min(threshold.inSeconds, maxTimeout));
   return threshold;
 }
-
 
 /// Representation of the back-off method to use when retrying requests. A fixed
 /// back-off will space retries out by [interval]. An exponential back-off will

@@ -83,9 +83,16 @@ class AutoRetryConfig {
   /// total - the first request and 2 retries.
   int maxRetries = 2;
 
-  /// increaseTimeoutOnRetry, when true, will multiply the request attempt number against the provided timeout.
-  /// For example, if timeout is set to be 10s, and this is the 3rd attempt, the timeout will be 10*3s or 30s.
-  /// See [timeoutThreshold]
+  /// When `true`, timeouts on retries will be increased by multiplying [numAttempts] by the
+  /// [timeoutThreshold].
+  ///
+  /// For example, if [timeoutThreshold] is set to 10s:
+  ///   - On the original request, [numAttempts] is one, so this request will have a timeout of 10s
+  ///   - On the first retry attempt, [numAttempts] is two, so this retry will have a timeout of 20s.
+  ///   - On the second retry attempt, [numAttempts] is three, so this retry will have a timeout of 30s.
+  ///   - ... and so on up to either 60 seconds, or [timeoutThreshold], whichever is greater.
+  ///
+  /// See [timeoutThreshold].
   bool increaseTimeoutOnRetry = false;
 
   /// A custom [test] function that decides whether or not a request should be

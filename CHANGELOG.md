@@ -1,6 +1,6 @@
 ## [4.1.0](https://github.com/Workiva/w_transport/compare/4.0.6...4.1.0)
 
-- **Improvement:** AutoRetryConfig gained the increaseTimeoutOnRetry flag.
+- **Improvement:** `AutoRetryConfig` gained the `increaseTimeoutOnRetry` flag.
 This allows timeouts to increase as retry attempts increase.
 
 

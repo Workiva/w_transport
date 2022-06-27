@@ -1,5 +1,5 @@
 name: w_transport
-version: 4.0.7
+version: 4.0.8
 description: Transport library for sending HTTP requests and opening WebSockets. Platform-independent with builtin support for browser and Dart VM (even supports SockJS). Includes mock utilities for testing.
 homepage: https://github.com/Workiva/w_transport
 

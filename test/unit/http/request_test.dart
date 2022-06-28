@@ -1068,6 +1068,31 @@ void _runAutoRetryTestSuiteFor(String name,
         expect(request.autoRetry.numAttempts, equals(2));
       });
 
+      test(
+          'request timeout should be retried by default increaseTimeoutOnRetry',
+          () async {
+        // 1st and 2nd request = hangs until timeout, 3nd request succeeds
+        int c = 0;
+        MockTransports.http.when(requestUri, (request) async {
+          if (++c <= 2) {
+            await Future.delayed(Duration(seconds: 1));
+          }
+          // The timeout should be 75ms by now, so even with this delay, should succeed.
+          await Future.delayed(Duration(milliseconds: 60));
+          return MockResponse.ok();
+        }, method: 'GET');
+
+        final request = requestFactory();
+        request.timeoutThreshold = Duration(milliseconds: 25);
+        request.autoRetry
+          ..enabled = true
+          ..maxRetries = 2
+          ..increaseTimeoutOnRetry = true;
+
+        await request.get(uri: requestUri);
+        expect(request.autoRetry.numAttempts, equals(3));
+      });
+
       test('request timeout should not be retried if disabled', () async {
         // 1st request = hangs until timeout
         MockTransports.http.when(requestUri, (request) async {

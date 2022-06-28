@@ -686,8 +686,9 @@ abstract class CommonRequest extends Object
       abortRequest();
     }
     isTimedOut = true;
+
     _timeoutError = TimeoutException(
-        'Request took too long to complete.', timeoutThreshold);
+        'Request took too long to complete.', autoRetry.timeoutThreshold);
     _timeoutCompleter.complete();
   }
 
@@ -769,7 +770,7 @@ abstract class CommonRequest extends Object
       // Enforce a timeout threshold if set.
       Timer timeout;
       if (timeoutThreshold != null) {
-        timeout = Timer(timeoutThreshold, _timeoutRequest);
+        timeout = Timer(autoRetry.timeoutThreshold, _timeoutRequest);
       }
 
       // Attempt to fetch the response.

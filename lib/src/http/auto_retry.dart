@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import 'dart:async';
+import 'dart:math';
 
+import 'package:meta/meta.dart';
 import 'package:w_transport/src/constants.dart' show v3Deprecation;
 
 import 'package:w_transport/src/http/base_request.dart';
@@ -80,6 +82,18 @@ class AutoRetryConfig {
   /// For example, a request with `maxRetries = 2` will produce up to 3 requests
   /// total - the first request and 2 retries.
   int maxRetries = 2;
+
+  /// When `true`, timeouts on retries will be increased by multiplying [numAttempts] by the
+  /// [timeoutThreshold].
+  ///
+  /// For example, if [timeoutThreshold] is set to 10s:
+  ///   - On the original request, [numAttempts] is one, so this request will have a timeout of 10s
+  ///   - On the first retry attempt, [numAttempts] is two, so this retry will have a timeout of 20s.
+  ///   - On the second retry attempt, [numAttempts] is three, so this retry will have a timeout of 30s.
+  ///   - ... and so on up to either 60 seconds, or [timeoutThreshold], whichever is greater.
+  ///
+  /// See [timeoutThreshold].
+  bool increaseTimeoutOnRetry = false;
 
   /// A custom [test] function that decides whether or not a request should be
   /// retried. It will be called with:
@@ -154,6 +168,27 @@ class RequestAutoRetry extends AutoRetryConfig {
     if (request is MultipartRequest && request.files.isNotEmpty) return false;
     return true;
   }
+
+  /// timeoutThreshold will not move beyond 60s or the [_request.timeoutThreshold], whichever is greater, when [increaseTimeoutOnRetry] is true.
+  Duration get timeoutThreshold {
+    if (increaseTimeoutOnRetry) {
+      return getRetryTimeoutThreshold(_request.timeoutThreshold, numAttempts);
+    }
+
+    return _request.timeoutThreshold;
+  }
+}
+
+@visibleForTesting
+Duration getRetryTimeoutThreshold(Duration timeoutThreshold, int numAttempts) {
+  if (numAttempts <= 0) return timeoutThreshold;
+  var threshold = timeoutThreshold * numAttempts;
+  var maxTimeout = Duration(seconds: max(timeoutThreshold.inSeconds, 60));
+
+  if (threshold < maxTimeout)
+    return threshold;
+  else
+    return maxTimeout;
 }
 
 /// Representation of the back-off method to use when retrying requests. A fixed

@@ -66,7 +66,7 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
 
     // TODO: pass `debug`, `noCredentials`, and `timeout` through when possible.
     final client = SockJSClient(sockjsUri,
-        options: SockJSOptions(transports: protocolsWhitelist));
+        options: SockJSOptions(transports: protocolsWhitelist, timeout: timeout.inMilliseconds));
 
     // Listen for and store the close event. This will determine whether or
     // not the socket connected successfully, and will also be used later

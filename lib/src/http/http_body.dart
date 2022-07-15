@@ -17,7 +17,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
-
 import 'package:w_transport/src/http/response_format_exception.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
 
@@ -132,10 +131,11 @@ class HttpBody extends BaseHttpBody {
   /// Returns this request/response body as a JSON object - either a `Map` or a
   /// `List`.
   ///
-  /// This attempts to read this request/response body as a `String` and decode
-  /// it to a JSON object. Throws a [FormatException] if this request/response
-  /// body cannot be decoded to text or if the text is not valid JSON.
-  dynamic asJson() => json.decode(asString());
+  /// This attempts to read this request/response body as a UTF-8 String and
+  /// decode it to a JSON object. Throws a [FormatException] if this
+  /// request/response body cannot be decoded to text or if the text is not
+  /// valid JSON.
+  dynamic asJson() => json.decode(utf8.decode(asBytes()));
 }
 
 /// Representation of an HTTP request body or an HTTP response body where the

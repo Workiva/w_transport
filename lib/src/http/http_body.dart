@@ -69,7 +69,7 @@ class HttpBody extends BaseHttpBody {
       {Encoding encoding, Encoding fallbackEncoding}) {
     _encoding =
         encoding ?? http_utils.parseEncodingFromContentType(contentType);
-    _fallbackEncoding = fallbackEncoding;
+    _fallbackEncoding = fallbackEncoding ?? utf8;
     _bytes = Uint8List.fromList(bytes ?? []);
   }
 
@@ -91,7 +91,7 @@ class HttpBody extends BaseHttpBody {
       {Encoding encoding, Encoding fallbackEncoding}) {
     _encoding =
         encoding ?? http_utils.parseEncodingFromContentType(contentType);
-    _fallbackEncoding = fallbackEncoding;
+    _fallbackEncoding = fallbackEncoding ?? utf8;
     _body = body ?? '';
   }
 

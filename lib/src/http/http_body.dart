@@ -49,6 +49,7 @@ class HttpBody extends BaseHttpBody {
   String _body;
   Uint8List _bytes;
   Encoding _encoding;
+  Encoding _fallbackEncoding;
 
   /// Construct the body to an HTTP request or an HTTP response from bytes.
   ///
@@ -66,9 +67,9 @@ class HttpBody extends BaseHttpBody {
   /// `charset` param), then [fallbackEncoding] will be used (utf-8 by default).
   HttpBody.fromBytes(this.contentType, List<int> bytes,
       {Encoding encoding, Encoding fallbackEncoding}) {
-    _encoding = encoding ??
-        http_utils.parseEncodingFromContentType(contentType,
-            fallback: fallbackEncoding ?? utf8);
+    _encoding =
+        encoding ?? http_utils.parseEncodingFromContentType(contentType);
+    _fallbackEncoding = fallbackEncoding;
     _bytes = Uint8List.fromList(bytes ?? []);
   }
 
@@ -88,9 +89,9 @@ class HttpBody extends BaseHttpBody {
   /// `charset` param), then [fallbackEncoding] will be used (utf-8 by default).
   HttpBody.fromString(this.contentType, String body,
       {Encoding encoding, Encoding fallbackEncoding}) {
-    _encoding = encoding ??
-        http_utils.parseEncodingFromContentType(contentType,
-            fallback: fallbackEncoding ?? utf8);
+    _encoding =
+        encoding ?? http_utils.parseEncodingFromContentType(contentType);
+    _fallbackEncoding = fallbackEncoding;
     _body = body ?? '';
   }
 
@@ -100,7 +101,7 @@ class HttpBody extends BaseHttpBody {
 
   /// Encoding used to encode/decode this request/response body.
   @override
-  Encoding get encoding => _encoding;
+  Encoding get encoding => _encoding ?? _fallbackEncoding;
 
   /// Returns this request/response body as a list of bytes.
   Uint8List asBytes() {
@@ -135,7 +136,7 @@ class HttpBody extends BaseHttpBody {
   /// decode it to a JSON object. Throws a [FormatException] if this
   /// request/response body cannot be decoded to text or if the text is not
   /// valid JSON.
-  dynamic asJson() => json.decode(utf8.decode(asBytes()));
+  dynamic asJson() => json.decode((_encoding ?? utf8).decode(asBytes()));
 }
 
 /// Representation of an HTTP request body or an HTTP response body where the
@@ -156,20 +157,22 @@ class StreamedHttpBody extends BaseHttpBody {
   @override
   final MediaType contentType;
 
+  Encoding _fallbackEncoding;
+
   /// Construct the body to an HTTP request or an HTTP response from a stream
   /// of chunks of bytes. The given [byteStream] should be a single-
   /// subscription stream.
   StreamedHttpBody.fromByteStream(this.contentType, this.byteStream,
       {this.contentLength, Encoding fallbackEncoding}) {
     if (byteStream == null) throw ArgumentError.notNull('byteStream');
-    _encoding = http_utils.parseEncodingFromContentType(contentType,
-        fallback: fallbackEncoding);
+    _encoding = http_utils.parseEncodingFromContentType(contentType);
+    _fallbackEncoding = fallbackEncoding;
   }
 
   /// Encoding used to encode/decode this request/response body. Encoding is
   /// selected by parsing the content-type from the headers.
   @override
-  Encoding get encoding => _encoding;
+  Encoding get encoding => _encoding ?? _fallbackEncoding;
   Encoding _encoding;
 
   /// Listens to this streamed request/response body and combines all chunks of

@@ -1,4 +1,4 @@
-## [4.1.1] (https://github.com/Workiva/w_transport/compare/4.1.0...4.1.1)
+## [4.1.3] (https://github.com/Workiva/w_transport/compare/4.1.2...4.1.3)
 
 - **Improvement** JSON content will always decode as utf-8. Previously it would
 fall back to the encoding specified for the body, or to ISO-8859-1, which was

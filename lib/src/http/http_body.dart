@@ -132,8 +132,9 @@ class HttpBody extends BaseHttpBody {
   /// Returns this request/response body as a JSON object - either a `Map` or a
   /// `List`.
   ///
-  /// This attempts to read this request/response body as a UTF-8 String and
-  /// decode it to a JSON object. Throws a [FormatException] if this
+  /// This attempts to read this request/response body as a String and decode it
+  /// to a JSON object. If no encoding is specified, it will use UTF-8, rather
+  /// than the generic fallback from the response. Throws a [FormatException] if this
   /// request/response body cannot be decoded to text or if the text is not
   /// valid JSON.
   dynamic asJson() => json.decode((_encoding ?? utf8).decode(asBytes()));

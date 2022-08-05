@@ -118,12 +118,15 @@ class HttpBody extends BaseHttpBody {
   }
 
   /// Returns this request/response body as a String.
-  String asString() {
+  ///
+  String asString() => _asString(encoding);
+
+  String _asString(Encoding charset) {
     if (_body == null) {
       try {
-        _body = encoding.decode(_bytes);
+        _body = charset.decode(_bytes);
       } on FormatException {
-        throw ResponseFormatException(contentType, encoding, bytes: _bytes);
+        throw ResponseFormatException(contentType, charset, bytes: _bytes);
       }
     }
     return _body;
@@ -137,7 +140,7 @@ class HttpBody extends BaseHttpBody {
   /// than the generic fallback from the response. Throws a [FormatException] if this
   /// request/response body cannot be decoded to text or if the text is not
   /// valid JSON.
-  dynamic asJson() => json.decode((_encoding ?? utf8).decode(asBytes()));
+  dynamic asJson() => json.decode(_asString(_encoding ?? utf8));
 }
 
 /// Representation of an HTTP request body or an HTTP response body where the

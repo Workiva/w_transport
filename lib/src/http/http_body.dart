@@ -118,7 +118,6 @@ class HttpBody extends BaseHttpBody {
   }
 
   /// Returns this request/response body as a String.
-  ///
   String asString() => _asString(encoding);
 
   String _asString(Encoding charset) {

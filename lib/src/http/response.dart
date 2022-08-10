@@ -17,7 +17,6 @@ import 'dart:convert';
 
 import 'package:http_parser/http_parser.dart'
     show CaseInsensitiveMap, MediaType;
-
 import 'package:w_transport/src/http/http_body.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
 
@@ -54,8 +53,12 @@ abstract class BaseResponse {
 
   /// Encoding that will be used to decode the response body. This encoding is
   /// selected based on [contentType]'s `charset` parameter. If `charset` is not
-  /// given or the encoding name is unrecognized, [latin1] is used by
-  /// default ([RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html)).
+  /// given or the encoding name is unrecognized, [latin1] is used by default
+  /// ([RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html)).
+  // TODO: That default has been superceded ([RFC 7231](https://datatracker.ietf.org/doc/html/rfc7231#appendix-B))
+  // and there is no longer a default, it should use the charset of the media type.
+  // But we don't have the media type's encoding, so leaving this for the moment. The most
+  // important media type for this is JSON, which we hard-code to utf-8.
   Encoding get encoding => _encoding;
 
   /// Headers sent with the response to the HTTP request.

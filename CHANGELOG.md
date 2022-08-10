@@ -1,3 +1,10 @@
+## [4.1.3] (https://github.com/Workiva/w_transport/compare/4.1.2...4.1.3)
+
+- **Improvement** JSON content will always decode as utf-8. Previously it would
+fall back to the encoding specified for the body, or to ISO-8859-1, which was
+the old fallback value. There is no longer any fallback value, per rfc7231, but 
+it uses the media type value, which for JSON is by default UTF-8.
+
 ## [4.1.0](https://github.com/Workiva/w_transport/compare/4.0.8...4.1.0)
 
 - **Improvement:** `AutoRetryConfig` gained the `increaseTimeoutOnRetry` flag.

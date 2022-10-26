@@ -7,8 +7,8 @@ environment:
   sdk: ">=2.11.0 <3.0.0"
 
 dependencies:
-  fluri: ^1.2.6
-  http_parser: ^3.1.3
+  fluri: '>=1.3.0 <3.0.0'
+  http_parser: '>=3.1.4 <5.0.0'
   meta: ^1.2.2
   mime: '>=0.9.6+3 <2.0.0'
   quiver: '>=2.1.5 <4.0.0'

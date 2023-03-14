@@ -35,8 +35,6 @@ import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 import 'package:w_transport/src/transport_platform.dart';
 
-Duration defaultTimeoutThreshold = Duration(minutes: 5);
-
 abstract class CommonRequest extends Object
     with FluriMixin
     implements BaseRequest, RequestDispatchers {

@@ -30,6 +30,9 @@ typedef ResponseInterceptor = Future<BaseResponse> Function(
     FinalizedRequest request, BaseResponse response,
     [RequestException error]);
 
+/// Specifies the default timeout for any request without an explicit one.
+Duration defaultTimeoutThreshold = Duration(minutes: 5);
+
 /// A common API that applies to all request types. The piece that is missing is
 /// that which is specific to the request body. Setting the request body differs
 /// based on the type of request being sent (plain-text, JSON, form, multipart,

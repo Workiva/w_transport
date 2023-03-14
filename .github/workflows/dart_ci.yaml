@@ -14,11 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Don't run on newer SDKs until we're able to get on analyzer 1.x,
-        # since our current analyzer version range results in build failures
-        # when analysis hits the `<<<` operator.
-        # sdk: [ 2.13.4, stable, dev ]
-        sdk: [ 2.13.4 ]
+        sdk: [ 2.13.4, 2.18.7, stable ]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -35,7 +31,7 @@ jobs:
         run: dart run dependency_validator
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed .
-        if: ${{ matrix.sdk == '2.13.4' }}
+        if: ${{ matrix.sdk == '2.18.7' }}
       - name: Analyze project source
         run: dart analyze
       - name: Run tests

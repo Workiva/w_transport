@@ -133,6 +133,12 @@ var response = await transport.Http.get(Uri.parse('/file'));
 Uint8List body = response.body.asBytes();
 ```
 
+> Note: In the browser, requests are sent via XHR and non-streamed responses are
+> received as text rather than as a blob. In cases where you're expecting a
+> binary response format and plan to read that response via `.asBytes()`,
+> prefer using `streamGet()` instead. This will result in the response being
+> received as a blob so that no encoding is necessary when calling `.asBytes()`.
+
 #### Response Body: Text
 The response's `content-type` header is inspected for a `charset` parameter. If
 found and if valid, the corresponding encoding will be used to decode the

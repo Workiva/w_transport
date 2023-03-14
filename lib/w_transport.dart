@@ -98,7 +98,8 @@ export 'package:w_transport/src/transport_platform.dart'
 // HTTP
 export 'package:w_transport/src/http/auto_retry.dart'
     show RetryBackOff, RetryBackOffMethod;
-export 'package:w_transport/src/http/base_request.dart' show BaseRequest;
+export 'package:w_transport/src/http/base_request.dart'
+    show BaseRequest, defaultTimeoutThreshold;
 export 'package:w_transport/src/http/client.dart'
     show Client; // ignore: deprecated_member_use_from_same_package
 export 'package:w_transport/src/http/finalized_request.dart'

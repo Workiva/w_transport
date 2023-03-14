@@ -292,7 +292,9 @@ void _runHttpClientSuite(transport.Client getClient()) {
   });
 
   test('addInterceptor() multiple interceptors', () async {
-    client..addInterceptor(ReqRespInt())..addInterceptor(AsyncInt());
+    client
+      ..addInterceptor(ReqRespInt())
+      ..addInterceptor(AsyncInt());
     for (final request in createAllRequestTypes(client)) {
       final uri = Uri.parse('/test');
       final augmentedUri =

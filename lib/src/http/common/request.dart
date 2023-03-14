@@ -35,6 +35,8 @@ import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 import 'package:w_transport/src/transport_platform.dart';
 
+Duration defaultTimeoutThreshold = Duration(minutes: 5);
+
 abstract class CommonRequest extends Object
     with FluriMixin
     implements BaseRequest, RequestDispatchers {
@@ -769,7 +771,7 @@ abstract class CommonRequest extends Object
 
       // Enforce a timeout threshold.
       if (timeoutThreshold == null) {
-        timeoutThreshold = Duration(seconds: 60);
+        timeoutThreshold = defaultTimeoutThreshold;
       }
       final timeout = Timer(autoRetry.timeoutThreshold, _timeoutRequest);
 

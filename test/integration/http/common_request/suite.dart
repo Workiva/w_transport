@@ -417,6 +417,21 @@ void _runCommonRequestSuiteFor(String name,
             error.error is TimeoutException;
       })));
     });
+
+    test('defaultTimeoutThreshold cancels the request if exceeded', () async {
+      final prevTimeout = transport.defaultTimeoutThreshold;
+      try {
+        transport.defaultTimeoutThreshold = Duration(milliseconds: 250);
+        final request = requestFactory();
+        expect(request.get(uri: IntegrationPaths.timeoutEndpointUri),
+            throwsA(predicate((error) {
+          return error is transport.RequestException &&
+              error.error is TimeoutException;
+        })));
+      } finally {
+        transport.defaultTimeoutThreshold = prevTimeout;
+      }
+    });
   });
 }
 

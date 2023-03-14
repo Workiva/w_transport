@@ -767,8 +767,8 @@ abstract class CommonRequest extends Object
       checkForTimeout();
       final responseCompleter = Completer<BaseResponse>();
 
-      // Enforce a timeout threshold.
-      if (timeoutThreshold == null) {
+      // Enforce a timeout threshold if specified.
+      if (timeoutThreshold == null && defaultTimeoutThreshold != null) {
         timeoutThreshold = defaultTimeoutThreshold;
       }
       final timeout = Timer(autoRetry.timeoutThreshold, _timeoutRequest);

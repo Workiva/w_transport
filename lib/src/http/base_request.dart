@@ -107,7 +107,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// Amount of time to wait for the request to finish before canceling it and
   /// considering it "timed out" (results in a [RequestException] being thrown).
   ///
-  /// If null, no timeout threshold will be enforced.
+  /// If null, a default timeout threshold will be enforced.
   Duration timeoutThreshold;
 
   /// [RequestProgress] stream for this HTTP request's upload.

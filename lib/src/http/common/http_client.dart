@@ -38,7 +38,7 @@ abstract class CommonHttpClient implements HttpClient {
   /// Amount of time to wait for the request to finish before canceling it and
   /// considering it "timed out" (results in a [RequestException] being thrown).
   ///
-  /// If null, no timeout threshold will be enforced.
+  /// If null, a default threshold will be enforced.
   @override
   Duration timeoutThreshold;
 

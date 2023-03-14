@@ -100,7 +100,7 @@ abstract class CommonRequest extends Object
   /// Amount of time to wait for the request to finish before canceling it and
   /// considering it "timed out" (results in a [RequestException] being thrown).
   ///
-  /// If null, no timeout threshold will be enforced.
+  /// If null, a default threshold will be enforced.
   @override
   Duration timeoutThreshold;
 
@@ -767,11 +767,11 @@ abstract class CommonRequest extends Object
       checkForTimeout();
       final responseCompleter = Completer<BaseResponse>();
 
-      // Enforce a timeout threshold if set.
-      Timer timeout;
-      if (timeoutThreshold != null) {
-        timeout = Timer(autoRetry.timeoutThreshold, _timeoutRequest);
+      // Enforce a timeout threshold.
+      if (timeoutThreshold == null) {
+        timeoutThreshold = Duration(seconds: 60);
       }
+      final timeout = Timer(autoRetry.timeoutThreshold, _timeoutRequest);
 
       // Attempt to fetch the response.
       // ignore: unawaited_futures

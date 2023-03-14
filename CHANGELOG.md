@@ -1,3 +1,8 @@
+## [4.1.6] (https://github.com/Workiva/w_transport/compare/4.1.5...4.1.6)
+
+- **Docs:** Suggest using `.streamGet()` over `.get()` for binary responses that
+will be read as bytes (via `body.asBytes()`).
+
 ## [4.1.4] (https://github.com/Workiva/w_transport/compare/4.1.3...4.1.4)
 
 - Widen ranges on `fluri` and `http_parser`

@@ -39,6 +39,10 @@ abstract class RequestDispatchers {
   ///
   /// If [headers] are given, they will be merged with the set of headers
   /// already defined on the [BaseRequest].
+  ///
+  /// **Note:** For now, prefer [streamGet] for responses that could be binary
+  /// in order to avoid encoding issues when reading the body as bytes (we hope
+  /// to lift this restriction in the future).
   Future<Response> get({Map<String, String> headers, Uri uri});
 
   /// Send a HEAD request.

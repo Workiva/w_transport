@@ -20,7 +20,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../handler.dart';
 
-String pathPrefix = '/example/http/cross_origin_credentials';
+String pathPrefix = '/http/cross_origin_credentials';
 
 Map<String, Handler> exampleHttpCrossOriginCredentialsRoutes = {
   '$pathPrefix/session': SessionHandler(),

@@ -20,19 +20,19 @@ import 'package:w_transport/vm.dart' show vmTransportPlatform;
 
 import '../../../handler.dart';
 
-String pathPrefix = '/proxy/example/http/cross_origin_file_transfer';
+String pathPrefix = '/proxy/http/cross_origin_file_transfer';
 Map<String, Handler> proxyExampleHttpCrossOriginFileTransferRoutes = {
   '$pathPrefix/files/': FilesProxy(),
   '$pathPrefix/download': DownloadProxy(),
   '$pathPrefix/upload': UploadProxy()
 };
 
-Uri filesEndpoint = Uri.parse(
-    'http://localhost:8024/example/http/cross_origin_file_transfer/files/');
-Uri uploadEndpoint = Uri.parse(
-    'http://localhost:8024/example/http/cross_origin_file_transfer/upload');
-Uri downloadEndpoint = Uri.parse(
-    'http://localhost:8024/example/http/cross_origin_file_transfer/download');
+Uri filesEndpoint =
+    Uri.parse('http://localhost:8024/http/cross_origin_file_transfer/files/');
+Uri uploadEndpoint =
+    Uri.parse('http://localhost:8024/http/cross_origin_file_transfer/upload');
+Uri downloadEndpoint =
+    Uri.parse('http://localhost:8024/http/cross_origin_file_transfer/download');
 
 transport.HttpClient client;
 transport.HttpClient getHttpClient() {

@@ -1,38 +1,15 @@
-import 'package:dart_dev/dart_dev.dart';
+import 'dart:io';
 
-import '../server/server.dart';
+import 'package:_test_server/servers.dart';
+import 'package:dart_dev/dart_dev.dart';
 
 final Map<String, DevTool> config = {
   ...coreConfig,
-  'serve': withServers(WebdevServeTool()..buildArgs = ['example:8080']),
+  'serve': withServers(ProcessTool(
+    'dart',
+    ['run', 'dart_dev', 'serve'],
+    mode: ProcessStartMode.inheritStdio,
+    workingDirectory: 'example',
+  )),
   'test': withServers(TestTool()),
 };
-
-CompoundTool withServers(DevTool tool) => CompoundTool()
-  ..addTool(DevTool.fromFunction(_streamServer), alwaysRun: true)
-  ..addTool(_sockjsServer.starter, alwaysRun: true)
-  ..addTool(tool)
-  ..addTool(DevTool.fromFunction(_stopServer), alwaysRun: true)
-  ..addTool(_sockjsServer.stopper, alwaysRun: true);
-
-final _sockjsServer = BackgroundProcessTool('node', ['tool/server/sockjs.js'],
-    delayAfterStart: Duration(seconds: 2));
-
-/// Server needed for integration tests and examples.
-Server _server;
-
-/// Start the server needed for integration tests and examples and stream the
-/// server output as it arrives. The output will be mixed in with output from
-/// whichever task is running.
-Future<int> _streamServer(_) async {
-  _server = Server();
-  _server.output.listen(print);
-  await _server.start();
-  return 0;
-}
-
-/// Stop the server needed for integration tests and examples.
-Future<int> _stopServer(_) async {
-  await _server.stop();
-  return 0;
-}

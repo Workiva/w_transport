@@ -1,1 +1,6 @@
 include: package:workiva_analysis_options/v1.yaml
+
+analyzer:
+  exclude:
+    - "_test_server/**"
+    - "example/**"

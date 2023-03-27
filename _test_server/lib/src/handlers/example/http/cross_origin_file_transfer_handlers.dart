@@ -21,7 +21,7 @@ import 'package:mime/mime.dart';
 
 import '../../../handler.dart';
 
-String pathPrefix = '/example/http/cross_origin_file_transfer';
+String pathPrefix = '/http/cross_origin_file_transfer';
 
 Map<String, Handler> exampleHttpCrossOriginFileTransferRoutes = {
   '$pathPrefix/files/': FilesHandler(),
@@ -29,8 +29,7 @@ Map<String, Handler> exampleHttpCrossOriginFileTransferRoutes = {
   '$pathPrefix/upload': UploadHandler()
 };
 
-Directory filesDirectory =
-    Directory('example/http/cross_origin_file_transfer/files');
+Directory filesDirectory = Directory('tool/files');
 
 Future<String> _readFileUploadAsString(HttpMultipartFormData formData) async {
   final parts = await formData.toList();
@@ -49,16 +48,14 @@ Future<List<int>> _readFileUploadAsBytes(HttpMultipartFormData formData) async {
 
 void _writeFileUploadAsString(String filename, String contents) {
   _createUploadDirectory();
-  final uploadDestination =
-      Uri.parse('example/http/cross_origin_file_transfer/files/$filename');
+  final uploadDestination = Uri.parse('tool/files/$filename');
   final upload = File.fromUri(uploadDestination);
   upload.writeAsStringSync(contents);
 }
 
 void _writeFileUploadAsBytes(String filename, List<int> bytes) {
   _createUploadDirectory();
-  final uploadDestination =
-      Uri.parse('example/http/cross_origin_file_transfer/files/$filename');
+  final uploadDestination = Uri.parse('tool/files/$filename');
   final upload = File.fromUri(uploadDestination);
   upload.writeAsBytesSync(bytes);
 }
@@ -179,9 +176,7 @@ class FilesHandler extends Handler {
 
   @override
   Future<Null> delete(HttpRequest request) async {
-    Iterable<File> files =
-        fw.files.where((FileSystemEntity entity) => entity is File);
-    for (final entity in files) {
+    for (final entity in fw.files.whereType<File>()) {
       entity.deleteSync();
     }
     request.response.statusCode = HttpStatus.ok;
@@ -212,7 +207,7 @@ class DownloadHandler extends Handler {
     final shouldForceDownload = request.uri.queryParameters['dl'] == '1';
 
     final fileUri = Uri.parse(
-        'example/http/cross_origin_file_transfer/files/$requestedFile');
+        '../example/web/http/cross_origin_file_transfer/files/$requestedFile');
     final file = File.fromUri(fileUri);
     if (!file.existsSync()) {
       request.response.statusCode = HttpStatus.notFound;

@@ -24,7 +24,8 @@ jobs:
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ matrix.sdk }}
-      - run: alias pub="dart pub $@"
+      - name: pub alias
+        run: echo -e '#!/bin/bash\ndart pub "$@"' > $DART_HOME/bin/pub && chmod u+x $DART_HOME/bin/pub
       - name: Install Node dependencies
         run: npm install
       - name: Install Dart dependencies

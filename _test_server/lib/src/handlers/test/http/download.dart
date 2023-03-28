@@ -25,7 +25,7 @@ class DownloadHandler extends Handler {
   }
 
   Future<Null> download(HttpRequest request) async {
-    final file = File('tool/server/handlers/test/http/file.txt');
+    final file = File('_test_server/lib/src/handlers/test/http/file.txt');
     final downloadStream = file.openRead();
     request.response.statusCode = HttpStatus.ok;
     request.response.headers

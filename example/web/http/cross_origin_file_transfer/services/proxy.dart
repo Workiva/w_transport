@@ -12,11 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import '../../../handler.dart';
-import '../../../logger.dart';
-import 'echo_handler.dart';
+// Whether or not to route requests through a proxy server.
+bool proxyEnabled = false;
 
-String pathPrefix = '/example/ws';
+void toggleProxy({bool enabled = false}) {
+  proxyEnabled = enabled;
+}
 
-Map<String, Handler> getExampleWsRoutes(Logger logger) =>
-    {'$pathPrefix/echo': EchoHandler(logger)};
+String getServerUrl() {
+  final base =
+      proxyEnabled ? 'http://localhost:8024/proxy' : 'http://localhost:8024';
+  return '$base/http/cross_origin_file_transfer';
+}
+
+Uri getDownloadEndpointUrl(String name) {
+  return Uri.parse('${getServerUrl()}/download?file=$name');
+}
+
+Uri getFilesEndpointUrl() {
+  return Uri.parse('${getServerUrl()}/files/');
+}
+
+Uri getUploadEndpointUrl() {
+  return Uri.parse('${getServerUrl()}/upload');
+}

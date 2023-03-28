@@ -18,7 +18,7 @@ package-lock.json
 /doc/api/
 
 # Examples
-/example/http/cross_origin_file_transfer/files/
+/tool/files/
 
 #IDEs
 .idea

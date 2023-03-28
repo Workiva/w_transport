@@ -1,0 +1,15 @@
+name: _test_server
+publish_to: none
+environment:
+  sdk: '>=2.10.0 <3.0.0'
+dev_dependencies:
+  dart_dev: ^4.0.0
+  dependency_validator: ^3.0.0
+  http_parser: ^4.0.0
+  http_server: ^1.0.0
+  mime: ^1.0.4
+  mockito: ^5.3.1
+  uuid: ^3.0.5
+  workiva_analysis_options: ^1.0.0
+  w_transport:
+    path: ../

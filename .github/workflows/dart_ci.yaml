@@ -8,10 +8,7 @@ on:
   pull_request:
     branches:
       - '*'
-      
-permissions:
-  contents: read
-  id-token: write
+
 
 jobs:
   test:
@@ -23,8 +20,6 @@ jobs:
     steps:
       - name: Config git
         run: git config --global url.git@github.com:.insteadOf https://github.com
-      - name: Setup Credentials
-        uses: Workiva/gha-setup-credentials@refs/tags/v1.0.0
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:

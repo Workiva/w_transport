@@ -33,3 +33,9 @@ dependency_validator:
     - example/**
   ignore:
     - mockito
+
+dependency_overrides:
+  sockjs_client_wrapper:
+    git:
+      url: git@github.com:Workiva/sockjs_client_wrapper.git
+      ref: null_safety

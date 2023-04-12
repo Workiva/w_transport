@@ -9,7 +9,6 @@ on:
     branches:
       - '*'
 
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -18,8 +17,6 @@ jobs:
       matrix:
         sdk: [ 2.18.7, stable ]
     steps:
-      - name: Config git
-        run: git config --global url.git@github.com:.insteadOf https://github.com
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:

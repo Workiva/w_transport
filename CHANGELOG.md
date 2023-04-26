@@ -1,5 +1,8 @@
 ## [4.1.6] (https://github.com/Workiva/w_transport/compare/4.1.5...4.1.6)
 
+- **Bug Fix:** When using `MockTransports.install(fallThrough: true)`, the
+optional `body` param on the `send()` method will now properly be applied when
+the request "falls through" the mock config to a real request.
 - **Docs:** Suggest using `.streamGet()` over `.get()` for binary responses that
 will be read as bytes (via `body.asBytes()`).
 

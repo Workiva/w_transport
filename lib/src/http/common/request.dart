@@ -748,8 +748,8 @@ abstract class CommonRequest extends Object
             this.method, this.uri, this.headers)) {
       final realRequest = switchToRealRequest();
       return streamResponse
-          ? realRequest.streamSend(method)
-          : realRequest.send(method);
+          ? realRequest.streamSend(method, body: body)
+          : realRequest.send(method, body: body);
     }
 
     // Otherwise, carry on with the send logic and the mocks will do the rest.

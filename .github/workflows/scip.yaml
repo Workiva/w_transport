@@ -1,0 +1,15 @@
+name: scip
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  scip-dart:
+    uses: Workiva/gha-dart/.github/workflows/scip-dart.yaml@master

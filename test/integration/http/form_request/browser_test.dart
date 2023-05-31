@@ -37,11 +37,11 @@ void main() {
           transport.FormRequest(transportPlatform: browserTransportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri;
       request.configure((request) async {
-        HttpRequest xhr = request;
+        HttpRequest xhr = request as HttpRequest;
         xhr.setRequestHeader('x-configured', 'true');
       });
       final response = await request.get();
-      expect(response.body.asJson()['headers']['x-configured'], equals('true'));
+      expect(response.body!.asJson()['headers']['x-configured'], equals('true'));
     });
 
     group('withCredentials', () {
@@ -51,7 +51,7 @@ void main() {
               ..uri = IntegrationPaths.pingEndpointUri
               ..withCredentials = true;
         request.configure((request) async {
-          HttpRequest xhr = request;
+          HttpRequest xhr = request as HttpRequest;
           expect(xhr.withCredentials, isTrue);
         });
         await request.get();
@@ -63,7 +63,7 @@ void main() {
               ..uri = IntegrationPaths.pingEndpointUri
               ..withCredentials = false;
         request.configure((request) async {
-          HttpRequest xhr = request;
+          HttpRequest xhr = request as HttpRequest;
           expect(xhr.withCredentials, isFalse);
         });
         await request.get();

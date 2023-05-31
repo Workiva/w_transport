@@ -30,58 +30,58 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   CommonPlainTextRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
-  String _body;
+  String? _body;
 
-  Uint8List _bodyBytes;
+  Uint8List? _bodyBytes;
 
   @override
-  String get body {
+  String? get body {
     if (_body != null) return _body;
     if (_bodyBytes != null) {
-      _body = encoding.decode(_bodyBytes);
+      _body = encoding.decode(_bodyBytes!);
       return _body;
     }
     return '';
   }
 
   @override
-  set body(String value) {
+  set body(String? value) {
     verifyUnsent();
     _body = value;
     _bodyBytes = null;
   }
 
   @override
-  Uint8List get bodyBytes {
+  Uint8List? get bodyBytes {
     if (_bodyBytes != null) return _bodyBytes;
     if (_body != null) {
-      _bodyBytes = encoding.encode(_body);
+      _bodyBytes = encoding.encode(_body!) as Uint8List?;
       return _bodyBytes;
     }
     return Uint8List.fromList([]);
   }
 
   @override
-  set bodyBytes(List<int> bytes) {
+  set bodyBytes(List<int>? bytes) {
     verifyUnsent();
-    _bodyBytes = bytes;
+    _bodyBytes = bytes as Uint8List?;
     _body = null;
   }
 
   @override
-  int get contentLength => bodyBytes.length;
+  int get contentLength => bodyBytes!.length;
 
   @override
   MediaType get defaultContentType =>
       MediaType('text', 'plain', {'charset': encoding.name});
 
   @override
-  Request clone() {
-    final Request requestClone = super.clone();
+  Request? clone() {
+    final Request? requestClone = super.clone() as Request?;
     if (_body != null) {
-      requestClone.body = body;
+      requestClone!.body = body;
     } else if (_bodyBytes != null) {
-      requestClone.bodyBytes = bodyBytes;
+      requestClone!.bodyBytes = bodyBytes;
     }
     return requestClone;
   }

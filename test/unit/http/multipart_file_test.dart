@@ -32,7 +32,7 @@ void main() {
         final contentType = MediaType('application', 'json');
         final file = transport.MultipartFile(Stream.fromIterable([]), 0,
             contentType: contentType, filename: 'page.html');
-        expect(file.contentType.mimeType, 'application/json');
+        expect(file.contentType!.mimeType, 'application/json');
       });
 
       test('content-type should be based on a mimetype lookup', () {
@@ -40,23 +40,23 @@ void main() {
 
         final jsonFile =
             transport.MultipartFile(stream, 0, filename: 'data.json');
-        expect(jsonFile.contentType.mimeType, equals('application/json'));
+        expect(jsonFile.contentType!.mimeType, equals('application/json'));
 
         final zipFile =
             transport.MultipartFile(stream, 0, filename: 'compressed.zip');
-        expect(zipFile.contentType.mimeType, equals('application/zip'));
+        expect(zipFile.contentType!.mimeType, equals('application/zip'));
 
         final imgFile = transport.MultipartFile(stream, 0, filename: 'img.png');
-        expect(imgFile.contentType.mimeType, equals('image/png'));
+        expect(imgFile.contentType!.mimeType, equals('image/png'));
 
         final htmlFile =
             transport.MultipartFile(stream, 0, filename: 'page.html');
-        expect(htmlFile.contentType.mimeType, equals('text/html'));
+        expect(htmlFile.contentType!.mimeType, equals('text/html'));
       });
 
       test('content-type default to application/octet-stream', () {
         final file = transport.MultipartFile(Stream.fromIterable([]), 0);
-        expect(file.contentType.mimeType, equals('application/octet-stream'));
+        expect(file.contentType!.mimeType, equals('application/octet-stream'));
       });
     });
   });

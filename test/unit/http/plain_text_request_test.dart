@@ -69,7 +69,7 @@ void main() {
 
         final c = Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          transport.HttpBody body = request.body;
+          transport.HttpBody body = request.body as HttpBody;
           c.complete(body.asString());
           return MockResponse.ok();
         });
@@ -84,7 +84,7 @@ void main() {
 
         final c = Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          transport.HttpBody body = request.body;
+          transport.HttpBody body = request.body as HttpBody;
           c.complete(body.asString());
           return MockResponse.ok();
         });
@@ -132,30 +132,30 @@ void main() {
 
       test('setting encoding should update content-type', () {
         final request = transport.Request();
-        expect(request.contentType.parameters['charset'], equals(utf8.name));
+        expect(request.contentType!.parameters['charset'], equals(utf8.name));
 
         request.encoding = latin1;
-        expect(request.contentType.parameters['charset'], equals(latin1.name));
+        expect(request.contentType!.parameters['charset'], equals(latin1.name));
 
         request.encoding = ascii;
-        expect(request.contentType.parameters['charset'], equals(ascii.name));
+        expect(request.contentType!.parameters['charset'], equals(ascii.name));
       });
 
       test(
           'setting encoding should not update content-type if content-type has been set manually',
           () {
         final request = transport.Request();
-        expect(request.contentType.parameters['charset'], equals(utf8.name));
+        expect(request.contentType!.parameters['charset'], equals(utf8.name));
 
         // Manually override content-type.
         request.contentType =
             MediaType('application', 'x-custom', {'charset': latin1.name});
-        expect(request.contentType.mimeType, equals('application/x-custom'));
-        expect(request.contentType.parameters['charset'], equals(latin1.name));
+        expect(request.contentType!.mimeType, equals('application/x-custom'));
+        expect(request.contentType!.parameters['charset'], equals(latin1.name));
 
         // Changes to encoding should no longer update the content-type.
         request.encoding = ascii;
-        expect(request.contentType.parameters['charset'], equals(latin1.name));
+        expect(request.contentType!.parameters['charset'], equals(latin1.name));
       });
 
       test('setting content-type should not be allowed once sent', () async {
@@ -190,12 +190,12 @@ void main() {
       test('clone()', () {
         const body = 'body';
         final orig = transport.Request()..body = body;
-        final clone = orig.clone();
+        final clone = orig.clone()!;
         expect(clone.body, equals(body));
 
         final bodyBytes = utf8.encode('bytes');
         final orig2 = transport.Request()..bodyBytes = bodyBytes;
-        final clone2 = orig2.clone();
+        final clone2 = orig2.clone()!;
         expect(clone2.bodyBytes, equals(bodyBytes));
       });
     });

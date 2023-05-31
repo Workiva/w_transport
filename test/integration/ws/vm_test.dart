@@ -32,23 +32,23 @@ void main() {
 
     test('should support List<int>', () async {
       final data = <int>[1, 2, 3];
-      final socket = await transport.WebSocket.connect(IntegrationPaths.echoUri,
-          transportPlatform: vmTransportPlatform);
+      final socket = await (transport.WebSocket.connect(IntegrationPaths.echoUri,
+          transportPlatform: vmTransportPlatform) as FutureOr<WebSocket>);
       socket.add(data);
       await socket.close();
     });
 
     test('should support String', () async {
       const data = 'data';
-      final socket = await transport.WebSocket.connect(IntegrationPaths.echoUri,
-          transportPlatform: vmTransportPlatform);
+      final socket = await (transport.WebSocket.connect(IntegrationPaths.echoUri,
+          transportPlatform: vmTransportPlatform) as FutureOr<WebSocket>);
       socket.add(data);
       await socket.close();
     });
 
     test('should throw when attempting to send invalid data', () async {
-      final socket = await transport.WebSocket.connect(IntegrationPaths.pingUri,
-          transportPlatform: vmTransportPlatform);
+      final socket = await (transport.WebSocket.connect(IntegrationPaths.pingUri,
+          transportPlatform: vmTransportPlatform) as FutureOr<WebSocket>);
       expect(() {
         socket.add(true);
       }, throwsArgumentError);

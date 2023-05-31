@@ -42,8 +42,8 @@ void main() {
 
         expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
-        expect(request.autoRetry.numAttempts, equals(1));
-        expect(request.autoRetry.failures.length, equals(1));
+        expect(request.autoRetry!.numAttempts, equals(1));
+        expect(request.autoRetry!.failures.length, equals(1));
       });
 
       test('null response should be retried', () async {
@@ -63,8 +63,8 @@ void main() {
 
         expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
-        expect(request.autoRetry.numAttempts, equals(3));
-        expect(request.autoRetry.failures.length, equals(3));
+        expect(request.autoRetry!.numAttempts, equals(3));
+        expect(request.autoRetry!.failures.length, equals(3));
       });
     });
   });

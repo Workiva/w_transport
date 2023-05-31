@@ -24,21 +24,21 @@ class MultipartFile {
   final Stream<List<int>> byteStream;
 
   /// Filename.
-  final String filename;
+  final String? filename;
 
   /// Length of the file contents.
   final int length;
 
-  MediaType _contentType;
+  MediaType? _contentType;
 
   /// Construct a [MultipartFile] by supplying the file contents and the file
   /// length. Optionally include a filename and content-type.
   MultipartFile(this.byteStream, this.length,
-      {MediaType contentType, this.filename}) {
+      {MediaType? contentType, this.filename}) {
     if (contentType != null) {
       _contentType = contentType;
     } else {
-      String mimeType = filename != null ? mime.lookupMimeType(filename) : null;
+      String? mimeType = filename != null ? mime.lookupMimeType(filename!) : null;
       if (mimeType == null) {
         mimeType = 'application/octet-stream';
       }
@@ -47,5 +47,5 @@ class MultipartFile {
   }
 
   /// File content-type. Defaults to "application/octet-stream".
-  MediaType get contentType => _contentType;
+  MediaType? get contentType => _contentType;
 }

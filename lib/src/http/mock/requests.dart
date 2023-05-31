@@ -25,7 +25,7 @@ import 'package:w_transport/src/transport_platform.dart';
 
 @Deprecated(v3Deprecation)
 class MockFormRequest extends CommonFormRequest with MockRequestMixin {
-  TransportPlatform _realTransport;
+  TransportPlatform? _realTransport;
 
   MockFormRequest(TransportPlatform realTransport)
       : _realTransport = realTransport,
@@ -34,17 +34,17 @@ class MockFormRequest extends CommonFormRequest with MockRequestMixin {
       : super.fromClient(wTransportClient, null);
 
   @override
-  FormRequest createRealRequest() {
+  FormRequest? createRealRequest() {
     if (_realTransport == null) {
       throw TransportPlatformMissing.httpRequestFailed('FormRequest');
     }
-    return _realTransport.newFormRequest()..fields = fields;
+    return _realTransport!.newFormRequest()..fields = fields;
   }
 }
 
 @Deprecated(v3Deprecation)
 class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {
-  TransportPlatform _realTransport;
+  TransportPlatform? _realTransport;
 
   MockJsonRequest(TransportPlatform realTransport)
       : _realTransport = realTransport,
@@ -53,18 +53,18 @@ class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {
       : super.fromClient(wTransportClient, null);
 
   @override
-  JsonRequest createRealRequest() {
+  JsonRequest? createRealRequest() {
     if (_realTransport == null) {
       throw TransportPlatformMissing.httpRequestFailed('JsonRequest');
     }
-    return _realTransport.newJsonRequest()..body = body;
+    return _realTransport!.newJsonRequest()..body = body;
   }
 }
 
 @Deprecated(v3Deprecation)
 class MockMultipartRequest extends CommonMultipartRequest
     with MockRequestMixin {
-  TransportPlatform _realTransport;
+  TransportPlatform? _realTransport;
 
   MockMultipartRequest(TransportPlatform realTransport)
       : _realTransport = realTransport,
@@ -73,11 +73,11 @@ class MockMultipartRequest extends CommonMultipartRequest
       : super.fromClient(wTransportClient, null);
 
   @override
-  MultipartRequest createRealRequest() {
+  MultipartRequest? createRealRequest() {
     if (_realTransport == null) {
       throw TransportPlatformMissing.httpRequestFailed('MultipartRequest');
     }
-    return _realTransport.newMultipartRequest()
+    return _realTransport!.newMultipartRequest()
       ..fields = fields
       ..files = files;
   }
@@ -86,7 +86,7 @@ class MockMultipartRequest extends CommonMultipartRequest
 @Deprecated(v3Deprecation)
 class MockPlainTextRequest extends CommonPlainTextRequest
     with MockRequestMixin {
-  TransportPlatform _realTransport;
+  TransportPlatform? _realTransport;
 
   MockPlainTextRequest(TransportPlatform realTransport)
       : _realTransport = realTransport,
@@ -95,17 +95,17 @@ class MockPlainTextRequest extends CommonPlainTextRequest
       : super.fromClient(wTransportClient, null);
 
   @override
-  Request createRealRequest() {
+  Request? createRealRequest() {
     if (_realTransport == null) {
       throw TransportPlatformMissing.httpRequestFailed('Request');
     }
-    return _realTransport.newRequest()..body = body;
+    return _realTransport!.newRequest()..body = body;
   }
 }
 
 @Deprecated(v3Deprecation)
 class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {
-  TransportPlatform _realTransport;
+  TransportPlatform? _realTransport;
 
   MockStreamedRequest(TransportPlatform realTransport)
       : _realTransport = realTransport,
@@ -114,11 +114,11 @@ class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {
       : super.fromClient(wTransportClient, null);
 
   @override
-  StreamedRequest createRealRequest() {
+  StreamedRequest? createRealRequest() {
     if (_realTransport == null) {
       throw TransportPlatformMissing.httpRequestFailed('StreamedRequest');
     }
-    return _realTransport.newStreamedRequest()
+    return _realTransport!.newStreamedRequest()
       ..contentLength = contentLength
       ..contentType = contentType
       ..body = body;

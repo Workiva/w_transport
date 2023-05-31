@@ -23,7 +23,7 @@ import 'package:w_transport/src/http/response.dart';
 abstract class MockBaseRequest extends BaseRequest {
   Future<Null> get onCanceled;
   Future<FinalizedRequest> get onSent;
-  void complete({BaseResponse response});
-  void completeError({Object error, BaseResponse response});
+  void complete({BaseResponse? response});
+  void completeError({Object? error, BaseResponse? response});
   void causeFailureOnOpen();
 }

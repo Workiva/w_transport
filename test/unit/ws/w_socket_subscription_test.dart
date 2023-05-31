@@ -108,22 +108,22 @@ void main() {
 }
 
 class MockStreamSubscription<T> extends Mock implements StreamSubscription<T> {
-  Function onDataHandler;
-  Function onDoneHandler;
-  Function onErrorHandler;
+  Function? onDataHandler;
+  Function? onDoneHandler;
+  Function? onErrorHandler;
 
   @override
-  void onData(void handleData(T data)) {
+  void onData(void handleData(T data)?) {
     onDataHandler = handleData;
   }
 
   @override
-  void onDone(void handleDone()) {
+  void onDone(void handleDone()?) {
     onDoneHandler = handleDone;
   }
 
   @override
-  void onError(Function handleError) {
+  void onError(Function? handleError) {
     onErrorHandler = handleError;
   }
 }

@@ -20,7 +20,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 import '../../integration_paths.dart';
 
 void runHttpTransportClientSuite(
-    [transport.TransportPlatform transportPlatform]) {
+    [transport.TransportPlatform? transportPlatform]) {
   group('Client', () {
     _runHttpClientSuite(
         // ignore: deprecated_member_use_from_same_package
@@ -36,7 +36,7 @@ void runHttpTransportClientSuite(
 // ignore: deprecated_member_use_from_same_package
 void _runHttpClientSuite(transport.Client getClient()) {
   // ignore: deprecated_member_use_from_same_package
-  transport.Client client;
+  late transport.Client client;
 
   setUp(() {
     client = getClient();
@@ -119,8 +119,8 @@ Future<Null> _testRequest(transport.BaseRequest request) async {
   request.uri = IntegrationPaths.reflectEndpointUri;
   request.headers = {'x-custom': 'value', 'x-tokens': 'token1, token2'};
   final response = await request.get();
-  expect(response.body.asJson()['method'], equals('GET'));
-  expect(response.body.asJson()['headers'], containsPair('x-custom', 'value'));
-  expect(response.body.asJson()['headers'],
+  expect(response.body!.asJson()['method'], equals('GET'));
+  expect(response.body!.asJson()['headers'], containsPair('x-custom', 'value'));
+  expect(response.body!.asJson()['headers'],
       containsPair('x-tokens', 'token1, token2'));
 }

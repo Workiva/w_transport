@@ -30,24 +30,24 @@ abstract class CommonStreamedRequest extends CommonRequest
   CommonStreamedRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
-  Stream<List<int>> _body;
+  Stream<List<int>>? _body;
 
-  int _contentLength;
-
-  @override
-  Stream<List<int>> get body => _body;
+  int? _contentLength;
 
   @override
-  set body(Stream<List<int>> byteStream) {
+  Stream<List<int>>? get body => _body;
+
+  @override
+  set body(Stream<List<int>>? byteStream) {
     verifyUnsent();
     _body = byteStream;
   }
 
   @override
-  int get contentLength => _contentLength;
+  int? get contentLength => _contentLength;
 
   @override
-  set contentLength(int value) {
+  set contentLength(int? value) {
     verifyUnsent();
     _contentLength = value;
   }

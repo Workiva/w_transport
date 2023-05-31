@@ -26,7 +26,7 @@ import 'package:w_transport/src/transport_platform.dart';
 /// network connections between requests that share a client.
 // ignore: deprecated_member_use_from_same_package
 abstract class HttpClient extends Client {
-  factory HttpClient({TransportPlatform transportPlatform}) {
+  factory HttpClient({TransportPlatform? transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
     // configured platform.
     transportPlatform ??= globalTransportPlatform;
@@ -36,10 +36,10 @@ abstract class HttpClient extends Client {
       // mock instance will construct mock-aware BaseRequest and WebSocket
       // instances that will be able to decide at the time of dispatch
       // whether or not the mock logic should be used.
-      return MockAwareTransportPlatform.newHttpClient(transportPlatform);
+      return MockAwareTransportPlatform.newHttpClient(transportPlatform!);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
-      return transportPlatform.newHttpClient();
+      return transportPlatform.newHttpClient()!;
     } else {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot

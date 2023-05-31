@@ -26,14 +26,14 @@ class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
     implements TransportPlatform {
   final bool _sockJSDebug;
   final bool _sockJSNoCredentials;
-  final List<String> _sockJSProtocolsWhitelist;
-  final Duration _sockJSTimeout;
+  final List<String>? _sockJSProtocolsWhitelist;
+  final Duration? _sockJSTimeout;
 
   const BrowserTransportPlatformWithSockJS(
-      {bool sockJSNoCredentials,
-      bool sockJSDebug,
-      List<String> sockJSProtocolsWhitelist,
-      Duration sockJSTimeout})
+      {bool? sockJSNoCredentials,
+      bool? sockJSDebug,
+      List<String>? sockJSProtocolsWhitelist,
+      Duration? sockJSTimeout})
       : _sockJSDebug = sockJSDebug ?? false,
         _sockJSProtocolsWhitelist = sockJSProtocolsWhitelist,
         _sockJSNoCredentials = sockJSNoCredentials ?? false,
@@ -41,16 +41,16 @@ class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
 
   bool get sockJSDebug => _sockJSDebug;
   bool get sockJSNoCredentials => _sockJSNoCredentials;
-  List<String> get sockJSProtocolsWhitelist => _sockJSProtocolsWhitelist != null
-      ? List.from(_sockJSProtocolsWhitelist)
+  List<String>? get sockJSProtocolsWhitelist => _sockJSProtocolsWhitelist != null
+      ? List.from(_sockJSProtocolsWhitelist!)
       : null;
-  Duration get sockJSTimeout => _sockJSTimeout;
+  Duration? get sockJSTimeout => _sockJSTimeout;
 
   /// Construct a [WebSocket] instance that leverages SockJS for use in the
   /// browser.
   @override
   Future<WebSocket> newWebSocket(Uri uri,
-          {Map<String, dynamic> headers, Iterable<String> protocols}) =>
+          {Map<String, dynamic>? headers, Iterable<String>? protocols}) =>
       SockJSWebSocket.connect(uri,
           debug: sockJSDebug ?? _sockJSDebug,
           noCredentials: sockJSNoCredentials ?? _sockJSNoCredentials,

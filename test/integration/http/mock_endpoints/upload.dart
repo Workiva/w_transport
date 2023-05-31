@@ -17,8 +17,8 @@ import 'package:w_transport/w_transport.dart' as transport;
 
 void mockUploadEndpoint(Uri uri) {
   MockTransports.http.when(uri, (request) async {
-    transport.StreamedHttpBody body = request.body;
-    await body.byteStream.drain();
+    transport.StreamedHttpBody body = request.body as StreamedHttpBody;
+    await body.byteStream!.drain();
     return MockResponse.ok();
   });
 }

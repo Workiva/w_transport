@@ -28,10 +28,10 @@ GlobalWebSocketMonitor newGlobalWebSocketMonitor() =>
     GlobalWebSocketMonitor._();
 
 WebSocketConnectEvent newWebSocketConnectEvent(
-        {@required String url,
-        @required bool wasSuccessful,
-        String sockJsSelectedProtocol,
-        List<String> sockJsProtocolsWhitelist}) =>
+        {required String url,
+        required bool? wasSuccessful,
+        String? sockJsSelectedProtocol,
+        List<String>? sockJsProtocolsWhitelist}) =>
     WebSocketConnectEvent._(
         url: url,
         wasSuccessful: wasSuccessful,
@@ -56,14 +56,14 @@ class GlobalWebSocketMonitor {
 }
 
 class WebSocketConnectEvent {
-  final List<String> sockJsProtocolsWhitelist;
-  final String sockJsSelectedProtocol;
+  final List<String>? sockJsProtocolsWhitelist;
+  final String? sockJsSelectedProtocol;
   final String url;
-  final bool wasSuccessful;
+  final bool? wasSuccessful;
 
   WebSocketConnectEvent._(
-      {@required this.url,
-      @required this.wasSuccessful,
+      {required this.url,
+      required this.wasSuccessful,
       this.sockJsProtocolsWhitelist,
       this.sockJsSelectedProtocol});
 }

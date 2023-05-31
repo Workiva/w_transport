@@ -23,12 +23,12 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
   @override
-  int closeCode;
+  int? closeCode;
 
   /// The close reason set when the WebSocket connection is closed. If there is
   /// no close reason available this property will be `null`.
   @override
-  String closeReason;
+  String? closeReason;
 
   /// Whether or not this [WebSocket] instance is closed or in the process of
   /// closing.
@@ -36,7 +36,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
 
   /// The subscription to the underlying WebSocket (either a browser WebSocket,
   /// VM WebSocket, SockJS Client, or a mock WebSocket).
-  StreamSubscription webSocketSubscription;
+  late StreamSubscription webSocketSubscription;
 
   /// A completer that completes when both the outgoing stream sink and the
   /// incoming stream have been closed. This is used to determine when this
@@ -48,13 +48,13 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   Completer<Null> _done = Completer<Null>();
 
   /// Any error that may be caught during the life of the underlying WebSocket.
-  Object _error;
+  Object? _error;
 
-  Future _inProgressAddStream;
+  Future? _inProgressAddStream;
 
   /// A `StreamController` used to expose the incoming stream of events from the
   /// underlying WebSocket.
-  StreamController<dynamic> _incoming;
+  late StreamController<dynamic> _incoming;
 
   /// Whether or not the incoming stream of WebSocket events is closed.
   bool _isIncomingClosed = false;
@@ -64,34 +64,34 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
 
   /// A `StreamController` used to pipe outgoing events to the underlying
   /// WebSocket.
-  StreamController<dynamic> _outgoing;
+  late StreamController<dynamic> _outgoing;
 
   /// The stack trace for any error that may be caught during the life of the
   /// underlying WebSocket.
-  StackTrace _stackTrace;
+  StackTrace? _stackTrace;
 
   /// The custom `StreamSubscription` that is used to proxy the subscription to
   /// the underlying WebSocket.
   // ignore: cancel_subscriptions
-  WSocketSubscription _incomingSubscription;
+  WSocketSubscription? _incomingSubscription;
 
   CommonWebSocket() {
     _allClosed.future.then((_) {
       if (_incomingSubscription != null &&
-          _incomingSubscription.doneHandler != null) {
-        _incomingSubscription.doneHandler();
+          _incomingSubscription!.doneHandler != null) {
+        _incomingSubscription!.doneHandler!();
       }
 
       if (_error != null) {
-        _done.completeError(_error, _stackTrace);
+        _done.completeError(_error!, _stackTrace);
       } else {
         _done.complete();
       }
-    });
+    } as FutureOr<_> Function(Null));
 
     // Outgoing communication will be handled by this stream controller.
     _outgoing = StreamController<dynamic>();
-    _outgoing.stream.listen(onOutgoingData,
+    _outgoing.stream.listen(onOutgoingData as void Function(dynamic)?,
         onError: onOutgoingError, onDone: onOutgoingDone);
 
     // Map events from the underlying socket to the incoming controller.
@@ -127,7 +127,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
 
   /// Add an error to the sink. This will cause the WebSocket connection to close.
   @override
-  void addError(Object errorEvent, [StackTrace stackTrace]) {
+  void addError(Object errorEvent, [StackTrace? stackTrace]) {
     _outgoing.addError(errorEvent, stackTrace);
   }
 
@@ -149,21 +149,21 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
   @override
-  Future<Null> close([int code, String reason]) {
+  Future<Null> close([int? code, String? reason]) {
     shutDown(code: code, reason: reason);
     return done;
   }
 
   @override
-  StreamSubscription listen(void onData(dynamic event),
-      {Function onError, void onDone(), bool cancelOnError}) {
+  StreamSubscription listen(void onData(dynamic event)?,
+      {Function? onError, void onDone()?, bool? cancelOnError}) {
     // ignore: cancel_subscriptions
     final sub = _incoming.stream
         .listen(onData, onError: onError, cancelOnError: cancelOnError);
     _incomingSubscription = WSocketSubscription(sub, onDone, onCancel: () {
       _incomingSubscription = null;
     });
-    return _incomingSubscription;
+    return _incomingSubscription!;
   }
 
   /// Called when the subscription to the incoming `StreamController` is
@@ -214,7 +214,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   }
 
   /// Called when an error is added to the outgoing `StreamController`.
-  void onOutgoingError(Object error, [StackTrace stackTrace]) {
+  void onOutgoingError(Object error, [StackTrace? stackTrace]) {
     // Don't pass the error on to the socket. It will cause the socket to close
     // anyway, so we will preempt this and handle the shut down by ourselves.
     // This allows us to prevent the error from propagating to the root zone
@@ -225,7 +225,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
   /// Shuts down the connection to the underling WebSocket. The outgoing
   /// `StreamController` is closed and the WebSocket is closed.
   void shutDown(
-      {int code, Object error, String reason, StackTrace stackTrace}) {
+      {int? code, Object? error, String? reason, StackTrace? stackTrace}) {
     if (isClosed) return;
     isClosed = true;
 
@@ -246,7 +246,7 @@ abstract class CommonWebSocket extends Stream implements WebSocket {
 
   /// Closes the underlying WebSocket connection with the given [code] and
   /// [reason].
-  void closeWebSocket(int code, String reason);
+  void closeWebSocket(int code, String? reason);
 
   /// Called when the incoming `StreamController` receives a listener. This
   /// should effectively trigger a subscription to the WebSocket's events. Up

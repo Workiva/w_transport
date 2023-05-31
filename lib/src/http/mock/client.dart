@@ -23,5 +23,5 @@ import 'package:w_transport/src/transport_platform.dart';
 /// anything else.
 @Deprecated(v3Deprecation)
 class MockClient extends MockHttpClient implements HttpClient {
-  MockClient([TransportPlatform transport]) : super(transport);
+  MockClient([TransportPlatform? transport]) : super(transport);
 }

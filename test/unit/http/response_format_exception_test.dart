@@ -31,7 +31,7 @@ void main() {
         final contentType =
             MediaType('application', 'json', {'charset': ascii.name});
         final exception =
-            transport.ResponseFormatException(contentType, ascii, bytes: bytes);
+            transport.ResponseFormatException(contentType, ascii, bytes: bytes as Uint8List?);
         expect(exception.toString(), contains('Bytes could not be decoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: ${ascii.name}'));

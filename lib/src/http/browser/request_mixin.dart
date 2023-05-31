@@ -25,7 +25,7 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/response.dart';
 
 abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
-  HttpRequest _request;
+  HttpRequest? _request;
 
   @override
   void abortRequest() {
@@ -35,7 +35,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
   @override
   Future<Null> openRequest([_]) async {
     _request = HttpRequest();
-    _request.open(method, uri.toString());
+    _request!.open(method!, uri.toString());
   }
 
   @override
@@ -52,27 +52,27 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
       final headersToAdd = Map<String, String>.from(finalizedRequest.headers);
       headersToAdd.remove('connection');
       headersToAdd.remove('content-length');
-      headersToAdd.forEach(_request.setRequestHeader);
+      headersToAdd.forEach(_request!.setRequestHeader);
     }
 
     if (withCredentials) {
-      _request.withCredentials = true;
+      _request!.withCredentials = true;
     }
 
     // Pipe onProgress events to the progress controllers.
 
     // ignore: unawaited_futures
-    _request.onProgress
+    _request!.onProgress
         .transform(browser_utils.transformProgressEvents)
         .pipe(downloadProgressController);
 
     // ignore: unawaited_futures
-    _request.upload.onProgress
+    _request!.upload.onProgress
         .transform(browser_utils.transformProgressEvents)
         .pipe(uploadProgressController);
 
     // Listen for request completion/errors.
-    _request.onLoad.listen((event) {
+    _request!.onLoad.listen((event) {
       if (!c.isCompleted) {
         c.complete(_createResponse(streamResponse: streamResponse));
       }
@@ -85,17 +85,17 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
       }
     }
 
-    _request.onError.listen(onError);
-    _request.onAbort.listen(onError);
+    _request!.onError.listen(onError);
+    _request!.onAbort.listen(onError);
 
     if (streamResponse == true) {
-      _request.responseType = 'blob';
+      _request!.responseType = 'blob';
     }
 
     // Allow the caller to configure the request.
-    Object configurationResult;
+    Object? configurationResult;
     if (configureFn != null) {
-      configurationResult = configureFn(_request);
+      configurationResult = configureFn!(_request);
     }
 
     // Wait for the configuration if applicable before sending the request.
@@ -104,14 +104,14 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     }
 
     if (finalizedRequest.body is HttpBody) {
-      HttpBody body = finalizedRequest.body;
-      _request.send(body.asBytes().buffer);
+      HttpBody body = finalizedRequest.body as HttpBody;
+      _request!.send(body.asBytes()!.buffer);
     } else if (finalizedRequest.body is StreamedHttpBody) {
-      StreamedHttpBody body = finalizedRequest.body;
-      _request.send(await body.toBytes());
+      StreamedHttpBody body = finalizedRequest.body as StreamedHttpBody;
+      _request!.send(await body.toBytes());
     } else if (finalizedRequest.body is FormDataBody) {
-      FormDataBody body = finalizedRequest.body;
-      _request.send(body.formData);
+      FormDataBody body = finalizedRequest.body as FormDataBody;
+      _request!.send(body.formData);
     }
     return await c.future;
   }
@@ -125,18 +125,18 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
       final reader = FileReader();
       // ignore: unawaited_futures
       reader.onLoad.first.then((_) {
-        result.complete(reader.result);
+        result.complete(reader.result as FutureOr<List<int>>?);
       });
       // ignore: unawaited_futures
       reader.onError.first.then(result.completeError);
-      reader.readAsArrayBuffer(_request.response ?? Blob([]));
+      reader.readAsArrayBuffer(_request!.response ?? Blob([]));
       final bytes = await result.future;
       final byteStream = Stream.fromIterable([bytes]);
-      response = StreamedResponse.fromByteStream(_request.status,
-          _request.statusText, _request.responseHeaders, byteStream);
+      response = StreamedResponse.fromByteStream(_request!.status,
+          _request!.statusText, _request!.responseHeaders, byteStream);
     } else {
-      response = Response.fromString(_request.status, _request.statusText,
-          _request.responseHeaders, _request.responseText);
+      response = Response.fromString(_request!.status, _request!.statusText,
+          _request!.responseHeaders, _request!.responseText);
     }
     return response;
   }

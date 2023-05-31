@@ -107,7 +107,7 @@ void main() {
 
       test('autoRetry with files not supported', () {
         final request = transport.MultipartRequest()..files['k'] = 'f';
-        expect(request.autoRetry.supported, isFalse);
+        expect(request.autoRetry!.supported, isFalse);
       });
     });
   });

@@ -37,11 +37,11 @@ void main() {
           transport.StreamedRequest(transportPlatform: vmTransportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri;
       request.configure((request) async {
-        HttpClientRequest ioRequest = request;
+        HttpClientRequest ioRequest = request as HttpClientRequest;
         ioRequest.headers.set('x-configured', 'true');
       });
       final response = await request.get();
-      expect(response.body.asJson()['headers']['x-configured'], equals('true'));
+      expect(response.body!.asJson()['headers']['x-configured'], equals('true'));
     });
   });
 }

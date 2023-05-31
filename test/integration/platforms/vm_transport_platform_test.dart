@@ -53,7 +53,7 @@ void main() {
 
       // Properly constructs VM implementation of WebSocket
       final webSocket =
-          await transport.WebSocket.connect(IntegrationPaths.pingUri);
+          await (transport.WebSocket.connect(IntegrationPaths.pingUri) as FutureOr<WebSocket>);
       expect(webSocket, isA<VMWebSocket>());
       await webSocket.close();
     });
@@ -73,7 +73,7 @@ void main() {
 
       // Properly constructs VM implementation of WebSocket
       final webSocket =
-          await transport.WebSocket.connect(IntegrationPaths.pingUri);
+          await (transport.WebSocket.connect(IntegrationPaths.pingUri) as FutureOr<WebSocket>);
       expect(webSocket, isA<VMWebSocket>());
       await webSocket.close();
     });
@@ -216,9 +216,9 @@ void main() {
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
-          final webSocket = await transport.WebSocket.connect(
+          final webSocket = await (transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform);
+              transportPlatform: vmTransportPlatform) as FutureOr<WebSocket>);
           await webSocket.close();
 
           await mockWebSocketServer.shutDown();
@@ -229,13 +229,13 @@ void main() {
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+                      {Map<String, dynamic>? headers,
+                      Iterable<String>? protocols}) async =>
                   mockWebSocketServer);
 
-          final webSocket = await transport.WebSocket.connect(
+          final webSocket = await (transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform);
+              transportPlatform: vmTransportPlatform) as FutureOr<WebSocket>);
           await webSocket.close();
 
           await mockWebSocketServer.shutDown();
@@ -451,9 +451,9 @@ void main() {
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
-          final webSocket = await transport.WebSocket.connect(
+          final webSocket = await (transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform);
+              transportPlatform: vmTransportPlatform) as FutureOr<WebSocket>);
           await webSocket.close();
 
           await mockWebSocketServer.shutDown();
@@ -464,13 +464,13 @@ void main() {
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+                      {Map<String, dynamic>? headers,
+                      Iterable<String>? protocols}) async =>
                   mockWebSocketServer);
 
-          final webSocket = await transport.WebSocket.connect(
+          final webSocket = await (transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform);
+              transportPlatform: vmTransportPlatform) as FutureOr<WebSocket>);
           await webSocket.close();
 
           await mockWebSocketServer.shutDown();
@@ -534,9 +534,9 @@ void main() {
         test(
             'websockets without expectation or handler should switch to real websocket',
             () async {
-          final webSocket = await transport.WebSocket.connect(
+          final webSocket = await (transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform);
+              transportPlatform: vmTransportPlatform) as FutureOr<WebSocket>);
           await webSocket.close();
         });
       });

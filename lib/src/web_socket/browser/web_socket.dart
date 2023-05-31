@@ -40,7 +40,7 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   static Future<WebSocket> connect(Uri uri,
-      {Map<String, dynamic> headers, Iterable<String> protocols}) async {
+      {Map<String, dynamic>? headers, Iterable<String>? protocols}) async {
     // Establish a Web Socket connection.
     final webSocket = html.WebSocket(uri.toString(), protocols);
     if (webSocket == null) {
@@ -76,7 +76,7 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   @override
-  void closeWebSocket(int code, String reason) {
+  void closeWebSocket(int code, String? reason) {
     _webSocket.close(code, reason);
   }
 

@@ -89,10 +89,10 @@ abstract class WebSocket implements Stream, StreamSink {
   /// Additional headers to be used in setting up the connection can be
   /// specified in [headers]. This only applies to server-side usage. See
   /// `dart:io`'s [WebSocket] for more information.
-  static Future<WebSocket> connect(Uri uri,
-      {Map<String, dynamic> headers,
-      Iterable<String> protocols,
-      TransportPlatform transportPlatform}) async {
+  static Future<WebSocket?> connect(Uri uri,
+      {Map<String, dynamic>? headers,
+      Iterable<String>? protocols,
+      TransportPlatform? transportPlatform}) async {
     // If a transport platform is not explicitly given, fallback to the globally
     // configured platform.
     transportPlatform ??= globalTransportPlatform;
@@ -101,7 +101,7 @@ abstract class WebSocket implements Stream, StreamSink {
       // If transports are mocked, return a mock-aware StreamedRequest instance.
       // This mock-aware instance will be able to decide at the time of dispatch
       // whether or not the mock logic should handle the request.
-      return MockAwareTransportPlatform.newWebSocket(transportPlatform, uri,
+      return MockAwareTransportPlatform.newWebSocket(transportPlatform!, uri,
           headers: headers, protocols: protocols);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
@@ -124,11 +124,11 @@ abstract class WebSocket implements Stream, StreamSink {
 
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
-  int get closeCode;
+  int? get closeCode;
 
   /// The close reason set when the WebSocket connection is closed. If there is
   /// no close reason available this property will be `null`.
-  String get closeReason;
+  String? get closeReason;
 
   /// Future that resolves when this WebSocket connection has completely closed.
   @override
@@ -150,7 +150,7 @@ abstract class WebSocket implements Stream, StreamSink {
 
   /// Add an error to the sink. This will cause the WebSocket connection to close.
   @override
-  void addError(Object errorEvent, [StackTrace stackTrace]);
+  void addError(Object errorEvent, [StackTrace? stackTrace]);
 
   /// Adds a stream of data to send over the WebSocket connection.
   /// This will wait for the stream to complete, sending each element
@@ -166,5 +166,5 @@ abstract class WebSocket implements Stream, StreamSink {
   /// Closes the WebSocket connection. Optionally set [code] and [reason]
   /// to send close information to the remote peer.
   @override
-  Future<Null> close([int code, String reason]);
+  Future<Null> close([int? code, String? reason]);
 }

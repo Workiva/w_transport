@@ -48,7 +48,7 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
 
       test('should not support Blob', () async {
         final blob = Blob(['one', 'two']);
-        final socket = await connect(pingUri, protocol);
+        final socket = await (connect(pingUri, protocol) as FutureOr<WebSocket>);
         expect(() {
           socket.add(blob);
         }, throwsArgumentError);
@@ -57,14 +57,14 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
 
       test('should support String', () async {
         const data = 'data';
-        final socket = await connect(echoUri, protocol);
+        final socket = await (connect(echoUri, protocol) as FutureOr<WebSocket>);
         socket.add(data);
         await socket.close();
       });
 
       test('should not support TypedData', () async {
         final data = Uint16List.fromList([1, 2, 3]);
-        final socket = await connect(echoUri, protocol);
+        final socket = await (connect(echoUri, protocol) as FutureOr<WebSocket>);
         expect(() {
           socket.add(data);
         }, throwsArgumentError);
@@ -72,7 +72,7 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
       });
 
       test('should throw when attempting to send invalid data', () async {
-        final socket = await connect(pingUri, protocol);
+        final socket = await (connect(pingUri, protocol) as FutureOr<WebSocket>);
         expect(() {
           socket.add(true);
         }, throwsArgumentError);

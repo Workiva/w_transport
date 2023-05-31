@@ -31,12 +31,12 @@ const _exponentialBase = 2;
 
 /// Calculate the backoff duration based on [RequestAutoRetry] configuration.
 /// Returns [null] if backoff is not applicable.
-Duration calculateBackOff(
+Duration? calculateBackOff(
   RequestAutoRetry autoRetry, {
-  @visibleForTesting Random random,
-  AdvancedBackOffCalculator calculator,
+  @visibleForTesting Random? random,
+  AdvancedBackOffCalculator? calculator,
 }) {
-  Duration backOff;
+  Duration? backOff;
   switch (autoRetry.backOff.method) {
     case RetryBackOffMethod.exponential:
       backOff = _calculateExponentialBackOff(autoRetry,
@@ -53,7 +53,7 @@ Duration calculateBackOff(
 }
 
 Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry,
-    {@visibleForTesting Random random, AdvancedBackOffCalculator calculator}) {
+    {@visibleForTesting Random? random, AdvancedBackOffCalculator? calculator}) {
   if (autoRetry.backOff.withJitter ?? false) {
     if (calculator == null) {
       throw StateError(
@@ -61,13 +61,13 @@ Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry,
     }
     final jitteredBackOff =
         calculator.calculateAdvancedExponentialJitteredBackOffInMs(
-            autoRetry.numAttempts, autoRetry.backOff.interval,
+            autoRetry.numAttempts, autoRetry.backOff.interval!,
             random: random);
     // If we're over the maximum duration, fall back to a fixed maxInterval with full jitter
-    if (jitteredBackOff > autoRetry.backOff.maxInterval.inMilliseconds) {
+    if (jitteredBackOff > autoRetry.backOff.maxInterval!.inMilliseconds) {
       return Duration(
           milliseconds:
-              (autoRetry.backOff.maxInterval.inMilliseconds.toDouble() *
+              (autoRetry.backOff.maxInterval!.inMilliseconds.toDouble() *
                       (random ?? Random()).nextDouble())
                   .toInt());
     }
@@ -95,17 +95,17 @@ class AdvancedBackOffCalculator {
   /// See the details here: https://github.com/Polly-Contrib/Polly.Contrib.WaitAndRetry#wait-and-retry-with-jittered-back-off
   int calculateAdvancedExponentialJitteredBackOffInMs(
       int numTotalAttempts, Duration backOffInterval,
-      {@visibleForTesting Random random}) {
+      {@visibleForTesting Random? random}) {
     // We subtract 1 from the numAttempts since the algorithm uses previous
     // _retry_ attempts, and `numTotalAttempts` is _total_ attempts, meaning
     // it will always be 1 greater than the number of _retry_ attempts.
     final t =
         numTotalAttempts.toDouble() - 1.0 + (random ?? Random()).nextDouble();
-    final next = pow(2, t) * _tanh(sqrt(4.0 * t));
-    final unscaledBackOff = next - _previous;
+    final num next = pow(2, t) * _tanh(sqrt(4.0 * t));
+    final num unscaledBackOff = next - _previous;
     final backoffInMs =
         unscaledBackOff * 1 / 1.4 * (backOffInterval.inMilliseconds);
-    _previous = next;
+    _previous = next as double;
     return backoffInMs.toInt();
   }
 }
@@ -136,14 +136,14 @@ double _tanh(double angle) {
   return (e1 - e2) / (e1 + e2);
 }
 
-Duration _calculateFixedBackOff(RequestAutoRetry autoRetry) {
-  Duration backOff;
+Duration? _calculateFixedBackOff(RequestAutoRetry autoRetry) {
+  Duration? backOff;
 
   if (autoRetry.backOff.withJitter ?? false) {
     final random = Random();
     backOff = Duration(
-        milliseconds: autoRetry.backOff.interval.inMilliseconds ~/ 2 +
-            random.nextInt(autoRetry.backOff.interval.inMilliseconds).toInt());
+        milliseconds: autoRetry.backOff.interval!.inMilliseconds ~/ 2 +
+            random.nextInt(autoRetry.backOff.interval!.inMilliseconds).toInt());
   } else {
     backOff = autoRetry.backOff.interval;
   }
@@ -158,15 +158,15 @@ bool isAsciiOnly(String value) => _asciiOnly.hasMatch(value);
 /// Converts a [Map] of field names to values to a query string. The resulting
 /// query string can be used as a URI query string or the body of a
 /// `application/x-www-form-urlencoded` request or response.
-String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
+String mapToQuery(Map<String, Object> map, {Encoding? encoding}) {
   final params = <String>[];
   map.forEach((key, value) {
     // Support fields with multiple values.
-    final valueList = value is List ? value : [value];
+    final valueList = value is List ? value as List<Object> : [value];
     for (final v in valueList) {
       final encoded = <String>[
         Uri.encodeQueryComponent(key, encoding: encoding ?? utf8),
-        Uri.encodeQueryComponent(v, encoding: encoding ?? utf8),
+        Uri.encodeQueryComponent(v as String, encoding: encoding ?? utf8),
       ];
       params.add(encoded.join('='));
     }
@@ -179,9 +179,9 @@ String mapToQuery(Map<String, Object> map, {Encoding encoding}) {
 /// If a content-type header is not specified in [headers], a default content-
 /// type of "application/octet-stream" will be returned (as per RFC 2616
 /// http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html#sec7.2.1).
-MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
+MediaType parseContentTypeFromHeaders(Map<String, String?> headers) {
   // Ensure the headers are case-insensitive.
-  headers = CaseInsensitiveMap<String>.from(headers);
+  headers = CaseInsensitiveMap<String?>.from(headers);
   var contentType = headers['content-type'];
   if (contentType != null && contentType.trim().isNotEmpty) {
     return MediaType.parse(contentType);
@@ -195,8 +195,8 @@ MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
 /// If no `charset` parameter is specified or if a corresponding [Encoding]
 /// cannot be found for the given `charset`, the [fallback] encoding will be
 /// returned.
-Encoding parseEncodingFromContentType(MediaType contentType,
-    {Encoding fallback}) {
+Encoding? parseEncodingFromContentType(MediaType? contentType,
+    {Encoding? fallback}) {
   if (contentType == null) return fallback;
   if (contentType.parameters['charset'] == null) return fallback;
   final encoding = Encoding.getByName(contentType.parameters['charset']);
@@ -210,8 +210,8 @@ Encoding parseEncodingFromContentType(MediaType contentType,
 /// cannot be found for the given `charset`, the [fallback] encoding will be
 /// returned as long as it is not null. If [fallback] is null, then a
 /// [FormatException] will be thrown.
-Encoding parseEncodingFromContentTypeOrFail(MediaType contentType,
-    {Encoding fallback}) {
+Encoding parseEncodingFromContentTypeOrFail(MediaType? contentType,
+    {Encoding? fallback}) {
   final encoding =
       parseEncodingFromContentType(contentType, fallback: fallback);
   if (encoding != null) return encoding;
@@ -227,15 +227,15 @@ Encoding parseEncodingFromContentTypeOrFail(MediaType contentType,
 /// or if the `charset` parameter is not specified, or if a corresponding
 /// [Encoding] cannot be found for the parsed `charset`, the [fallback] encoding
 /// will be returned.
-Encoding parseEncodingFromHeaders(Map<String, String> headers,
-    {Encoding fallback}) {
+Encoding? parseEncodingFromHeaders(Map<String, String> headers,
+    {Encoding? fallback}) {
   final contentType = parseContentTypeFromHeaders(headers);
   return parseEncodingFromContentType(contentType, fallback: fallback);
 }
 
 /// Converts a query string to a [Map] of parameter names to values. Works for
 /// URI query string or an `application/x-www-form-urlencoded` body.
-Map<String, Object> queryToMap(String query, {Encoding encoding}) {
+Map<String, Object> queryToMap(String query, {Encoding? encoding}) {
   final fields = <String, Object>{};
   for (final pair in query.split('&')) {
     final pieces = pair.split('=');
@@ -251,7 +251,7 @@ Map<String, Object> queryToMap(String query, {Encoding encoding}) {
       if (fields[key] is! List) {
         fields[key] = [fields[key]];
       }
-      final List currentFields = fields[key];
+      final List currentFields = fields[key] as List<dynamic>;
       currentFields.add(value);
     } else {
       fields[key] = value;
@@ -261,11 +261,11 @@ Map<String, Object> queryToMap(String query, {Encoding encoding}) {
 }
 
 /// Reduces a byte stream to a single list of bytes.
-Future<Uint8List> reduceByteStream(Stream<List<int>> byteStream) async {
+Future<Uint8List> reduceByteStream(Stream<List<int>?> byteStream) async {
   try {
-    final bytes = await byteStream.reduce((prev, next) {
-      return List<int>.from(prev)..addAll(next);
-    });
+    final bytes = await (byteStream.reduce((prev, next) {
+      return List<int>.from(prev!)..addAll(next!);
+    }) as FutureOr<List<int>>);
     return Uint8List.fromList(bytes);
   } on StateError {
     // StateError is thrown if stream was empty.
@@ -277,23 +277,23 @@ class ByteStreamProgressListener {
   StreamController<RequestProgress> _progressController =
       StreamController<RequestProgress>();
 
-  Stream<List<int>> _transformed;
+  Stream<List<int>>? _transformed;
 
-  ByteStreamProgressListener(Stream<List<int>> byteStream, {int total}) {
+  ByteStreamProgressListener(Stream<List<int>?> byteStream, {int? total}) {
     _transformed = _listenTo(byteStream, total: total);
   }
 
-  Stream<List<int>> get byteStream => _transformed;
+  Stream<List<int>>? get byteStream => _transformed;
 
   Stream<RequestProgress> get progressStream => _progressController.stream;
 
-  Stream<List<int>> _listenTo(Stream<List<int>> byteStream, {int total}) {
+  Stream<List<int>> _listenTo(Stream<List<int>?> byteStream, {int? total}) {
     int loaded = 0;
 
     final progressListener = StreamTransformer<List<int>, List<int>>(
         (Stream<List<int>> input, bool cancelOnError) {
-      StreamController<List<int>> controller;
-      StreamSubscription<List<int>> subscription;
+      late StreamController<List<int>> controller;
+      late StreamSubscription<List<int>> subscription;
 
       controller = StreamController<List<int>>(onListen: () {
         subscription = input.listen(

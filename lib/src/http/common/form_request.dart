@@ -45,7 +45,7 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
       isSent ? Map<String, dynamic>.unmodifiable(_fields) : _fields;
 
   @override
-  set fields(Map<String, dynamic> fields) {
+  set fields(Map<String, dynamic>? fields) {
     verifyUnsent();
     _fields = fields ?? {};
   }
@@ -57,12 +57,12 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
             'type `String` or `Iterable<String>`');
       }
     });
-    return encoding.encode(http_utils.mapToQuery(fields, encoding: encoding));
+    return encoding.encode(http_utils.mapToQuery(fields as Map<String, Object>, encoding: encoding)) as Uint8List;
   }
 
   @override
   FormRequest clone() {
-    final FormRequest requestClone = super.clone();
+    final FormRequest requestClone = super.clone() as FormRequest;
     return requestClone..fields = fields;
   }
 

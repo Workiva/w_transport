@@ -29,9 +29,9 @@ void main() {
     ..topic = topicWebSocket;
 
   group(naming.toString(), () {
-    MockWebSocketServer mockCloseWebSocketServer;
-    MockWebSocketServer mockEchoWebSocketServer;
-    MockWebSocketServer mockPingWebSocketServer;
+    late MockWebSocketServer mockCloseWebSocketServer;
+    late MockWebSocketServer mockEchoWebSocketServer;
+    late MockWebSocketServer mockPingWebSocketServer;
 
     setUp(() {
       MockTransports.install();
@@ -44,8 +44,8 @@ void main() {
         connection.onData((data) {
           if (data.startsWith('close')) {
             final parts = data.split(':');
-            int closeCode;
-            String closeReason;
+            int? closeCode;
+            String? closeReason;
             if (parts.length >= 2) {
               closeCode = int.parse(parts[1]);
             }
@@ -58,7 +58,7 @@ void main() {
       });
 
       mockEchoWebSocketServer.onClientConnected.listen((connection) {
-        connection.onData(connection.send);
+        connection.onData(connection.send as dynamic Function(dynamic));
       });
 
       mockPingWebSocketServer.onClientConnected.listen((connection) {
@@ -120,8 +120,8 @@ void main() {
         webSocket.onOutgoing((data) {
           if (data.startsWith('close')) {
             final parts = data.split(':');
-            int closeCode;
-            String closeReason;
+            int? closeCode;
+            String? closeReason;
             if (parts.length >= 2) {
               closeCode = int.parse(parts[1]);
             }

@@ -35,7 +35,7 @@ void main() {
           final value = ascii.decode(ascii.encode('This is ASCII!'));
 
           final BrowserMultipartRequest request = transport.MultipartRequest(
-              transportPlatform: browserTransportPlatform)
+              transportPlatform: browserTransportPlatform) as BrowserMultipartRequest
             ..fields = {
               key: value,
             };
@@ -49,7 +49,7 @@ void main() {
           const value = '藤原とうふ店（自家用）';
 
           final BrowserMultipartRequest request = transport.MultipartRequest(
-              transportPlatform: browserTransportPlatform)
+              transportPlatform: browserTransportPlatform) as BrowserMultipartRequest
             ..fields = {
               key: value,
             };

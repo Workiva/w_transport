@@ -29,7 +29,7 @@ import 'package:w_transport/src/transport_platform.dart';
 /// TODO: Remove this class in 4.0.0 and move the abstract definition into the `HttpClient` class.
 @Deprecated(v3Deprecation + 'Use `HttpClient` instead.')
 abstract class Client {
-  factory Client({TransportPlatform transportPlatform}) =>
+  factory Client({TransportPlatform? transportPlatform}) =>
       HttpClient(transportPlatform: transportPlatform);
 
   /// Configuration of automatic request retrying for failed requests. Use this
@@ -42,7 +42,7 @@ abstract class Client {
   AutoRetryConfig autoRetry;
 
   /// A base URI that all requests from this client should inherit.
-  Uri baseUri;
+  Uri? baseUri;
 
   /// Get and set request headers that will be applied to all requests created
   /// by this HTTP client.
@@ -56,12 +56,12 @@ abstract class Client {
   /// [RequestException] being thrown).
   ///
   /// If null, no timeout threshold will be enforced.
-  Duration timeoutThreshold;
+  Duration? timeoutThreshold;
 
   /// Whether or not to send requests from this client with credentials. Only
   /// applicable to requests in the browser, but does not adversely affect any
   /// other platform.
-  bool withCredentials;
+  bool? withCredentials;
 
   void addInterceptor(HttpInterceptor interceptor);
 

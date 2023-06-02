@@ -18,6 +18,7 @@ import 'dart:async';
 
 import 'package:http_parser/http_parser.dart' show CaseInsensitiveMap;
 import 'package:quiver/core.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 
 import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/http/base_request.dart' show BaseRequest;
@@ -53,7 +54,7 @@ class MockTransports {
   /// the rest will be handled by a real transport platform.
   static void install({bool fallThrough = false}) {
     MockTransportsInternal.isInstalled = true;
-    MockTransportsInternal.fallThrough = fallThrough ?? false;
+    MockTransportsInternal.fallThrough = fallThrough;
   }
 
   static Future<Null> reset() {

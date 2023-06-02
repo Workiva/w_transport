@@ -30,7 +30,7 @@ abstract class RequestDispatchers {
   ///
   /// If [headers] is given, they will be merged with the set of headers
   /// already defined on the [BaseRequest].
-  Future<Response> delete({Map<String, String> headers, Uri uri});
+  Future<Response> delete({Map<String, String>? headers, Uri? uri});
 
   /// Send a GET request.
   ///
@@ -43,7 +43,7 @@ abstract class RequestDispatchers {
   /// **Note:** For now, prefer [streamGet] for responses that could be binary
   /// in order to avoid encoding issues when reading the body as bytes (we hope
   /// to lift this restriction in the future).
-  Future<Response> get({Map<String, String> headers, Uri uri});
+  Future<Response> get({Map<String, String>? headers, Uri? uri});
 
   /// Send a HEAD request.
   ///
@@ -52,7 +52,7 @@ abstract class RequestDispatchers {
   ///
   /// If [headers] are given, they will be merged with the set of headers
   /// already defined on the [BaseRequest].
-  Future<Response> head({Map<String, String> headers, Uri uri});
+  Future<Response> head({Map<String, String>? headers, Uri? uri});
 
   /// Send an OPTIONS request.
   ///
@@ -61,7 +61,7 @@ abstract class RequestDispatchers {
   ///
   /// If [headers] are given, they will be merged with the set of headers
   /// already defined on the [BaseRequest].
-  Future<Response> options({Map<String, String> headers, Uri uri});
+  Future<Response> options({Map<String, String>? headers, Uri? uri});
 
   /// Send a PATCH request.
   ///
@@ -74,7 +74,7 @@ abstract class RequestDispatchers {
   /// If [body] is given, it must be of valid type for the type of request being
   /// sent. For example, if sending a JSON request using the [JsonRequest],
   /// [body] must be a JSON-encodable Map or List.
-  Future<Response> patch({dynamic body, Map<String, String> headers, Uri uri});
+  Future<Response> patch({dynamic body, Map<String, String>? headers, Uri? uri});
 
   /// Send a POST request.
   ///
@@ -87,7 +87,7 @@ abstract class RequestDispatchers {
   /// If [body] is given, it must be of valid type for the type of request being
   /// sent. For example, if sending a JSON request using the [JsonRequest],
   /// [body] must be a JSON-encodable Map or List.
-  Future<Response> post({dynamic body, Map<String, String> headers, Uri uri});
+  Future<Response> post({dynamic body, Map<String, String>? headers, Uri? uri});
 
   /// Send a PUT request.
   ///
@@ -100,7 +100,7 @@ abstract class RequestDispatchers {
   /// If [body] is given, it must be of valid type for the type of request being
   /// sent. For example, if sending a JSON request using the [JsonRequest],
   /// [body] must be a JSON-encodable Map or List.
-  Future<Response> put({dynamic body, Map<String, String> headers, Uri uri});
+  Future<Response> put({dynamic body, Map<String, String>? headers, Uri? uri});
 
   /// Send an HTTP request with a custom [method].
   ///
@@ -113,8 +113,8 @@ abstract class RequestDispatchers {
   /// If [body] is given, it must be of valid type for the type of request being
   /// sent. For example, if sending a JSON request using the [JsonRequest],
   /// [body] must be a JSON-encodable Map or List.
-  Future<Response> send(String method,
-      {dynamic body, Map<String, String> headers, Uri uri});
+  Future<Response> send(String? method,
+      {dynamic body, Map<String, String>? headers, Uri? uri});
 
   /// Send a DELETE request. The response will be streamed, meaning the body
   /// will be available asynchronously. This is useful for large response bodies
@@ -125,7 +125,7 @@ abstract class RequestDispatchers {
   ///
   /// If [headers] are given, they will be merged with the set of headers
   /// already defined on the [BaseRequest].
-  Future<StreamedResponse> streamDelete({Map<String, String> headers, Uri uri});
+  Future<StreamedResponse> streamDelete({Map<String, String>? headers, Uri? uri});
 
   /// Send a GET request. The response will be streamed, meaning the body will
   /// be available asynchronously. This is useful for large response bodies or
@@ -136,7 +136,7 @@ abstract class RequestDispatchers {
   ///
   /// If [headers] are given, they will be merged with the set of headers
   /// already defined on the [BaseRequest].
-  Future<StreamedResponse> streamGet({Map<String, String> headers, Uri uri});
+  Future<StreamedResponse> streamGet({Map<String, String>? headers, Uri? uri});
 
   /// Send a HEAD request. The response will be streamed, meaning the body will
   /// be available asynchronously. This is useful for large response bodies or
@@ -147,7 +147,7 @@ abstract class RequestDispatchers {
   ///
   /// If [headers] are given, they will be merged with the set of headers
   /// already defined on the [BaseRequest].
-  Future<StreamedResponse> streamHead({Map<String, String> headers, Uri uri});
+  Future<StreamedResponse> streamHead({Map<String, String>? headers, Uri? uri});
 
   /// Send an OPTIONS request. The response will be streamed, meaning the body
   /// will be available asynchronously. This is useful for large response bodies
@@ -159,7 +159,7 @@ abstract class RequestDispatchers {
   /// If [headers] are given, they will be merged with the set of headers
   /// already defined on the [BaseRequest].
   Future<StreamedResponse> streamOptions(
-      {Map<String, String> headers, Uri uri});
+      {Map<String, String>? headers, Uri? uri});
 
   /// Send a PATCH request. The response will be streamed, meaning the body will
   /// be available asynchronously. This is useful for large response bodies or
@@ -175,7 +175,7 @@ abstract class RequestDispatchers {
   /// sent. For example, if sending a JSON request using the [JsonRequest],
   /// [body] must be a JSON-encodable Map or List.
   Future<StreamedResponse> streamPatch(
-      {dynamic body, Map<String, String> headers, Uri uri});
+      {dynamic body, Map<String, String>? headers, Uri? uri});
 
   /// Send a POST request. The response will be streamed, meaning the body will
   /// be available asynchronously. This is useful for large response bodies or
@@ -191,7 +191,7 @@ abstract class RequestDispatchers {
   /// sent. For example, if sending a JSON request using the [JsonRequest],
   /// [body] must be a JSON-encodable Map or List.
   Future<StreamedResponse> streamPost(
-      {dynamic body, Map<String, String> headers, Uri uri});
+      {dynamic body, Map<String, String>? headers, Uri? uri});
 
   /// Send a PUT request. The response will be streamed, meaning the body will
   /// be available asynchronously. This is useful for large response bodies or
@@ -207,7 +207,7 @@ abstract class RequestDispatchers {
   /// sent. For example, if sending a JSON request using the [JsonRequest],
   /// [body] must be a JSON-encodable Map or List.
   Future<StreamedResponse> streamPut(
-      {dynamic body, Map<String, String> headers, Uri uri});
+      {dynamic body, Map<String, String>? headers, Uri? uri});
 
   /// Send an HTTP request with a custom [method]. The response will be
   /// streamed, meaning the body will be available asynchronously. This is
@@ -222,6 +222,6 @@ abstract class RequestDispatchers {
   /// If [body] is given, it must be of valid type for the type of request being
   /// sent. For example, if sending a JSON request using the [JsonRequest],
   /// [body] must be a JSON-encodable Map or List.
-  Future<StreamedResponse> streamSend(String method,
-      {dynamic body, Map<String, String> headers, Uri uri});
+  Future<StreamedResponse> streamSend(String? method,
+      {dynamic body, Map<String, String>? headers, Uri? uri});
 }

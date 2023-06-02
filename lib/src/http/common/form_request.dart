@@ -25,7 +25,7 @@ import 'package:w_transport/src/http/utils.dart' as http_utils;
 import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonFormRequest extends CommonRequest implements FormRequest {
-  CommonFormRequest(TransportPlatform transportPlatform)
+  CommonFormRequest(TransportPlatform? transportPlatform)
       : super(transportPlatform);
   // ignore: deprecated_member_use_from_same_package
   CommonFormRequest.fromClient(Client wTransportClient, client)
@@ -45,7 +45,7 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
       isSent ? Map<String, dynamic>.unmodifiable(_fields) : _fields;
 
   @override
-  set fields(Map<String, dynamic> fields) {
+  set fields(Map<String, dynamic>? fields) {
     verifyUnsent();
     _fields = fields ?? {};
   }
@@ -57,12 +57,12 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
             'type `String` or `Iterable<String>`');
       }
     });
-    return encoding.encode(http_utils.mapToQuery(fields, encoding: encoding));
+    return encoding.encode(http_utils.mapToQuery(fields, encoding: encoding)) as Uint8List;
   }
 
   @override
   FormRequest clone() {
-    final FormRequest requestClone = super.clone();
+    final FormRequest requestClone = super.clone() as FormRequest;
     return requestClone..fields = fields;
   }
 

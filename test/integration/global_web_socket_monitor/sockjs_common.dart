@@ -32,7 +32,7 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
     ..topic = topicGlobalWebSocketMonitor;
 
   for (final protocol in protocolsToTest) {
-    Future<transport.WebSocket> connect(Uri uri, String protocol) =>
+    Future<transport.WebSocket?> connect(Uri uri, String protocol) =>
         transport.WebSocket.connect(uri,
             transportPlatform: BrowserTransportPlatformWithSockJS(
                 sockJSNoCredentials: true,
@@ -51,8 +51,8 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
         var events = <transport.WebSocketConnectEvent>[];
         monitor.didAttemptToConnect.listen(events.add);
 
-        var webSocket = await connect(echoUri, protocol);
-        await webSocket.close();
+        var webSocket = await (connect(echoUri, protocol));
+        await webSocket?.close();
 
         await connect(fourOhFourUri, protocol).catchError((_) {});
 

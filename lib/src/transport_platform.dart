@@ -25,44 +25,44 @@ import 'package:w_transport/src/web_socket/web_socket.dart';
 
 abstract class TransportPlatform {
   /// Constructs a new [HttpClient] instance.
-  HttpClient newHttpClient();
+  HttpClient? newHttpClient();
 
   /// Constructs a new [FormRequest] instance.
-  FormRequest newFormRequest();
+  FormRequest? newFormRequest();
 
   /// Constructs a new [JsonRequest] instance.
-  JsonRequest newJsonRequest();
+  JsonRequest? newJsonRequest();
 
   /// Constructs a new [MultipartRequest] instance.
-  MultipartRequest newMultipartRequest();
+  MultipartRequest? newMultipartRequest();
 
   /// Constructs a new [Request] instance.
-  Request newRequest();
+  Request? newRequest();
 
   /// Constructs a new [StreamedRequest] instance.
-  StreamedRequest newStreamedRequest();
+  StreamedRequest? newStreamedRequest();
 
   /// Constructs a new [WebSocket] instance.
-  Future<WebSocket> newWebSocket(Uri uri,
-      {Map<String, dynamic> headers, Iterable<String> protocols});
+  Future<WebSocket?> newWebSocket(Uri uri,
+      {Map<String, dynamic>? headers, Iterable<String>? protocols});
 }
 
 class MockAwareTransportPlatform {
   /// Construct a new [MockHttpClient] instance that implements [HttpClient].
-  static HttpClient newHttpClient(TransportPlatform realTransportPlatform) =>
+  static HttpClient newHttpClient(TransportPlatform? realTransportPlatform) =>
       MockHttpClient(realTransportPlatform);
 
   // ignore: deprecated_member_use_from_same_package
   /// Construct a new [MockFormRequest] instance that implements
   /// [FormRequest].
-  static FormRequest newFormRequest(TransportPlatform realTransportPlatform) =>
+  static FormRequest newFormRequest(TransportPlatform? realTransportPlatform) =>
       // ignore: deprecated_member_use_from_same_package
       MockFormRequest(realTransportPlatform);
 
   // ignore: deprecated_member_use_from_same_package
   /// Construct a new [MockJsonRequest] instance that implements
   /// [JsonRequest].
-  static JsonRequest newJsonRequest(TransportPlatform realTransportPlatform) =>
+  static JsonRequest newJsonRequest(TransportPlatform? realTransportPlatform) =>
       // ignore: deprecated_member_use_from_same_package
       MockJsonRequest(realTransportPlatform);
 
@@ -77,7 +77,7 @@ class MockAwareTransportPlatform {
   // ignore: deprecated_member_use_from_same_package
   /// Construct a new [MockPlainTextRequest] instance that implements
   /// [Request].
-  static Request newRequest(TransportPlatform realTransportPlatform) =>
+  static Request newRequest(TransportPlatform? realTransportPlatform) =>
       // ignore: deprecated_member_use_from_same_package
       MockPlainTextRequest(realTransportPlatform);
 
@@ -85,14 +85,14 @@ class MockAwareTransportPlatform {
   /// Construct a new [MockStreamedRequest] instance that implements
   /// [StreamedRequest].
   static StreamedRequest newStreamedRequest(
-          TransportPlatform realTransportPlatform) =>
+          TransportPlatform? realTransportPlatform) =>
       // ignore: deprecated_member_use_from_same_package
       MockStreamedRequest(realTransportPlatform);
 
   /// Construct a new [MockWebSocket] instance that implements [WebSocket].
-  static Future<WebSocket> newWebSocket(
-      TransportPlatform realTransportPlatform, Uri uri,
-      {Map<String, dynamic> headers, Iterable<String> protocols}) {
+  static Future<WebSocket?> newWebSocket(
+      TransportPlatform? realTransportPlatform, Uri uri,
+      {Map<String, dynamic>? headers, Iterable<String>? protocols}) {
     if (MockTransportsInternal.isInstalled &&
         MockWebSocketInternal.hasHandlerForWebSocket(uri)) {
       // ignore: deprecated_member_use_from_same_package

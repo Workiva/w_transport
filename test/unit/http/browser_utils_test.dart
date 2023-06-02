@@ -96,10 +96,10 @@ class MockProgressEvent implements ProgressEvent {
   bool lengthComputable;
 
   @override
-  int loaded;
+  int? loaded;
 
   @override
-  int total;
+  int? total;
 
   MockProgressEvent.computable(this.loaded, this.total)
       : lengthComputable = true;

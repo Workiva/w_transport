@@ -42,9 +42,9 @@ class ReflectHandler extends Handler {
       encoding = latin1;
     } else {
       final contentType = MediaType(
-          request.headers.contentType.primaryType,
-          request.headers.contentType.subType,
-          request.headers.contentType.parameters);
+          request.headers.contentType!.primaryType,
+          request.headers.contentType!.subType,
+          request.headers.contentType!.parameters as Map<String, String>?);
       encoding = http_utils.parseEncodingFromContentType(contentType,
           fallback: latin1);
     }

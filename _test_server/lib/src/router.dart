@@ -30,7 +30,7 @@ import 'logger.dart';
 
 class Router implements Function {
   Logger logger;
-  Map<String, Handler> routes;
+  late Map<String, Handler> routes;
 
   Router(this.logger) {
     routes = {'/ping': PingHandler()}
@@ -44,7 +44,7 @@ class Router implements Function {
 
   Future<Null> call(HttpRequest request) async {
     if (routes.containsKey(request.uri.path)) {
-      await routes[request.uri.path].processRequest(request);
+      await routes[request.uri.path]!.processRequest(request);
     } else {
       request.response.statusCode = HttpStatus.notFound;
       await request.response.close();

@@ -19,7 +19,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
+void runPlainTextRequestSuite([transport.TransportPlatform? transportPlatform]) {
   group('Request', () {
     test('contentLength should be set automatically', () async {
       final emptyRequest =
@@ -27,7 +27,7 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
       final response =
           await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
       final contentLength =
-          int.parse(response.body.asJson()['headers']['content-length']);
+          int.parse(response.body!.asJson()['headers']['content-length']);
       expect(contentLength, equals(0),
           reason: 'Empty plain-text request\'s content-length should be 0.');
 
@@ -37,7 +37,7 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..body = 'data';
       final response2 = await nonEmptyRequest.post();
       final contentLength2 =
-          int.parse(response2.body.asJson()['headers']['content-length']);
+          int.parse(response2.body!.asJson()['headers']['content-length']);
       expect(contentLength2, greaterThan(0),
           reason:
               'Non-empty plain-text request\'s content-length should be greater than 0.');
@@ -49,7 +49,7 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
         ..body = 'data';
       final response = await request.post();
       final contentType =
-          MediaType.parse(response.body.asJson()['headers']['content-type']);
+          MediaType.parse(response.body!.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('text/plain'));
     });
 
@@ -61,7 +61,7 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
         ..contentType = contentType;
       final response = await request.post();
       final reflectedContentType =
-          MediaType.parse(response.body.asJson()['headers']['content-type']);
+          MediaType.parse(response.body!.asJson()['headers']['content-type']);
       expect(reflectedContentType.mimeType, equals(contentType.mimeType));
     });
 
@@ -71,8 +71,8 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
         ..encoding = utf8
         ..body = 'dataç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(utf8.name));
-      expect(response.body.asString(), equals('dataç®å'));
+      expect(response.encoding!.name, equals(utf8.name));
+      expect(response.body!.asString(), equals('dataç®å'));
     });
 
     test('LATIN1', () async {
@@ -81,8 +81,8 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
         ..encoding = latin1
         ..body = 'dataç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(latin1.name));
-      expect(response.body.asString(), equals('dataç®å'));
+      expect(response.encoding!.name, equals(latin1.name));
+      expect(response.body!.asString(), equals('dataç®å'));
     });
 
     test('ASCII', () async {
@@ -91,8 +91,8 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
         ..encoding = ascii
         ..body = 'data';
       final response = await request.post();
-      expect(response.encoding.name, equals(ascii.name));
-      expect(response.body.asString(), equals('data'));
+      expect(response.encoding!.name, equals(ascii.name));
+      expect(response.body!.asString(), equals('data'));
     });
   });
 }

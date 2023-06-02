@@ -16,7 +16,7 @@
 class WebSocketException implements Exception {
   WebSocketException([this.message]);
 
-  final String message;
+  final String? message;
 
   @override
   String toString() => 'WebSocketException: $message';

@@ -25,18 +25,18 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   /// The callback given by the [WSocket] implementation to be called when this
   /// subscription is canceled. This allows the [WSocket] instance to perform
   /// necessary cleanup.
-  Function _onCancel;
+  Function? _onCancel;
 
   /// The `StreamSubscription` being proxied.
   StreamSubscription<T> _sub;
 
-  WSocketSubscription(this._sub, this._doneHandler, {Function onCancel})
+  WSocketSubscription(this._sub, this._doneHandler, {Function? onCancel})
       : _onCancel = onCancel;
 
   /// The callback given by the listener to be called when this subscription
   /// is completely done.
-  Function get doneHandler => _isCanceled ? null : _doneHandler;
-  Function _doneHandler;
+  Function? get doneHandler => _isCanceled ? null : _doneHandler;
+  Function? _doneHandler;
 
   @override
   bool get isPaused => _sub.isPaused;
@@ -53,12 +53,12 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
     _isCanceled = true;
 
     if (_onCancel != null) {
-      await _onCancel();
+      await _onCancel!();
     }
   }
 
   @override
-  Future<E> asFuture<E>([E futureValue]) {
+  Future<E> asFuture<E>([E? futureValue]) {
     final c = Completer<E>();
     _doneHandler = () {
       c.complete(futureValue);
@@ -73,7 +73,7 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   }
 
   @override
-  void pause([Future resumeSignal]) {
+  void pause([Future? resumeSignal]) {
     if (_isCanceled) return;
     _sub.pause();
     if (resumeSignal != null) {
@@ -90,19 +90,19 @@ class WSocketSubscription<T> implements StreamSubscription<T> {
   }
 
   @override
-  void onDone(void handleDone()) {
+  void onDone(void handleDone()?) {
     if (_isCanceled) return;
     _doneHandler = handleDone;
   }
 
   @override
-  void onError(Function handleError) {
+  void onError(Function? handleError) {
     if (_isCanceled) return;
     _sub.onError(handleError);
   }
 
   @override
-  void onData(void handleData(T data)) {
+  void onData(void handleData(T data)?) {
     if (_isCanceled) return;
     _sub.onData(handleData);
   }

@@ -21,7 +21,7 @@ import 'package:w_transport/src/http/utils.dart' as http_utils;
 
 import '../../integration_paths.dart';
 
-void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
+void runFormRequestSuite([transport.TransportPlatform? transportPlatform]) {
   group('FormRequest', () {
     test('content-length should be set automatically', () async {
       // Empty request.
@@ -30,7 +30,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
       final response =
           await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
       final contentLength =
-          int.parse(response.body.asJson()['headers']['content-length']);
+          int.parse(response.body!.asJson()['headers']['content-length']);
       expect(contentLength, equals(0),
           reason: 'Empty form request\'s content-length should be 0.');
 
@@ -42,7 +42,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..fields['field2'] = 'value2';
       final response2 = await nonEmptyRequest.post();
       final contentLength2 =
-          int.parse(response2.body.asJson()['headers']['content-length']);
+          int.parse(response2.body!.asJson()['headers']['content-length']);
       expect(contentLength2, greaterThan(0),
           reason:
               'Non-empty form request\'s content-length should be greater than 0.');
@@ -55,7 +55,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..fields['field'] = 'value';
       final response = await request.post();
       final contentType =
-          MediaType.parse(response.body.asJson()['headers']['content-type']);
+          MediaType.parse(response.body!.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('application/x-www-form-urlencoded'));
     });
 
@@ -68,7 +68,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..contentType = contentType;
       final response = await request.post();
       final reflectedContentType =
-          MediaType.parse(response.body.asJson()['headers']['content-type']);
+          MediaType.parse(response.body!.asJson()['headers']['content-type']);
       expect(reflectedContentType.mimeType, equals(contentType.mimeType));
     });
 
@@ -80,8 +80,8 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'ç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(utf8.name));
-      final echo = http_utils.queryToMap(response.body.asString(),
+      expect(response.encoding!.name, equals(utf8.name));
+      final echo = http_utils.queryToMap(response.body!.asString()!,
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
       expect(echo, containsPair('field2', 'ç®å'));
@@ -95,8 +95,8 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'ç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(latin1.name));
-      final echo = http_utils.queryToMap(response.body.asString(),
+      expect(response.encoding!.name, equals(latin1.name));
+      final echo = http_utils.queryToMap(response.body!.asString()!,
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
       expect(echo, containsPair('field2', 'ç®å'));
@@ -110,8 +110,8 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'value2';
       final response = await request.post();
-      expect(response.encoding.name, equals(ascii.name));
-      final echo = http_utils.queryToMap(response.body.asString(),
+      expect(response.encoding!.name, equals(ascii.name));
+      final echo = http_utils.queryToMap(response.body!.asString()!,
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
       expect(echo, containsPair('field2', 'value2'));
@@ -123,7 +123,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..uri = IntegrationPaths.echoEndpointUri
             ..fields['items'] = ['one', 'two'];
       final response = await request.post();
-      final echo = http_utils.queryToMap(response.body.asString());
+      final echo = http_utils.queryToMap(response.body!.asString()!);
       expect(echo['items'], equals(['one', 'two']));
     });
 

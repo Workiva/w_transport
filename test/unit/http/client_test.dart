@@ -18,6 +18,7 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/w_transport.dart' as transport;
+import 'package:w_transport/w_transport.dart';
 
 import '../../naming.dart';
 
@@ -34,11 +35,11 @@ abstract class RespIntMixin implements transport.HttpInterceptor {
   @override
   Future<transport.ResponsePayload> interceptResponse(
       transport.ResponsePayload payload) async {
-    final newHeaders = Map<String, String>.from(payload.response.headers);
+    final newHeaders = Map<String, String>.from(payload.response!.headers!);
     newHeaders['x-intercepted'] = 'true';
-    transport.Response response = payload.response;
-    payload.response = transport.Response.fromString(payload.response.status,
-        payload.response.statusText, newHeaders, response.body.asString());
+    transport.Response response = payload.response as Response;
+    payload.response = transport.Response.fromString(payload.response!.status,
+        payload.response!.statusText, newHeaders, response.body!.asString());
     return payload;
   }
 }
@@ -63,12 +64,12 @@ class AsyncInt extends transport.HttpInterceptor {
   Future<transport.ResponsePayload> interceptResponse(
       transport.ResponsePayload payload) async {
     await Future.delayed(Duration(milliseconds: 500));
-    final headers = Map<String, String>.from(payload.response.headers);
-    transport.Response response = payload.response;
+    final headers = Map<String, String?>.from(payload.response!.headers!);
+    transport.Response response = payload.response as Response;
     headers['x-interceptor'] =
         payload.request.uri.queryParameters['interceptor'];
-    payload.response = transport.Response.fromString(payload.response.status,
-        payload.response.statusText, headers, response.body.asString());
+    payload.response = transport.Response.fromString(payload.response!.status,
+        payload.response!.statusText, headers, response.body!.asString());
     return payload;
   }
 }
@@ -113,7 +114,7 @@ void main() {
 // ignore: deprecated_member_use_from_same_package
 void _runHttpClientSuite(transport.Client getClient()) {
   // ignore: deprecated_member_use_from_same_package
-  transport.Client client;
+  late transport.Client client;
 
   setUp(() {
     client = getClient();
@@ -235,19 +236,19 @@ void _runHttpClientSuite(transport.Client getClient()) {
       ..test = (request, response, willRetry) async => true;
 
     for (final request in createAllRequestTypes(client)) {
-      expect(request.autoRetry.backOff.interval,
+      expect(request.autoRetry!.backOff.interval,
           equals(client.autoRetry.backOff.interval));
-      expect(request.autoRetry.backOff.method,
+      expect(request.autoRetry!.backOff.method,
           equals(client.autoRetry.backOff.method));
-      expect(request.autoRetry.enabled, equals(client.autoRetry.enabled));
-      expect(request.autoRetry.forHttpMethods,
+      expect(request.autoRetry!.enabled, equals(client.autoRetry.enabled));
+      expect(request.autoRetry!.forHttpMethods,
           equals(client.autoRetry.forHttpMethods));
-      expect(request.autoRetry.forStatusCodes,
+      expect(request.autoRetry!.forStatusCodes,
           equals(client.autoRetry.forStatusCodes));
       expect(
-          request.autoRetry.forTimeouts, equals(client.autoRetry.forTimeouts));
-      expect(request.autoRetry.maxRetries, equals(client.autoRetry.maxRetries));
-      expect(request.autoRetry.test, equals(client.autoRetry.test));
+          request.autoRetry!.forTimeouts, equals(client.autoRetry.forTimeouts));
+      expect(request.autoRetry!.maxRetries, equals(client.autoRetry.maxRetries));
+      expect(request.autoRetry!.test, equals(client.autoRetry.test));
     }
   });
 

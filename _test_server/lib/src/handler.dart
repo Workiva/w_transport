@@ -18,9 +18,9 @@ import 'dart:io';
 /// Base request handler class that enables CORS by default.
 /// Should be subclassed and the handleRequest() method must be implemented.
 abstract class Handler {
-  List<String> _allowedMethods;
-  String _allowedOrigin;
-  bool _credentialsAllowed;
+  late List<String> _allowedMethods;
+  String? _allowedOrigin;
+  late bool _credentialsAllowed;
   bool _corsEnabled;
 
   Handler() : _corsEnabled = false;
@@ -30,7 +30,7 @@ abstract class Handler {
   /// Main entry point for request handling.
   /// Sub-classes should implement only the necessary REST method handlers.
   Future<Null> processRequest(HttpRequest request) async {
-    Function handler;
+    late Function handler;
     switch (request.method) {
       case 'COPY':
         handler = copy;
@@ -69,7 +69,7 @@ abstract class Handler {
   /// Enable Cross Origin Resource Sharing support.
   /// Call this in the sub-class constructor.
   void enableCors(
-      {bool credentials = true, List<String> methods, String origin}) {
+      {bool credentials = true, List<String>? methods, String? origin}) {
     _corsEnabled = true;
     _credentialsAllowed = credentials == true;
     _allowedMethods = methods ??
@@ -91,7 +91,7 @@ abstract class Handler {
   /// configured in the call to [enableCors].
   void setCorsHeaders(HttpRequest request) {
     // Use given allow origin, but default to allowing every origin (by using origin of request)
-    final origin = _allowedOrigin ?? request.headers.value('Origin');
+    final origin = _allowedOrigin ?? request.headers.value('Origin')!;
     request.response.headers.set('Access-Control-Allow-Origin', origin);
 
     // Allow all headers (by using the requested headers)

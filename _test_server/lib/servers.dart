@@ -19,7 +19,7 @@ BackgroundProcessTool _sockjsServer() => BackgroundProcessTool(
     );
 
 /// Server needed for integration tests and examples.
-Server _server;
+late Server _server;
 
 /// Start the server needed for integration tests and examples and stream the
 /// server output as it arrives. The output will be mixed in with output from

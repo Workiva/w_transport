@@ -53,9 +53,9 @@ void main() {
 
       // Properly constructs VM implementation of WebSocket
       final webSocket =
-          await transport.WebSocket.connect(IntegrationPaths.pingUri);
+          await (transport.WebSocket.connect(IntegrationPaths.pingUri));
       expect(webSocket, isA<VMWebSocket>());
-      await webSocket.close();
+      await webSocket?.close();
     });
 
     test('configureWTransportForVM()', () async {
@@ -73,9 +73,9 @@ void main() {
 
       // Properly constructs VM implementation of WebSocket
       final webSocket =
-          await transport.WebSocket.connect(IntegrationPaths.pingUri);
+          await (transport.WebSocket.connect(IntegrationPaths.pingUri));
       expect(webSocket, isA<VMWebSocket>());
-      await webSocket.close();
+      await webSocket?.close();
     });
 
     group('mock-aware', () {
@@ -216,10 +216,10 @@ void main() {
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
-          final webSocket = await transport.WebSocket.connect(
+          final webSocket = await (transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform);
-          await webSocket.close();
+              transportPlatform: vmTransportPlatform));
+          await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -229,14 +229,14 @@ void main() {
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+                      {Map<String, dynamic>? headers,
+                      Iterable<String>? protocols}) async =>
                   mockWebSocketServer);
 
-          final webSocket = await transport.WebSocket.connect(
+          final webSocket = await (transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform);
-          await webSocket.close();
+              transportPlatform: vmTransportPlatform));
+          await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -451,10 +451,10 @@ void main() {
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
-          final webSocket = await transport.WebSocket.connect(
+          final webSocket = await (transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform);
-          await webSocket.close();
+              transportPlatform: vmTransportPlatform));
+          await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -464,14 +464,14 @@ void main() {
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+                      {Map<String, dynamic>? headers,
+                      Iterable<String>? protocols}) async =>
                   mockWebSocketServer);
 
-          final webSocket = await transport.WebSocket.connect(
+          final webSocket = await (transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform);
-          await webSocket.close();
+              transportPlatform: vmTransportPlatform));
+          await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -534,10 +534,10 @@ void main() {
         test(
             'websockets without expectation or handler should switch to real websocket',
             () async {
-          final webSocket = await transport.WebSocket.connect(
+          final webSocket = await (transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform);
-          await webSocket.close();
+              transportPlatform: vmTransportPlatform));
+          await webSocket?.close();
         });
       });
     });

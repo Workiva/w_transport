@@ -61,7 +61,7 @@ void main() {
         test('expected web socket connection rejected', () async {
           MockTransports.webSocket.expect(webSocketUri, reject: true);
           expect(transport.WebSocket.connect(webSocketUri),
-              throwsA(predicate((error) {
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('rejected');
           })));
         });
@@ -109,7 +109,7 @@ void main() {
           MockTransports.webSocket
               .expectPattern(webSocketUri.toString(), reject: true);
           expect(transport.WebSocket.connect(webSocketUri),
-              throwsA(predicate((error) {
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('rejected');
           })));
         });
@@ -140,14 +140,14 @@ void main() {
 
       test('reset() should clear all expectations and handlers', () async {
         Future<transport.WebSocket> handler(Uri uri,
-                {Map<String, dynamic> headers,
-                Iterable<String> protocols}) async =>
+                {Map<String, dynamic>? headers,
+                Iterable<String>? protocols}) async =>
             // ignore: deprecated_member_use_from_same_package
             MockWSocket();
         Future<transport.WebSocket> patternHandler(Uri uri,
-                {Map<String, dynamic> headers,
-                Match match,
-                Iterable<String> protocols}) async =>
+                {Map<String, dynamic>? headers,
+                Match? match,
+                Iterable<String>? protocols}) async =>
             // ignore: deprecated_member_use_from_same_package
             MockWSocket();
         MockTransports.webSocket.when(webSocketUri, handler: handler);
@@ -172,8 +172,8 @@ void main() {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
           Future<transport.WebSocket> handler(Uri uri,
-                  {Map<String, dynamic> headers,
-                  Iterable<String> protocols}) async =>
+                  {Map<String, dynamic>? headers,
+                  Iterable<String>? protocols}) async =>
               webSocket;
           MockTransports.webSocket.when(webSocketUri, handler: handler);
 
@@ -194,11 +194,11 @@ void main() {
 
           // Multiple matching connections work as expected.
           expect(transport.WebSocket.connect(webSocketUri),
-              throwsA(predicate((error) {
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('rejected');
           })));
           expect(transport.WebSocket.connect(webSocketUri),
-              throwsA(predicate((error) {
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('rejected');
           })));
 
@@ -211,7 +211,7 @@ void main() {
           expect(() {
             MockTransports.webSocket.when(webSocketUri,
                 // ignore: deprecated_member_use_from_same_package
-                handler: (uri, {protocols, headers}) async => MockWSocket(),
+                handler: (uri, {Iterable<String>? protocols, Map<String, dynamic>? headers}) async => MockWSocket(),
                 reject: true);
           }, throwsArgumentError);
         });
@@ -227,8 +227,8 @@ void main() {
             () {
           MockTransports.webSocket.when(webSocketUri,
               handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+                      {Map<String, dynamic>? headers,
+                      Iterable<String>? protocols}) async =>
                   'invalid');
           // ignore: deprecated_member_use_from_same_package
           expect(MockWSocket.connect(webSocketUri), throwsArgumentError);
@@ -238,7 +238,7 @@ void main() {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
           final handler = MockTransports.webSocket.when(webSocketUri,
-              handler: (uri, {protocols, headers}) async => webSocket);
+              handler: (uri, {Iterable<String>? protocols, Map<String, dynamic>? headers}) async => webSocket);
 
           expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
@@ -254,7 +254,7 @@ void main() {
           final oldHandler =
               MockTransports.webSocket.when(webSocketUri, reject: true);
           MockTransports.webSocket.when(webSocketUri,
-              handler: (uri, {protocols, headers}) async => webSocket);
+              handler: (uri, {Iterable<String>? protocols, Map<String, dynamic>? headers}) async => webSocket);
 
           expect(() {
             oldHandler.cancel();
@@ -267,7 +267,7 @@ void main() {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
           final oldHandler = MockTransports.webSocket.when(webSocketUri,
-              handler: (uri, {protocols, headers}) async => webSocket);
+              handler: (uri, {Iterable<String>? protocols, Map<String, dynamic>? headers}) async => webSocket);
           await MockTransports.reset();
 
           expect(() {
@@ -286,9 +286,9 @@ void main() {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
           Future<transport.WebSocket> handler(Uri uri,
-                  {Map<String, dynamic> headers,
-                  Match match,
-                  Iterable<String> protocols}) async =>
+                  {Map<String, dynamic>? headers,
+                  Match? match,
+                  Iterable<String>? protocols}) async =>
               webSocket;
           MockTransports.webSocket
               .whenPattern(webSocketUri.toString(), handler: handler);
@@ -311,11 +311,11 @@ void main() {
 
           // Multiple matching connections work as expected.
           expect(transport.WebSocket.connect(webSocketUri),
-              throwsA(predicate((error) {
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('rejected');
           })));
           expect(transport.WebSocket.connect(webSocketUri),
-              throwsA(predicate((error) {
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('rejected');
           })));
 
@@ -345,9 +345,9 @@ void main() {
             () {
           MockTransports.webSocket.whenPattern(webSocketUri.toString(),
               handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Match match,
-                      Iterable<String> protocols}) async =>
+                      {Map<String, dynamic>? headers,
+                      Match? match,
+                      Iterable<String>? protocols}) async =>
                   'invalid');
           // ignore:
           expect(
@@ -361,9 +361,9 @@ void main() {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
           Future<transport.WebSocket> handler(Uri uri,
-                  {Map<String, dynamic> headers,
-                  Match match,
-                  Iterable<String> protocols}) async =>
+                  {Map<String, dynamic>? headers,
+                  Match? match,
+                  Iterable<String>? protocols}) async =>
               webSocket;
           MockTransports.webSocket.whenPattern(uriPattern, handler: handler);
 
@@ -386,11 +386,11 @@ void main() {
             'registers a handler that will receive the uri Match on connection',
             () async {
           final uriPattern = RegExp('ws:\/\/(google|github)\.com\/ws.*');
-          Match uriMatch;
+          Match? uriMatch;
           Future<transport.WebSocket> handler(Uri uri,
-              {Map<String, dynamic> headers,
-              Match match,
-              Iterable<String> protocols}) async {
+              {Map<String, dynamic>? headers,
+              Match? match,
+              Iterable<String>? protocols}) async {
             uriMatch = match;
             // ignore: deprecated_member_use_from_same_package
             return MockWSocket();
@@ -400,8 +400,8 @@ void main() {
 
           await transport.WebSocket.connect(
               Uri.parse('ws://github.com/ws/listen'));
-          expect(uriMatch.group(0), equals('ws://github.com/ws/listen'));
-          expect(uriMatch.group(1), equals('github'));
+          expect(uriMatch!.group(0), equals('ws://github.com/ws/listen'));
+          expect(uriMatch!.group(1), equals('github'));
         });
 
         test('registers a handler that can be canceled', () async {
@@ -481,13 +481,13 @@ void main() {
         final c = Completer<Null>();
         final mockWebSocketServer = MockWebSocketServer();
         mockWebSocketServer.onClientConnected.listen((connection) {
-          connection.done.then((_) => c.complete());
+          connection.done.then(((_) => c.complete()));
         });
 
         MockTransports.webSocket
             .expect(webSocketUri, connectTo: mockWebSocketServer);
-        final webSocket = await transport.WebSocket.connect(webSocketUri);
-        await webSocket.close();
+        final webSocket = await (transport.WebSocket.connect(webSocketUri));
+        await webSocket?.close();
         await c.future;
       });
     });

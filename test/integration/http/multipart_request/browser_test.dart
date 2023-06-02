@@ -40,12 +40,12 @@ void main() {
           ..uri = IntegrationPaths.reflectEndpointUri
           ..fields['field'] = 'value';
         request.configure((request) async {
-          HttpRequest xhr = request;
+          HttpRequest xhr = request as HttpRequest;
           xhr.setRequestHeader('x-configured', 'true');
         });
         final response = await request.get();
         expect(
-            response.body.asJson()['headers']['x-configured'], equals('true'));
+            response.body!.asJson()['headers']['x-configured'], equals('true'));
       });
 
       group('withCredentials', () {
@@ -56,7 +56,7 @@ void main() {
             ..fields['field'] = 'value'
             ..withCredentials = true;
           request.configure((request) async {
-            HttpRequest xhr = request;
+            HttpRequest xhr = request as HttpRequest;
             expect(xhr.withCredentials, isTrue);
           });
           await request.get();
@@ -69,7 +69,7 @@ void main() {
             ..fields['field'] = 'value'
             ..withCredentials = false;
           request.configure((request) async {
-            HttpRequest xhr = request;
+            HttpRequest xhr = request as HttpRequest;
             expect(xhr.withCredentials, isFalse);
           });
           await request.get();

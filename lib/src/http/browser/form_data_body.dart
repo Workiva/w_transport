@@ -25,11 +25,11 @@ class FormDataBody extends BaseHttpBody {
   FormDataBody(this.formData);
 
   @override
-  int get contentLength => null;
+  int? get contentLength => null;
 
   @override
-  MediaType get contentType => null;
+  MediaType? get contentType => null;
 
   @override
-  Encoding get encoding => null;
+  Encoding? get encoding => null;
 }

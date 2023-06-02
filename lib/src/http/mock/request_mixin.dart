@@ -34,7 +34,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   Completer<BaseResponse> _response = Completer<BaseResponse>();
   Completer<FinalizedRequest> _sent = Completer<FinalizedRequest>();
   bool _shouldFailToOpen = false;
-  bool _streamResponse;
+  late bool _streamResponse;
 
   @override
   bool get isMockAware => true;
@@ -57,7 +57,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     _canceled.complete();
   }
 
-  BaseRequest createRealRequest();
+  BaseRequest? createRealRequest();
 
   @override
   Future<Null> openRequest([_]) async {
@@ -69,10 +69,10 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   }
 
   @override
-  CommonRequest switchToRealRequest({bool streamResponse}) {
+  CommonRequest? switchToRealRequest({bool? streamResponse}) {
     // There is not a mock expectation or handler set up to handle this request,
     // so we fallback to the real TransportPlatform implementation.
-    final realRequest = createRealRequest()
+    final realRequest = createRealRequest()!
       ..autoRetry = autoRetry
       ..headers = headers
       ..requestInterceptor = requestInterceptor
@@ -96,7 +96,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
       realRequest.encoding = encoding;
     }
 
-    return realRequest;
+    return realRequest as CommonRequest?;
   }
 
   @override
@@ -123,36 +123,36 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   }
 
   @override
-  void complete({BaseResponse response}) {
+  void complete({BaseResponse? response}) {
     response ??= MockResponse.ok();
     // Defer the "fetching" of the response until the request has been sent.
     onSent.then((_) async {
       // Coerce the response to the correct format (streamed or not).
       if (_streamResponse && response is Response) {
-        final Response standardResponse = response;
+        final Response standardResponse = response as Response;
         response = StreamedResponse.fromByteStream(
-            response.status,
-            response.statusText,
-            response.headers,
-            Stream.fromIterable([standardResponse.body.asBytes()]));
+            response!.status,
+            response!.statusText,
+            response!.headers!,
+            Stream.fromIterable([standardResponse.body!.asBytes()]));
       }
       if (!_streamResponse && response is StreamedResponse) {
-        final StreamedResponse streamedResponse = response;
-        response = Response.fromBytes(response.status, response.statusText,
-            response.headers, await streamedResponse.body.toBytes());
+        final StreamedResponse streamedResponse = response as StreamedResponse;
+        response = Response.fromBytes(response!.status, response!.statusText,
+            response!.headers!, await streamedResponse.body!.toBytes());
       }
 
       if (response is StreamedResponse) {
-        final StreamedResponse streamedResponse = response;
+        final StreamedResponse streamedResponse = response as StreamedResponse;
         final progressListener = http_utils.ByteStreamProgressListener(
-            streamedResponse.body.byteStream,
-            total: response.contentLength);
+            streamedResponse.body!.byteStream!,
+            total: response!.contentLength);
         progressListener.progressStream.listen(downloadProgressController.add);
-        response = StreamedResponse.fromByteStream(response.status,
-            response.statusText, response.headers, progressListener.byteStream);
+        response = StreamedResponse.fromByteStream(response!.status,
+            response!.statusText, response!.headers!, progressListener.byteStream);
       } else {
-        final Response standardResponse = response;
-        final total = standardResponse.body.asBytes().length;
+        final Response standardResponse = response as Response;
+        final total = standardResponse.body!.asBytes()!.length;
         downloadProgressController.add(RequestProgress(total, total));
       }
 
@@ -161,7 +161,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
   }
 
   @override
-  void completeError({Object error, BaseResponse response}) {
+  void completeError({Object? error, BaseResponse? response}) {
     // Defer the "fetching" of the response until the request has been sent.
     onSent.then((_) {
       _response

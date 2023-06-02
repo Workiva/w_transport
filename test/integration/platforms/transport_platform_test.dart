@@ -50,7 +50,7 @@ void main() {
         () {
       expect(() {
         transport.FormRequest();
-      }, throwsA(predicate((exception) {
+      }, throwsA(predicate((dynamic exception) {
         return exception is transport.TransportPlatformMissing &&
             exception.toString().contains(
                 'Cannot send FormRequest - Missing Transport Platform');
@@ -58,7 +58,7 @@ void main() {
 
       expect(() {
         transport.HttpClient();
-      }, throwsA(predicate((exception) {
+      }, throwsA(predicate((dynamic exception) {
         return exception is transport.TransportPlatformMissing &&
             exception.toString().contains(
                 'Cannot construct an HTTP Client - Missing Transport Platform');
@@ -66,7 +66,7 @@ void main() {
 
       expect(() {
         transport.JsonRequest();
-      }, throwsA(predicate((exception) {
+      }, throwsA(predicate((dynamic exception) {
         return exception is transport.TransportPlatformMissing &&
             exception.toString().contains(
                 'Cannot send JsonRequest - Missing Transport Platform');
@@ -74,7 +74,7 @@ void main() {
 
       expect(() {
         transport.MultipartRequest();
-      }, throwsA(predicate((exception) {
+      }, throwsA(predicate((dynamic exception) {
         return exception is transport.TransportPlatformMissing &&
             exception.toString().contains(
                 'Cannot send MultipartRequest - Missing Transport Platform');
@@ -82,7 +82,7 @@ void main() {
 
       expect(() {
         transport.Request();
-      }, throwsA(predicate((exception) {
+      }, throwsA(predicate((dynamic exception) {
         return exception is transport.TransportPlatformMissing &&
             exception
                 .toString()
@@ -91,7 +91,7 @@ void main() {
 
       expect(() {
         transport.StreamedRequest();
-      }, throwsA(predicate((exception) {
+      }, throwsA(predicate((dynamic exception) {
         return exception is transport.TransportPlatformMissing &&
             exception.toString().contains(
                 'Cannot send StreamedRequest - Missing Transport Platform');
@@ -160,31 +160,31 @@ class StubTransportPlatform implements transport.TransportPlatform {
   const StubTransportPlatform();
 
   @override
-  transport.HttpClient newHttpClient() => null;
+  transport.HttpClient? newHttpClient() => null;
 
   @override
-  Future<transport.WebSocket> newWebSocket(Uri uri,
-          {Map<String, dynamic> headers,
-          Iterable<String> protocols,
-          bool sockJSDebug,
-          bool sockJSNoCredentials,
-          List<String> sockJSProtocolsWhitelist,
-          Duration sockJSTimeout,
-          bool useSockJS}) async =>
+  Future<transport.WebSocket?> newWebSocket(Uri uri,
+          {Map<String, dynamic>? headers,
+          Iterable<String>? protocols,
+          bool? sockJSDebug,
+          bool? sockJSNoCredentials,
+          List<String>? sockJSProtocolsWhitelist,
+          Duration? sockJSTimeout,
+          bool? useSockJS}) async =>
       null;
 
   @override
-  transport.StreamedRequest newStreamedRequest() => null;
+  transport.StreamedRequest? newStreamedRequest() => null;
 
   @override
-  transport.Request newRequest() => null;
+  transport.Request? newRequest() => null;
 
   @override
-  transport.MultipartRequest newMultipartRequest() => null;
+  transport.MultipartRequest? newMultipartRequest() => null;
 
   @override
-  transport.JsonRequest newJsonRequest() => null;
+  transport.JsonRequest? newJsonRequest() => null;
 
   @override
-  transport.FormRequest newFormRequest() => null;
+  transport.FormRequest? newFormRequest() => null;
 }

@@ -34,8 +34,8 @@ Uri uploadEndpoint =
 Uri downloadEndpoint =
     Uri.parse('http://localhost:8024/http/cross_origin_file_transfer/download');
 
-transport.HttpClient client;
-transport.HttpClient getHttpClient() {
+transport.HttpClient? client;
+transport.HttpClient? getHttpClient() {
   if (client == null) {
     client = transport.HttpClient(transportPlatform: vmTransportPlatform);
   }
@@ -53,7 +53,7 @@ class FilesProxy extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    final proxyRequest = getHttpClient().newRequest()..headers = headers;
+    final proxyRequest = getHttpClient()!.newRequest()..headers = headers;
 
     final proxyResponse = await proxyRequest.streamGet(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.ok;
@@ -70,7 +70,7 @@ class FilesProxy extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    final proxyRequest = getHttpClient().newRequest()..headers = headers;
+    final proxyRequest = getHttpClient()!.newRequest()..headers = headers;
 
     final proxyResponse = await proxyRequest.streamDelete(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.ok;
@@ -94,8 +94,8 @@ class UploadProxy extends Handler {
       headers[name] = values.join(', ');
     });
     final contentType =
-        transport.MediaType.parse(request.headers.value('content-type'));
-    final proxyRequest = getHttpClient().newStreamedRequest()
+        transport.MediaType.parse(request.headers.value('content-type')!);
+    final proxyRequest = getHttpClient()!.newStreamedRequest()
       ..headers = headers
       ..body = request.cast<List<int>>()
       ..contentLength = request.contentLength
@@ -133,7 +133,7 @@ class DownloadProxy extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    final proxyRequest = getHttpClient().newRequest()
+    final proxyRequest = getHttpClient()!.newRequest()
       ..uri = downloadEndpoint
       ..query = request.uri.query
       ..headers = headers;

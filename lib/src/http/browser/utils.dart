@@ -22,8 +22,8 @@ import 'package:w_transport/src/http/request_progress.dart';
 StreamTransformer<ProgressEvent, RequestProgress> transformProgressEvents =
     StreamTransformer<ProgressEvent, RequestProgress>(
         (Stream<ProgressEvent> input, bool cancelOnError) {
-  StreamController<RequestProgress> controller;
-  StreamSubscription<ProgressEvent> subscription;
+  late StreamController<RequestProgress> controller;
+  late StreamSubscription<ProgressEvent> subscription;
   controller = StreamController<RequestProgress>(onListen: () {
     subscription = input.listen((ProgressEvent event) {
       controller.add(event.lengthComputable

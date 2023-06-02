@@ -30,7 +30,7 @@ void main() {
     ..topic = topicGlobalWebSocketMonitor;
 
   group(naming.toString(), () {
-    Future<transport.WebSocket> connect(Uri uri) =>
+    Future<transport.WebSocket?> connect(Uri uri) =>
         transport.WebSocket.connect(uri,
             transportPlatform: vmTransportPlatform);
 
@@ -41,8 +41,8 @@ void main() {
       var events = <transport.WebSocketConnectEvent>[];
       monitor.didAttemptToConnect.listen(events.add);
 
-      var webSocket = await connect(IntegrationPaths.echoUri);
-      await webSocket.close();
+      var webSocket = await (connect(IntegrationPaths.echoUri));
+      await webSocket?.close();
 
       await connect(IntegrationPaths.fourOhFourUri).catchError((_) {});
 

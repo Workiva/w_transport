@@ -67,10 +67,10 @@ void _createUploadDirectory() {
 }
 
 class FileWatcher {
-  List<FileSystemEntity> files;
+  late List<FileSystemEntity> files;
 
   Directory _dir;
-  bool _watching;
+  late bool _watching;
 
   FileWatcher(this._dir) {
     files = [];
@@ -119,8 +119,8 @@ class UploadHandler extends Handler {
     }
 
     final contentType =
-        ContentType.parse(request.headers.value('content-type'));
-    final boundary = contentType.parameters['boundary'];
+        ContentType.parse(request.headers.value('content-type')!);
+    final boundary = contentType.parameters['boundary']!;
     final stream = MimeMultipartTransformer(boundary)
         .bind(request)
         .map(HttpMultipartFormData.parse);
@@ -197,7 +197,7 @@ class DownloadHandler extends Handler {
       return;
     }
     final requestedFile =
-        Uri.parse(request.uri.queryParameters['file']).pathSegments.last;
+        Uri.parse(request.uri.queryParameters['file']!).pathSegments.last;
     if (requestedFile == '' || requestedFile == null) {
       request.response.statusCode = HttpStatus.notFound;
       setCorsHeaders(request);
@@ -215,7 +215,7 @@ class DownloadHandler extends Handler {
       return;
     }
 
-    final headers = <String, String>{
+    final headers = <String, String?>{
       'content-length': file.lengthSync().toString(),
       'content-type': lookupMimeType(fileUri.path),
     };
@@ -227,7 +227,7 @@ class DownloadHandler extends Handler {
     request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
     headers.forEach((h, v) {
-      request.response.headers.set(h, v);
+      request.response.headers.set(h, v!);
     });
     await request.response.addStream(file.openRead());
   }

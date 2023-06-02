@@ -62,9 +62,9 @@ void main() {
       MockTransports.webSocket
           .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
       final webSocket =
-          await transport.WebSocket.connect(IntegrationPaths.pingUri);
+          await (transport.WebSocket.connect(IntegrationPaths.pingUri));
       expect(webSocket, isA<MockWebSocket>());
-      await webSocket.close();
+      await webSocket?.close();
       await mockWebSocketServer.shutDown();
 
       MockTransports.verifyNoOutstandingExceptions();
@@ -98,9 +98,9 @@ void main() {
       MockTransports.webSocket
           .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
       final webSocket =
-          await transport.WebSocket.connect(IntegrationPaths.pingUri);
+          await (transport.WebSocket.connect(IntegrationPaths.pingUri));
       expect(webSocket, isA<MockWebSocket>());
-      await webSocket.close();
+      await webSocket?.close();
       await mockWebSocketServer.shutDown();
 
       MockTransports.verifyNoOutstandingExceptions();
@@ -176,12 +176,12 @@ void main() {
 
       Future<Null> requestInterceptor(transport.BaseRequest request) async =>
           null;
-      Future<transport.BaseResponse> responseInterceptor(
-              FinalizedRequest request, transport.BaseResponse response,
-              [transport.RequestException error]) async =>
+      Future<transport.BaseResponse?> responseInterceptor(
+              FinalizedRequest request, transport.BaseResponse? response,
+              [transport.RequestException? error]) async =>
           null;
       final request = transport.Request(transportPlatform: vmTransportPlatform)
-        ..autoRetry.enabled = true
+        ..autoRetry!.enabled = true
         ..contentType = transport.MediaType('application', 'json')
         ..headers['x-custom'] = 'test'
         ..requestInterceptor = requestInterceptor
@@ -191,16 +191,16 @@ void main() {
         ..withCredentials = true;
 
       // ignore: avoid_as
-      final realRequest = (request as MockRequestMixin).switchToRealRequest();
+      final realRequest = (request as MockRequestMixin).switchToRealRequest()!;
 
-      expect(realRequest.autoRetry.enabled, isTrue);
-      expect(realRequest.contentType.mimeType, equals('application/json'));
+      expect(realRequest.autoRetry!.enabled, isTrue);
+      expect(realRequest.contentType!.mimeType, equals('application/json'));
       expect(realRequest.headers, containsPair('x-custom', 'test'));
       expect(identical(realRequest.requestInterceptor, requestInterceptor),
           isTrue);
       expect(identical(realRequest.responseInterceptor, responseInterceptor),
           isTrue);
-      expect(realRequest.timeoutThreshold.inSeconds, equals(5));
+      expect(realRequest.timeoutThreshold!.inSeconds, equals(5));
       expect(realRequest.uri, equals(IntegrationPaths.reflectEndpointUri));
       expect(realRequest.withCredentials, isTrue);
 
@@ -210,7 +210,7 @@ void main() {
             ..contentLength = 10;
       // ignore: avoid_as
       final realStreamedRequest =
-          (streamedRequest as MockRequestMixin).switchToRealRequest();
+          (streamedRequest as MockRequestMixin).switchToRealRequest()!;
       expect(realStreamedRequest.contentLength, equals(10));
 
       await MockTransports.uninstall();

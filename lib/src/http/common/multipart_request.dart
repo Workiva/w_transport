@@ -61,7 +61,7 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   Map<String, dynamic> _files = {};
 
-  CommonMultipartRequest(TransportPlatform transportPlatform)
+  CommonMultipartRequest(TransportPlatform? transportPlatform)
       : super(transportPlatform);
   // ignore: deprecated_member_use_from_same_package
   CommonMultipartRequest.fromClient(Client wTransportClient, client)
@@ -219,7 +219,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       write(file['headers']); // File headers.
 
       // File bytes and ending newline.
-      return writeByteStream(byteStream).then(((_) => write(_crlf)) as FutureOr<dynamic> Function(Null));
+      return writeByteStream(byteStream).then(((_) => write(_crlf)));
     }).then((_) {
       // Ending boundary delimiter.
       write('$_boundaryHyphens$boundary$_boundaryHyphens$_crlf');

@@ -66,7 +66,7 @@ class MockMultipartRequest extends CommonMultipartRequest
     with MockRequestMixin {
   TransportPlatform? _realTransport;
 
-  MockMultipartRequest(TransportPlatform realTransport)
+  MockMultipartRequest(TransportPlatform? realTransport)
       : _realTransport = realTransport,
         super(realTransport);
   MockMultipartRequest.fromClient(Client wTransportClient, this._realTransport)

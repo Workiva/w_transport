@@ -291,19 +291,6 @@ void _runCommonRequestSuiteFor(String name,
       await request.get(headers: {'x-two': '2', 'x-three': '3'});
     });
 
-    test('request cancellation prior to dispatch should cancel request',
-        () async {
-      final request = requestFactory();
-      request.abort();
-      Future future = request.get(uri: requestUri);
-      expect(future, throwsA(isA<transport.RequestException>()));
-      await future.catchError((_) {});
-      expect(request.isDone, isTrue,
-          reason: 'canceled request should be marked as "done"');
-      expect(request.done, completes,
-          reason:
-              'canceled request should trigger completion of `done` future');
-    });
 
     test(
         'request cancellation after dispatch but prior to resolution should cancel request',

@@ -28,7 +28,13 @@ import 'package:w_transport/w_transport.dart';
 
 import '../../naming.dart';
 
-class MockRandom extends Mock implements Random {}
+
+class MockRandom extends Mock implements Random {
+  @override
+  double nextDouble() {
+    return 0.5;
+  }
+}
 
 void main() {
   final naming = Naming()
@@ -49,10 +55,8 @@ void main() {
 
         group('exponential', () {
           Request? request;
-          final random = MockRandom();
+          var random = MockRandom();
           // Return the mean/median value of this random so we have a deterministic output
-          when(random.nextDouble()).thenReturn(0.5);
-
           void expectBackOffOf(Matcher matcher,
               {http_utils.AdvancedBackOffCalculator? calculator,
               bool useMockRandom = true}) {

@@ -177,7 +177,7 @@ abstract class MultipartRequest extends BaseRequest {
       // If transports are mocked, return a mock-aware MultipartRequest instance.
       // This mock-aware instance will be able to decide at the time of dispatch
       // whether or not the mock logic should handle the request.
-      return MockAwareTransportPlatform.newMultipartRequest(transportPlatform!);
+      return MockAwareTransportPlatform.newMultipartRequest(transportPlatform);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
       return transportPlatform.newMultipartRequest()!;

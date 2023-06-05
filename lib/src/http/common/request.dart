@@ -792,7 +792,7 @@ abstract class CommonRequest extends Object
       void breakOutOfResponseFetching(_) {
         if (!responseCompleter.isCompleted) {
           response = null;
-          responseCompleter.complete(response!);
+          responseCompleter.complete(response);
         }
       }
 
@@ -831,7 +831,7 @@ abstract class CommonRequest extends Object
         }
       }
 
-      c.complete(response!);
+      c.complete(response);
     } catch (e, stackTrace) {
       Object exception = e;
       if (exception is! RequestException) {

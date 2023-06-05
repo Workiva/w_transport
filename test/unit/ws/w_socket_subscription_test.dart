@@ -74,8 +74,8 @@ void main() {
 
         wsub.onDone(doneHandler);
         expect(wsub.doneHandler, equals(doneHandler));
+        sub.cancel();
         await wsub.cancel();
-        await sub.cancel();
       });
 
       test('onError() should call onError() on the underlying subscription',
@@ -87,8 +87,8 @@ void main() {
         wsub.onError(errorHandler);
         expect(identical(sub.onErrorHandler, errorHandler), isTrue);
 
+        sub.cancel();
         await wsub.cancel();
-        await sub.cancel();
       });
 
       test('onData() should call onData() on the underlying subscription',
@@ -99,9 +99,8 @@ void main() {
 
         wsub.onData(dataHandler);
         expect(identical(sub.onDataHandler, dataHandler), isTrue);
-
+        sub.cancel();
         await wsub.cancel();
-        await sub.cancel();
       });
     });
   });

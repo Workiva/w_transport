@@ -70,7 +70,7 @@ class MockAwareTransportPlatform {
   /// Construct a new [MockMultipartRequest] instance that implements
   /// [MultipartRequest].
   static MultipartRequest newMultipartRequest(
-          TransportPlatform realTransportPlatform) =>
+          TransportPlatform? realTransportPlatform) =>
       // ignore: deprecated_member_use_from_same_package
       MockMultipartRequest(realTransportPlatform);
 

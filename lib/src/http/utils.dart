@@ -289,9 +289,9 @@ class ByteStreamProgressListener {
 
   Stream<List<int>> _listenTo(Stream<List<int>?> byteStream, {int? total}) {
     int loaded = 0;
-
     final progressListener = StreamTransformer<List<int>, List<int>>(
         (Stream<List<int>> input, bool cancelOnError) {
+
       late StreamController<List<int>> controller;
       late StreamSubscription<List<int>> subscription;
 
@@ -324,7 +324,6 @@ class ByteStreamProgressListener {
 
       return controller.stream.listen(null);
     });
-
     return byteStream.transform(progressListener);
   }
 }

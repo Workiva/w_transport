@@ -14,7 +14,6 @@
 
 @TestOn('browser')
 import 'dart:async';
-import 'dart:html';
 
 import 'package:test/test.dart';
 import 'package:w_transport/browser.dart';

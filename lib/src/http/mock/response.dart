@@ -131,7 +131,7 @@ class MockStreamedResponse implements StreamedResponse {
   late StreamedResponse _response;
 
   MockStreamedResponse(int status,
-      {Stream<List<int>?>? byteStream,
+      {Stream<List<int>>? byteStream,
       Encoding? encoding,
       Map<String, String?>? headers,
       String? statusText}) {
@@ -155,7 +155,7 @@ class MockStreamedResponse implements StreamedResponse {
   }
 
   factory MockStreamedResponse.ok(
-          {Stream<List<int>?>? byteStream,
+          {Stream<List<int>>? byteStream,
           Map<String, String?>? headers,
           String? statusText}) =>
       MockStreamedResponse(200,

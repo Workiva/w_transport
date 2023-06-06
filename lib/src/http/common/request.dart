@@ -716,7 +716,7 @@ abstract class CommonRequest extends Object
 
     // Use a completer so that an exception can be wrapped in a RequestException
     // instance while still preserving the stack trace of the original error.
-    final c = Completer<BaseResponse>();
+    final c = Completer<BaseResponse?>();
 
     this.method = method;
     if (uri != null) {
@@ -765,7 +765,7 @@ abstract class CommonRequest extends Object
       await openRequest(client);
       checkForCancellation();
       checkForTimeout();
-      final responseCompleter = Completer<BaseResponse>();
+      final responseCompleter = Completer<BaseResponse?>();
 
       // Enforce a timeout threshold if set.
       Timer? timeout;
@@ -855,7 +855,7 @@ abstract class CommonRequest extends Object
       // Attempt to retry the request if configuration and state permit it.
       bool retrySucceeded = false;
       if (await _canRetry(finalizedRequest, response, requestException)) {
-        final retryCompleter = Completer<BaseResponse>();
+        final retryCompleter = Completer<BaseResponse?>();
 
         // If retry back-off is configured, wait as necessary.
         _backOffCalculator ??= utils.AdvancedBackOffCalculator();

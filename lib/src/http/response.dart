@@ -100,7 +100,7 @@ class Response extends BaseResponse {
   /// Gets and sets the content-length of the request, in bytes. If the size of
   /// the request is not known in advance, set this to null.
   @override
-  int get contentLength => body!.asBytes()!.length;
+  int get contentLength => body!.asBytes().length;
 
   /// Create a new [Response] using all the values from this instance except
   /// for the parameters specified.
@@ -138,7 +138,7 @@ class StreamedResponse extends BaseResponse {
         super(status, statusText, headers);
 
   StreamedResponse.fromByteStream(int status, String? statusText,
-      Map<String, String?> headers, Stream<List<int>?>? byteStream)
+      Map<String, String?> headers, Stream<List<int>>? byteStream)
       : super(status, statusText, headers) {
     _body = StreamedHttpBody.fromByteStream(contentType, byteStream,
         contentLength: contentLength, fallbackEncoding: encoding);

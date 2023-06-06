@@ -17,7 +17,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';

@@ -97,14 +97,14 @@ class HttpBody extends BaseHttpBody {
 
   /// The size of this request/response body in bytes.
   @override
-  int get contentLength => asBytes()!.length;
+  int get contentLength => asBytes().length;
 
   /// Encoding used to encode/decode this request/response body.
   @override
   Encoding? get encoding => _encoding ?? _fallbackEncoding;
 
   /// Returns this request/response body as a list of bytes.
-  Uint8List? asBytes() {
+  Uint8List asBytes() {
     if (_bytes == null) {
       List<int> encoded;
       try {
@@ -114,7 +114,7 @@ class HttpBody extends BaseHttpBody {
       }
       _bytes = Uint8List.fromList(encoded);
     }
-    return _bytes;
+    return _bytes!;
   }
 
   /// Returns this request/response body as a String.
@@ -147,7 +147,7 @@ class HttpBody extends BaseHttpBody {
 /// when uploading/downloading a file).
 class StreamedHttpBody extends BaseHttpBody {
   /// Single subscription stream of chunks of bytes.
-  Stream<List<int>?>? byteStream;
+  Stream<List<int>>? byteStream;
 
   /// The size of this request/response body in bytes.
   ///

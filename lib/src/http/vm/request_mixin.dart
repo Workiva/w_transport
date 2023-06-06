@@ -63,7 +63,6 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
   Future<BaseResponse> sendRequestAndFetchResponse(
       FinalizedRequest finalizedRequest,
       {bool streamResponse = false}) async {
-    streamResponse ??= false;
 
     if (finalizedRequest.headers != null) {
       finalizedRequest.headers.forEach(_request!.headers.set);
@@ -100,7 +99,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
     } else {
       final HttpBody body = finalizedRequest.body as HttpBody;
       // The entire request body is available immediately as bytes.
-      _request!.add(body.asBytes()!);
+      _request!.add(body.asBytes());
 
       // Since the entire request body has already been sent, the upload
       // progress stream can be "completed" by adding a single progress event.

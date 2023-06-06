@@ -15,7 +15,6 @@
 @TestOn('browser')
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
-import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
 import 'package:w_transport/src/http/mock/http_client.dart';

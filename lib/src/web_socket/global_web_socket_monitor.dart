@@ -14,7 +14,6 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart' show required;
 
 List<GlobalWebSocketMonitor> _monitors = [];
 

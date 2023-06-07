@@ -549,8 +549,8 @@ abstract class CommonRequest extends Object
   @override
   Future<StreamedResponse> streamDelete(
       {Map<String, String>? headers, Uri? uri}) async {
-    final r =
-        await (_send('DELETE', headers: headers, streamResponse: true, uri: uri));
+    final r = await (_send('DELETE',
+        headers: headers, streamResponse: true, uri: uri));
     assert(r is StreamedResponse,
         'streamDelete() should return a StreamedResponse');
     StreamedResponse response = r as StreamedResponse;
@@ -711,7 +711,10 @@ abstract class CommonRequest extends Object
   /// errors that may be thrown. These errors are wrapped in a
   /// [RequestException] and rethrown.
   Future<BaseResponse?> _send(String? method,
-      {body, Map<String, String>? headers, bool? streamResponse, Uri? uri}) async {
+      {body,
+      Map<String, String>? headers,
+      bool? streamResponse,
+      Uri? uri}) async {
     autoRetry!.numAttempts++;
 
     // Use a completer so that an exception can be wrapped in a RequestException

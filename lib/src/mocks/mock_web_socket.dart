@@ -47,7 +47,8 @@ class MockWebSockets {
       {WebSocketConnectHandler? handler, bool? reject}) {
     MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
     if (reject != null && reject) {
-      handler = (uri, {Iterable<String>? protocols, Map<String, dynamic>? headers}) {
+      handler =
+          (uri, {Iterable<String>? protocols, Map<String, dynamic>? headers}) {
         throw WebSocketException('Mock connection to $uri rejected.');
       };
     }
@@ -72,7 +73,11 @@ class MockWebSockets {
     MockWebSocketInternal._patternHandlers[uriPattern] = handler;
 
     return MockWebSocketHandler._(() {
-      final Future<dynamic> Function(Uri, {Map<String, dynamic> headers, Match match, Iterable<String> protocols})? currentHandler = MockWebSocketInternal._patternHandlers[uriPattern];
+      final Future<dynamic> Function(Uri,
+              {Map<String, dynamic> headers,
+              Match match,
+              Iterable<String> protocols})? currentHandler =
+          MockWebSocketInternal._patternHandlers[uriPattern];
       if (currentHandler != null && currentHandler == handler) {
         MockWebSocketInternal._patternHandlers.remove(uriPattern);
       }
@@ -208,7 +213,8 @@ class MockWebSocketInternal {
     }
 
     Match? match;
-    final matchingHandlerKey = _patternHandlers.keys.firstWhereOrNull((uriPattern) {
+    final matchingHandlerKey =
+        _patternHandlers.keys.firstWhereOrNull((uriPattern) {
       final matches = uriPattern.allMatches(uri.toString());
       if (matches.isNotEmpty) {
         match = matches.first;

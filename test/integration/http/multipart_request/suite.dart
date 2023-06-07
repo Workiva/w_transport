@@ -21,7 +21,8 @@ import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runMultipartRequestSuite([transport.TransportPlatform? transportPlatform]) {
+void runMultipartRequestSuite(
+    [transport.TransportPlatform? transportPlatform]) {
   group('MultipartRequest', () {
     test('contentLength should be set automatically', () async {
       final chunks = <List<int>>[

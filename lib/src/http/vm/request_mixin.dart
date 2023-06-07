@@ -63,7 +63,6 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
   Future<BaseResponse> sendRequestAndFetchResponse(
       FinalizedRequest finalizedRequest,
       {bool streamResponse = false}) async {
-
     finalizedRequest.headers.forEach(_request!.headers.set);
 
     // Allow the caller to configure the request.

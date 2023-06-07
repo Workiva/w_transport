@@ -74,7 +74,8 @@ abstract class RequestDispatchers {
   /// If [body] is given, it must be of valid type for the type of request being
   /// sent. For example, if sending a JSON request using the [JsonRequest],
   /// [body] must be a JSON-encodable Map or List.
-  Future<Response> patch({dynamic body, Map<String, String>? headers, Uri? uri});
+  Future<Response> patch(
+      {dynamic body, Map<String, String>? headers, Uri? uri});
 
   /// Send a POST request.
   ///
@@ -125,7 +126,8 @@ abstract class RequestDispatchers {
   ///
   /// If [headers] are given, they will be merged with the set of headers
   /// already defined on the [BaseRequest].
-  Future<StreamedResponse> streamDelete({Map<String, String>? headers, Uri? uri});
+  Future<StreamedResponse> streamDelete(
+      {Map<String, String>? headers, Uri? uri});
 
   /// Send a GET request. The response will be streamed, meaning the body will
   /// be available asynchronously. This is useful for large response bodies or

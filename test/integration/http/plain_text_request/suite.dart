@@ -19,7 +19,8 @@ import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runPlainTextRequestSuite([transport.TransportPlatform? transportPlatform]) {
+void runPlainTextRequestSuite(
+    [transport.TransportPlatform? transportPlatform]) {
   group('Request', () {
     test('contentLength should be set automatically', () async {
       final emptyRequest =

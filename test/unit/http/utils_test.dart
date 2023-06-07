@@ -27,7 +27,6 @@ import 'package:w_transport/w_transport.dart';
 
 import '../../naming.dart';
 
-
 class MockRandom extends Mock implements Random {
   @override
   double nextDouble() {
@@ -181,8 +180,8 @@ void main() {
                     calculator: calculator, useMockRandom: false);
               } else {
                 expectBackOffOf(
-                    lessThanOrEqualTo(
-                        request!.autoRetry!.backOff.maxInterval!.inMilliseconds),
+                    lessThanOrEqualTo(request!
+                        .autoRetry!.backOff.maxInterval!.inMilliseconds),
                     calculator: calculator,
                     useMockRandom: false);
               }
@@ -219,8 +218,9 @@ void main() {
                 transport.RetryBackOff.fixed(interval, withJitter: withJitter);
 
             for (int i = 0; i < 5; i++) {
-              final backOff =
-                  http_utils.calculateBackOff(request.autoRetry!)!.inMilliseconds;
+              final backOff = http_utils
+                  .calculateBackOff(request.autoRetry!)!
+                  .inMilliseconds;
               expect(backOff, lessThanOrEqualTo(interval.inMilliseconds * 1.5));
               expect(
                   backOff, greaterThanOrEqualTo(interval.inMilliseconds ~/ 2));

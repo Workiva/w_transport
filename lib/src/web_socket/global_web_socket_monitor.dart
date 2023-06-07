@@ -14,7 +14,6 @@
 
 import 'dart:async';
 
-
 List<GlobalWebSocketMonitor> _monitors = [];
 
 void emitWebSocketConnectEvent(WebSocketConnectEvent connectEvent) {

@@ -247,7 +247,8 @@ void _runHttpClientSuite(transport.Client getClient()) {
           equals(client.autoRetry.forStatusCodes));
       expect(
           request.autoRetry!.forTimeouts, equals(client.autoRetry.forTimeouts));
-      expect(request.autoRetry!.maxRetries, equals(client.autoRetry.maxRetries));
+      expect(
+          request.autoRetry!.maxRetries, equals(client.autoRetry.maxRetries));
       expect(request.autoRetry!.test, equals(client.autoRetry.test));
     }
   });

@@ -53,7 +53,8 @@ Duration? calculateBackOff(
 }
 
 Duration _calculateExponentialBackOff(RequestAutoRetry autoRetry,
-    {@visibleForTesting Random? random, AdvancedBackOffCalculator? calculator}) {
+    {@visibleForTesting Random? random,
+    AdvancedBackOffCalculator? calculator}) {
   if (autoRetry.backOff.withJitter) {
     if (calculator == null) {
       throw StateError(
@@ -291,7 +292,6 @@ class ByteStreamProgressListener {
     int loaded = 0;
     final progressListener = StreamTransformer<List<int>, List<int>>(
         (Stream<List<int>> input, bool cancelOnError) {
-
       late StreamController<List<int>> controller;
       late StreamSubscription<List<int>> subscription;
 

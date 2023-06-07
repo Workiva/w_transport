@@ -291,7 +291,6 @@ void _runCommonRequestSuiteFor(String name,
       await request.get(headers: {'x-two': '2', 'x-three': '3'});
     });
 
-
     test(
         'request cancellation after dispatch but prior to resolution should cancel request',
         () async {
@@ -545,8 +544,8 @@ void _runCommonRequestSuiteFor(String name,
       final request = requestFactory();
       request.responseInterceptor =
           (request, transport.BaseResponse? response, [exception]) async {
-        return transport.Response.fromString(
-            response!.status, response.statusText, response.headers!, 'modified');
+        return transport.Response.fromString(response!.status,
+            response.statusText, response.headers!, 'modified');
       };
       final response = await request.get(uri: requestUri);
       expect(response.body!.asString(), equals('modified'));
@@ -585,7 +584,8 @@ void _runCommonRequestSuiteFor(String name,
       final request = requestFactory();
       request.responseInterceptor =
           (request, response, [exception]) async => response;
-      expect(request.get(uri: requestUri), throwsA(predicate((dynamic exception) {
+      expect(request.get(uri: requestUri),
+          throwsA(predicate((dynamic exception) {
         return exception is transport.RequestException &&
             identical(exception.error, error);
       })));

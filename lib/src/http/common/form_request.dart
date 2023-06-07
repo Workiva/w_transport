@@ -57,7 +57,8 @@ abstract class CommonFormRequest extends CommonRequest implements FormRequest {
             'type `String` or `Iterable<String>`');
       }
     });
-    return encoding.encode(http_utils.mapToQuery(fields, encoding: encoding)) as Uint8List;
+    return encoding.encode(http_utils.mapToQuery(fields, encoding: encoding))
+        as Uint8List;
   }
 
   @override

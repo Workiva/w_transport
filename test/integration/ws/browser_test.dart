@@ -36,7 +36,8 @@ void main() {
 
     test('should support Blob', () async {
       final blob = Blob(['one', 'two']);
-      final socket = await (transport.WebSocket.connect(IntegrationPaths.echoUri,
+      final socket = await (transport.WebSocket.connect(
+          IntegrationPaths.echoUri,
           transportPlatform: browserTransportPlatform));
       socket?.add(blob);
       await socket?.close();
@@ -44,7 +45,8 @@ void main() {
 
     test('should support String', () async {
       const data = 'data';
-      final socket = await (transport.WebSocket.connect(IntegrationPaths.echoUri,
+      final socket = await (transport.WebSocket.connect(
+          IntegrationPaths.echoUri,
           transportPlatform: browserTransportPlatform));
       socket?.add(data);
       await socket?.close();
@@ -52,14 +54,16 @@ void main() {
 
     test('should support TypedData', () async {
       final data = Uint16List.fromList([1, 2, 3]);
-      final socket = await (transport.WebSocket.connect(IntegrationPaths.echoUri,
+      final socket = await (transport.WebSocket.connect(
+          IntegrationPaths.echoUri,
           transportPlatform: browserTransportPlatform));
       socket?.add(data);
       await socket?.close();
     });
 
     test('should throw when attempting to send invalid data', () async {
-      final socket = await (transport.WebSocket.connect(IntegrationPaths.pingUri,
+      final socket = await (transport.WebSocket.connect(
+          IntegrationPaths.pingUri,
           transportPlatform: browserTransportPlatform));
       expect(() {
         socket?.add(true);

@@ -58,7 +58,8 @@ class MockHttp {
   }
 
   @Deprecated(v3Deprecation)
-  void failRequest(BaseRequest request, {Object? error, BaseResponse? response}) {
+  void failRequest(BaseRequest request,
+      {Object? error, BaseResponse? response}) {
     MockHttpInternal._verifyRequestIsMock(request);
     final MockBaseRequest mockRequest = request as MockBaseRequest;
     mockRequest.completeError(error: error, response: response);
@@ -253,7 +254,8 @@ class MockHttpInternal {
   }
 
   static _RequestHandlerMatch? _getMatchingHandler(String? method, Uri uri) {
-    final matchingRequestHandlerKey = _requestHandlers.keys.firstWhereOrNull((key) {
+    final matchingRequestHandlerKey =
+        _requestHandlers.keys.firstWhereOrNull((key) {
       return key == uri;
     });
 

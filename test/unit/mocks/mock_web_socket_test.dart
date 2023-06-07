@@ -211,7 +211,10 @@ void main() {
           expect(() {
             MockTransports.webSocket.when(webSocketUri,
                 // ignore: deprecated_member_use_from_same_package
-                handler: (uri, {Iterable<String>? protocols, Map<String, dynamic>? headers}) async => MockWSocket(),
+                handler: (uri,
+                        {Iterable<String>? protocols,
+                        Map<String, dynamic>? headers}) async =>
+                    MockWSocket(),
                 reject: true);
           }, throwsArgumentError);
         });
@@ -238,7 +241,10 @@ void main() {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
           final handler = MockTransports.webSocket.when(webSocketUri,
-              handler: (uri, {Iterable<String>? protocols, Map<String, dynamic>? headers}) async => webSocket);
+              handler: (uri,
+                      {Iterable<String>? protocols,
+                      Map<String, dynamic>? headers}) async =>
+                  webSocket);
 
           expect(await transport.WebSocket.connect(webSocketUri),
               equals(webSocket));
@@ -254,7 +260,10 @@ void main() {
           final oldHandler =
               MockTransports.webSocket.when(webSocketUri, reject: true);
           MockTransports.webSocket.when(webSocketUri,
-              handler: (uri, {Iterable<String>? protocols, Map<String, dynamic>? headers}) async => webSocket);
+              handler: (uri,
+                      {Iterable<String>? protocols,
+                      Map<String, dynamic>? headers}) async =>
+                  webSocket);
 
           expect(() {
             oldHandler.cancel();
@@ -267,7 +276,10 @@ void main() {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
           final oldHandler = MockTransports.webSocket.when(webSocketUri,
-              handler: (uri, {Iterable<String>? protocols, Map<String, dynamic>? headers}) async => webSocket);
+              handler: (uri,
+                      {Iterable<String>? protocols,
+                      Map<String, dynamic>? headers}) async =>
+                  webSocket);
           await MockTransports.reset();
 
           expect(() {

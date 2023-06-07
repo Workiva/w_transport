@@ -91,8 +91,11 @@ abstract class Handler {
   /// configured in the call to [enableCors].
   void setCorsHeaders(HttpRequest request) {
     // Use given allow origin, but default to allowing every origin (by using origin of request)
-    final origin = _allowedOrigin ?? request.headers.value('Origin')!;
-    request.response.headers.set('Access-Control-Allow-Origin', origin);
+    final origin = _allowedOrigin ?? request.headers.value('Origin');
+    if (origin != null) {
+      request.response.headers.set('Access-Control-Allow-Origin', origin);
+    }
+
 
     // Allow all headers (by using the requested headers)
     final requestHeaders = request.headers['Access-Control-Request-Headers'];

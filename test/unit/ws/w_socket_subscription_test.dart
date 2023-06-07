@@ -125,6 +125,7 @@ class MockStreamSubscription<T> extends Mock implements StreamSubscription<T> {
   void onError(Function? handleError) {
     onErrorHandler = handleError;
   }
+
   @override
   Future<void> cancel() async {
     // Add any necessary cleanup logic here

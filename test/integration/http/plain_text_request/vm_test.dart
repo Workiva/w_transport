@@ -41,7 +41,8 @@ void main() {
         await ioRequest.close();
       });
       final response = await request.get();
-      expect(response.body!.asJson()['headers']['x-configured'], equals('true'));
+      expect(
+          response.body!.asJson()['headers']['x-configured'], equals('true'));
     });
   });
 }

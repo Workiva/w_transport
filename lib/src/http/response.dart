@@ -36,7 +36,8 @@ abstract class BaseResponse {
   BaseResponse(this.status, this.statusText, Map<String, String?> headers) {
     _headers = Map<String, String>.unmodifiable(
         CaseInsensitiveMap<String?>.from(headers));
-    _encoding = http_utils.parseEncodingFromHeaders(_headers!, fallback: latin1);
+    _encoding =
+        http_utils.parseEncodingFromHeaders(_headers!, fallback: latin1);
     _contentType = http_utils.parseContentTypeFromHeaders(_headers!);
   }
 
@@ -76,19 +77,19 @@ abstract class BaseResponse {
 class Response extends BaseResponse {
   HttpBody? _body;
 
-  Response._(
-      int status, String statusText, Map<String, String> headers, HttpBody? body)
+  Response._(int status, String statusText, Map<String, String> headers,
+      HttpBody? body)
       : _body = body,
         super(status, statusText, headers);
 
-  Response.fromBytes(int status, String? statusText, Map<String, String?> headers,
-      List<int> bytes)
+  Response.fromBytes(int status, String? statusText,
+      Map<String, String?> headers, List<int> bytes)
       : super(status, statusText, headers) {
     _body = HttpBody.fromBytes(contentType, bytes, fallbackEncoding: encoding);
   }
 
-  Response.fromString(
-      int status, String? statusText, Map<String, String?> headers, String? body)
+  Response.fromString(int status, String? statusText,
+      Map<String, String?> headers, String? body)
       : super(status, statusText, headers) {
     _body = HttpBody.fromString(contentType, body, fallbackEncoding: encoding);
   }

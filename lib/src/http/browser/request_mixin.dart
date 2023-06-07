@@ -112,7 +112,6 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
   }
 
   Future<BaseResponse> _createResponse({bool streamResponse = false}) async {
-
     BaseResponse response;
     if (streamResponse) {
       final result = Completer<List<int>>();

@@ -41,7 +41,8 @@ void main() {
         xhr.setRequestHeader('x-configured', 'true');
       });
       final response = await request.get();
-      expect(response.body!.asJson()['headers']['x-configured'], equals('true'));
+      expect(
+          response.body!.asJson()['headers']['x-configured'], equals('true'));
     });
 
     group('withCredentials', () {

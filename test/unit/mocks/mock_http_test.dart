@@ -96,7 +96,8 @@ void main() {
         test('expected request failure', () async {
           final exception = Exception('Custom exception');
           MockTransports.http.expect('DELETE', requestUri, failWith: exception);
-          expect(transport.Http.delete(requestUri), throwsA(predicate((dynamic error) {
+          expect(transport.Http.delete(requestUri),
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('Custom exception');
           })));
         });
@@ -139,7 +140,8 @@ void main() {
           final exception = Exception('Custom exception');
           MockTransports.http.expectPattern('DELETE', requestUri.toString(),
               failWith: exception);
-          expect(transport.Http.delete(requestUri), throwsA(predicate((dynamic error) {
+          expect(transport.Http.delete(requestUri),
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('Custom exception');
           })));
         });
@@ -194,7 +196,8 @@ void main() {
           MockTransports.http
               // ignore: deprecated_member_use_from_same_package
               .failRequest(request, error: Exception('Custom exception'));
-          expect(request.get(uri: requestUri), throwsA(predicate((dynamic error) {
+          expect(request.get(uri: requestUri),
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('Custom exception');
           })));
         });
@@ -204,7 +207,8 @@ void main() {
           final response = MockResponse.internalServerError();
           // ignore: deprecated_member_use_from_same_package
           MockTransports.http.failRequest(request, response: response);
-          expect(request.get(uri: requestUri), throwsA(predicate((dynamic error) {
+          expect(request.get(uri: requestUri),
+              throwsA(predicate((dynamic error) {
             return error is transport.RequestException &&
                 error.response!.status == 500;
           })));
@@ -343,7 +347,8 @@ void main() {
 
         test('registers handler that throws to cause request failure',
             () async {
-          MockTransports.http.when(requestUri, ((_) async => throw Exception()));
+          MockTransports.http
+              .when(requestUri, ((_) async => throw Exception()));
           expect(transport.Http.get(requestUri),
               throwsA(isA<transport.RequestException>()));
         });

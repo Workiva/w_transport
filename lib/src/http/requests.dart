@@ -40,7 +40,12 @@ abstract class FormRequest extends BaseRequest {
       return MockAwareTransportPlatform.newFormRequest(transportPlatform);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
-      return transportPlatform.newFormRequest()!;
+      final formRequest = transportPlatform.newFormRequest();
+      if (formRequest != null) {
+        return formRequest;
+      } else {
+        throw TransportPlatformMissing.httpRequestFailed('FormRequest');
+      }
     } else {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
@@ -103,7 +108,12 @@ abstract class JsonRequest extends BaseRequest {
       return MockAwareTransportPlatform.newJsonRequest(transportPlatform);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
-      return transportPlatform.newJsonRequest()!;
+      final jsonRequest = transportPlatform.newJsonRequest();
+      if (jsonRequest != null) {
+        return jsonRequest;
+      } else {
+        throw TransportPlatformMissing.httpRequestFailed('JsonRequest');
+      }
     } else {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
@@ -180,7 +190,12 @@ abstract class MultipartRequest extends BaseRequest {
       return MockAwareTransportPlatform.newMultipartRequest(transportPlatform);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
-      return transportPlatform.newMultipartRequest()!;
+      final multipartRequest = transportPlatform.newMultipartRequest();
+      if (multipartRequest != null) {
+        return multipartRequest;
+      } else {
+        throw TransportPlatformMissing.httpRequestFailed('MultipartRequest');
+      }
     } else {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
@@ -210,7 +225,12 @@ abstract class Request extends BaseRequest {
       return MockAwareTransportPlatform.newRequest(transportPlatform);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
-      return transportPlatform.newRequest()!;
+      final newRequest = transportPlatform.newRequest();
+      if (newRequest != null) {
+        return newRequest;
+      } else {
+        throw TransportPlatformMissing.httpRequestFailed('Request');
+      }
     } else {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot
@@ -259,7 +279,12 @@ abstract class StreamedRequest extends BaseRequest {
       return MockAwareTransportPlatform.newStreamedRequest(transportPlatform);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
-      return transportPlatform.newStreamedRequest()!;
+      final newStreamedRequest = transportPlatform.newStreamedRequest();
+      if (newStreamedRequest != null) {
+        return newStreamedRequest;
+      } else {
+        throw TransportPlatformMissing.httpRequestFailed('StreamedRequest');
+      }
     } else {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot

@@ -109,13 +109,19 @@ void main() {
     test('constructing any HTTP class without a TP will inherit the global',
         () {
       transport.globalTransportPlatform = stubTransportPlatform;
-        // All of these should throw a TransportPlatformMissing exception.
-        expect(() => transport.FormRequest(), throwsA(isA<transport.TransportPlatformMissing>()));
-        expect(() => transport.HttpClient(), throwsA(isA<transport.TransportPlatformMissing>()));
-        expect(() => transport.JsonRequest(), throwsA(isA<transport.TransportPlatformMissing>()));
-        expect(() => transport.MultipartRequest(), throwsA(isA<transport.TransportPlatformMissing>()));
-        expect(() => transport.Request(), throwsA(isA<transport.TransportPlatformMissing>()));
-        expect(() => transport.StreamedRequest(), throwsA(isA<transport.TransportPlatformMissing>()));
+      // All of these should throw a TransportPlatformMissing exception.
+      expect(() => transport.FormRequest(),
+          throwsA(isA<transport.TransportPlatformMissing>()));
+      expect(() => transport.HttpClient(),
+          throwsA(isA<transport.TransportPlatformMissing>()));
+      expect(() => transport.JsonRequest(),
+          throwsA(isA<transport.TransportPlatformMissing>()));
+      expect(() => transport.MultipartRequest(),
+          throwsA(isA<transport.TransportPlatformMissing>()));
+      expect(() => transport.Request(),
+          throwsA(isA<transport.TransportPlatformMissing>()));
+      expect(() => transport.StreamedRequest(),
+          throwsA(isA<transport.TransportPlatformMissing>()));
     });
 
     test('establishing a WS connection without a TP will inherit the global',

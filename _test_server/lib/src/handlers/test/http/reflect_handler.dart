@@ -37,7 +37,7 @@ class ReflectHandler extends Handler {
       headers[name] = values.join(', ');
     });
 
-    Encoding encoding;
+    Encoding? encoding;
     if (request.headers.contentType == null) {
       encoding = latin1;
     } else {
@@ -53,7 +53,7 @@ class ReflectHandler extends Handler {
       'method': request.method,
       'path': request.uri.path,
       'headers': headers,
-      'body': await encoding.decodeStream(request),
+      'body': await encoding!.decodeStream(request),
     };
 
     request.response.statusCode = HttpStatus.ok;

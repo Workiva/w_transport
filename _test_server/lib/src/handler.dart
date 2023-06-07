@@ -96,7 +96,6 @@ abstract class Handler {
       request.response.headers.set('Access-Control-Allow-Origin', origin);
     }
 
-
     // Allow all headers (by using the requested headers)
     final requestHeaders = request.headers['Access-Control-Request-Headers'];
     if (requestHeaders != null) {

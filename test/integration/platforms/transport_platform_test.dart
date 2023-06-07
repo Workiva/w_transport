@@ -17,6 +17,7 @@ import 'dart:async';
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
+import 'package:w_transport/w_transport.dart';
 
 import '../../naming.dart';
 
@@ -110,12 +111,13 @@ void main() {
       transport.globalTransportPlatform = stubTransportPlatform;
 
       // All of these should be null because the stub TP only returns null.
-      expect(transport.FormRequest(transportPlatform: null), isNull);
-      expect(transport.HttpClient(transportPlatform: null), isNull);
-      expect(transport.JsonRequest(transportPlatform: null), isNull);
-      expect(transport.MultipartRequest(transportPlatform: null), isNull);
-      expect(transport.Request(transportPlatform: null), isNull);
-      expect(transport.StreamedRequest(transportPlatform: null), isNull);
+      transport.globalTransportPlatform = null;
+      expect(transport.FormRequest(), isNull);
+      expect(transport.HttpClient(), isNull);
+      expect(transport.JsonRequest(), isNull);
+      expect(transport.MultipartRequest(), isNull);
+      expect(transport.Request(), isNull);
+      expect(transport.StreamedRequest(), isNull);
     });
 
     test('establishing a WS connection without a TP will inherit the global',
@@ -127,13 +129,25 @@ void main() {
     });
 
     test('constructing any HTTP class with a TP does not throw', () {
-      // All of these should be null because the stub TP only returns null.
-      expect(transport.FormRequest(transportPlatform: stubTransportPlatform), isNotNull);
-      expect(transport.HttpClient(transportPlatform: stubTransportPlatform), isNotNull);
-      expect(transport.JsonRequest(transportPlatform: stubTransportPlatform), isNotNull);
-      expect(transport.MultipartRequest(transportPlatform: stubTransportPlatform), isNotNull);
-      expect(transport.Request(transportPlatform: stubTransportPlatform), isNotNull);
-      expect(transport.StreamedRequest(transportPlatform: stubTransportPlatform), isNotNull);
+      expect(
+          () => transport.FormRequest(transportPlatform: stubTransportPlatform),
+          throwsA(isA<TransportPlatformMissing>()));
+      expect(
+          () => transport.HttpClient(transportPlatform: stubTransportPlatform),
+          throwsA(isA<TransportPlatformMissing>()));
+      expect(
+          () => transport.JsonRequest(transportPlatform: stubTransportPlatform),
+          throwsA(isA<TransportPlatformMissing>()));
+      expect(
+          () => transport.MultipartRequest(
+              transportPlatform: stubTransportPlatform),
+          throwsA(isA<TransportPlatformMissing>()));
+      expect(() => transport.Request(transportPlatform: stubTransportPlatform),
+          throwsA(isA<TransportPlatformMissing>()));
+      expect(
+          () => transport.StreamedRequest(
+              transportPlatform: stubTransportPlatform),
+          throwsA(isA<TransportPlatformMissing>()));
     });
 
     test('establishing a WS connection with a TP does not throw', () async {

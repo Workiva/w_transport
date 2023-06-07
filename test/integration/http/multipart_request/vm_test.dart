@@ -40,6 +40,7 @@ void main() {
       request.configure((request) async {
         HttpClientRequest ioRequest = request as HttpClientRequest;
         ioRequest.headers.set('x-configured', 'true');
+        await ioRequest.close();
       });
       final response = await request.get();
       expect(response.body!.asJson()['headers']['x-configured'], equals('true'));

@@ -663,7 +663,7 @@ abstract class CommonRequest extends Object
     }
 
     bool willRetry = autoRetry!.forHttpMethods.contains(method);
-    if (response != null && response.status != null) {
+    if (response != null) {
       willRetry =
           willRetry && autoRetry!.forStatusCodes.contains(response.status);
     } else {
@@ -722,7 +722,7 @@ abstract class CommonRequest extends Object
     if (uri != null) {
       this.uri = uri;
     }
-    if (this.uri == null || this.uri.toString().isEmpty)
+    if (this.uri.toString().isEmpty)
       throw StateError('Request: Cannot send a request without a URI.');
     if (headers != null) {
       headers.forEach((key, value) {

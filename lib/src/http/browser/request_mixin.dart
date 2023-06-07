@@ -45,15 +45,10 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     final c = Completer<BaseResponse>();
 
     // Add request headers.
-    if (finalizedRequest.headers != null) {
-      // The browser forbids setting these two headers:
-      // - connection
-      // - content-length
-      final headersToAdd = Map<String, String>.from(finalizedRequest.headers);
-      headersToAdd.remove('connection');
-      headersToAdd.remove('content-length');
-      headersToAdd.forEach(_request!.setRequestHeader);
-    }
+    final headersToAdd = Map<String, String>.from(finalizedRequest.headers);
+    headersToAdd.remove('connection');
+    headersToAdd.remove('content-length');
+    headersToAdd.forEach(_request!.setRequestHeader);
 
     if (withCredentials) {
       _request!.withCredentials = true;

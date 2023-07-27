@@ -25,7 +25,7 @@ import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/response.dart';
 
 abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
-  late HttpRequest _request;
+  HttpRequest _request = HttpRequest();
 
   @override
   void abortRequest() {

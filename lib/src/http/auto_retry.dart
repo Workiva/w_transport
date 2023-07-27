@@ -182,8 +182,8 @@ class RequestAutoRetry extends AutoRetryConfig {
 @visibleForTesting
 Duration? getRetryTimeoutThreshold(
     Duration? timeoutThreshold, int numAttempts) {
-  if (numAttempts <= 0) return timeoutThreshold;
-  var threshold = timeoutThreshold! * numAttempts;
+  if (numAttempts <= 0 || timeoutThreshold == null) return timeoutThreshold;
+  var threshold = timeoutThreshold * numAttempts;
   var maxTimeout = Duration(seconds: max(timeoutThreshold.inSeconds, 60));
 
   if (threshold < maxTimeout)

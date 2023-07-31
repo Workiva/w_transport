@@ -27,19 +27,18 @@ abstract class BaseResponse {
 
   /// Status text of the response to the HTTP request.
   /// 'OK', 'Not Found', etc.
-  final String? statusText;
+  final String statusText;
 
   MediaType? _contentType;
   Encoding? _encoding;
-  Map<String, String>? _headers;
+  Map<String, String> _headers;
 
-  BaseResponse(this.status, this.statusText, Map<String, String?> headers) {
-    _headers = Map<String, String>.unmodifiable(
-        CaseInsensitiveMap<String?>.from(headers));
-    _encoding =
-        http_utils.parseEncodingFromHeaders(_headers!, fallback: latin1);
-    _contentType = http_utils.parseContentTypeFromHeaders(_headers!);
-  }
+  BaseResponse(this.status, this.statusText, Map<String, String> headers)
+      : _headers = Map<String, String>.unmodifiable(
+            CaseInsensitiveMap<String>.from(headers)),
+        _encoding =
+            http_utils.parseEncodingFromHeaders(headers, fallback: latin1),
+        _contentType = http_utils.parseContentTypeFromHeaders(headers);
 
   /// Gets and sets the content-length of the request, in bytes. If the size of
   /// the request is not known in advance, set this to null.
@@ -63,7 +62,7 @@ abstract class BaseResponse {
   Encoding? get encoding => _encoding;
 
   /// Headers sent with the response to the HTTP request.
-  Map<String, String>? get headers => _headers;
+  Map<String, String> get headers => _headers;
 }
 
 /// An HTTP response. Content of and meta data about a response to an HTTP
@@ -75,33 +74,34 @@ abstract class BaseResponse {
 /// - text (`String`)
 /// - JSON (`Map` or `List`) - assuming the response content type is JSON
 class Response extends BaseResponse {
-  HttpBody? _body;
+  late HttpBody _body;
 
-  Response._(int status, String statusText, Map<String, String> headers,
-      HttpBody? body)
+  Response._(
+      int status, String statusText, Map<String, String> headers, HttpBody body)
       : _body = body,
         super(status, statusText, headers);
 
-  Response.fromBytes(int status, String? statusText,
-      Map<String, String?> headers, List<int> bytes)
+  Response.fromBytes(int status, String statusText, Map<String, String> headers,
+      List<int> bytes)
       : super(status, statusText, headers) {
     _body = HttpBody.fromBytes(contentType, bytes, fallbackEncoding: encoding);
   }
 
-  Response.fromString(int status, String? statusText,
-      Map<String, String?> headers, String? body)
+  Response.fromString(int status, String statusText,
+      Map<String, String> headers, String? bodyString)
       : super(status, statusText, headers) {
-    _body = HttpBody.fromString(contentType, body, fallbackEncoding: encoding);
+    _body = HttpBody.fromString(contentType, bodyString,
+        fallbackEncoding: encoding);
   }
 
   /// This response's body. Provides synchronous access to the response body as
   /// bytes, text, or JSON.
-  HttpBody? get body => _body;
+  HttpBody get body => _body;
 
   /// Gets and sets the content-length of the request, in bytes. If the size of
   /// the request is not known in advance, set this to null.
   @override
-  int get contentLength => body!.asBytes().length;
+  int get contentLength => body.asBytes().length;
 
   /// Create a new [Response] using all the values from this instance except
   /// for the parameters specified.
@@ -111,17 +111,17 @@ class Response extends BaseResponse {
       int? status,
       String? statusText,
       Map<String, String>? headers}) {
-    status ??= this.status;
-    statusText ??= this.statusText;
-    headers ??= this.headers;
+    status = status ?? this.status;
+    statusText = statusText ?? this.statusText;
+    headers = headers ?? this.headers;
     if (bodyBytes == null) {
       if (bodyString == null) {
-        return Response._(status, statusText!, headers!, _body);
+        return Response._(status, statusText, headers, _body);
       } else {
-        return Response.fromString(status, statusText, headers!, bodyString);
+        return Response.fromString(status, statusText, headers, bodyString);
       }
     } else {
-      return Response.fromBytes(status, statusText, headers!, bodyBytes);
+      return Response.fromBytes(status, statusText, headers, bodyBytes);
     }
   }
 }
@@ -138,8 +138,8 @@ class StreamedResponse extends BaseResponse {
       : _body = body,
         super(status, statusText, headers);
 
-  StreamedResponse.fromByteStream(int status, String? statusText,
-      Map<String, String?> headers, Stream<List<int>>? byteStream)
+  StreamedResponse.fromByteStream(int status, String statusText,
+      Map<String, String> headers, Stream<List<int>>? byteStream)
       : super(status, statusText, headers) {
     _body = StreamedHttpBody.fromByteStream(contentType, byteStream,
         contentLength: contentLength, fallbackEncoding: encoding);
@@ -152,9 +152,10 @@ class StreamedResponse extends BaseResponse {
   /// Gets and sets the content-length of the request, in bytes. If the size of
   /// the request is not known in advance, set this to null.
   @override
-  int? get contentLength => headers!.containsKey('content-length')
-      ? int.parse(headers!['content-length']!)
-      : null;
+  int? get contentLength {
+    final length = headers['content-length'];
+    return length != null ? int.parse(length) : null;
+  }
 
   /// Create a new [StreamedResponse] using all the values from this instance
   /// except for the parameters specified.
@@ -163,14 +164,14 @@ class StreamedResponse extends BaseResponse {
       int? status,
       String? statusText,
       Map<String, String>? headers}) {
-    status ??= this.status;
-    statusText ??= this.statusText;
-    headers ??= this.headers;
+    status = status ?? this.status;
+    statusText = statusText ?? this.statusText;
+    headers = headers ?? this.headers;
     if (byteStream == null) {
-      return StreamedResponse._(status, statusText!, headers!, _body);
+      return StreamedResponse._(status, statusText, headers, _body);
     } else {
       return StreamedResponse.fromByteStream(
-          status, statusText, headers!, byteStream);
+          status, statusText, headers, byteStream);
     }
   }
 }

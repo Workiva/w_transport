@@ -138,7 +138,7 @@ double _tanh(double angle) {
 }
 
 Duration? _calculateFixedBackOff(RequestAutoRetry autoRetry) {
-  Duration? backOff;
+  late Duration backOff;
 
   if (autoRetry.backOff.withJitter) {
     final random = Random();
@@ -146,7 +146,7 @@ Duration? _calculateFixedBackOff(RequestAutoRetry autoRetry) {
         milliseconds: autoRetry.backOff.interval!.inMilliseconds ~/ 2 +
             random.nextInt(autoRetry.backOff.interval!.inMilliseconds).toInt());
   } else {
-    backOff = autoRetry.backOff.interval;
+    backOff = autoRetry.backOff.interval!;
   }
 
   return backOff;
@@ -301,7 +301,7 @@ class ByteStreamProgressListener {
               controller.add(bytes);
               try {
                 loaded += bytes.length;
-                _progressController.add(RequestProgress(loaded, total));
+                _progressController.add(RequestProgress(loaded, total ?? -1));
               } catch (e) {
                 // If one item from the stream is not of type List<int>,
                 // attempting to add the length to the `loaded` counter would

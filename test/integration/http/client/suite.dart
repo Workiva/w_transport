@@ -119,8 +119,8 @@ Future<Null> _testRequest(transport.BaseRequest request) async {
   request.uri = IntegrationPaths.reflectEndpointUri;
   request.headers = {'x-custom': 'value', 'x-tokens': 'token1, token2'};
   final response = await request.get();
-  expect(response.body!.asJson()['method'], equals('GET'));
-  expect(response.body!.asJson()['headers'], containsPair('x-custom', 'value'));
-  expect(response.body!.asJson()['headers'],
+  expect(response.body.asJson()['method'], equals('GET'));
+  expect(response.body.asJson()['headers'], containsPair('x-custom', 'value'));
+  expect(response.body.asJson()['headers'],
       containsPair('x-tokens', 'token1, token2'));
 }

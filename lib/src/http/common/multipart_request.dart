@@ -76,9 +76,9 @@ abstract class CommonMultipartRequest extends CommonRequest
     return '$senderPrefix${String.fromCharCodes(boundaryChars)}';
   }
 
-  String? get boundary {
+  String get boundary {
     _boundary ??= _generateBoundaryString();
-    return _boundary;
+    return _boundary!;
   }
 
   @override
@@ -119,7 +119,7 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   @override
   MediaType get defaultContentType =>
-      MediaType('multipart', 'form-data', {'boundary': boundary!});
+      MediaType('multipart', 'form-data', {'boundary': boundary});
 
   @override
   set encoding(Encoding? encoding) {

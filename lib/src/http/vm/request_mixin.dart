@@ -68,16 +68,15 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
     // Allow the caller to configure the request.
     Object? configurationResult;
     if (configureFn != null) {
-      configurationResult = configureFn!(_request);
+      configurationResult = await configureFn!(_request);
     }
 
     // Wait for the configuration if applicable.
     if (configurationResult != null && configurationResult is Future) {
       await configurationResult;
     }
-
     if (finalizedRequest.body.contentLength != null) {
-      _request!.contentLength = finalizedRequest.body.contentLength!;
+      _request?.contentLength = finalizedRequest.body.contentLength!;
     }
 
     if (finalizedRequest.body is StreamedHttpBody) {

@@ -112,7 +112,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     if (contentLength == null || contentLength == 0) {
       progress = RequestProgress(0, 0);
     } else {
-      progress = RequestProgress(contentLength, contentLength);
+      progress = RequestProgress(contentLength!, contentLength!);
     }
     uploadProgressController.add(progress);
 
@@ -133,13 +133,13 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
         response = StreamedResponse.fromByteStream(
             response!.status,
             response!.statusText,
-            response!.headers!,
-            Stream.fromIterable([standardResponse.body!.asBytes()]));
+            response!.headers,
+            Stream.fromIterable([standardResponse.body.asBytes()]));
       }
       if (!_streamResponse && response is StreamedResponse) {
         final StreamedResponse streamedResponse = response as StreamedResponse;
         response = Response.fromBytes(response!.status, response!.statusText,
-            response!.headers!, await streamedResponse.body!.toBytes());
+            response!.headers, await streamedResponse.body!.toBytes());
       }
 
       if (response is StreamedResponse) {
@@ -151,11 +151,11 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
         response = StreamedResponse.fromByteStream(
             response!.status,
             response!.statusText,
-            response!.headers!,
-            progressListener.byteStream);
+            response!.headers,
+            progressListener.byteStream!);
       } else {
         final Response standardResponse = response as Response;
-        final total = standardResponse.body!.asBytes().length;
+        final total = standardResponse.body.asBytes().length;
         downloadProgressController.add(RequestProgress(total, total));
       }
 

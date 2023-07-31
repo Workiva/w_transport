@@ -76,12 +76,12 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
       MediaType('text', 'plain', {'charset': encoding.name});
 
   @override
-  Request? clone() {
-    final Request? requestClone = super.clone() as Request?;
+  Request clone() {
+    final Request requestClone = super.clone() as Request;
     if (_body != null) {
-      requestClone!.body = body;
+      requestClone.body = body;
     } else if (_bodyBytes != null) {
-      requestClone!.bodyBytes = bodyBytes;
+      requestClone.bodyBytes = bodyBytes;
     }
     return requestClone;
   }

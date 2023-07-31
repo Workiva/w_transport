@@ -27,7 +27,7 @@ StreamTransformer<ProgressEvent, RequestProgress> transformProgressEvents =
   controller = StreamController<RequestProgress>(onListen: () {
     subscription = input.listen((ProgressEvent event) {
       controller.add(event.lengthComputable
-          ? RequestProgress(event.loaded, event.total)
+          ? RequestProgress(event.loaded!, event.total!)
           : RequestProgress());
     },
         onError: controller.addError,

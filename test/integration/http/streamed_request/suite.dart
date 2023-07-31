@@ -31,7 +31,7 @@ void runStreamedRequestSuite([transport.TransportPlatform? transportPlatform]) {
       final response =
           await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
       final contentLength =
-          int.parse(response.body!.asJson()['headers']['content-length']);
+          int.parse(response.body.asJson()['headers']['content-length']);
       expect(contentLength, equals(0),
           reason:
               'Empty streamed plain-text request\'s content-length should be 0.');
@@ -52,7 +52,7 @@ void runStreamedRequestSuite([transport.TransportPlatform? transportPlatform]) {
             ..contentLength = size;
       final response2 = await nonEmptyRequest.post();
       final contentLength2 =
-          int.parse(response2.body!.asJson()['headers']['content-length']);
+          int.parse(response2.body.asJson()['headers']['content-length']);
       expect(contentLength2, equals(size),
           reason:
               'Non-empty streamed plain-text request\'s content-length should be greater than 0.');
@@ -66,7 +66,7 @@ void runStreamedRequestSuite([transport.TransportPlatform? transportPlatform]) {
             ..contentLength = 0;
       final response = await request.post();
       final contentType =
-          MediaType.parse(response.body!.asJson()['headers']['content-type']);
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('text/plain'));
     });
 
@@ -80,7 +80,7 @@ void runStreamedRequestSuite([transport.TransportPlatform? transportPlatform]) {
             ..contentType = contentType;
       final response = await request.post();
       final reflectedContentType =
-          MediaType.parse(response.body!.asJson()['headers']['content-type']);
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(reflectedContentType.mimeType, equals(contentType.mimeType));
     });
 
@@ -92,7 +92,7 @@ void runStreamedRequestSuite([transport.TransportPlatform? transportPlatform]) {
             ..body = Stream.fromIterable([utf8.encode('dataç®å')]);
       final response = await request.post();
       expect(response.encoding!.name, equals(utf8.name));
-      expect(response.body!.asString(), equals('dataç®å'));
+      expect(response.body.asString(), equals('dataç®å'));
     });
 
     test('LATIN1', () async {
@@ -103,7 +103,7 @@ void runStreamedRequestSuite([transport.TransportPlatform? transportPlatform]) {
             ..body = Stream.fromIterable([latin1.encode('dataç®å')]);
       final response = await request.post();
       expect(response.encoding!.name, equals(latin1.name));
-      expect(response.body!.asString(), equals('dataç®å'));
+      expect(response.body.asString(), equals('dataç®å'));
     });
 
     test('ASCII', () async {
@@ -114,7 +114,7 @@ void runStreamedRequestSuite([transport.TransportPlatform? transportPlatform]) {
             ..body = Stream.fromIterable([ascii.encode('data')]);
       final response = await request.post();
       expect(response.encoding!.name, equals(ascii.name));
-      expect(response.body!.asString(), equals('data'));
+      expect(response.body.asString(), equals('data'));
     });
   });
 }

@@ -17,11 +17,11 @@
 /// but with an additional [percent] property for convenience.
 class RequestProgress {
   /// Amount of work already done.
-  final int? loaded;
+  final int loaded;
 
   /// Total amount of work being performed. This only represents the content
   /// itself, not headers and other overhead.
-  final int? total;
+  final int total;
 
   /// Indicates whether or not the progress is measurable.
   bool? _lengthComputable;
@@ -30,13 +30,13 @@ class RequestProgress {
   double? _percent;
 
   RequestProgress([this.loaded = 0, this.total = -1]) {
-    _lengthComputable = total != null && total! > -1;
+    _lengthComputable = total != null && total > -1;
     if (!_lengthComputable!) {
       _percent = 0.0;
     } else if (total == 0) {
       _percent = 100.0;
     } else {
-      _percent = loaded! * 100.0 / total!;
+      _percent = loaded * 100.0 / total;
     }
   }
 

@@ -101,14 +101,14 @@ class HttpBody extends BaseHttpBody {
 
   /// Encoding used to encode/decode this request/response body.
   @override
-  Encoding? get encoding => _encoding ?? _fallbackEncoding;
+  Encoding get encoding => _encoding ?? _fallbackEncoding!;
 
   /// Returns this request/response body as a list of bytes.
   Uint8List asBytes() {
     if (_bytes == null) {
       List<int> encoded;
       try {
-        encoded = encoding!.encode(_body!);
+        encoded = encoding.encode(_body!);
       } on ArgumentError {
         throw ResponseFormatException(contentType, encoding, body: _body);
       }
@@ -120,15 +120,15 @@ class HttpBody extends BaseHttpBody {
   /// Returns this request/response body as a String.
   String? asString() => _asString(encoding);
 
-  String? _asString(Encoding? charset) {
+  String _asString(Encoding charset) {
     if (_body == null) {
       try {
-        _body = charset!.decode(_bytes!);
+        _body = charset.decode(_bytes!);
       } on FormatException {
         throw ResponseFormatException(contentType, charset, bytes: _bytes);
       }
     }
-    return _body;
+    return _body!;
   }
 
   /// Returns this request/response body as a JSON object - either a `Map` or a
@@ -139,7 +139,7 @@ class HttpBody extends BaseHttpBody {
   /// than the generic fallback from the response. Throws a [FormatException] if this
   /// request/response body cannot be decoded to text or if the text is not
   /// valid JSON.
-  dynamic asJson() => json.decode(_asString(_encoding ?? utf8)!);
+  dynamic asJson() => json.decode(_asString(_encoding ?? utf8));
 }
 
 /// Representation of an HTTP request body or an HTTP response body where the
@@ -160,16 +160,24 @@ class StreamedHttpBody extends BaseHttpBody {
   @override
   final MediaType? contentType;
 
-  Encoding? _fallbackEncoding;
+  final Encoding _fallbackEncoding;
+
+  StreamedHttpBody._(this.contentType, this.byteStream, this.contentLength,
+      this._fallbackEncoding) {
+    if (byteStream == null) throw ArgumentError.notNull('byteStream');
+    _encoding = http_utils.parseEncodingFromContentType(contentType);
+  }
 
   /// Construct the body to an HTTP request or an HTTP response from a stream
   /// of chunks of bytes. The given [byteStream] should be a single-
   /// subscription stream.
-  StreamedHttpBody.fromByteStream(this.contentType, this.byteStream,
-      {this.contentLength, Encoding? fallbackEncoding}) {
-    if (byteStream == null) throw ArgumentError.notNull('byteStream');
-    _encoding = http_utils.parseEncodingFromContentType(contentType);
-    _fallbackEncoding = fallbackEncoding;
+  factory StreamedHttpBody.fromByteStream(
+      MediaType? contentType, Stream<List<int>>? byteStream,
+      {int? contentLength, Encoding? fallbackEncoding}) {
+    final nonNullFallbackEncoding =
+        fallbackEncoding ?? utf8; // Use UTF-8 as the default fallback encoding.
+    return StreamedHttpBody._(
+        contentType, byteStream, contentLength, nonNullFallbackEncoding);
   }
 
   /// Encoding used to encode/decode this request/response body. Encoding is

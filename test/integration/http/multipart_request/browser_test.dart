@@ -45,7 +45,7 @@ void main() {
         });
         final response = await request.get();
         expect(
-            response.body!.asJson()['headers']['x-configured'], equals('true'));
+            response.body.asJson()['headers']['x-configured'], equals('true'));
       });
 
       group('withCredentials', () {

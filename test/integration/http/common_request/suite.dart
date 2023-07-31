@@ -22,15 +22,15 @@ import '../../integration_paths.dart';
 
 void runCommonRequestSuite([transport.TransportPlatform? transportPlatform]) {
   group('Common Request API', () {
-    transport.FormRequest formReqFactory({bool? withBody = false}) {
-      if (!withBody!)
+    transport.FormRequest formReqFactory({bool withBody = false}) {
+      if (!withBody)
         return transport.FormRequest(transportPlatform: transportPlatform);
       return transport.FormRequest(transportPlatform: transportPlatform)
         ..fields['field'] = 'value';
     }
 
-    transport.JsonRequest jsonReqFactory({bool? withBody = false}) {
-      if (!withBody!)
+    transport.JsonRequest jsonReqFactory({bool withBody = false}) {
+      if (!withBody)
         return transport.JsonRequest(transportPlatform: transportPlatform);
       return transport.JsonRequest(transportPlatform: transportPlatform)
         ..body = [
@@ -44,15 +44,15 @@ void runCommonRequestSuite([transport.TransportPlatform? transportPlatform]) {
         ..fields['field'] = 'value';
     }
 
-    transport.Request reqFactory({bool? withBody = false}) {
-      if (!withBody!)
+    transport.Request reqFactory({bool withBody = false}) {
+      if (!withBody)
         return transport.Request(transportPlatform: transportPlatform);
       return transport.Request(transportPlatform: transportPlatform)
         ..body = 'body';
     }
 
-    transport.StreamedRequest streamedReqFactory({bool? withBody = false}) {
-      if (!withBody!)
+    transport.StreamedRequest streamedReqFactory({bool withBody = false}) {
+      if (!withBody)
         return transport.StreamedRequest(transportPlatform: transportPlatform);
       return transport.StreamedRequest(transportPlatform: transportPlatform)
         ..body = Stream.fromIterable([utf8.encode('bytes')])
@@ -73,7 +73,7 @@ void runCommonRequestSuite([transport.TransportPlatform? transportPlatform]) {
 }
 
 void _runCommonRequestSuiteFor(String name,
-    transport.BaseRequest Function({bool? withBody}) requestFactory) {
+    transport.BaseRequest Function({bool withBody}) requestFactory) {
   group(name, () {
     final headers = <String, String>{
       'authorization': 'test',
@@ -177,7 +177,7 @@ void _runCommonRequestSuiteFor(String name,
       final response =
           await request.delete(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
-      expect(response.body!.asJson()['method'], equals('DELETE'));
+      expect(response.body.asJson()['method'], equals('DELETE'));
     });
 
     test('DELETE request with headers', () async {
@@ -187,7 +187,7 @@ void _runCommonRequestSuiteFor(String name,
       final response = await request.delete();
       expect(response.status, equals(200));
 
-      final json = response.body!.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('DELETE'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -202,7 +202,7 @@ void _runCommonRequestSuiteFor(String name,
       final response =
           await request.get(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
-      expect(response.body!.asJson()['method'], equals('GET'));
+      expect(response.body.asJson()['method'], equals('GET'));
     });
 
     test('GET request with headers', () async {
@@ -212,7 +212,7 @@ void _runCommonRequestSuiteFor(String name,
       final response = await request.get();
       expect(response.status, equals(200));
 
-      final json = response.body!.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('GET'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -242,7 +242,7 @@ void _runCommonRequestSuiteFor(String name,
       final response =
           await request.options(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
-      expect(response.body!.asJson()['method'], equals('OPTIONS'));
+      expect(response.body.asJson()['method'], equals('OPTIONS'));
     });
 
     test('OPTIONS request with headers', () async {
@@ -252,7 +252,7 @@ void _runCommonRequestSuiteFor(String name,
       final response = await request.options();
       expect(response.status, equals(200));
 
-      final json = response.body!.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('OPTIONS'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -267,7 +267,7 @@ void _runCommonRequestSuiteFor(String name,
       final response =
           await request.patch(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
-      expect(response.body!.asJson()['method'], equals('PATCH'));
+      expect(response.body.asJson()['method'], equals('PATCH'));
     });
 
     test('PATCH request with headers', () async {
@@ -277,7 +277,7 @@ void _runCommonRequestSuiteFor(String name,
       final response = await request.patch();
       expect(response.status, equals(200));
 
-      final json = response.body!.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('PATCH'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -292,7 +292,7 @@ void _runCommonRequestSuiteFor(String name,
       final response =
           await request.post(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
-      expect(response.body!.asJson()['method'], equals('POST'));
+      expect(response.body.asJson()['method'], equals('POST'));
     });
 
     test('POST request with headers', () async {
@@ -302,7 +302,7 @@ void _runCommonRequestSuiteFor(String name,
       final response = await request.post();
       expect(response.status, equals(200));
 
-      final json = response.body!.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('POST'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -317,7 +317,7 @@ void _runCommonRequestSuiteFor(String name,
       final response =
           await request.put(uri: IntegrationPaths.reflectEndpointUri);
       expect(response.status, equals(200));
-      expect(response.body!.asJson()['method'], equals('PUT'));
+      expect(response.body.asJson()['method'], equals('PUT'));
     });
 
     test('PUT request with headers', () async {
@@ -327,7 +327,7 @@ void _runCommonRequestSuiteFor(String name,
       final response = await request.put();
       expect(response.status, equals(200));
 
-      final json = response.body!.asJson();
+      final json = response.body.asJson();
       expect(json['method'], equals('PUT'));
       expect(json['headers'],
           containsPair('authorization', request.headers['authorization']));
@@ -421,7 +421,7 @@ void _runCommonRequestSuiteFor(String name,
 }
 
 void _runAutoRetryTestSuiteFor(String name,
-    transport.BaseRequest Function({bool? withBody}) requestFactory) {
+    transport.BaseRequest Function({bool withBody}) requestFactory) {
   group(name, () {
     group('auto retry', () {
       test('disabled', () async {

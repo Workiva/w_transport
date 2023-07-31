@@ -47,7 +47,7 @@ void runMultipartRequestSuite(
       final response =
           await request.post(uri: IntegrationPaths.reflectEndpointUri);
       final contentLength =
-          int.parse(response.body!.asJson()['headers']['content-length']);
+          int.parse(response.body.asJson()['headers']['content-length']);
       expect(contentLength, greaterThan(0),
           reason:
               'Non-empty multipart request\'s content-length should be greater than 0.');
@@ -60,7 +60,7 @@ void runMultipartRequestSuite(
             ..fields['field'] = 'value';
       final response = await request.post();
       final contentType =
-          MediaType.parse(response.body!.asJson()['headers']['content-type']);
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
       expect(contentType.mimeType, equals('multipart/form-data'));
     });
 

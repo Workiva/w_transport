@@ -27,10 +27,10 @@ class MockResponse implements Response {
   MockResponse(int status,
       {body,
       Encoding? encoding,
-      Map<String, String?>? headers,
+      Map<String, String>? headers,
       String? statusText}) {
     // Ensure the headers are case insensitive.
-    headers = CaseInsensitiveMap<String?>.from(headers ?? {});
+    headers = CaseInsensitiveMap<String>.from(headers ?? {});
 
     // If an encoding was given, update the content-type charset parameter.
     if (encoding != null) {
@@ -55,7 +55,7 @@ class MockResponse implements Response {
   }
 
   factory MockResponse.ok(
-          {body, Map<String, String?>? headers, String? statusText}) =>
+          {body, Map<String, String>? headers, String? statusText}) =>
       MockResponse(200, body: body, headers: headers, statusText: statusText);
 
   factory MockResponse.badRequest(
@@ -91,7 +91,7 @@ class MockResponse implements Response {
       MockResponse(502, body: body, headers: headers, statusText: statusText);
 
   @override
-  HttpBody? get body => _response.body;
+  HttpBody get body => _response.body;
 
   @override
   int get contentLength => _response.contentLength;
@@ -103,13 +103,13 @@ class MockResponse implements Response {
   Encoding? get encoding => _response.encoding;
 
   @override
-  Map<String, String>? get headers => _response.headers;
+  Map<String, String> get headers => _response.headers;
 
   @override
   int get status => _response.status;
 
   @override
-  String? get statusText => _response.statusText;
+  String get statusText => _response.statusText;
 
   @override
   Response replace(
@@ -133,10 +133,10 @@ class MockStreamedResponse implements StreamedResponse {
   MockStreamedResponse(int status,
       {Stream<List<int>>? byteStream,
       Encoding? encoding,
-      Map<String, String?>? headers,
+      Map<String, String>? headers,
       String? statusText}) {
     // Ensure the headers are case insensitive.
-    headers = CaseInsensitiveMap<String?>.from(headers ?? {});
+    headers = CaseInsensitiveMap<String>.from(headers ?? {});
 
     // If an encoding was given, update the content-type charset parameter.
     if (encoding != null) {
@@ -156,7 +156,7 @@ class MockStreamedResponse implements StreamedResponse {
 
   factory MockStreamedResponse.ok(
           {Stream<List<int>>? byteStream,
-          Map<String, String?>? headers,
+          Map<String, String>? headers,
           String? statusText}) =>
       MockStreamedResponse(200,
           byteStream: byteStream, headers: headers, statusText: statusText);
@@ -230,13 +230,13 @@ class MockStreamedResponse implements StreamedResponse {
   Encoding? get encoding => _response.encoding;
 
   @override
-  Map<String, String>? get headers => _response.headers;
+  Map<String, String> get headers => _response.headers;
 
   @override
   int get status => _response.status;
 
   @override
-  String? get statusText => _response.statusText;
+  String get statusText => _response.statusText;
 
   @override
   StreamedResponse replace(

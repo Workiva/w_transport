@@ -58,7 +58,7 @@ class FilesProxy extends Handler {
     final proxyResponse = await proxyRequest.streamGet(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
-    proxyResponse.headers?.forEach((h, v) {
+    proxyResponse.headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
     await request.response.addStream(proxyResponse.body!.byteStream!);
@@ -75,7 +75,7 @@ class FilesProxy extends Handler {
     final proxyResponse = await proxyRequest.streamDelete(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
-    proxyResponse.headers?.forEach((h, v) {
+    proxyResponse.headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
     await request.response.addStream(proxyResponse.body!.byteStream!);
@@ -110,7 +110,7 @@ class UploadProxy extends Handler {
       proxyResponse = await proxyRequest.streamPost(uri: uploadEndpoint);
       request.response.statusCode = HttpStatus.ok;
       setCorsHeaders(request);
-      proxyResponse.headers?.forEach((h, v) {
+      proxyResponse.headers.forEach((h, v) {
         request.response.headers.set(h, v);
       });
       await request.response.addStream(proxyResponse.body!.byteStream!);
@@ -148,7 +148,7 @@ class DownloadProxy extends Handler {
       proxyResponse = await proxyRequest.streamGet();
       request.response.statusCode = HttpStatus.ok;
       setCorsHeaders(request);
-      proxyResponse.headers?.forEach((h, v) {
+      proxyResponse.headers.forEach((h, v) {
         request.response.headers.set(h, v);
       });
       await request.response.addStream(proxyResponse.body!.byteStream!);

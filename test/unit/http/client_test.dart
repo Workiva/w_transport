@@ -35,11 +35,11 @@ abstract class RespIntMixin implements transport.HttpInterceptor {
   @override
   Future<transport.ResponsePayload> interceptResponse(
       transport.ResponsePayload payload) async {
-    final newHeaders = Map<String, String>.from(payload.response!.headers!);
+    final newHeaders = Map<String, String>.from(payload.response!.headers);
     newHeaders['x-intercepted'] = 'true';
     transport.Response response = payload.response as Response;
     payload.response = transport.Response.fromString(payload.response!.status,
-        payload.response!.statusText, newHeaders, response.body!.asString());
+        payload.response!.statusText, newHeaders, response.body.asString());
     return payload;
   }
 }
@@ -64,12 +64,12 @@ class AsyncInt extends transport.HttpInterceptor {
   Future<transport.ResponsePayload> interceptResponse(
       transport.ResponsePayload payload) async {
     await Future.delayed(Duration(milliseconds: 500));
-    final headers = Map<String, String?>.from(payload.response!.headers!);
+    final headers = Map<String, String>.from(payload.response!.headers);
     transport.Response response = payload.response as Response;
     headers['x-interceptor'] =
-        payload.request.uri.queryParameters['interceptor'];
+        payload.request.uri.queryParameters['interceptor'] ?? '';
     payload.response = transport.Response.fromString(payload.response!.status,
-        payload.response!.statusText, headers, response.body!.asString());
+        payload.response!.statusText, headers, response.body.asString());
     return payload;
   }
 }

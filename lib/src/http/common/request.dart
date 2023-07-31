@@ -373,9 +373,9 @@ abstract class CommonRequest extends Object
   /// Sub classes should override this, call super.clone() first to get the base
   /// clone, and then add fields specific to their implementation.
   @override
-  BaseRequest? clone() {
+  BaseRequest clone() {
     // StreamedRequests can't be cloned.
-    if (this is StreamedRequest) return null;
+    if (this is StreamedRequest) return this;
 
     BaseRequest? requestClone;
     final fromClient = _wTransportClient != null;
@@ -637,13 +637,13 @@ abstract class CommonRequest extends Object
   @override
   Future<Response> retry() {
     _verifyCanRetryManually();
-    return clone()!.send(method);
+    return clone().send(method);
   }
 
   @override
   Future<StreamedResponse> streamRetry() {
     _verifyCanRetryManually();
-    return clone()!.streamSend(method);
+    return clone().streamSend(method);
   }
 
   /// Determine if this request failure is eligible for retry.
@@ -678,7 +678,7 @@ abstract class CommonRequest extends Object
   /// Retry this request by creating and sending a clone.
   Future<BaseResponse> _retry(bool streamResponse) async {
     final retry = clone();
-    return streamResponse ? retry!.streamSend(method) : retry!.send(method);
+    return streamResponse ? retry.streamSend(method) : retry.send(method);
   }
 
   void _timeoutRequest() {
@@ -815,8 +815,9 @@ abstract class CommonRequest extends Object
         timeout.cancel();
       }
 
-      if (response?.status != 0 &&
-          response?.status != 304 &&
+      if (response != null &&
+          response!.status != 0 &&
+          response!.status != 304 &&
           !(response!.status >= 200 && response!.status < 300)) {
         throw RequestException(method, this.uri, this, response);
       }

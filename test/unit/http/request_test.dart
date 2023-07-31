@@ -361,7 +361,7 @@ void _runCommonRequestSuiteFor(String name,
       request.abort();
       expect(future, throwsA(predicate((dynamic error) {
         return error is transport.RequestException &&
-            error.request!.autoRetry!.numAttempts == 1;
+            error.request.autoRetry!.numAttempts == 1;
       })));
     });
 
@@ -506,7 +506,7 @@ void _runCommonRequestSuiteFor(String name,
           (request, transport.BaseResponse? response, [exception]) async {
         expect(response, isA<transport.Response>());
         transport.Response standardResponse = response as Response;
-        expect(standardResponse.body!.asString(), equals('original'));
+        expect(standardResponse.body.asString(), equals('original'));
         return standardResponse;
       };
       await request.get(uri: requestUri);
@@ -545,10 +545,10 @@ void _runCommonRequestSuiteFor(String name,
       request.responseInterceptor =
           (request, transport.BaseResponse? response, [exception]) async {
         return transport.Response.fromString(response!.status,
-            response.statusText, response.headers!, 'modified');
+            response.statusText, response.headers, 'modified');
       };
       final response = await request.get(uri: requestUri);
-      expect(response.body!.asString(), equals('modified'));
+      expect(response.body.asString(), equals('modified'));
     });
 
     test(
@@ -850,7 +850,7 @@ void _runAutoRetryTestSuiteFor(String name,
           ..maxRetries = 2
           ..test =
               (request, transport.BaseResponse? response, willRetry) async =>
-                  response!.headers!['x-retry'] == 'yes';
+                  response!.headers['x-retry'] == 'yes';
 
         expect(request.get(uri: requestUri),
             throwsA(isA<transport.RequestException>()));

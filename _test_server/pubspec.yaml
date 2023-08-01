@@ -13,3 +13,9 @@ dev_dependencies:
   workiva_analysis_options: ^1.0.0
   w_transport:
     path: ../
+
+dependency_overrides:
+  w_transport:
+    git:
+      url: ssh://git@github.com/Workiva/w_transport.git
+      ref: FEDX-60-null-safety

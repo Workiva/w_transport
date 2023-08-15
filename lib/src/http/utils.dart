@@ -138,18 +138,14 @@ double _tanh(double angle) {
 }
 
 Duration? _calculateFixedBackOff(RequestAutoRetry autoRetry) {
-  late Duration backOff;
-
   if (autoRetry.backOff.withJitter) {
     final random = Random();
-    backOff = Duration(
+    return Duration(
         milliseconds: autoRetry.backOff.interval!.inMilliseconds ~/ 2 +
             random.nextInt(autoRetry.backOff.interval!.inMilliseconds).toInt());
   } else {
-    backOff = autoRetry.backOff.interval!;
+    return autoRetry.backOff.interval!;
   }
-
-  return backOff;
 }
 
 /// Returns true if all characters in [value] are ASCII-compatible chars.
@@ -180,9 +176,9 @@ String mapToQuery(Map<String, dynamic> map, {Encoding? encoding}) {
 /// If a content-type header is not specified in [headers], a default content-
 /// type of "application/octet-stream" will be returned (as per RFC 2616
 /// http://www.w3.org/Protocols/rfc2616/rfc2616-sec7.html#sec7.2.1).
-MediaType parseContentTypeFromHeaders(Map<String, String?> headers) {
+MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
   // Ensure the headers are case-insensitive.
-  headers = CaseInsensitiveMap<String?>.from(headers);
+  headers = CaseInsensitiveMap<String>.from(headers);
   var contentType = headers['content-type'];
   if (contentType != null && contentType.trim().isNotEmpty) {
     return MediaType.parse(contentType);
@@ -278,13 +274,13 @@ class ByteStreamProgressListener {
   StreamController<RequestProgress> _progressController =
       StreamController<RequestProgress>();
 
-  Stream<List<int>>? _transformed;
+  late Stream<List<int>> _transformed;
 
   ByteStreamProgressListener(Stream<List<int>> byteStream, {int? total}) {
     _transformed = _listenTo(byteStream, total: total);
   }
 
-  Stream<List<int>>? get byteStream => _transformed;
+  Stream<List<int>> get byteStream => _transformed;
 
   Stream<RequestProgress> get progressStream => _progressController.stream;
 

@@ -181,7 +181,7 @@ void main() {
               [transport.RequestException? error]) async =>
           null;
       final request = transport.Request(transportPlatform: vmTransportPlatform)
-        ..autoRetry!.enabled = true
+        ..autoRetry.enabled = true
         ..contentType = transport.MediaType('application', 'json')
         ..headers['x-custom'] = 'test'
         ..requestInterceptor = requestInterceptor
@@ -191,9 +191,9 @@ void main() {
         ..withCredentials = true;
 
       // ignore: avoid_as
-      final realRequest = (request as MockRequestMixin).switchToRealRequest()!;
+      final realRequest = (request as MockRequestMixin).switchToRealRequest();
 
-      expect(realRequest.autoRetry!.enabled, isTrue);
+      expect(realRequest.autoRetry.enabled, isTrue);
       expect(realRequest.contentType!.mimeType, equals('application/json'));
       expect(realRequest.headers, containsPair('x-custom', 'test'));
       expect(identical(realRequest.requestInterceptor, requestInterceptor),
@@ -210,7 +210,7 @@ void main() {
             ..contentLength = 10;
       // ignore: avoid_as
       final realStreamedRequest =
-          (streamedRequest as MockRequestMixin).switchToRealRequest()!;
+          (streamedRequest as MockRequestMixin).switchToRealRequest();
       expect(realStreamedRequest.contentLength, equals(10));
 
       await MockTransports.uninstall();

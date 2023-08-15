@@ -25,7 +25,7 @@ import 'package:w_transport/src/http/utils.dart' as http_utils;
 import 'package:w_transport/src/http/vm/utils.dart' as vm_utils;
 
 abstract class VMRequestMixin implements BaseRequest, CommonRequest {
-  HttpClient? _client;
+  late HttpClient _client;
 
   /// Whether or not this request is the only request that will be sent by its
   /// HTTP client. If that is the case, the client will have to be closed
@@ -42,13 +42,13 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
   @override
   void cleanUp() {
     if (_isSingle) {
-      _client?.close();
+      _client.close();
     }
   }
 
   @override
   Future<Null> openRequest([Object? client]) async {
-    final HttpClient? httpClient = client as HttpClient?;
+    final httpClient = client as HttpClient?;
     if (httpClient != null) {
       _client = httpClient;
       _isSingle = false;
@@ -56,19 +56,20 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
       _client = HttpClient();
       _isSingle = true;
     }
-    _request = await _client!.openUrl(method!, uri);
+    _request = await _client.openUrl(method!, uri);
   }
 
   @override
   Future<BaseResponse> sendRequestAndFetchResponse(
       FinalizedRequest finalizedRequest,
       {bool streamResponse = false}) async {
-    finalizedRequest.headers.forEach(_request!.headers.set);
+    final request = _request!;
+    finalizedRequest.headers.forEach(request.headers.set);
 
     // Allow the caller to configure the request.
     Object? configurationResult;
     if (configureFn != null) {
-      configurationResult = await configureFn!(_request);
+      configurationResult = await configureFn!(request);
     }
 
     // Wait for the configuration if applicable.
@@ -76,7 +77,7 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
       await configurationResult;
     }
     if (finalizedRequest.body.contentLength != null) {
-      _request?.contentLength = finalizedRequest.body.contentLength!;
+      request.contentLength = finalizedRequest.body.contentLength!;
     }
 
     if (finalizedRequest.body is StreamedHttpBody) {
@@ -84,33 +85,33 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
       // Use a byte stream progress listener to transform the request body such
       // that it produces a stream of progress events.
       final progressListener = http_utils.ByteStreamProgressListener(
-          body.byteStream!,
+          body.byteStream,
           total: finalizedRequest.body.contentLength);
 
       // Add the now-transformed request body stream.
-      await _request!.addStream(progressListener.byteStream!);
+      await request.addStream(progressListener.byteStream);
 
       // Map the progress stream back to this request's upload progress.
       progressListener.progressStream.listen(uploadProgressController.add);
     } else {
       final HttpBody body = finalizedRequest.body as HttpBody;
       // The entire request body is available immediately as bytes.
-      _request!.add(body.asBytes());
+      request.add(body.asBytes());
 
       // Since the entire request body has already been sent, the upload
       // progress stream can be "completed" by adding a single progress event.
       RequestProgress progress;
-      if (_request!.contentLength == 0) {
+      if (request.contentLength == 0) {
         progress = RequestProgress(0, 0);
       } else {
         progress =
-            RequestProgress(_request!.contentLength, _request!.contentLength);
+            RequestProgress(request.contentLength, _request!.contentLength);
       }
       uploadProgressController.add(progress);
     }
 
     // Close the request now that data has been sent and wait for the response.
-    final response = await _request!.close();
+    final response = await request.close();
 
     // Use a byte stream progress listener to transform the response stream such
     // that it produces a stream of progress events.
@@ -137,6 +138,6 @@ abstract class VMRequestMixin implements BaseRequest, CommonRequest {
 
     // Otherwise, the byte stream needs to be reduced to a single list of bytes.
     return Response.fromBytes(response.statusCode, response.reasonPhrase,
-        responseHeaders, await streamedResponse.body!.toBytes());
+        responseHeaders, await streamedResponse.body.toBytes());
   }
 }

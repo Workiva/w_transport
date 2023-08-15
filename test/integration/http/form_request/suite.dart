@@ -81,7 +81,7 @@ void runFormRequestSuite([transport.TransportPlatform? transportPlatform]) {
             ..fields['field2'] = 'ç®å';
       final response = await request.post();
       expect(response.encoding!.name, equals(utf8.name));
-      final echo = http_utils.queryToMap(response.body.asString()!,
+      final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
       expect(echo, containsPair('field2', 'ç®å'));
@@ -96,7 +96,7 @@ void runFormRequestSuite([transport.TransportPlatform? transportPlatform]) {
             ..fields['field2'] = 'ç®å';
       final response = await request.post();
       expect(response.encoding!.name, equals(latin1.name));
-      final echo = http_utils.queryToMap(response.body.asString()!,
+      final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
       expect(echo, containsPair('field2', 'ç®å'));
@@ -111,7 +111,7 @@ void runFormRequestSuite([transport.TransportPlatform? transportPlatform]) {
             ..fields['field2'] = 'value2';
       final response = await request.post();
       expect(response.encoding!.name, equals(ascii.name));
-      final echo = http_utils.queryToMap(response.body.asString()!,
+      final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
       expect(echo, containsPair('field2', 'value2'));
@@ -123,7 +123,7 @@ void runFormRequestSuite([transport.TransportPlatform? transportPlatform]) {
             ..uri = IntegrationPaths.echoEndpointUri
             ..fields['items'] = ['one', 'two'];
       final response = await request.post();
-      final echo = http_utils.queryToMap(response.body.asString()!);
+      final echo = http_utils.queryToMap(response.body.asString());
       expect(echo['items'], equals(['one', 'two']));
     });
 

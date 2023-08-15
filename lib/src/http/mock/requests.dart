@@ -34,11 +34,11 @@ class MockFormRequest extends CommonFormRequest with MockRequestMixin {
       : super.fromClient(wTransportClient, null);
 
   @override
-  FormRequest? createRealRequest() {
+  FormRequest createRealRequest() {
     if (_realTransport == null) {
       throw TransportPlatformMissing.httpRequestFailed('FormRequest');
     }
-    return _realTransport!.newFormRequest()!..fields = fields;
+    return _realTransport!.newFormRequest()..fields = fields;
   }
 }
 
@@ -53,11 +53,11 @@ class MockJsonRequest extends CommonJsonRequest with MockRequestMixin {
       : super.fromClient(wTransportClient, null);
 
   @override
-  JsonRequest? createRealRequest() {
+  JsonRequest createRealRequest() {
     if (_realTransport == null) {
       throw TransportPlatformMissing.httpRequestFailed('JsonRequest');
     }
-    return _realTransport!.newJsonRequest()!..body = body;
+    return _realTransport!.newJsonRequest()..body = body;
   }
 }
 
@@ -73,11 +73,11 @@ class MockMultipartRequest extends CommonMultipartRequest
       : super.fromClient(wTransportClient, null);
 
   @override
-  MultipartRequest? createRealRequest() {
+  MultipartRequest createRealRequest() {
     if (_realTransport == null) {
       throw TransportPlatformMissing.httpRequestFailed('MultipartRequest');
     }
-    return _realTransport!.newMultipartRequest()!
+    return _realTransport!.newMultipartRequest()
       ..fields = fields
       ..files = files;
   }
@@ -95,11 +95,11 @@ class MockPlainTextRequest extends CommonPlainTextRequest
       : super.fromClient(wTransportClient, null);
 
   @override
-  Request? createRealRequest() {
+  Request createRealRequest() {
     if (_realTransport == null) {
       throw TransportPlatformMissing.httpRequestFailed('Request');
     }
-    return _realTransport!.newRequest()!..body = body;
+    return _realTransport!.newRequest()..body = body;
   }
 }
 
@@ -114,11 +114,11 @@ class MockStreamedRequest extends CommonStreamedRequest with MockRequestMixin {
       : super.fromClient(wTransportClient, null);
 
   @override
-  StreamedRequest? createRealRequest() {
+  StreamedRequest createRealRequest() {
     if (_realTransport == null) {
       throw TransportPlatformMissing.httpRequestFailed('StreamedRequest');
     }
-    return _realTransport!.newStreamedRequest()!
+    return _realTransport!.newStreamedRequest()
       ..contentLength = contentLength
       ..contentType = contentType
       ..body = body;

@@ -128,7 +128,7 @@ class BrowserMultipartRequest extends CommonRequest
         } else if (value is Blob) {
           formData.appendBlob(name, value);
         } else if (value is MultipartFile) {
-          final contentType = value.contentType?.toString();
+          final contentType = value.contentType.toString();
           final blob = Blob(await value.byteStream.toList(), contentType);
           formData.appendBlob(name, blob, value.filename);
         }

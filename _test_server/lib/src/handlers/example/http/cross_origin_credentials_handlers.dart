@@ -28,9 +28,9 @@ Map<String, Handler> exampleHttpCrossOriginCredentialsRoutes = {
 };
 
 String? session;
-String? generateSessionCookie() {
+String generateSessionCookie() {
   session = Uuid().v4();
-  return session;
+  return session!;
 }
 
 bool isValidSession(HttpRequest request) {
@@ -72,7 +72,7 @@ class SessionHandler extends Handler {
   Future<Null> post(HttpRequest request) async {
     request.response.statusCode = HttpStatus.ok;
     setCorsHeaders(request);
-    final headers = createSessionHeaders(generateSessionCookie()!);
+    final headers = createSessionHeaders(generateSessionCookie());
     headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });

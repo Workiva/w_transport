@@ -52,11 +52,11 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   }
 
   @override
-  Uint8List? get bodyBytes {
-    if (_bodyBytes != null) return _bodyBytes;
+  Uint8List get bodyBytes {
+    if (_bodyBytes != null) return _bodyBytes!;
     if (_body != null) {
       _bodyBytes = encoding.encode(_body!) as Uint8List?;
-      return _bodyBytes;
+      return _bodyBytes!;
     }
     return Uint8List.fromList([]);
   }
@@ -69,7 +69,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   }
 
   @override
-  int get contentLength => bodyBytes!.length;
+  int get contentLength => bodyBytes.length;
 
   @override
   MediaType get defaultContentType =>

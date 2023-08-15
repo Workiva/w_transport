@@ -25,7 +25,7 @@ class MockWebSocketConnection {
   MockWebSocketConnection._(this._connectedClient, this.uri,
       {Map<String, dynamic>? headers, Iterable<String>? protocols})
       : headers = Map.unmodifiable(headers ?? {}),
-        protocols = List.unmodifiable((protocols ?? []) as Iterable<dynamic>);
+        protocols = List.unmodifiable(protocols ?? <String>[]);
 
   int? get closeCode => _connectedClient.closeCode;
 

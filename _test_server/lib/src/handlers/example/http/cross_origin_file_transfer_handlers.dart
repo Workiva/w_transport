@@ -198,7 +198,7 @@ class DownloadHandler extends Handler {
     }
     final requestedFile =
         Uri.parse(request.uri.queryParameters['file']!).pathSegments.last;
-    if (requestedFile == '' || requestedFile == null) {
+    if (requestedFile == '') {
       request.response.statusCode = HttpStatus.notFound;
       setCorsHeaders(request);
       return;
@@ -206,8 +206,7 @@ class DownloadHandler extends Handler {
 
     final shouldForceDownload = request.uri.queryParameters['dl'] == '1';
 
-    final fileUri = Uri.parse(
-        '../example/web/http/cross_origin_file_transfer/files/$requestedFile');
+    final fileUri = Uri.parse('tool/files/$requestedFile');
     final file = File.fromUri(fileUri);
     if (!file.existsSync()) {
       request.response.statusCode = HttpStatus.notFound;

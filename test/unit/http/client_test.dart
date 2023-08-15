@@ -236,20 +236,19 @@ void _runHttpClientSuite(transport.Client getClient()) {
       ..test = (request, response, willRetry) async => true;
 
     for (final request in createAllRequestTypes(client)) {
-      expect(request.autoRetry!.backOff.interval,
+      expect(request.autoRetry.backOff.interval,
           equals(client.autoRetry.backOff.interval));
-      expect(request.autoRetry!.backOff.method,
+      expect(request.autoRetry.backOff.method,
           equals(client.autoRetry.backOff.method));
-      expect(request.autoRetry!.enabled, equals(client.autoRetry.enabled));
-      expect(request.autoRetry!.forHttpMethods,
+      expect(request.autoRetry.enabled, equals(client.autoRetry.enabled));
+      expect(request.autoRetry.forHttpMethods,
           equals(client.autoRetry.forHttpMethods));
-      expect(request.autoRetry!.forStatusCodes,
+      expect(request.autoRetry.forStatusCodes,
           equals(client.autoRetry.forStatusCodes));
       expect(
-          request.autoRetry!.forTimeouts, equals(client.autoRetry.forTimeouts));
-      expect(
-          request.autoRetry!.maxRetries, equals(client.autoRetry.maxRetries));
-      expect(request.autoRetry!.test, equals(client.autoRetry.test));
+          request.autoRetry.forTimeouts, equals(client.autoRetry.forTimeouts));
+      expect(request.autoRetry.maxRetries, equals(client.autoRetry.maxRetries));
+      expect(request.autoRetry.test, equals(client.autoRetry.test));
     }
   });
 

@@ -44,7 +44,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// Information about this request related to retries is also available here.
   /// This includes the current number of attempts and the current list of
   /// failures.
-  RequestAutoRetry? autoRetry;
+  late RequestAutoRetry autoRetry;
 
   /// Gets and sets the content-length of the request, in bytes. If the size of
   /// the request is not known in advance, set this to null.
@@ -125,7 +125,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   void abort([Object? error]);
 
   /// Returns an clone of this request.
-  BaseRequest? clone();
+  BaseRequest clone();
 
   /// Allows more advanced configuration of this request prior to sending. The
   /// supplied callback [configure] will be called after opening, but prior to

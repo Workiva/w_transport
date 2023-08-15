@@ -106,7 +106,7 @@ abstract class CommonHttpClient implements HttpClient {
     if (withCredentials == true) {
       request.withCredentials = true;
     }
-    request.autoRetry!
+    request.autoRetry
       ..backOff = autoRetry.backOff
       ..enabled = autoRetry.enabled
       ..forHttpMethods = autoRetry.forHttpMethods

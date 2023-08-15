@@ -131,15 +131,15 @@ class Response extends BaseResponse {
 /// status, statusText) are available immediately and synchronously. The
 /// response body is available as a stream of bytes.
 class StreamedResponse extends BaseResponse {
-  StreamedHttpBody? _body;
+  late StreamedHttpBody _body;
 
   StreamedResponse._(int status, String statusText, Map<String, String> headers,
-      StreamedHttpBody? body)
+      StreamedHttpBody body)
       : _body = body,
         super(status, statusText, headers);
 
   StreamedResponse.fromByteStream(int status, String statusText,
-      Map<String, String> headers, Stream<List<int>>? byteStream)
+      Map<String, String> headers, Stream<List<int>> byteStream)
       : super(status, statusText, headers) {
     _body = StreamedHttpBody.fromByteStream(contentType, byteStream,
         contentLength: contentLength, fallbackEncoding: encoding);
@@ -147,7 +147,7 @@ class StreamedResponse extends BaseResponse {
 
   /// This response's body. Provides access to the response body as a byte
   /// stream.
-  StreamedHttpBody? get body => _body;
+  StreamedHttpBody get body => _body;
 
   /// Gets and sets the content-length of the request, in bytes. If the size of
   /// the request is not known in advance, set this to null.

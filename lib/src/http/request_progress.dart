@@ -24,14 +24,14 @@ class RequestProgress {
   final int total;
 
   /// Indicates whether or not the progress is measurable.
-  bool? _lengthComputable;
+  late bool _lengthComputable;
 
   /// Percentage of work done.
-  double? _percent;
+  late double _percent;
 
   RequestProgress([this.loaded = 0, this.total = -1]) {
-    _lengthComputable = total != null && total > -1;
-    if (!_lengthComputable!) {
+    _lengthComputable = total > -1;
+    if (!_lengthComputable) {
       _percent = 0.0;
     } else if (total == 0) {
       _percent = 100.0;
@@ -41,8 +41,8 @@ class RequestProgress {
   }
 
   /// Indicates whether or not the progress is measurable.
-  bool? get lengthComputable => _lengthComputable;
+  bool get lengthComputable => _lengthComputable;
 
   /// Percentage of work done.
-  double? get percent => _percent;
+  double get percent => _percent;
 }

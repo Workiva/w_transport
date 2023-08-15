@@ -55,7 +55,6 @@ class BrowserTransportPlatformWithSockJS extends BrowserTransportPlatform
       SockJSWebSocket.connect(uri,
           debug: sockJSDebug,
           noCredentials: sockJSNoCredentials,
-          protocolsWhitelist:
-              sockJSProtocolsWhitelist ?? _sockJSProtocolsWhitelist,
-          timeout: sockJSTimeout ?? _sockJSTimeout);
+          protocolsWhitelist: sockJSProtocolsWhitelist,
+          timeout: sockJSTimeout);
 }

@@ -237,7 +237,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
 
     Future<String> _decodeStreamedResponseToString(
         transport.StreamedResponse response) async {
-      final bytes = await response.body!.toBytes();
+      final bytes = await response.body.toBytes();
       return response.encoding!.decode(bytes.toList());
     }
 

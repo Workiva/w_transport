@@ -114,7 +114,7 @@ void _runCommonRequestSuiteFor(String name,
       final response =
           await request.streamDelete(uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
-      expect(await response.body!.byteStream!.isEmpty, isFalse);
+      expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('GET (streamed)', () async {
@@ -122,7 +122,7 @@ void _runCommonRequestSuiteFor(String name,
       final response =
           await request.streamGet(uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
-      expect(await response.body!.byteStream!.isEmpty, isFalse);
+      expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('HEAD (streamed)', () async {
@@ -137,7 +137,7 @@ void _runCommonRequestSuiteFor(String name,
       final response = await request.streamOptions(
           uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
-      expect(await response.body!.byteStream!.isEmpty, isFalse);
+      expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('PATCH (streamed)', () async {
@@ -145,7 +145,7 @@ void _runCommonRequestSuiteFor(String name,
       final response =
           await request.streamPatch(uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
-      expect(await response.body!.byteStream!.isEmpty, isFalse);
+      expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('POST (streamed)', () async {
@@ -153,7 +153,7 @@ void _runCommonRequestSuiteFor(String name,
       final response =
           await request.streamPost(uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
-      expect(await response.body!.byteStream!.isEmpty, isFalse);
+      expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('PUT (streamed)', () async {
@@ -161,7 +161,7 @@ void _runCommonRequestSuiteFor(String name,
       final response =
           await request.streamPut(uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
-      expect(await response.body!.byteStream!.isEmpty, isFalse);
+      expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('custom HTTP method (streamed)', () async {
@@ -169,7 +169,7 @@ void _runCommonRequestSuiteFor(String name,
       final response = await request.streamSend('COPY',
           uri: IntegrationPaths.downloadEndpointUri);
       expect(response.status, equals(200));
-      expect(await response.body!.byteStream!.isEmpty, isFalse);
+      expect(await response.body.byteStream.isEmpty, isFalse);
     });
 
     test('DELETE request', () async {
@@ -342,7 +342,7 @@ void _runCommonRequestSuiteFor(String name,
       final request = requestFactory(withBody: true)
         ..uri = IntegrationPaths.reflectEndpointUri;
       request.uploadProgress.listen((progress) {
-        if (progress.percent! > 0 && !uploadProgressListenedTo.isCompleted) {
+        if (progress.percent > 0 && !uploadProgressListenedTo.isCompleted) {
           uploadProgressListenedTo.complete();
         }
       });
@@ -355,7 +355,7 @@ void _runCommonRequestSuiteFor(String name,
       final request = requestFactory()
         ..uri = IntegrationPaths.downloadEndpointUri;
       request.downloadProgress.listen((progress) {
-        if (progress.percent! > 0 && !downloadProgressListenedTo.isCompleted) {
+        if (progress.percent > 0 && !downloadProgressListenedTo.isCompleted) {
           downloadProgressListenedTo.complete();
         }
       });
@@ -431,52 +431,52 @@ void _runAutoRetryTestSuiteFor(String name,
 
         expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
-        expect(request.autoRetry!.numAttempts, equals(1));
-        expect(request.autoRetry!.failures.length, equals(1));
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures.length, equals(1));
       });
 
       test('no retries', () async {
         final request = requestFactory();
-        request.autoRetry!
+        request.autoRetry
           ..enabled = true
           ..maxRetries = 2;
 
         defineResponseChain(request, [200]);
 
         await request.get();
-        expect(request.autoRetry!.numAttempts, equals(1));
-        expect(request.autoRetry!.failures, isEmpty);
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures, isEmpty);
       });
 
       test('1 successful retry', () async {
         final request = requestFactory();
-        request.autoRetry!
+        request.autoRetry
           ..enabled = true
           ..maxRetries = 2;
 
         defineResponseChain(request, [500, 200]);
 
         await request.get();
-        expect(request.autoRetry!.numAttempts, equals(2));
-        expect(request.autoRetry!.failures.length, equals(1));
+        expect(request.autoRetry.numAttempts, equals(2));
+        expect(request.autoRetry.failures.length, equals(1));
       });
 
       test('1 failed retry, 1 successful retry', () async {
         final request = requestFactory();
-        request.autoRetry!
+        request.autoRetry
           ..enabled = true
           ..maxRetries = 2;
 
         defineResponseChain(request, [500, 500, 200]);
 
         await request.get();
-        expect(request.autoRetry!.numAttempts, equals(3));
-        expect(request.autoRetry!.failures.length, equals(2));
+        expect(request.autoRetry.numAttempts, equals(3));
+        expect(request.autoRetry.failures.length, equals(2));
       });
 
       test('maximum retries exceeded', () async {
         final request = requestFactory();
-        request.autoRetry!
+        request.autoRetry
           ..enabled = true
           ..maxRetries = 2;
 
@@ -484,8 +484,8 @@ void _runAutoRetryTestSuiteFor(String name,
 
         expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
-        expect(request.autoRetry!.numAttempts, equals(3));
-        expect(request.autoRetry!.failures.length, equals(3));
+        expect(request.autoRetry.numAttempts, equals(3));
+        expect(request.autoRetry.failures.length, equals(3));
       });
     });
   });

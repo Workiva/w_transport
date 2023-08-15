@@ -15,9 +15,9 @@
 @TestOn('vm || browser')
 import 'dart:async';
 
+import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
-import 'package:w_transport/w_transport.dart';
 
 import '../../naming.dart';
 
@@ -109,57 +109,43 @@ void main() {
     test('constructing any HTTP class without a TP will inherit the global',
         () {
       transport.globalTransportPlatform = stubTransportPlatform;
-      // All of these should throw a TransportPlatformMissing exception.
-      expect(() => transport.FormRequest(),
-          throwsA(isA<transport.TransportPlatformMissing>()));
-      expect(() => transport.HttpClient(),
-          throwsA(isA<transport.TransportPlatformMissing>()));
-      expect(() => transport.JsonRequest(),
-          throwsA(isA<transport.TransportPlatformMissing>()));
-      expect(() => transport.MultipartRequest(),
-          throwsA(isA<transport.TransportPlatformMissing>()));
-      expect(() => transport.Request(),
-          throwsA(isA<transport.TransportPlatformMissing>()));
-      expect(() => transport.StreamedRequest(),
-          throwsA(isA<transport.TransportPlatformMissing>()));
+      expect(transport.FormRequest(), isA<StubFormRequest>());
+      expect(transport.HttpClient(), isA<StubHttpClient>());
+      expect(transport.JsonRequest(), isA<StubJsonRequest>());
+      expect(transport.MultipartRequest(), isA<StubMultipartRequest>());
+      expect(transport.Request(), isA<StubRequest>());
+      expect(transport.StreamedRequest(), isA<StubStreamedRequest>());
     });
 
     test('establishing a WS connection without a TP will inherit the global',
         () async {
       transport.globalTransportPlatform = stubTransportPlatform;
-
-      // The connected WS should be null because the stub TP returns null.
-      expect(await transport.WebSocket.connect(Uri.parse('/')), isNull);
+      expect(await transport.WebSocket.connect(Uri.parse('/')),
+          isA<StubWebSocket>());
     });
 
     test('constructing any HTTP class with a TP does not throw', () {
+      expect(transport.FormRequest(transportPlatform: stubTransportPlatform),
+          isA<StubFormRequest>());
+      expect(transport.HttpClient(transportPlatform: stubTransportPlatform),
+          isA<StubHttpClient>());
+      expect(transport.JsonRequest(transportPlatform: stubTransportPlatform),
+          isA<StubJsonRequest>());
       expect(
-          () => transport.FormRequest(transportPlatform: stubTransportPlatform),
-          throwsA(isA<TransportPlatformMissing>()));
+          transport.MultipartRequest(transportPlatform: stubTransportPlatform),
+          isA<StubMultipartRequest>());
+      expect(transport.Request(transportPlatform: stubTransportPlatform),
+          isA<StubRequest>());
       expect(
-          () => transport.HttpClient(transportPlatform: stubTransportPlatform),
-          throwsA(isA<TransportPlatformMissing>()));
-      expect(
-          () => transport.JsonRequest(transportPlatform: stubTransportPlatform),
-          throwsA(isA<TransportPlatformMissing>()));
-      expect(
-          () => transport.MultipartRequest(
-              transportPlatform: stubTransportPlatform),
-          throwsA(isA<TransportPlatformMissing>()));
-      expect(() => transport.Request(transportPlatform: stubTransportPlatform),
-          throwsA(isA<TransportPlatformMissing>()));
-      expect(
-          () => transport.StreamedRequest(
-              transportPlatform: stubTransportPlatform),
-          throwsA(isA<TransportPlatformMissing>()));
+          transport.StreamedRequest(transportPlatform: stubTransportPlatform),
+          isA<StubStreamedRequest>());
     });
 
     test('establishing a WS connection with a TP does not throw', () async {
-      // The connected WS should be null because the stub TP returns null.
       expect(
           await transport.WebSocket.connect(Uri.parse('/'),
               transportPlatform: stubTransportPlatform),
-          isNull);
+          isA<StubWebSocket>());
     });
   });
 }
@@ -170,10 +156,10 @@ class StubTransportPlatform implements transport.TransportPlatform {
   const StubTransportPlatform();
 
   @override
-  transport.HttpClient? newHttpClient() => null;
+  transport.HttpClient newHttpClient() => StubHttpClient();
 
   @override
-  Future<transport.WebSocket?> newWebSocket(Uri uri,
+  Future<transport.WebSocket> newWebSocket(Uri uri,
           {Map<String, dynamic>? headers,
           Iterable<String>? protocols,
           bool? sockJSDebug,
@@ -181,20 +167,34 @@ class StubTransportPlatform implements transport.TransportPlatform {
           List<String>? sockJSProtocolsWhitelist,
           Duration? sockJSTimeout,
           bool? useSockJS}) async =>
-      null;
+      StubWebSocket();
 
   @override
-  transport.StreamedRequest? newStreamedRequest() => null;
+  transport.StreamedRequest newStreamedRequest() => StubStreamedRequest();
 
   @override
-  transport.Request? newRequest() => null;
+  transport.Request newRequest() => StubRequest();
 
   @override
-  transport.MultipartRequest? newMultipartRequest() => null;
+  transport.MultipartRequest newMultipartRequest() => StubMultipartRequest();
 
   @override
-  transport.JsonRequest? newJsonRequest() => null;
+  transport.JsonRequest newJsonRequest() => StubJsonRequest();
 
   @override
-  transport.FormRequest? newFormRequest() => null;
+  transport.FormRequest newFormRequest() => StubFormRequest();
 }
+
+class StubHttpClient extends Mock implements transport.HttpClient {}
+
+class StubWebSocket extends Mock implements transport.WebSocket {}
+
+class StubStreamedRequest extends Mock implements transport.StreamedRequest {}
+
+class StubRequest extends Mock implements transport.Request {}
+
+class StubMultipartRequest extends Mock implements transport.MultipartRequest {}
+
+class StubJsonRequest extends Mock implements transport.JsonRequest {}
+
+class StubFormRequest extends Mock implements transport.FormRequest {}

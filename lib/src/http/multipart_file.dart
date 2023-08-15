@@ -29,7 +29,7 @@ class MultipartFile {
   /// Length of the file contents.
   final int length;
 
-  MediaType? _contentType;
+  late MediaType _contentType;
 
   /// Construct a [MultipartFile] by supplying the file contents and the file
   /// length. Optionally include a filename and content-type.
@@ -48,5 +48,5 @@ class MultipartFile {
   }
 
   /// File content-type. Defaults to "application/octet-stream".
-  MediaType? get contentType => _contentType;
+  MediaType get contentType => _contentType;
 }

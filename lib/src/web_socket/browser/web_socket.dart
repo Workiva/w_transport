@@ -43,9 +43,6 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
       {Map<String, dynamic>? headers, Iterable<String>? protocols}) async {
     // Establish a Web Socket connection.
     final webSocket = html.WebSocket(uri.toString(), protocols);
-    if (webSocket == null) {
-      throw WebSocketException('Could not connect to $uri');
-    }
 
     // Listen for and store the close event. This will determine whether or
     // not the socket connected successfully, and will also be used later

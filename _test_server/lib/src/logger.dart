@@ -15,7 +15,7 @@
 import 'dart:async';
 import 'dart:io';
 
-class Logger implements Function {
+class Logger {
   StreamController<String> _controller = StreamController<String>();
 
   Logger();

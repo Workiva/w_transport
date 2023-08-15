@@ -54,7 +54,7 @@ abstract class CommonRequest extends Object
   /// that determines whether or not a request should be retried, as well as the
   /// number of retries to attempt.
   @override
-  RequestAutoRetry? autoRetry;
+  late RequestAutoRetry autoRetry;
 
   /// The underlying HTTP client instance. In the browser, this will be null
   /// because there is no HTTP client API available. In the VM, this will be an
@@ -356,7 +356,7 @@ abstract class CommonRequest extends Object
     if (isCanceled) {
       final error = RequestException(method, uri, this, response,
           _cancellationError ?? Exception('Request canceled'));
-      autoRetry!.failures.add(error);
+      autoRetry.failures.add(error);
       throw error;
     }
   }
@@ -447,7 +447,7 @@ abstract class CommonRequest extends Object
     final finalizedHeaders = finalizeHeaders();
     final finalizedBody = await finalizeBody(body);
     final finalizedRequest = FinalizedRequest(
-        method, uri, finalizedHeaders, finalizedBody, withCredentials);
+        method!, uri, finalizedHeaders, finalizedBody, withCredentials);
 
     if (isSent)
       throw StateError(
@@ -462,7 +462,7 @@ abstract class CommonRequest extends Object
   /// a real request instance (created from a TransportPlatform instance).
   ///
   /// This is handled by the mock request mixin.
-  CommonRequest? switchToRealRequest({bool? streamResponse}) {
+  CommonRequest switchToRealRequest({bool? streamResponse}) {
     throw UnimplementedError();
   }
 
@@ -649,9 +649,9 @@ abstract class CommonRequest extends Object
   /// Determine if this request failure is eligible for retry.
   Future<bool> _canRetry(FinalizedRequest request, BaseResponse? response,
       RequestException requestException) async {
-    if (!autoRetry!.enabled ||
-        !autoRetry!.supported ||
-        autoRetry!.didExceedMaxNumberOfAttempts) return false;
+    if (!autoRetry.enabled ||
+        !autoRetry.supported ||
+        autoRetry.didExceedMaxNumberOfAttempts) return false;
 
     // If the request was explicitly canceled, then there is no reason to retry.
     if (isCanceled) return false;
@@ -659,18 +659,18 @@ abstract class CommonRequest extends Object
     // If the request failed due to exceeding the timeout threshold, check if
     // it is configured to retry for timeouts.
     if (requestException.error is TimeoutException) {
-      return autoRetry!.forTimeouts;
+      return autoRetry.forTimeouts;
     }
 
-    bool willRetry = autoRetry!.forHttpMethods.contains(method);
+    bool willRetry = autoRetry.forHttpMethods.contains(method);
     if (response != null) {
       willRetry =
-          willRetry && autoRetry!.forStatusCodes.contains(response.status);
+          willRetry && autoRetry.forStatusCodes.contains(response.status);
     } else {
       willRetry = false;
     }
-    if (autoRetry!.test != null) {
-      willRetry = await autoRetry!.test!(request, response, willRetry);
+    if (autoRetry.test != null) {
+      willRetry = await autoRetry.test!(request, response, willRetry);
     }
     return willRetry;
   }
@@ -688,7 +688,7 @@ abstract class CommonRequest extends Object
     isTimedOut = true;
 
     _timeoutError = TimeoutException(
-        'Request took too long to complete.', autoRetry!.timeoutThreshold);
+        'Request took too long to complete.', autoRetry.timeoutThreshold);
     _timeoutCompleter.complete();
   }
 
@@ -710,23 +710,31 @@ abstract class CommonRequest extends Object
   /// During this process, we check for cancellation several times and catch any
   /// errors that may be thrown. These errors are wrapped in a
   /// [RequestException] and rethrown.
-  Future<BaseResponse?> _send(String? method,
+  Future<BaseResponse> _send(String? method,
       {body,
       Map<String, String>? headers,
       bool? streamResponse,
       Uri? uri}) async {
-    autoRetry!.numAttempts++;
+    autoRetry.numAttempts++;
 
     // Use a completer so that an exception can be wrapped in a RequestException
     // instance while still preserving the stack trace of the original error.
-    final c = Completer<BaseResponse?>();
+    final c = Completer<void>();
 
+    if (method != null) {
+      this.method = method;
+    }
+    if (this.method == null) {
+      throw StateError(
+          'Request: Cannot send a request without an HTTP method.');
+    }
     this.method = method;
     if (uri != null) {
       this.uri = uri;
     }
-    if (this.uri.toString().isEmpty)
+    if (this.uri.toString().isEmpty) {
       throw StateError('Request: Cannot send a request without a URI.');
+    }
     if (headers != null) {
       headers.forEach((key, value) {
         this.headers[key] = value;
@@ -751,8 +759,8 @@ abstract class CommonRequest extends Object
             this.method, this.uri, this.headers)) {
       final realRequest = switchToRealRequest();
       return streamResponse
-          ? realRequest!.streamSend(method, body: body)
-          : realRequest!.send(method, body: body);
+          ? realRequest.streamSend(method, body: body)
+          : realRequest.send(method, body: body);
     }
 
     // Otherwise, carry on with the send logic and the mocks will do the rest.
@@ -762,40 +770,41 @@ abstract class CommonRequest extends Object
     checkForCancellation();
     checkForTimeout();
 
-    BaseResponse? response;
+    late BaseResponse response;
+    BaseResponse? maybeResponse;
     bool responseInterceptorThrew = false;
     try {
       await openRequest(client);
       checkForCancellation();
       checkForTimeout();
-      final responseCompleter = Completer<BaseResponse?>();
+      final maybeResponseCompleter = Completer<BaseResponse?>();
 
       // Enforce a timeout threshold if set.
       Timer? timeout;
       if (timeoutThreshold != null) {
-        timeout = Timer(autoRetry!.timeoutThreshold!, _timeoutRequest);
+        timeout = Timer(autoRetry.timeoutThreshold!, _timeoutRequest);
       }
 
       // Attempt to fetch the response.
       // ignore: unawaited_futures
       sendRequestAndFetchResponse(finalizedRequest,
               streamResponse: streamResponse)
-          .then((response) {
-        if (!responseCompleter.isCompleted) {
-          responseCompleter.complete(response);
+          .then((r) {
+        if (!maybeResponseCompleter.isCompleted) {
+          maybeResponseCompleter.complete(r);
         }
       }, onError: (error, stackTrace) {
-        if (!responseCompleter.isCompleted) {
-          responseCompleter.completeError(error, stackTrace);
+        if (!maybeResponseCompleter.isCompleted) {
+          maybeResponseCompleter.completeError(error, stackTrace);
         }
       });
 
       // Listen for cancellation and request timeout and break out of the
       // response fetching early if it occurs before the request has finished.
       void breakOutOfResponseFetching(_) {
-        if (!responseCompleter.isCompleted) {
-          response = null;
-          responseCompleter.complete(response);
+        if (!maybeResponseCompleter.isCompleted) {
+          maybeResponse = null;
+          maybeResponseCompleter.complete(null);
         }
       }
 
@@ -804,28 +813,36 @@ abstract class CommonRequest extends Object
       // ignore: unawaited_futures
       _timeoutCompleter.future.then(breakOutOfResponseFetching);
 
-      response = await responseCompleter.future;
-      if (response == null) {
+      maybeResponse = await maybeResponseCompleter.future;
+      if (maybeResponse == null) {
         checkForTimeout();
       }
-      checkForCancellation(response: response);
+      checkForCancellation(response: maybeResponse);
+
+      // The response should only be null if it timed out or was canceled, and
+      // in both cases an exception is thrown. In other words, we can safely
+      // assert non-nullability here.
+      response = maybeResponse!;
 
       // Response has been received, so the timeout timer can be canceled.
       if (timeout != null) {
         timeout.cancel();
       }
 
-      if (response != null &&
-          response!.status != 0 &&
-          response!.status != 304 &&
-          !(response!.status >= 200 && response!.status < 300)) {
+      if (response.status != 0 &&
+          response.status != 304 &&
+          !(response.status >= 200 && response.status < 300)) {
         throw RequestException(method, this.uri, this, response);
       }
 
       // Apply the response interceptor if set.
       if (responseInterceptor != null) {
         try {
-          response = await responseInterceptor!(finalizedRequest, response);
+          final interceptedResponse =
+              await responseInterceptor!(finalizedRequest, response);
+          // If any of the response interceptors return null, default to the
+          // original response.
+          response = interceptedResponse ?? response;
         } catch (e) {
           // We try to apply the response interceptor even if the request fails,
           // but if the request failure was due to the response interceptor
@@ -835,36 +852,39 @@ abstract class CommonRequest extends Object
         }
       }
 
-      c.complete(response);
+      c.complete();
     } catch (e, stackTrace) {
+      // Note: the exception may have been thrown prior to our assertion of a
+      // non-null `response`, so this catch block must read `maybeResponse`.
+
       Object exception = e;
       if (exception is! RequestException) {
         exception =
-            RequestException(method, this.uri, this, response, exception);
+            RequestException(method, this.uri, this, maybeResponse, exception);
       }
       RequestException requestException = exception;
 
       // Apply the response interceptor even in the event of failure, unless the
       // response interceptor was the cause of failure.
       if (responseInterceptor != null && !responseInterceptorThrew) {
-        response = await responseInterceptor!(
-            finalizedRequest, response, requestException);
+        maybeResponse = await responseInterceptor!(
+            finalizedRequest, maybeResponse, requestException);
         requestException = RequestException(
-            method, this.uri, this, response, requestException.error);
+            method, this.uri, this, maybeResponse, requestException.error);
       }
 
       // Store the failure for context.
-      autoRetry!.failures.add(requestException);
+      autoRetry.failures.add(requestException);
 
       // Attempt to retry the request if configuration and state permit it.
       bool retrySucceeded = false;
-      if (await _canRetry(finalizedRequest, response, requestException)) {
-        final retryCompleter = Completer<BaseResponse?>();
+      if (await _canRetry(finalizedRequest, maybeResponse, requestException)) {
+        final retryCompleter = Completer<void>();
 
         // If retry back-off is configured, wait as necessary.
         _backOffCalculator ??= utils.AdvancedBackOffCalculator();
         final backOff =
-            utils.calculateBackOff(autoRetry!, calculator: _backOffCalculator);
+            utils.calculateBackOff(autoRetry, calculator: _backOffCalculator);
 
         if (backOff != null) {
           await Future.delayed(backOff);
@@ -873,7 +893,7 @@ abstract class CommonRequest extends Object
         // ignore: unawaited_futures
         _retry(streamResponse).then((retryResponse) {
           if (!retryCompleter.isCompleted) {
-            response = retryResponse;
+            response = maybeResponse = retryResponse;
             retrySucceeded = true;
             retryCompleter.complete();
           }
@@ -895,7 +915,7 @@ abstract class CommonRequest extends Object
         });
 
         await retryCompleter.future;
-        checkForCancellation(response: response);
+        checkForCancellation(response: maybeResponse);
       }
 
       retrySucceeded

@@ -28,7 +28,7 @@ import 'handlers/test/http/routes.dart' show testHttpIntegrationRoutes;
 import 'handlers/test/ws/routes.dart' show getTestWebSocketIntegrationRoutes;
 import 'logger.dart';
 
-class Router implements Function {
+class Router {
   Logger logger;
   late Map<String, Handler> routes;
 

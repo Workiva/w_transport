@@ -24,7 +24,7 @@ import 'package:w_transport/src/web_socket/web_socket.dart';
 abstract class MockWSocket extends MockWebSocket implements WebSocket {
   factory MockWSocket() => MockWebSocket() as MockWSocket;
 
-  static Future<WebSocket?> connect(Uri uri,
+  static Future<WebSocket> connect(Uri uri,
           {Map<String, dynamic>? headers, Iterable<String>? protocols}) =>
       MockWebSocketInternal.handleWebSocketConnection(uri,
           headers: headers, protocols: protocols);

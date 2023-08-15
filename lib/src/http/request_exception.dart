@@ -31,7 +31,7 @@ class RequestException implements Exception {
   final BaseResponse? response;
 
   /// URL of the attempted/unsuccessful request.
-  final Uri? uri;
+  final Uri uri;
 
   /// Construct a new instance of [RequestException] using information from
   /// an HTTP request and response.
@@ -42,12 +42,10 @@ class RequestException implements Exception {
   /// response status.
   String get message {
     String msg;
-    if (request != null &&
-        request.autoRetry != null &&
-        request.autoRetry!.numAttempts > 1) {
+    if (request.autoRetry.numAttempts > 1) {
       msg = '$method $uri';
-      for (int i = 0; i < request.autoRetry!.failures.length; i++) {
-        final failure = request.autoRetry!.failures[i];
+      for (int i = 0; i < request.autoRetry.failures.length; i++) {
+        final failure = request.autoRetry.failures[i];
         String attempt = '\n\tAttempt #${i + 1}:';
         if (failure.response != null) {
           attempt +=

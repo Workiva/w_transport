@@ -26,7 +26,7 @@ class FinalizedRequest {
   final Map<String, String> headers;
 
   /// The HTTP method (get, post, put, etc.).
-  final String? method;
+  final String method;
 
   /// The URI the request will be opened against.
   final Uri uri;

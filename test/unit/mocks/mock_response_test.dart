@@ -144,7 +144,7 @@ void main() {
         expect(response.status, equals(100));
         expect(response.statusText, equals('custom'));
         expect(response.headers['x-custom'], equals('value'));
-        expect(utf8.decode(await response.body!.toBytes()), equals('data'));
+        expect(utf8.decode(await response.body.toBytes()), equals('data'));
       });
 
       test('.ok() 200', () {
@@ -209,7 +209,7 @@ void main() {
       test('should support byteStream body', () async {
         final response =
             MockStreamedResponse(200, byteStream: toByteStream('body'));
-        expect(utf8.decode(await response.body!.toBytes()), equals('body'));
+        expect(utf8.decode(await response.body.toBytes()), equals('body'));
       });
 
       test('content-length', () {

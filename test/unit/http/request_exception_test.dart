@@ -2,6 +2,7 @@
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
+import 'package:w_transport/src/http/auto_retry.dart';
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
@@ -26,8 +27,8 @@ void main() {
       test('should include the response status and text if given', () {
         final response = MockResponse.ok();
         final request = MockRequest();
-        final exception =
-            transport.RequestException('GET', null, request, response);
+        final exception = transport.RequestException(
+            'GET', Uri.parse('/'), request, response);
         expect(exception.toString(), contains('200 OK'));
       });
 
@@ -35,7 +36,7 @@ void main() {
         final request = MockRequest();
 
         final exception = transport.RequestException(
-            'GET', null, request, null, Exception('original'));
+            'GET', Uri.parse('/'), request, null, Exception('original'));
         expect(exception.toString(), contains('original'));
       });
     });
@@ -43,4 +44,7 @@ void main() {
 }
 
 // Update MockRequest class to implement BaseRequest
-class MockRequest extends Mock implements BaseRequest {}
+class MockRequest extends Mock implements BaseRequest {
+  @override
+  RequestAutoRetry get autoRetry => RequestAutoRetry(this);
+}

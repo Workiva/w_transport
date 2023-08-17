@@ -91,7 +91,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     // Allow the caller to configure the request.
     Object? configurationResult;
     if (configureFn != null) {
-      configurationResult = configureFn!(_request);
+      configurationResult = configureFn!(request);
     }
 
     // Wait for the configuration if applicable before sending the request.

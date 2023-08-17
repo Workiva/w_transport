@@ -36,8 +36,8 @@ Uri downloadEndpoint =
 
 transport.HttpClient? client;
 transport.HttpClient getHttpClient() {
-  client ??= transport.HttpClient(transportPlatform: vmTransportPlatform);
-  return client!;
+  return client ??=
+      transport.HttpClient(transportPlatform: vmTransportPlatform);
 }
 
 class FilesProxy extends Handler {

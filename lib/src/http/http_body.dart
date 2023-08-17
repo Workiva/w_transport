@@ -48,8 +48,8 @@ class HttpBody extends BaseHttpBody {
 
   String? _body;
   Uint8List? _bytes;
-  Encoding? _encoding;
-  late Encoding _fallbackEncoding;
+  final Encoding? _encoding;
+  final Encoding _fallbackEncoding;
 
   /// Construct the body to an HTTP request or an HTTP response from bytes.
   ///
@@ -66,12 +66,11 @@ class HttpBody extends BaseHttpBody {
   /// If an encoding cannot be parsed from the content-type header (via the
   /// `charset` param), then [fallbackEncoding] will be used (utf-8 by default).
   HttpBody.fromBytes(this.contentType, List<int>? bytes,
-      {Encoding? encoding, Encoding? fallbackEncoding}) {
-    _encoding =
-        encoding ?? http_utils.parseEncodingFromContentType(contentType);
-    _fallbackEncoding = fallbackEncoding ?? utf8;
-    _bytes = Uint8List.fromList(bytes ?? []);
-  }
+      {Encoding? encoding, Encoding? fallbackEncoding})
+      : _encoding =
+            encoding ?? http_utils.parseEncodingFromContentType(contentType),
+        _fallbackEncoding = fallbackEncoding ?? utf8,
+        _bytes = Uint8List.fromList(bytes ?? []);
 
   /// Construct the body to an HTTP request or an HTTP response from text.
   ///
@@ -88,12 +87,11 @@ class HttpBody extends BaseHttpBody {
   /// If an encoding cannot be parsed from the content-type header (via the
   /// `charset` param), then [fallbackEncoding] will be used (utf-8 by default).
   HttpBody.fromString(this.contentType, String? body,
-      {Encoding? encoding, Encoding? fallbackEncoding}) {
-    _encoding =
-        encoding ?? http_utils.parseEncodingFromContentType(contentType);
-    _fallbackEncoding = fallbackEncoding ?? utf8;
-    _body = body ?? '';
-  }
+      {Encoding? encoding, Encoding? fallbackEncoding})
+      : _encoding =
+            encoding ?? http_utils.parseEncodingFromContentType(contentType),
+        _fallbackEncoding = fallbackEncoding ?? utf8,
+        _body = body ?? '';
 
   /// The size of this request/response body in bytes.
   @override

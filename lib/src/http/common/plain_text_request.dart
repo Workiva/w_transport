@@ -55,8 +55,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
   Uint8List get bodyBytes {
     if (_bodyBytes != null) return _bodyBytes!;
     if (_body != null) {
-      _bodyBytes = encoding.encode(_body!) as Uint8List?;
-      return _bodyBytes!;
+      return _bodyBytes = encoding.encode(_body!) as Uint8List;
     }
     return Uint8List.fromList([]);
   }

@@ -838,11 +838,10 @@ abstract class CommonRequest extends Object
       // Apply the response interceptor if set.
       if (responseInterceptor != null) {
         try {
-          final interceptedResponse =
-              await responseInterceptor!(finalizedRequest, response);
           // If any of the response interceptors return null, default to the
           // original response.
-          response = interceptedResponse ?? response;
+          response = await responseInterceptor!(finalizedRequest, response) ??
+              response;
         } catch (e) {
           // We try to apply the response interceptor even if the request fails,
           // but if the request failure was due to the response interceptor

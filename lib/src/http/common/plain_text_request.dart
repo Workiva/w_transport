@@ -24,28 +24,28 @@ import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonPlainTextRequest extends CommonRequest implements Request {
-  CommonPlainTextRequest(TransportPlatform transportPlatform)
+  CommonPlainTextRequest(TransportPlatform? transportPlatform)
       : super(transportPlatform);
   // ignore: deprecated_member_use_from_same_package
   CommonPlainTextRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
-  String _body;
+  String? _body;
 
-  Uint8List _bodyBytes;
+  Uint8List? _bodyBytes;
 
   @override
-  String get body {
+  String? get body {
     if (_body != null) return _body;
     if (_bodyBytes != null) {
-      _body = encoding.decode(_bodyBytes);
+      _body = encoding.decode(_bodyBytes!);
       return _body;
     }
     return '';
   }
 
   @override
-  set body(String value) {
+  set body(String? value) {
     verifyUnsent();
     _body = value;
     _bodyBytes = null;
@@ -53,18 +53,17 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
 
   @override
   Uint8List get bodyBytes {
-    if (_bodyBytes != null) return _bodyBytes;
+    if (_bodyBytes != null) return _bodyBytes!;
     if (_body != null) {
-      _bodyBytes = encoding.encode(_body);
-      return _bodyBytes;
+      return _bodyBytes = encoding.encode(_body!) as Uint8List;
     }
     return Uint8List.fromList([]);
   }
 
   @override
-  set bodyBytes(List<int> bytes) {
+  set bodyBytes(List<int>? bytes) {
     verifyUnsent();
-    _bodyBytes = bytes;
+    _bodyBytes = bytes as Uint8List?;
     _body = null;
   }
 
@@ -77,7 +76,7 @@ abstract class CommonPlainTextRequest extends CommonRequest implements Request {
 
   @override
   Request clone() {
-    final Request requestClone = super.clone();
+    final Request requestClone = super.clone() as Request;
     if (_body != null) {
       requestClone.body = body;
     } else if (_bodyBytes != null) {

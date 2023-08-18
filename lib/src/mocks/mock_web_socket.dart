@@ -19,20 +19,20 @@ typedef WebSocketConnectHandler
         {Map<String, dynamic> headers, Iterable<String> protocols});
 typedef WebSocketPatternConnectHandler
     = Future<dynamic /*WSocket|MockWebSocketServer*/ > Function(Uri uri,
-        {Map<String, dynamic> headers,
-        Match match,
-        Iterable<String> protocols});
+        {Map<String, dynamic>? headers,
+        Match? match,
+        Iterable<String>? protocols});
 
 class MockWebSockets {
   const MockWebSockets();
 
   void expect(Uri uri,
-      {dynamic /*MockWSocket|MockWebSocketServer*/ connectTo, bool reject}) {
+      {dynamic /*MockWSocket|MockWebSocketServer*/ connectTo, bool? reject}) {
     MockWebSocketInternal._expect(uri, connectTo: connectTo, reject: reject);
   }
 
   void expectPattern(Pattern uriPattern,
-      {dynamic /*MockWSocket|MockWebSocketServer*/ connectTo, bool reject}) {
+      {dynamic /*MockWSocket|MockWebSocketServer*/ connectTo, bool? reject}) {
     MockWebSocketInternal._expect(uriPattern,
         connectTo: connectTo, reject: reject);
   }
@@ -44,10 +44,11 @@ class MockWebSockets {
   }
 
   MockWebSocketHandler when(Uri uri,
-      {WebSocketConnectHandler handler, bool reject}) {
+      {WebSocketConnectHandler? handler, bool? reject}) {
     MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
     if (reject != null && reject) {
-      handler = (uri, {protocols, headers}) {
+      handler =
+          (uri, {Iterable<String>? protocols, Map<String, dynamic>? headers}) {
         throw WebSocketException('Mock connection to $uri rejected.');
       };
     }
@@ -62,7 +63,7 @@ class MockWebSockets {
   }
 
   MockWebSocketHandler whenPattern(Pattern uriPattern,
-      {WebSocketPatternConnectHandler handler, bool reject}) {
+      {WebSocketPatternConnectHandler? handler, bool? reject}) {
     MockWebSocketInternal._validateWhenParams(handler: handler, reject: reject);
     if (reject == true) {
       handler = (uri, {protocols, headers, match}) {
@@ -72,7 +73,11 @@ class MockWebSockets {
     MockWebSocketInternal._patternHandlers[uriPattern] = handler;
 
     return MockWebSocketHandler._(() {
-      final currentHandler = MockWebSocketInternal._patternHandlers[uriPattern];
+      final Future<dynamic> Function(Uri,
+              {Map<String, dynamic> headers,
+              Match match,
+              Iterable<String> protocols})? currentHandler =
+          MockWebSocketInternal._patternHandlers[uriPattern];
       if (currentHandler != null && currentHandler == handler) {
         MockWebSocketInternal._patternHandlers.remove(uriPattern);
       }
@@ -92,17 +97,17 @@ class MockWebSocketHandler {
 // ignore: avoid_classes_with_only_static_members
 class MockWebSocketInternal {
   static List<_WebSocketConnectExpectation> _expectations = [];
-  static Map<String, WebSocketConnectHandler> _handlers = {};
-  static Map<Pattern, WebSocketPatternConnectHandler> _patternHandlers = {};
+  static Map<String, WebSocketConnectHandler?> _handlers = {};
+  static Map<Pattern, WebSocketPatternConnectHandler?> _patternHandlers = {};
 
   static Future<WebSocket> handleWebSocketConnection(Uri uri,
-      {Map<String, dynamic> headers, Iterable<String> protocols}) async {
+      {Map<String, dynamic>? headers, Iterable<String>? protocols}) async {
     final matchingExpectations = _getMatchingExpectations(uri);
     if (matchingExpectations.isNotEmpty) {
       // If this connection was expected, resolve it as planned.
       _WebSocketConnectExpectation expectation = matchingExpectations.first;
       _expectations.remove(expectation);
-      if (expectation.reject != null && expectation.reject) {
+      if (expectation.reject != null && expectation.reject!) {
         throw WebSocketException('Mock connection to $uri rejected.');
       }
 
@@ -128,11 +133,11 @@ class MockWebSocketInternal {
       // If a handler was set up for this type of connection, call the handler.
       dynamic result;
       if (handlerMatch.handler is WebSocketPatternConnectHandler) {
-        result = handlerMatch.handler(uri,
+        result = handlerMatch.handler!(uri,
             headers: headers, match: handlerMatch.match, protocols: protocols);
       } else {
         result =
-            handlerMatch.handler(uri, headers: headers, protocols: protocols);
+            handlerMatch.handler!(uri, headers: headers, protocols: protocols);
       }
 
       if (result is Future) {
@@ -160,7 +165,7 @@ class MockWebSocketInternal {
       return mockWebSocket;
     }
 
-    return null;
+    throw StateError('No matching web socket mock handler for $uri');
   }
 
   static bool hasHandlerForWebSocket(Uri uri) {
@@ -170,7 +175,7 @@ class MockWebSocketInternal {
   }
 
   static void _expect(Object uri,
-      {dynamic /*MockWSocket|MockWebSocketServer*/ connectTo, bool reject}) {
+      {dynamic /*MockWSocket|MockWebSocketServer*/ connectTo, bool? reject}) {
     if (connectTo != null && reject != null) {
       throw ArgumentError('Use connectTo OR reject, but not both.');
     }
@@ -194,7 +199,7 @@ class MockWebSocketInternal {
       if (e.uri is Uri) {
         return e.uri == uri;
       } else if (e.uri is Pattern) {
-        final Pattern pattern = e.uri;
+        final Pattern pattern = e.uri as Pattern;
         return pattern.allMatches(uri.toString()).isNotEmpty;
       } else {
         throw UnsupportedError('Expectation URI must be Uri or Pattern.');
@@ -202,20 +207,21 @@ class MockWebSocketInternal {
     });
   }
 
-  static _WebSocketHandlerMatch _getMatchingHandler(Uri uri) {
+  static _WebSocketHandlerMatch? _getMatchingHandler(Uri uri) {
     if (_handlers.containsKey(uri.toString())) {
       return _WebSocketHandlerMatch(_handlers[uri.toString()]);
     }
 
-    Match match;
-    final matchingHandlerKey = _patternHandlers.keys.firstWhere((uriPattern) {
+    Match? match;
+    final matchingHandlerKey =
+        _patternHandlers.keys.firstWhereOrNull((uriPattern) {
       final matches = uriPattern.allMatches(uri.toString());
       if (matches.isNotEmpty) {
         match = matches.first;
         return true;
       }
       return false;
-    }, orElse: () => null);
+    });
 
     if (matchingHandlerKey != null) {
       return _WebSocketHandlerMatch(_patternHandlers[matchingHandlerKey],
@@ -225,7 +231,7 @@ class MockWebSocketInternal {
     return null;
   }
 
-  static void _validateWhenParams({dynamic handler, bool reject}) {
+  static void _validateWhenParams({dynamic handler, bool? reject}) {
     if (handler != null && reject != null) {
       throw ArgumentError('Use handler OR reject, but not both.');
     }
@@ -237,15 +243,15 @@ class MockWebSocketInternal {
 
 class _WebSocketConnectExpectation {
   dynamic /*MockWSocket|MockWebSocketServer*/ connectTo;
-  bool reject;
+  bool? reject;
   final Object uri;
 
   _WebSocketConnectExpectation(this.uri, {this.connectTo, this.reject});
 }
 
 class _WebSocketHandlerMatch {
-  final Function handler;
-  final Match match;
+  final Function? handler;
+  final Match? match;
 
   _WebSocketHandlerMatch(this.handler, {this.match});
 }

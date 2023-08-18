@@ -22,13 +22,13 @@ import 'package:w_transport/src/http/response.dart';
 import 'package:w_transport/src/http/utils.dart' as http_utils;
 
 class MockResponse implements Response {
-  Response _response;
+  late Response _response;
 
   MockResponse(int status,
       {body,
-      Encoding encoding,
-      Map<String, String> headers,
-      String statusText}) {
+      Encoding? encoding,
+      Map<String, String>? headers,
+      String? statusText}) {
     // Ensure the headers are case insensitive.
     headers = CaseInsensitiveMap<String>.from(headers ?? {});
 
@@ -55,39 +55,39 @@ class MockResponse implements Response {
   }
 
   factory MockResponse.ok(
-          {body, Map<String, String> headers, String statusText}) =>
+          {body, Map<String, String>? headers, String? statusText}) =>
       MockResponse(200, body: body, headers: headers, statusText: statusText);
 
   factory MockResponse.badRequest(
-          {body, Map<String, String> headers, String statusText}) =>
+          {body, Map<String, String>? headers, String? statusText}) =>
       MockResponse(400, body: body, headers: headers, statusText: statusText);
 
   factory MockResponse.unauthorized(
-          {body, Map<String, String> headers, String statusText}) =>
+          {body, Map<String, String>? headers, String? statusText}) =>
       MockResponse(401, body: body, headers: headers, statusText: statusText);
 
   factory MockResponse.forbidden(
-          {body, Map<String, String> headers, String statusText}) =>
+          {body, Map<String, String>? headers, String? statusText}) =>
       MockResponse(403, body: body, headers: headers, statusText: statusText);
 
   factory MockResponse.notFound(
-          {body, Map<String, String> headers, String statusText}) =>
+          {body, Map<String, String>? headers, String? statusText}) =>
       MockResponse(404, body: body, headers: headers, statusText: statusText);
 
   factory MockResponse.methodNotAllowed(
-          {body, Map<String, String> headers, String statusText}) =>
+          {body, Map<String, String>? headers, String? statusText}) =>
       MockResponse(405, body: body, headers: headers, statusText: statusText);
 
   factory MockResponse.internalServerError(
-          {body, Map<String, String> headers, String statusText}) =>
+          {body, Map<String, String>? headers, String? statusText}) =>
       MockResponse(500, body: body, headers: headers, statusText: statusText);
 
   factory MockResponse.notImplemented(
-          {body, Map<String, String> headers, String statusText}) =>
+          {body, Map<String, String>? headers, String? statusText}) =>
       MockResponse(501, body: body, headers: headers, statusText: statusText);
 
   factory MockResponse.badGateway(
-          {body, Map<String, String> headers, String statusText}) =>
+          {body, Map<String, String>? headers, String? statusText}) =>
       MockResponse(502, body: body, headers: headers, statusText: statusText);
 
   @override
@@ -97,10 +97,10 @@ class MockResponse implements Response {
   int get contentLength => _response.contentLength;
 
   @override
-  MediaType get contentType => _response.contentType;
+  MediaType? get contentType => _response.contentType;
 
   @override
-  Encoding get encoding => _response.encoding;
+  Encoding? get encoding => _response.encoding;
 
   @override
   Map<String, String> get headers => _response.headers;
@@ -113,11 +113,11 @@ class MockResponse implements Response {
 
   @override
   Response replace(
-      {List<int> bodyBytes,
-      String bodyString,
-      int status,
-      String statusText,
-      Map<String, String> headers}) {
+      {List<int>? bodyBytes,
+      String? bodyString,
+      int? status,
+      String? statusText,
+      Map<String, String>? headers}) {
     return _response.replace(
         bodyBytes: bodyBytes,
         bodyString: bodyString,
@@ -128,13 +128,13 @@ class MockResponse implements Response {
 }
 
 class MockStreamedResponse implements StreamedResponse {
-  StreamedResponse _response;
+  late StreamedResponse _response;
 
   MockStreamedResponse(int status,
-      {Stream<List<int>> byteStream,
-      Encoding encoding,
-      Map<String, String> headers,
-      String statusText}) {
+      {Stream<List<int>>? byteStream,
+      Encoding? encoding,
+      Map<String, String>? headers,
+      String? statusText}) {
     // Ensure the headers are case insensitive.
     headers = CaseInsensitiveMap<String>.from(headers ?? {});
 
@@ -155,65 +155,65 @@ class MockStreamedResponse implements StreamedResponse {
   }
 
   factory MockStreamedResponse.ok(
-          {Stream<List<int>> byteStream,
-          Map<String, String> headers,
-          String statusText}) =>
+          {Stream<List<int>>? byteStream,
+          Map<String, String>? headers,
+          String? statusText}) =>
       MockStreamedResponse(200,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.badRequest(
-          {Stream<List<int>> byteStream,
-          Map<String, String> headers,
-          String statusText}) =>
+          {Stream<List<int>>? byteStream,
+          Map<String, String>? headers,
+          String? statusText}) =>
       MockStreamedResponse(400,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.unauthorized(
-          {Stream<List<int>> byteStream,
-          Map<String, String> headers,
-          String statusText}) =>
+          {Stream<List<int>>? byteStream,
+          Map<String, String>? headers,
+          String? statusText}) =>
       MockStreamedResponse(401,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.forbidden(
-          {Stream<List<int>> byteStream,
-          Map<String, String> headers,
-          String statusText}) =>
+          {Stream<List<int>>? byteStream,
+          Map<String, String>? headers,
+          String? statusText}) =>
       MockStreamedResponse(403,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.notFound(
-          {Stream<List<int>> byteStream,
-          Map<String, String> headers,
-          String statusText}) =>
+          {Stream<List<int>>? byteStream,
+          Map<String, String>? headers,
+          String? statusText}) =>
       MockStreamedResponse(404,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.methodNotAllowed(
-          {Stream<List<int>> byteStream,
-          Map<String, String> headers,
-          String statusText}) =>
+          {Stream<List<int>>? byteStream,
+          Map<String, String>? headers,
+          String? statusText}) =>
       MockStreamedResponse(405,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.internalServerError(
-          {Stream<List<int>> byteStream,
-          Map<String, String> headers,
-          String statusText}) =>
+          {Stream<List<int>>? byteStream,
+          Map<String, String>? headers,
+          String? statusText}) =>
       MockStreamedResponse(500,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.notImplemented(
-          {Stream<List<int>> byteStream,
-          Map<String, String> headers,
-          String statusText}) =>
+          {Stream<List<int>>? byteStream,
+          Map<String, String>? headers,
+          String? statusText}) =>
       MockStreamedResponse(501,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   factory MockStreamedResponse.badGateway(
-          {Stream<List<int>> byteStream,
-          Map<String, String> headers,
-          String statusText}) =>
+          {Stream<List<int>>? byteStream,
+          Map<String, String>? headers,
+          String? statusText}) =>
       MockStreamedResponse(502,
           byteStream: byteStream, headers: headers, statusText: statusText);
 
@@ -221,13 +221,13 @@ class MockStreamedResponse implements StreamedResponse {
   StreamedHttpBody get body => _response.body;
 
   @override
-  int get contentLength => _response.contentLength;
+  int? get contentLength => _response.contentLength;
 
   @override
-  MediaType get contentType => _response.contentType;
+  MediaType? get contentType => _response.contentType;
 
   @override
-  Encoding get encoding => _response.encoding;
+  Encoding? get encoding => _response.encoding;
 
   @override
   Map<String, String> get headers => _response.headers;
@@ -240,10 +240,10 @@ class MockStreamedResponse implements StreamedResponse {
 
   @override
   StreamedResponse replace(
-      {Stream<List<int>> byteStream,
-      int status,
-      String statusText,
-      Map<String, String> headers}) {
+      {Stream<List<int>>? byteStream,
+      int? status,
+      String? statusText,
+      Map<String, String>? headers}) {
     return _response.replace(
         byteStream: byteStream,
         status: status,

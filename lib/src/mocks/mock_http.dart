@@ -27,14 +27,14 @@ class MockHttp {
   void causeFailureOnOpen(BaseRequest request) {
     MockHttpInternal._verifyRequestIsMock(request);
     // ignore: deprecated_member_use_from_same_package
-    final MockBaseRequest mockRequest = request;
+    final MockBaseRequest mockRequest = request as MockBaseRequest;
     mockRequest.causeFailureOnOpen();
   }
 
   @Deprecated(v3Deprecation)
-  void completeRequest(BaseRequest request, {BaseResponse response}) {
+  void completeRequest(BaseRequest? request, {BaseResponse? response}) {
     MockHttpInternal._verifyRequestIsMock(request);
-    final MockBaseRequest mockRequest = request;
+    final MockBaseRequest mockRequest = request as MockBaseRequest;
     mockRequest.complete(response: response);
     mockRequest.done.then((_) {
       MockHttpInternal._pending.remove(request);
@@ -42,25 +42,26 @@ class MockHttp {
   }
 
   void expect(String method, Uri uri,
-      {Object failWith,
-      Map<String, String> headers,
-      BaseResponse respondWith}) {
+      {Object? failWith,
+      Map<String, String>? headers,
+      BaseResponse? respondWith}) {
     MockHttpInternal._expect(method, uri,
         failWith: failWith, headers: headers, respondWith: respondWith);
   }
 
   void expectPattern(String method, Pattern uriPattern,
-      {Object failWith,
-      Map<String, String> headers,
-      BaseResponse respondWith}) {
+      {Object? failWith,
+      Map<String, String>? headers,
+      BaseResponse? respondWith}) {
     MockHttpInternal._expect(method, uriPattern,
         failWith: failWith, headers: headers, respondWith: respondWith);
   }
 
   @Deprecated(v3Deprecation)
-  void failRequest(BaseRequest request, {Object error, BaseResponse response}) {
+  void failRequest(BaseRequest request,
+      {Object? error, BaseResponse? response}) {
     MockHttpInternal._verifyRequestIsMock(request);
-    final MockBaseRequest mockRequest = request;
+    final MockBaseRequest mockRequest = request as MockBaseRequest;
     mockRequest.completeError(error: error, response: response);
     mockRequest.done.catchError((_) {}).then((_) {
       MockHttpInternal._pending.remove(request);
@@ -93,30 +94,30 @@ class MockHttp {
     if (errorMsg.isNotEmpty) throw StateError(errorMsg);
   }
 
-  MockHttpHandler when(Uri uri, RequestHandler handler, {String method}) {
+  MockHttpHandler when(Uri uri, RequestHandler handler, {String? method}) {
     if (!MockHttpInternal._requestHandlers.containsKey(uri)) {
       MockHttpInternal._requestHandlers[uri] = {};
     }
     final methodKey = method == null ? '*' : method.toUpperCase();
-    MockHttpInternal._requestHandlers[uri][methodKey] = handler;
+    MockHttpInternal._requestHandlers[uri]![methodKey] = handler;
     return MockHttpHandler._(() {
       final handlers = MockHttpInternal._requestHandlers[uri];
       if (handlers != null &&
           handlers[methodKey] != null &&
           handlers[methodKey] == handler) {
-        MockHttpInternal._requestHandlers[uri].remove(methodKey);
+        MockHttpInternal._requestHandlers[uri]!.remove(methodKey);
       }
     });
   }
 
   MockHttpHandler whenPattern(Pattern uriPattern, PatternRequestHandler handler,
-      {String method}) {
+      {String? method}) {
     final patternKey = _Pattern(uriPattern);
     if (!MockHttpInternal._patternRequestHandlers.containsKey(patternKey)) {
       MockHttpInternal._patternRequestHandlers[patternKey] = {};
     }
     final methodKey = method == null ? '*' : method.toUpperCase();
-    MockHttpInternal._patternRequestHandlers[patternKey][methodKey] = handler;
+    MockHttpInternal._patternRequestHandlers[patternKey]![methodKey] = handler;
     return MockHttpHandler._(() {
       final handlers = MockHttpInternal._patternRequestHandlers[patternKey];
       if (handlers != null &&
@@ -201,16 +202,16 @@ class MockHttpInternal {
   }
 
   static bool hasHandlerForRequest(
-      String method, Uri uri, Map<String, String> headers) {
+      String? method, Uri uri, Map<String, String> headers) {
     if (_getMatchingExpectations(method, uri, headers).isNotEmpty) return true;
     if (_getMatchingHandler(method, uri) != null) return true;
     return false;
   }
 
   static void _expect(String method, Object uri,
-      {Object failWith,
-      Map<String, String> headers,
-      BaseResponse respondWith}) {
+      {Object? failWith,
+      Map<String, String>? headers,
+      BaseResponse? respondWith}) {
     if (failWith != null && respondWith != null) {
       throw ArgumentError('Use failWith OR respondWith, but not both.');
     }
@@ -223,17 +224,17 @@ class MockHttpInternal {
   }
 
   static Iterable<_RequestExpectation> _getMatchingExpectations(
-      String method, Uri uri, Map<String, String> headers) {
+      String? method, Uri uri, Map<String, String> headers) {
     headers = CaseInsensitiveMap<String>.from(headers);
 
     return _expectations.where((e) {
       final methodMatches = e.method == method;
       bool uriMatches = false;
       if (e.uri is Uri) {
-        final Uri expectedUri = e.uri;
+        final Uri expectedUri = e.uri as Uri;
         uriMatches = uri == expectedUri;
       } else if (e.uri is Pattern) {
-        final Pattern pattern = e.uri;
+        final Pattern pattern = e.uri as Pattern;
         uriMatches = pattern.allMatches(uri.toString()).isNotEmpty;
       }
       bool headersMatch;
@@ -242,7 +243,7 @@ class MockHttpInternal {
         headersMatch = true;
       } else {
         headersMatch = true;
-        e.headers.forEach((header, value) {
+        e.headers!.forEach((header, value) {
           if (!headers.containsKey(header) || headers[header] != value) {
             headersMatch = false;
           }
@@ -252,23 +253,24 @@ class MockHttpInternal {
     });
   }
 
-  static _RequestHandlerMatch _getMatchingHandler(String method, Uri uri) {
-    final matchingRequestHandlerKey = _requestHandlers.keys.firstWhere((key) {
+  static _RequestHandlerMatch? _getMatchingHandler(String? method, Uri uri) {
+    final matchingRequestHandlerKey =
+        _requestHandlers.keys.firstWhereOrNull((key) {
       return key == uri;
-    }, orElse: () => null);
+    });
 
-    Match match;
+    Match? match;
     final matchingPatternRequestHandlerKey =
-        _patternRequestHandlers.keys.firstWhere((pattern) {
+        _patternRequestHandlers.keys.firstWhereOrNull((pattern) {
       final matches = pattern.allMatches(uri.toString());
       if (matches.isNotEmpty) {
         match = matches.first;
         return true;
       }
       return false;
-    }, orElse: () => null);
+    });
 
-    Map<String, Object> handlersByMethod;
+    Map<String, Function>? handlersByMethod;
     if (matchingRequestHandlerKey != null) {
       handlersByMethod = _requestHandlers[matchingRequestHandlerKey];
     } else if (matchingPatternRequestHandlerKey != null) {
@@ -278,11 +280,11 @@ class MockHttpInternal {
       handlersByMethod = {};
     }
 
-    Object handler;
-    if (handlersByMethod.isNotEmpty) {
+    Function? handler;
+    if (handlersByMethod!.isNotEmpty) {
       // Try to find an applicable handler.
       if (handlersByMethod.containsKey(method)) {
-        handler = handlersByMethod[method];
+        handler = handlersByMethod[method!];
       } else if (handlersByMethod.containsKey('*')) {
         handler = handlersByMethod['*'];
       }
@@ -292,7 +294,7 @@ class MockHttpInternal {
         match: handler is PatternRequestHandler ? match : null);
   }
 
-  static void _verifyRequestIsMock(BaseRequest request) {
+  static void _verifyRequestIsMock(BaseRequest? request) {
     // ignore: deprecated_member_use_from_same_package
     if (request is! MockBaseRequest) {
       throw ArgumentError.value(
@@ -317,13 +319,13 @@ class _Pattern implements Pattern {
       _pattern.allMatches(string, start);
 
   @override
-  Match matchAsPrefix(String string, [int start = 0]) =>
+  Match? matchAsPrefix(String string, [int start = 0]) =>
       _pattern.matchAsPrefix(string, start);
 
   @override
   int get hashCode {
     if (_pattern is RegExp) {
-      final RegExp r = _pattern;
+      final RegExp r = _pattern as RegExp;
       return hashObjects([
         r.pattern,
         r.isCaseSensitive,
@@ -339,8 +341,8 @@ class _Pattern implements Pattern {
   bool operator ==(Object other) {
     if (other is _Pattern) {
       if (_pattern is RegExp && other._pattern is RegExp) {
-        final RegExp a = _pattern;
-        final RegExp b = other._pattern;
+        final RegExp a = _pattern as RegExp;
+        final RegExp b = other._pattern as RegExp;
         return a.pattern == b.pattern &&
             a.isCaseSensitive == b.isCaseSensitive &&
             a.isDotAll == b.isDotAll &&
@@ -358,16 +360,16 @@ class _Pattern implements Pattern {
 
 class _RequestHandlerMatch {
   final Function handler;
-  final Match match;
+  final Match? match;
 
   _RequestHandlerMatch(this.handler, {this.match});
 }
 
 class _RequestExpectation {
-  Object failWith;
-  final Map<String, String> headers;
+  Object? failWith;
+  final Map<String, String>? headers;
   final String method;
-  BaseResponse respondWith;
+  BaseResponse? respondWith;
   final Object uri;
 
   _RequestExpectation(this.method, this.uri, this.headers,

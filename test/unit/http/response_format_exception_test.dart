@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -30,8 +31,8 @@ void main() {
         final bytes = utf8.encode('bodyçå®');
         final contentType =
             MediaType('application', 'json', {'charset': ascii.name});
-        final exception =
-            transport.ResponseFormatException(contentType, ascii, bytes: bytes);
+        final exception = transport.ResponseFormatException(contentType, ascii,
+            bytes: bytes as Uint8List?);
         expect(exception.toString(), contains('Bytes could not be decoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: ${ascii.name}'));

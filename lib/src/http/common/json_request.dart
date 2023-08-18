@@ -25,13 +25,13 @@ import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
-  CommonJsonRequest(TransportPlatform transportPlatform)
+  CommonJsonRequest(TransportPlatform? transportPlatform)
       : super(transportPlatform);
   // ignore: deprecated_member_use_from_same_package
   CommonJsonRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
-  String _encodedJson;
+  String? _encodedJson;
   dynamic _source;
 
   @override
@@ -47,7 +47,7 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
     // Encode immediately so that we can attempt decoding it such that invalid
     // JSON will result in an exception now rather than later.
     _encodedJson = json.encode(jsonBody);
-    json.decode(_encodedJson);
+    json.decode(_encodedJson!);
   }
 
   @override
@@ -59,12 +59,12 @@ abstract class CommonJsonRequest extends CommonRequest implements JsonRequest {
 
   // Calculate each time because body can be modified outside of the setter.
   Uint8List get _bytes => _encodedJson != null
-      ? encoding.encode(_encodedJson)
+      ? encoding.encode(_encodedJson!) as Uint8List
       : Uint8List.fromList([]);
 
   @override
   JsonRequest clone() {
-    final JsonRequest requestClone = super.clone();
+    final JsonRequest requestClone = super.clone() as JsonRequest;
     return requestClone..body = _source;
   }
 

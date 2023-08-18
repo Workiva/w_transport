@@ -37,31 +37,31 @@ void main() {
       MockTransports.verifyNoOutstandingExceptions();
     });
 
-    transport.FormRequest formReqFactory({bool withBody = false}) {
-      if (!withBody) return transport.FormRequest();
+    transport.FormRequest formReqFactory({bool? withBody = false}) {
+      if (!withBody!) return transport.FormRequest();
       return transport.FormRequest()..fields['field'] = 'value';
     }
 
-    transport.JsonRequest jsonReqFactory({bool withBody = false}) {
-      if (!withBody) return transport.JsonRequest();
+    transport.JsonRequest jsonReqFactory({bool? withBody = false}) {
+      if (!withBody!) return transport.JsonRequest();
       return transport.JsonRequest()
         ..body = [
           {'field': 'value'}
         ];
     }
 
-    transport.MultipartRequest multipartReqFactory({bool withBody}) {
+    transport.MultipartRequest multipartReqFactory({bool? withBody}) {
       // Multipart requests can't be empty.
       return transport.MultipartRequest()..fields['field'] = 'value';
     }
 
-    transport.Request reqFactory({bool withBody = false}) {
-      if (!withBody) return transport.Request();
+    transport.Request reqFactory({bool? withBody = false}) {
+      if (!withBody!) return transport.Request();
       return transport.Request()..body = 'body';
     }
 
-    transport.StreamedRequest streamedReqFactory({bool withBody = false}) {
-      if (!withBody) return transport.StreamedRequest();
+    transport.StreamedRequest streamedReqFactory({bool? withBody = false}) {
+      if (!withBody!) return transport.StreamedRequest();
       return transport.StreamedRequest()
         ..body = Stream.fromIterable([utf8.encode('bytes')])
         ..contentLength = utf8.encode('bytes').length;
@@ -96,7 +96,7 @@ void main() {
       ];
       for (final orig in clientReqs) {
         final clone = orig.clone()..uri = requestUri;
-        expect(clone.get(), throwsA(predicate((exception) {
+        expect(clone.get(), throwsA(predicate((dynamic exception) {
           return exception is transport.RequestException &&
               exception.toString().contains('client was closed');
         })));
@@ -130,7 +130,7 @@ void main() {
 }
 
 void _runCommonRequestSuiteFor(String name,
-    transport.BaseRequest Function({bool withBody}) requestFactory) {
+    transport.BaseRequest Function({bool? withBody}) requestFactory) {
   group(name, () {
     final requestUri = Uri.parse('/mock/request');
     final requestHeaders = <String, String>{'x-custom': 'header'};
@@ -267,10 +267,11 @@ void _runCommonRequestSuiteFor(String name,
       final dataCompleter = Completer<String>();
       MockTransports.http.when(requestUri, (FinalizedRequest request) async {
         if (request.body is transport.HttpBody) {
-          transport.HttpBody body = request.body;
+          transport.HttpBody body = request.body as transport.HttpBody;
           dataCompleter.complete(body.asString());
         } else {
-          transport.StreamedHttpBody body = request.body;
+          transport.StreamedHttpBody body =
+              request.body as transport.StreamedHttpBody;
           dataCompleter.complete(utf8.decode(await body.toBytes()));
         }
 
@@ -296,7 +297,12 @@ void _runCommonRequestSuiteFor(String name,
       request.abort();
       Future future = request.get(uri: requestUri);
       expect(future, throwsA(isA<transport.RequestException>()));
-      await future.catchError((_) {});
+      try {
+        await future;
+        fail('Expected RequestException, but future completed successfully.');
+      } catch (error) {
+        expect(error, isA<transport.RequestException>());
+      }
       expect(request.isDone, isTrue,
           reason: 'canceled request should be marked as "done"');
       expect(request.done, completes,
@@ -312,7 +318,12 @@ void _runCommonRequestSuiteFor(String name,
       await Future.delayed(Duration(milliseconds: 100));
       request.abort();
       expect(future, throwsA(isA<transport.RequestException>()));
-      await future.catchError((_) {});
+      try {
+        await future;
+        fail('Expected RequestException, but future completed successfully.');
+      } catch (error) {
+        expect(error, isA<transport.RequestException>());
+      }
       expect(request.isDone, isTrue,
           reason: 'canceled request should be marked as "done"');
       expect(request.done, completes,
@@ -343,7 +354,7 @@ void _runCommonRequestSuiteFor(String name,
     test('request cancellation should accept a custom error', () async {
       final request = requestFactory();
       request.abort(Exception('custom error'));
-      expect(request.get(uri: requestUri), throwsA(predicate((error) {
+      expect(request.get(uri: requestUri), throwsA(predicate((dynamic error) {
         return error is transport.RequestException &&
             error.toString().contains('custom error');
       })));
@@ -367,7 +378,7 @@ void _runCommonRequestSuiteFor(String name,
       final future = request.get(uri: requestUri);
       await Future.delayed(Duration(milliseconds: 100));
       request.abort();
-      expect(future, throwsA(predicate((error) {
+      expect(future, throwsA(predicate((dynamic error) {
         return error is transport.RequestException &&
             error.request.autoRetry.numAttempts == 1;
       })));
@@ -440,7 +451,12 @@ void _runCommonRequestSuiteFor(String name,
       final request = requestFactory();
       final future = request.get(uri: requestUri);
       expect(future, throwsA(isA<transport.RequestException>()));
-      await future.catchError((_) {});
+      try {
+        await future;
+        fail('Expected RequestException, but future completed successfully.');
+      } catch (error) {
+        expect(error, isA<transport.RequestException>());
+      }
       expect(request.isDone, isTrue);
     });
 
@@ -448,7 +464,12 @@ void _runCommonRequestSuiteFor(String name,
       final request = requestFactory();
       final future = request.get(uri: requestUri);
       request.abort();
-      await future.catchError((_) {});
+      try {
+        await future;
+        fail('Expected RequestException, but future completed successfully.');
+      } catch (error) {
+        expect(error, isA<transport.RequestException>());
+      }
       expect(request.isDone, isTrue);
     });
 
@@ -501,9 +522,9 @@ void _runCommonRequestSuiteFor(String name,
       MockTransports.http.expect('GET', requestUri, respondWith: mockResponse);
       final request = requestFactory();
       request.responseInterceptor =
-          (request, transport.BaseResponse response, [exception]) async {
+          (request, transport.BaseResponse? response, [exception]) async {
         expect(response, isA<transport.Response>());
-        transport.Response standardResponse = response;
+        transport.Response standardResponse = response as transport.Response;
         expect(standardResponse.body.asString(), equals('original'));
         return standardResponse;
       };
@@ -527,7 +548,7 @@ void _runCommonRequestSuiteFor(String name,
           .expect('GET', requestUri, failWith: Exception('mock failure'));
       final request = requestFactory();
       request.responseInterceptor =
-          (request, response, [transport.RequestException exception]) async {
+          (request, response, [transport.RequestException? exception]) async {
         expect(exception, isNotNull);
         expect(exception.toString(), contains('mock failure'));
         return MockResponse.ok();
@@ -541,9 +562,9 @@ void _runCommonRequestSuiteFor(String name,
       MockTransports.http.expect('GET', requestUri, respondWith: mockResponse);
       final request = requestFactory();
       request.responseInterceptor =
-          (request, transport.BaseResponse response, [exception]) async {
-        return transport.Response.fromString(
-            response.status, response.statusText, response.headers, 'modified');
+          (request, transport.BaseResponse? response, [exception]) async {
+        return transport.Response.fromString(response!.status,
+            response.statusText, response.headers, 'modified');
       };
       final response = await request.get(uri: requestUri);
       expect(response.body.asString(), equals('modified'));
@@ -557,7 +578,7 @@ void _runCommonRequestSuiteFor(String name,
       request.responseInterceptor = (request, response, [exception]) async {
         throw Exception('interceptor failure');
       };
-      expect(request.get(uri: requestUri), throwsA(predicate((error) {
+      expect(request.get(uri: requestUri), throwsA(predicate((dynamic error) {
         return error is transport.RequestException &&
             error.toString().contains('interceptor failure');
       })));
@@ -582,7 +603,8 @@ void _runCommonRequestSuiteFor(String name,
       final request = requestFactory();
       request.responseInterceptor =
           (request, response, [exception]) async => response;
-      expect(request.get(uri: requestUri), throwsA(predicate((exception) {
+      expect(request.get(uri: requestUri),
+          throwsA(predicate((dynamic exception) {
         return exception is transport.RequestException &&
             identical(exception.error, error);
       })));
@@ -611,7 +633,7 @@ void _runCommonRequestSuiteFor(String name,
     test('timeoutThreshold cancels the request if exceeded', () async {
       final request = requestFactory()
         ..timeoutThreshold = Duration(milliseconds: 500);
-      expect(request.get(uri: requestUri), throwsA(predicate((error) {
+      expect(request.get(uri: requestUri), throwsA(predicate((dynamic error) {
         return error is transport.RequestException &&
             error.error is TimeoutException;
       })));
@@ -625,7 +647,7 @@ void _runCommonRequestSuiteFor(String name,
       final future = request.get(uri: requestUri);
       await Future.delayed(Duration(milliseconds: 250));
       request.abort();
-      expect(future, throwsA(predicate((error) {
+      expect(future, throwsA(predicate((dynamic error) {
         return error is transport.RequestException &&
             error.error is! TimeoutException;
       })));
@@ -653,7 +675,7 @@ void _runCommonRequestSuiteFor(String name,
 }
 
 void _runAutoRetryTestSuiteFor(String name,
-    transport.BaseRequest Function({bool withBody}) requestFactory) {
+    transport.BaseRequest Function({bool? withBody}) requestFactory) {
   group(name, () {
     final requestUri = Uri.parse('/mock/request');
 
@@ -668,9 +690,9 @@ void _runAutoRetryTestSuiteFor(String name,
 
     test('clone()', () {
       Future<Null> reqInt(transport.BaseRequest request) async {}
-      Future<transport.BaseResponse> respInt(
-              FinalizedRequest request, transport.BaseResponse response,
-              [transport.RequestException exception]) async =>
+      Future<transport.BaseResponse?> respInt(
+              FinalizedRequest request, transport.BaseResponse? response,
+              [transport.RequestException? exception]) async =>
           response;
 
       final headers = <String, String>{'x-custom': 'header'};
@@ -846,8 +868,8 @@ void _runAutoRetryTestSuiteFor(String name,
           ..enabled = true
           ..maxRetries = 2
           ..test =
-              (request, transport.BaseResponse response, willRetry) async =>
-                  response.headers['x-retry'] == 'yes';
+              (request, transport.BaseResponse? response, willRetry) async =>
+                  response!.headers['x-retry'] == 'yes';
 
         expect(request.get(uri: requestUri),
             throwsA(isA<transport.RequestException>()));
@@ -1042,7 +1064,7 @@ void _runAutoRetryTestSuiteFor(String name,
         final future = request.get(uri: requestUri);
         await Future.delayed(Duration(milliseconds: 500));
         request.abort();
-        expect(future, throwsA(predicate((exception) {
+        expect(future, throwsA(predicate((dynamic exception) {
           return exception is transport.RequestException &&
               exception.toString().contains('Request canceled');
         })));
@@ -1109,7 +1131,12 @@ void _runAutoRetryTestSuiteFor(String name,
 
         final future = request.get(uri: requestUri);
         expect(future, throwsA(isA<transport.RequestException>()));
-        await future.catchError((_) {});
+        try {
+          await future;
+          fail('Expected RequestException, but future completed successfully.');
+        } catch (error) {
+          expect(error, isA<transport.RequestException>());
+        }
         expect(request.autoRetry.numAttempts, equals(1));
       });
 
@@ -1305,7 +1332,12 @@ void _runAutoRetryTestSuiteFor(String name,
             .expect('GET', requestUri, respondWith: MockResponse.badRequest());
         MockTransports.http.expect('GET', requestUri);
         final request = requestFactory();
-        await request.get(uri: requestUri).catchError((_) {});
+        // await request.get(uri: requestUri);
+        try {
+          await request.get(uri: requestUri);
+        } catch (error) {
+          expect(error, isA<transport.RequestException>());
+        }
         await request.retry();
       });
 
@@ -1336,7 +1368,11 @@ void _runAutoRetryTestSuiteFor(String name,
             .expect('GET', requestUri, respondWith: MockResponse.badRequest());
         MockTransports.http.expect('GET', requestUri);
         final request = requestFactory();
-        await request.get(uri: requestUri).catchError((_) {});
+        try {
+          await request.get(uri: requestUri);
+        } catch (error) {
+          expect(error, isA<transport.RequestException>());
+        }
         await request.streamRetry();
       });
 

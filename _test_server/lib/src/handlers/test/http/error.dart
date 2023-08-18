@@ -24,7 +24,7 @@ class ErrorHandler extends Handler {
   @override
   Future<Null> get(HttpRequest request) async {
     request.response.statusCode =
-        request.uri.queryParameters['status'] ?? HttpStatus.ok;
+        request.uri.queryParameters['status'] as int? ?? HttpStatus.ok;
     request.response.headers.contentType = request.headers.contentType;
   }
 }

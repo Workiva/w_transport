@@ -55,7 +55,7 @@ void main() {
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<VMWebSocket>());
-      await webSocket.close();
+      await webSocket?.close();
     });
 
     test('configureWTransportForVM()', () async {
@@ -75,7 +75,7 @@ void main() {
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<VMWebSocket>());
-      await webSocket.close();
+      await webSocket?.close();
     });
 
     group('mock-aware', () {
@@ -219,7 +219,7 @@ void main() {
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: vmTransportPlatform);
-          await webSocket.close();
+          await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -229,14 +229,14 @@ void main() {
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+                      {Map<String, dynamic>? headers,
+                      Iterable<String>? protocols}) async =>
                   mockWebSocketServer);
 
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: vmTransportPlatform);
-          await webSocket.close();
+          await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -454,7 +454,7 @@ void main() {
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: vmTransportPlatform);
-          await webSocket.close();
+          await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -464,14 +464,14 @@ void main() {
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+                      {Map<String, dynamic>? headers,
+                      Iterable<String>? protocols}) async =>
                   mockWebSocketServer);
 
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: vmTransportPlatform);
-          await webSocket.close();
+          await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -537,7 +537,7 @@ void main() {
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: vmTransportPlatform);
-          await webSocket.close();
+          await webSocket?.close();
         });
       });
     });

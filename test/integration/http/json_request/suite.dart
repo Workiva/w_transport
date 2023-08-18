@@ -19,7 +19,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runJsonRequestSuite([transport.TransportPlatform transportPlatform]) {
+void runJsonRequestSuite([transport.TransportPlatform? transportPlatform]) {
   group('JsonRequest', () {
     test('contentLength should be set automatically', () async {
       final emptyRequest =
@@ -74,7 +74,7 @@ void runJsonRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..encoding = utf8
             ..body = {'field1': 'value1', 'field2': 'ç®å'};
       final response = await request.post();
-      expect(response.encoding.name, equals(utf8.name));
+      expect(response.encoding!.name, equals(utf8.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'ç®å'));
     });
@@ -86,7 +86,7 @@ void runJsonRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..encoding = latin1
             ..body = {'field1': 'value1', 'field2': 'ç®å'};
       final response = await request.post();
-      expect(response.encoding.name, equals(latin1.name));
+      expect(response.encoding!.name, equals(latin1.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'ç®å'));
     });
@@ -98,7 +98,7 @@ void runJsonRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..encoding = ascii
             ..body = {'field1': 'value1', 'field2': 'value2'};
       final response = await request.post();
-      expect(response.encoding.name, equals(ascii.name));
+      expect(response.encoding!.name, equals(ascii.name));
       expect(response.body.asJson(), containsPair('field1', 'value1'));
       expect(response.body.asJson(), containsPair('field2', 'value2'));
     });

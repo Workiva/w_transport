@@ -25,9 +25,9 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> delete(Uri uri,
-          {Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               headers: headers,
               transportPlatform: transportPlatform,
@@ -39,9 +39,9 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> get(Uri uri,
-          {Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               headers: headers,
               transportPlatform: transportPlatform,
@@ -53,9 +53,9 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> head(Uri uri,
-          {Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               headers: headers,
               transportPlatform: transportPlatform,
@@ -67,9 +67,9 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> options(Uri uri,
-          {Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               headers: headers,
               transportPlatform: transportPlatform,
@@ -82,10 +82,10 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> patch(Uri uri,
-          {String body,
-          Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {String? body,
+          Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               body: body,
               headers: headers,
@@ -99,10 +99,10 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> post(Uri uri,
-          {String body,
-          Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {String? body,
+          Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               body: body,
               headers: headers,
@@ -116,10 +116,10 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> put(Uri uri,
-          {String body,
-          Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {String? body,
+          Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               body: body,
               headers: headers,
@@ -133,10 +133,10 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<Response> send(String method, Uri uri,
-          {String body,
-          Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {String? body,
+          Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               body: body,
               headers: headers,
@@ -150,9 +150,9 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<StreamedResponse> streamDelete(Uri uri,
-          {Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               headers: headers,
               transportPlatform: transportPlatform,
@@ -165,9 +165,9 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<StreamedResponse> streamGet(Uri uri,
-          {Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               headers: headers,
               transportPlatform: transportPlatform,
@@ -180,9 +180,9 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<StreamedResponse> streamHead(Uri uri,
-          {Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               headers: headers,
               transportPlatform: transportPlatform,
@@ -195,9 +195,9 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<StreamedResponse> streamOptions(Uri uri,
-          {Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               headers: headers,
               transportPlatform: transportPlatform,
@@ -210,10 +210,10 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<StreamedResponse> streamPatch(Uri uri,
-          {String body,
-          Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {String? body,
+          Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               body: body,
               headers: headers,
@@ -227,10 +227,10 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<StreamedResponse> streamPost(Uri uri,
-          {String body,
-          Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {String? body,
+          Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               body: body,
               headers: headers,
@@ -244,10 +244,10 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<StreamedResponse> streamPut(Uri uri,
-          {String body,
-          Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {String? body,
+          Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               body: body,
               headers: headers,
@@ -262,10 +262,10 @@ class Http {
   /// Secure cookies (credentials) will be included (in the browser) if
   /// [withCredentials] is true.
   static Future<StreamedResponse> streamSend(String method, Uri uri,
-          {String body,
-          Map<String, String> headers,
-          TransportPlatform transportPlatform,
-          bool withCredentials}) =>
+          {String? body,
+          Map<String, String>? headers,
+          TransportPlatform? transportPlatform,
+          bool? withCredentials}) =>
       _createRequest(uri,
               body: body,
               headers: headers,
@@ -274,10 +274,10 @@ class Http {
           .streamSend(method);
 
   static Request _createRequest(Uri uri,
-      {String body,
-      Map<String, String> headers,
-      TransportPlatform transportPlatform,
-      bool withCredentials}) {
+      {String? body,
+      Map<String, String>? headers,
+      TransportPlatform? transportPlatform,
+      bool? withCredentials}) {
     final request = Request(transportPlatform: transportPlatform)..uri = uri;
     if (body != null) {
       request.body = body;

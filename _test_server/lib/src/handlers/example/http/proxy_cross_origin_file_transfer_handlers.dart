@@ -34,12 +34,10 @@ Uri uploadEndpoint =
 Uri downloadEndpoint =
     Uri.parse('http://localhost:8024/http/cross_origin_file_transfer/download');
 
-transport.HttpClient client;
+transport.HttpClient? client;
 transport.HttpClient getHttpClient() {
-  if (client == null) {
-    client = transport.HttpClient(transportPlatform: vmTransportPlatform);
-  }
-  return client;
+  return client ??=
+      transport.HttpClient(transportPlatform: vmTransportPlatform);
 }
 
 class FilesProxy extends Handler {
@@ -94,7 +92,7 @@ class UploadProxy extends Handler {
       headers[name] = values.join(', ');
     });
     final contentType =
-        transport.MediaType.parse(request.headers.value('content-type'));
+        transport.MediaType.parse(request.headers.value('content-type')!);
     final proxyRequest = getHttpClient().newStreamedRequest()
       ..headers = headers
       ..body = request.cast<List<int>>()

@@ -128,7 +128,7 @@ void main() {
       test('PATCH with body', () async {
         final c = Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-          transport.HttpBody body = request.body;
+          transport.HttpBody body = request.body as transport.HttpBody;
           c.complete(body.asString());
           return MockResponse.ok();
         }, method: 'PATCH');
@@ -161,7 +161,7 @@ void main() {
       test('POST with body', () async {
         final c = Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-          transport.HttpBody body = request.body;
+          transport.HttpBody body = request.body as transport.HttpBody;
           c.complete(body.asString());
           return MockResponse.ok();
         }, method: 'POST');
@@ -192,7 +192,7 @@ void main() {
       test('PUT with body', () async {
         final c = Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-          transport.HttpBody body = request.body;
+          transport.HttpBody body = request.body as transport.HttpBody;
           c.complete(body.asString());
           return MockResponse.ok();
         }, method: 'PATCH');
@@ -223,7 +223,7 @@ void main() {
       test('custom method with body', () async {
         final c = Completer<String>();
         MockTransports.http.when(requestUri, (FinalizedRequest request) async {
-          transport.HttpBody body = request.body;
+          transport.HttpBody body = request.body as transport.HttpBody;
           c.complete(body.asString());
           return MockResponse.ok();
         }, method: 'COPY');

@@ -28,7 +28,7 @@ import 'package:w_transport/src/transport_platform.dart';
 /// This request will be sent with content-type:
 /// application/x-www-form-urlencoded
 abstract class FormRequest extends BaseRequest {
-  factory FormRequest({TransportPlatform transportPlatform}) {
+  factory FormRequest({TransportPlatform? transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
     // configured platform.
     transportPlatform ??= globalTransportPlatform;
@@ -79,7 +79,7 @@ abstract class FormRequest extends BaseRequest {
   /// query string. Depending on the platform, this may then be encoded to
   /// bytes. Be sure to set [encoding] if this request body should be encoded
   /// with something other than the default utf-8.
-  set fields(Map<String, dynamic> fields);
+  set fields(Map<String, dynamic>? fields);
 
   /// Returns an clone of this request.
   @override
@@ -91,7 +91,7 @@ abstract class FormRequest extends BaseRequest {
 ///
 /// This request will be sent with content-type: application/json
 abstract class JsonRequest extends BaseRequest {
-  factory JsonRequest({TransportPlatform transportPlatform}) {
+  factory JsonRequest({TransportPlatform? transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
     // configured platform.
     transportPlatform ??= globalTransportPlatform;
@@ -156,7 +156,7 @@ abstract class MultipartRequest extends BaseRequest {
   ///     MultipartRequest request = new MultipartRequest()
   ///       ..fields['key1'] = 'value1'
   ///       ..fields['key2'] = 'value2';
-  Map<String, String> fields;
+  late Map<String, String> fields;
 
   /// Get and set this request's file fields as a Map of field names to files.
   /// The value can be a [MultipartFile] or, if in the browser, a [Blob].
@@ -166,9 +166,9 @@ abstract class MultipartRequest extends BaseRequest {
   ///     MultipartFile file = new MultipartFile(...);
   ///     MultipartRequest request = new MultipartRequest()
   ///       ..files['file1'] = file;
-  Map<String, dynamic> files;
+  late Map<String, dynamic> files;
 
-  factory MultipartRequest({TransportPlatform transportPlatform}) {
+  factory MultipartRequest({TransportPlatform? transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
     // configured platform.
     transportPlatform ??= globalTransportPlatform;
@@ -198,7 +198,7 @@ abstract class MultipartRequest extends BaseRequest {
 ///
 /// This request will be sent with content-type: text/plain
 abstract class Request extends BaseRequest {
-  factory Request({TransportPlatform transportPlatform}) {
+  factory Request({TransportPlatform? transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
     // configured platform.
     transportPlatform ??= globalTransportPlatform;
@@ -220,24 +220,24 @@ abstract class Request extends BaseRequest {
   }
 
   /// Gets this request's body.
-  String get body;
+  String? get body;
 
   /// Sets this request's plain-text body.
   ///
   /// Depending on the platform, this may be encoded to bytes prior to sending.
   /// Be sure to set [encoding] if this request body should be encoded with
   /// something other than the default utf-8.
-  set body(String body);
+  set body(String? body);
 
   /// Gets this request's body as bytes (encoded version of [body]).
-  Uint8List get bodyBytes;
+  Uint8List? get bodyBytes;
 
   /// Sets this request's body from bytes (encoded version of [body]).
   ///
   /// Depending on the platform, this may be decoded to text prior to sending.
   /// Be sure to set [encoding] if this request body should be decoded with
   /// something other than the default utf-8.
-  set bodyBytes(List<int> bytes);
+  set bodyBytes(List<int>? bytes);
 
   /// Returns an clone of this request.
   @override
@@ -247,7 +247,7 @@ abstract class Request extends BaseRequest {
 /// Representation of an HTTP request where the request body is sent
 /// asynchronously as a stream. The [content-type] should be set manually.
 abstract class StreamedRequest extends BaseRequest {
-  factory StreamedRequest({TransportPlatform transportPlatform}) {
+  factory StreamedRequest({TransportPlatform? transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
     // configured platform.
     transportPlatform ??= globalTransportPlatform;
@@ -269,7 +269,7 @@ abstract class StreamedRequest extends BaseRequest {
   }
 
   /// Get the byte stream that will be sent as this request's body.
-  Stream<List<int>> get body;
+  Stream<List<int>>? get body;
 
   /// Set this request's body to be a byte stream. The given stream should be a
   /// single subscription string to avoid losing data. This request's body will
@@ -277,7 +277,7 @@ abstract class StreamedRequest extends BaseRequest {
   ///
   /// Be sure to set [encoding] if the byte stream should be decoded with
   /// something other than the default utf-8.
-  set body(Stream<List<int>> byteStream);
+  set body(Stream<List<int>>? byteStream);
 
   /// Cloning a StreamedRequest is not supported. This will throw an
   /// [UnsupportedError].

@@ -7,7 +7,7 @@ CompoundTool withServers(DevTool tool) {
   return CompoundTool()
     ..addTool(DevTool.fromFunction(_streamServer), alwaysRun: true)
     ..addTool(sockjsServer.starter, alwaysRun: true)
-    ..addTool(tool)
+    ..addTool(tool, argMapper: takeAllArgs)
     ..addTool(DevTool.fromFunction(_stopServer), alwaysRun: true)
     ..addTool(sockjsServer.stopper, alwaysRun: true);
 }
@@ -19,7 +19,7 @@ BackgroundProcessTool _sockjsServer() => BackgroundProcessTool(
     );
 
 /// Server needed for integration tests and examples.
-Server _server;
+late Server _server;
 
 /// Start the server needed for integration tests and examples and stream the
 /// server output as it arrives. The output will be mixed in with output from

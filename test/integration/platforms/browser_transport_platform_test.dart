@@ -59,19 +59,19 @@ void main() {
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<BrowserWebSocket>());
-      await webSocket.close();
+      await webSocket?.close();
       final wSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(wSocket, isA<BrowserWebSocket>());
-      await wSocket.close();
+      await wSocket?.close();
     });
 
     test('globalTransportPlatform = browserTransportPlatformWithSockJS',
         () async {
       transport.globalTransportPlatform = browserTransportPlatformWithSockJS;
 
-      BrowserTransportPlatformWithSockJS btpwsj =
-          transport.globalTransportPlatform;
+      BrowserTransportPlatformWithSockJS btpwsj = transport
+          .globalTransportPlatform as BrowserTransportPlatformWithSockJS;
       expect(btpwsj.sockJSDebug, isFalse);
       expect(btpwsj.sockJSNoCredentials, isFalse);
       expect(btpwsj.sockJSProtocolsWhitelist, isNull);
@@ -82,10 +82,10 @@ void main() {
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
       expect(webSocket, isA<SockJSWrapperWebSocket>());
-      await webSocket.close();
+      await webSocket?.close();
       final wSocket = await transport.WebSocket.connect(pingUri);
       expect(wSocket, isA<SockJSWrapperWebSocket>());
-      await wSocket.close();
+      await wSocket?.close();
     });
 
     test('globalTransportPlatform = custom BrowserTransportPlatformWithSockJS',
@@ -96,8 +96,8 @@ void main() {
           sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming'],
           sockJSTimeout: Duration(seconds: 1));
 
-      BrowserTransportPlatformWithSockJS btpwsj =
-          transport.globalTransportPlatform;
+      BrowserTransportPlatformWithSockJS btpwsj = transport
+          .globalTransportPlatform as BrowserTransportPlatformWithSockJS;
       expect(btpwsj.sockJSDebug, isTrue);
       expect(btpwsj.sockJSNoCredentials, isFalse);
       expect(btpwsj.sockJSProtocolsWhitelist,
@@ -109,10 +109,10 @@ void main() {
       // Properly constructs SockJS implementation of WebSocket
       final webSocket = await transport.WebSocket.connect(pingUri);
       expect(webSocket, isA<SockJSWrapperWebSocket>());
-      await webSocket.close();
+      await webSocket?.close();
       final wSocket = await transport.WebSocket.connect(pingUri);
       expect(wSocket, isA<SockJSWrapperWebSocket>());
-      await wSocket.close();
+      await wSocket?.close();
     });
 
     test(
@@ -125,12 +125,12 @@ void main() {
           IntegrationPaths.pingUri,
           transportPlatform: browserTransportPlatform);
       expect(webSocket, isA<BrowserWebSocket>());
-      await webSocket.close();
+      await webSocket?.close();
       final wSocket = await transport.WebSocket.connect(
           IntegrationPaths.pingUri,
           transportPlatform: browserTransportPlatform);
       expect(wSocket, isA<BrowserWebSocket>());
-      await wSocket.close();
+      await wSocket?.close();
     });
 
     test('configureWTransportForBrowser()', () async {
@@ -150,11 +150,11 @@ void main() {
       final webSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<BrowserWebSocket>());
-      await webSocket.close();
+      await webSocket?.close();
       final wSocket =
           await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(wSocket, isA<BrowserWebSocket>());
-      await wSocket.close();
+      await wSocket?.close();
     });
 
     group('mock-aware', () {
@@ -298,14 +298,14 @@ void main() {
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatform);
-          await webSocket.close();
+          await webSocket?.close();
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
           final sockJS = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatformWithSockJS);
-          await sockJS.close();
+          await sockJS?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -315,19 +315,19 @@ void main() {
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+                      {Map<String, dynamic>? headers,
+                      Iterable<String>? protocols}) async =>
                   mockWebSocketServer);
 
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatform);
-          await webSocket.close();
+          await webSocket?.close();
 
           final sockJS = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatformWithSockJS);
-          await sockJS.close();
+          await sockJS?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -551,14 +551,14 @@ void main() {
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatform);
-          await webSocket.close();
+          await webSocket?.close();
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
           final sockJS = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatformWithSockJS);
-          await sockJS.close();
+          await sockJS?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -568,19 +568,19 @@ void main() {
 
           MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
-                      {Map<String, dynamic> headers,
-                      Iterable<String> protocols}) async =>
+                      {Map<String, dynamic>? headers,
+                      Iterable<String>? protocols}) async =>
                   mockWebSocketServer);
 
           final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatform);
-          await webSocket.close();
+          await webSocket?.close();
 
           final sockJS = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatformWithSockJS);
-          await sockJS.close();
+          await sockJS?.close();
 
           await mockWebSocketServer.shutDown();
         });
@@ -649,13 +649,13 @@ void main() {
               IntegrationPaths.pingUri,
               transportPlatform: browserTransportPlatform);
           expect(webSocket, isA<BrowserWebSocket>());
-          await webSocket.close();
+          await webSocket?.close();
 
           final pingUri = IntegrationPaths.pingUri.replace(port: sockjsPort);
           final sockJS = await transport.WebSocket.connect(pingUri,
               transportPlatform: browserTransportPlatformWithSockJS);
           expect(sockJS, isA<SockJSWrapperWebSocket>());
-          await sockJS.close();
+          await sockJS?.close();
         });
       });
     });

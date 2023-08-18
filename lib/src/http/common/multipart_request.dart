@@ -55,13 +55,13 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   static final Random _random = Random();
 
-  String _boundary;
+  String? _boundary;
 
   Map<String, String> _fields = {};
 
   Map<String, dynamic> _files = {};
 
-  CommonMultipartRequest(TransportPlatform transportPlatform)
+  CommonMultipartRequest(TransportPlatform? transportPlatform)
       : super(transportPlatform);
   // ignore: deprecated_member_use_from_same_package
   CommonMultipartRequest.fromClient(Client wTransportClient, client)
@@ -78,7 +78,7 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   String get boundary {
     _boundary ??= _generateBoundaryString();
-    return _boundary;
+    return _boundary!;
   }
 
   @override
@@ -106,13 +106,13 @@ abstract class CommonMultipartRequest extends CommonRequest
   }
 
   @override
-  set contentLength(int contentLength) {
+  set contentLength(int? contentLength) {
     throw UnsupportedError(
         'The content-length of a multipart request cannot be set manually.');
   }
 
   @override
-  set contentType(MediaType contentType) {
+  set contentType(MediaType? contentType) {
     throw UnsupportedError(
         'The content-type of a multipart request cannot be set manually.');
   }
@@ -122,7 +122,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       MediaType('multipart', 'form-data', {'boundary': boundary});
 
   @override
-  set encoding(Encoding encoding) {
+  set encoding(Encoding? encoding) {
     throw UnsupportedError(
         'A multipart request has many individually-encoded parts. An encoding '
         'cannot be set for the entire request.');
@@ -150,7 +150,7 @@ abstract class CommonMultipartRequest extends CommonRequest
 
   @override
   MultipartRequest clone() {
-    final MultipartRequest requestClone = super.clone();
+    final MultipartRequest requestClone = super.clone() as MultipartRequest;
     return requestClone
       ..fields = fields
       ..files = files;
@@ -263,7 +263,7 @@ abstract class CommonMultipartRequest extends CommonRequest
     String disposition =
         'content-disposition: form-data; name="${_encodeName(field)}"';
     if (file.filename != null) {
-      disposition = '$disposition; filename="${_encodeName(file.filename)}"';
+      disposition = '$disposition; filename="${_encodeName(file.filename!)}"';
     }
     headers.add(disposition);
 

@@ -74,8 +74,8 @@ void main() {
 
         wsub.onDone(doneHandler);
         expect(wsub.doneHandler, equals(doneHandler));
+        sub.cancel();
         await wsub.cancel();
-        await sub.cancel();
       });
 
       test('onError() should call onError() on the underlying subscription',
@@ -87,8 +87,8 @@ void main() {
         wsub.onError(errorHandler);
         expect(identical(sub.onErrorHandler, errorHandler), isTrue);
 
+        sub.cancel();
         await wsub.cancel();
-        await sub.cancel();
       });
 
       test('onData() should call onData() on the underlying subscription',
@@ -99,31 +99,36 @@ void main() {
 
         wsub.onData(dataHandler);
         expect(identical(sub.onDataHandler, dataHandler), isTrue);
-
+        sub.cancel();
         await wsub.cancel();
-        await sub.cancel();
       });
     });
   });
 }
 
 class MockStreamSubscription<T> extends Mock implements StreamSubscription<T> {
-  Function onDataHandler;
-  Function onDoneHandler;
-  Function onErrorHandler;
+  Function? onDataHandler;
+  Function? onDoneHandler;
+  Function? onErrorHandler;
 
   @override
-  void onData(void handleData(T data)) {
+  void onData(void handleData(T data)?) {
     onDataHandler = handleData;
   }
 
   @override
-  void onDone(void handleDone()) {
+  void onDone(void handleDone()?) {
     onDoneHandler = handleDone;
   }
 
   @override
-  void onError(Function handleError) {
+  void onError(Function? handleError) {
     onErrorHandler = handleError;
+  }
+
+  @override
+  Future<void> cancel() async {
+    // Add any necessary cleanup logic here
+    return Future.value();
   }
 }

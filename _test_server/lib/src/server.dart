@@ -28,9 +28,9 @@ class Server {
   final int port;
 
   Logger _logger = Logger();
-  Router _router;
-  HttpServer _server;
-  StreamSubscription _subscription;
+  late Router _router;
+  late HttpServer _server;
+  late StreamSubscription _subscription;
 
   Server({this.host = defaultHost, this.port = defaultPort});
 

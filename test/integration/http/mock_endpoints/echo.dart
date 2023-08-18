@@ -18,13 +18,13 @@ import 'package:w_transport/mock.dart';
 void mockEchoEndpoint(Uri uri) {
   MockTransports.http.when(uri, (request) async {
     final headers = <String, String>{
-      'content-type': request.headers['content-type']
+      'content-type': request.headers['content-type'] ?? ''
     };
     if (request.body is HttpBody) {
-      HttpBody body = request.body;
+      HttpBody body = request.body as HttpBody;
       return MockResponse.ok(body: body.asString(), headers: headers);
     } else {
-      StreamedHttpBody body = request.body;
+      StreamedHttpBody body = request.body as StreamedHttpBody;
       return MockStreamedResponse.ok(
           byteStream: body.byteStream, headers: headers);
     }

@@ -21,13 +21,13 @@ import 'package:http_parser/http_parser.dart' show MediaType;
 /// that cannot successfully be encoded or decoded based on the expected
 /// content-type.
 class ResponseFormatException implements Exception {
-  final String body;
+  final String? body;
 
-  final Uint8List bytes;
+  final Uint8List? bytes;
 
-  final MediaType contentType;
+  final MediaType? contentType;
 
-  final Encoding encoding;
+  final Encoding? encoding;
 
   /// Construct a new instance of [ResponseFormatException] using information
   /// from the body of the response.

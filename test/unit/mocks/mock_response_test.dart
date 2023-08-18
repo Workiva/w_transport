@@ -93,7 +93,7 @@ void main() {
 
       test('encoding should set charset', () {
         final response = MockResponse(200, encoding: ascii);
-        expect(response.contentType.parameters['charset'], equals(ascii.name));
+        expect(response.contentType!.parameters['charset'], equals(ascii.name));
       });
 
       test('should support string body', () {
@@ -120,9 +120,9 @@ void main() {
       test('content-type', () {
         final response = MockResponse.ok(
             headers: {'content-type': 'application/json; charset=utf-8'});
-        expect(response.contentType.mimeType, equals('application/json'));
+        expect(response.contentType!.mimeType, equals('application/json'));
         expect(
-            response.contentType.parameters, containsPair('charset', 'utf-8'));
+            response.contentType!.parameters, containsPair('charset', 'utf-8'));
       });
 
       test('replace', () {
@@ -203,7 +203,7 @@ void main() {
 
       test('encoding should set charset', () {
         final response = MockStreamedResponse(200, encoding: ascii);
-        expect(response.contentType.parameters['charset'], equals(ascii.name));
+        expect(response.contentType!.parameters['charset'], equals(ascii.name));
       });
 
       test('should support byteStream body', () async {
@@ -221,9 +221,9 @@ void main() {
       test('content-type', () {
         final response = MockStreamedResponse.ok(
             headers: {'content-type': 'application/json; charset=utf-8'});
-        expect(response.contentType.mimeType, equals('application/json'));
+        expect(response.contentType!.mimeType, equals('application/json'));
         expect(
-            response.contentType.parameters, containsPair('charset', 'utf-8'));
+            response.contentType!.parameters, containsPair('charset', 'utf-8'));
       });
 
       test('encoding', () {

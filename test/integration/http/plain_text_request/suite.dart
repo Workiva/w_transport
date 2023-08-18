@@ -19,7 +19,8 @@ import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
+void runPlainTextRequestSuite(
+    [transport.TransportPlatform? transportPlatform]) {
   group('Request', () {
     test('contentLength should be set automatically', () async {
       final emptyRequest =
@@ -71,7 +72,7 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
         ..encoding = utf8
         ..body = 'dataç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(utf8.name));
+      expect(response.encoding!.name, equals(utf8.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
@@ -81,7 +82,7 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
         ..encoding = latin1
         ..body = 'dataç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(latin1.name));
+      expect(response.encoding!.name, equals(latin1.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
@@ -91,7 +92,7 @@ void runPlainTextRequestSuite([transport.TransportPlatform transportPlatform]) {
         ..encoding = ascii
         ..body = 'data';
       final response = await request.post();
-      expect(response.encoding.name, equals(ascii.name));
+      expect(response.encoding!.name, equals(ascii.name));
       expect(response.body.asString(), equals('data'));
     });
   });

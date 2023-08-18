@@ -35,17 +35,18 @@ class VMWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   static Future<WebSocket> connect(Uri uri,
-      {Map<String, dynamic> headers, Iterable<String> protocols}) async {
+      {Map<String, dynamic>? headers, Iterable<String>? protocols}) async {
     // Note: closing this sink is handled by VMWSocket
     // ignore: close_sinks
     io.WebSocket webSocket;
-    bool wasSuccessful;
+    bool wasSuccessful = false;
     try {
       webSocket = await io.WebSocket.connect(uri.toString(),
           headers: headers, protocols: protocols);
       wasSuccessful = true;
+    } on io.HttpException catch (e) {
+      throw WebSocketException(e.toString());
     } on io.SocketException catch (e) {
-      wasSuccessful = false;
       throw WebSocketException(e.toString());
     } finally {
       emitWebSocketConnectEvent(newWebSocketConnectEvent(
@@ -56,7 +57,7 @@ class VMWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   @override
-  void closeWebSocket(int code, String reason) {
+  void closeWebSocket(int code, String? reason) {
     _webSocket.close(code, reason);
   }
 

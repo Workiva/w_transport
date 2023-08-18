@@ -55,6 +55,6 @@ class BrowserTransportPlatform implements TransportPlatform {
   /// Construct a [WebSocket] instance for use in the browser.
   @override
   Future<WebSocket> newWebSocket(Uri uri,
-          {Map<String, dynamic> headers, Iterable<String> protocols}) =>
+          {Map<String, dynamic>? headers, Iterable<String>? protocols}) =>
       BrowserWebSocket.connect(uri, headers: headers, protocols: protocols);
 }

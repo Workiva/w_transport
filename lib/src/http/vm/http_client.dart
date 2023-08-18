@@ -29,7 +29,7 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
   /// Close the underlying HTTP client.
   @override
   void closeClient() {
-    _ioHttpClient?.close();
+    _ioHttpClient.close();
   }
 
   /// Constructs a new [FormRequest] that will use this client to send the

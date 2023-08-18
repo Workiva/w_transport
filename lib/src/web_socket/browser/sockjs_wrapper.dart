@@ -55,15 +55,11 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
   static Future<WebSocket> connect(Uri uri,
       {bool debug = false,
       bool noCredentials = false,
-      List<String> protocolsWhitelist,
-      Duration timeout}) async {
-    Uri sockjsUri;
-    if (uri.scheme == 'ws') {
-      sockjsUri = uri.replace(scheme: 'http');
-    } else if (uri.scheme == 'wss') {
-      sockjsUri = uri.replace(scheme: 'https');
-    }
-
+      List<String>? protocolsWhitelist,
+      Duration? timeout}) async {
+    Uri sockjsUri = uri.scheme == 'ws'
+        ? uri.replace(scheme: 'http')
+        : uri.replace(scheme: 'https');
     // TODO: pass `debug`, `noCredentials`, and `timeout` through when possible.
     final client = SockJSClient(sockjsUri,
         options: SockJSOptions(transports: protocolsWhitelist));
@@ -105,7 +101,7 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   @override
-  void closeWebSocket(int code, String reason) {
+  void closeWebSocket(int code, String? reason) {
     _webSocket.close(code, reason);
   }
 

@@ -17,18 +17,22 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:http_parser/http_parser.dart' show MediaType;
+import 'package:http_parser/http_parser.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
 import 'package:w_transport/src/http/utils.dart' as http_utils;
-import 'package:w_transport/w_transport.dart';
 
 import '../../naming.dart';
 
-class MockRandom extends Mock implements Random {}
+class MockRandom extends Mock implements Random {
+  @override
+  double nextDouble() {
+    return 0.5;
+  }
+}
 
 void main() {
   final naming = Naming()
@@ -48,19 +52,17 @@ void main() {
         });
 
         group('exponential', () {
-          Request request;
-          final random = MockRandom();
+          transport.Request? request;
+          var random = MockRandom();
           // Return the mean/median value of this random so we have a deterministic output
-          when(random.nextDouble()).thenReturn(0.5);
-
           void expectBackOffOf(Matcher matcher,
-              {http_utils.AdvancedBackOffCalculator calculator,
+              {http_utils.AdvancedBackOffCalculator? calculator,
               bool useMockRandom = true}) {
             expect(
                 http_utils
-                    .calculateBackOff(request.autoRetry,
+                    .calculateBackOff(request!.autoRetry,
                         random: useMockRandom ? random : null,
-                        calculator: calculator)
+                        calculator: calculator)!
                     .inMilliseconds,
                 matcher);
           }
@@ -75,7 +77,7 @@ void main() {
             request = transport.Request();
             final interval = Duration(seconds: 1);
             final maxInterval = Duration(seconds: 15);
-            request.autoRetry.backOff = transport.RetryBackOff.exponential(
+            request!.autoRetry.backOff = transport.RetryBackOff.exponential(
                 interval,
                 withJitter: true,
                 maxInterval: maxInterval);
@@ -86,7 +88,7 @@ void main() {
               // We start at 1, since the advanced backoff/jitter algorithm
               // only activates once we've had one attempt, so it expects
               // `numAttempts` to be at least 1
-              request.autoRetry.numAttempts = i;
+              request!.autoRetry.numAttempts = i;
 
               // With a value of `nextDouble()` mocked to 0.5, these are the
               // expected delay values
@@ -114,19 +116,19 @@ void main() {
             request = transport.Request();
             final interval = Duration(milliseconds: 5);
             final maxInterval = Duration(milliseconds: 400);
-            request.autoRetry.backOff = transport.RetryBackOff.exponential(
+            request!.autoRetry.backOff = transport.RetryBackOff.exponential(
                 interval,
                 withJitter: false,
                 maxInterval: maxInterval);
 
             for (int i = 0; i < 5; i++) {
-              request.autoRetry.numAttempts = i;
+              request!.autoRetry.numAttempts = i;
 
               if (i == 0) {
                 expectBackOffOf(equals(interval.inMilliseconds));
               } else {
                 expectBackOffOf(equals(interval.inMilliseconds *
-                    pow(2, request.autoRetry.numAttempts)));
+                    pow(2, request!.autoRetry.numAttempts)));
               }
             }
           });
@@ -135,13 +137,13 @@ void main() {
             request = transport.Request();
             final interval = Duration(milliseconds: 5);
             final maxInterval = Duration(milliseconds: 20);
-            request.autoRetry.backOff = transport.RetryBackOff.exponential(
+            request!.autoRetry.backOff = transport.RetryBackOff.exponential(
                 interval,
                 withJitter: false,
                 maxInterval: maxInterval);
 
             for (int i = 0; i < 5; i++) {
-              request.autoRetry.numAttempts = i;
+              request!.autoRetry.numAttempts = i;
 
               if (i == 0) {
                 expectBackOffOf(equals(interval.inMilliseconds));
@@ -149,7 +151,7 @@ void main() {
                 expectBackOffOf(equals(10));
               } else {
                 expectBackOffOf(equals(
-                    request.autoRetry.backOff.maxInterval.inMilliseconds));
+                    request!.autoRetry.backOff.maxInterval!.inMilliseconds));
               }
             }
           });
@@ -158,7 +160,7 @@ void main() {
             request = transport.Request();
             final interval = Duration(milliseconds: 50);
             final maxInterval = Duration(milliseconds: 200);
-            request.autoRetry.backOff = transport.RetryBackOff.exponential(
+            request!.autoRetry.backOff = transport.RetryBackOff.exponential(
                 interval,
                 withJitter: true,
                 maxInterval: maxInterval);
@@ -169,7 +171,7 @@ void main() {
               // We start at 1, since the advanced backoff/jitter algorithm
               // only activates once we've had one attempt, so it expects
               // `numAttempts` to be at least 1
-              request.autoRetry.numAttempts = i;
+              request!.autoRetry.numAttempts = i;
 
               if (i == 1) {
                 // For an interval of 50 ms, the valid outputs from the advanced jitter are
@@ -179,7 +181,7 @@ void main() {
               } else {
                 expectBackOffOf(
                     lessThanOrEqualTo(
-                        request.autoRetry.backOff.maxInterval.inMilliseconds),
+                        request!.autoRetry.backOff.maxInterval!.inMilliseconds),
                     calculator: calculator,
                     useMockRandom: false);
               }
@@ -201,7 +203,7 @@ void main() {
               if (i == 0) {
                 expect(
                     http_utils
-                        .calculateBackOff(request.autoRetry)
+                        .calculateBackOff(request.autoRetry)!
                         .inMilliseconds,
                     equals(interval.inMilliseconds));
               }
@@ -216,8 +218,9 @@ void main() {
                 transport.RetryBackOff.fixed(interval, withJitter: withJitter);
 
             for (int i = 0; i < 5; i++) {
-              final backOff =
-                  http_utils.calculateBackOff(request.autoRetry).inMilliseconds;
+              final backOff = http_utils
+                  .calculateBackOff(request.autoRetry)!
+                  .inMilliseconds;
               expect(backOff, lessThanOrEqualTo(interval.inMilliseconds * 1.5));
               expect(
                   backOff, greaterThanOrEqualTo(interval.inMilliseconds ~/ 2));

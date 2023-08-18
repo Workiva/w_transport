@@ -1,3 +1,7 @@
+## [5.0.0] (<https://github.com/Workiva/w_transport/compare/4.1.6...5.0.0>)
+
+- Updated to null safety
+
 ## [4.1.6] (https://github.com/Workiva/w_transport/compare/4.1.5...4.1.6)
 
 - **Bug Fix:** When using `MockTransports.install(fallThrough: true)`, the

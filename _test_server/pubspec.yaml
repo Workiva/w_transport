@@ -13,3 +13,7 @@ dev_dependencies:
   workiva_analysis_options: ^1.0.0
   w_transport:
     path: ../
+
+dependency_overrides:
+  w_module: ^3.0.0
+  w_transport: ^5.0.0

@@ -137,7 +137,7 @@ double _tanh(double angle) {
   return (e1 - e2) / (e1 + e2);
 }
 
-Duration? _calculateFixedBackOff(RequestAutoRetry autoRetry) {
+Duration _calculateFixedBackOff(RequestAutoRetry autoRetry) {
   if (autoRetry.backOff.withJitter) {
     final random = Random();
     return Duration(

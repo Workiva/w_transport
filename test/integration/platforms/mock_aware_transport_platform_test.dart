@@ -62,7 +62,7 @@ void main() {
       MockTransports.webSocket
           .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
       final webSocket =
-          await (transport.WebSocket.connect(IntegrationPaths.pingUri));
+          await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<MockWebSocket>());
       await webSocket?.close();
       await mockWebSocketServer.shutDown();
@@ -98,7 +98,7 @@ void main() {
       MockTransports.webSocket
           .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
       final webSocket =
-          await (transport.WebSocket.connect(IntegrationPaths.pingUri));
+          await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<MockWebSocket>());
       await webSocket?.close();
       await mockWebSocketServer.shutDown();

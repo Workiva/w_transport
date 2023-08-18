@@ -17,13 +17,13 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:http_parser/http_parser.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/w_transport.dart' as transport;
 
 import 'package:w_transport/src/http/utils.dart' as http_utils;
-import 'package:w_transport/w_transport.dart';
 
 import '../../naming.dart';
 
@@ -52,7 +52,7 @@ void main() {
         });
 
         group('exponential', () {
-          Request? request;
+          transport.Request? request;
           var random = MockRandom();
           // Return the mean/median value of this random so we have a deterministic output
           void expectBackOffOf(Matcher matcher,

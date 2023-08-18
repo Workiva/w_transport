@@ -493,12 +493,12 @@ void main() {
         final c = Completer<Null>();
         final mockWebSocketServer = MockWebSocketServer();
         mockWebSocketServer.onClientConnected.listen((connection) {
-          connection.done.then(((_) => c.complete()));
+          connection.done.then((_) => c.complete());
         });
 
         MockTransports.webSocket
             .expect(webSocketUri, connectTo: mockWebSocketServer);
-        final webSocket = await (transport.WebSocket.connect(webSocketUri));
+        final webSocket = await transport.WebSocket.connect(webSocketUri);
         await webSocket?.close();
         await c.future;
       });

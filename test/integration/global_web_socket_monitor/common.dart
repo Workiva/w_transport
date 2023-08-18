@@ -35,7 +35,7 @@ void runCommonGlobalWebSocketMonitorIntegrationTests(
   test('should support multiple monitors, each of which can be closed',
       () async {
     // First connection attempt - no monitors.
-    var webSocket1 = await (connect(closeUri));
+    var webSocket1 = await connect(closeUri);
     await webSocket1?.close();
 
     var monitor1 = transport.WebSocket.getGlobalEventMonitor();
@@ -43,7 +43,7 @@ void runCommonGlobalWebSocketMonitorIntegrationTests(
     monitor1.didAttemptToConnect.listen(monitor1Events.add);
 
     // Second connection attempt - monitor 1 should receive it.
-    var webSocket2 = await (connect(echoUri));
+    var webSocket2 = await connect(echoUri);
     await webSocket2?.close();
 
     var monitor2 = transport.WebSocket.getGlobalEventMonitor();
@@ -51,7 +51,7 @@ void runCommonGlobalWebSocketMonitorIntegrationTests(
     monitor2.didAttemptToConnect.listen(monitor2Events.add);
 
     // Third connection attempt - monitors 1 & 2 should both receive it.
-    var webSocket3 = await (connect(pingUri));
+    var webSocket3 = await connect(pingUri);
     await webSocket3?.close();
 
     await monitor2.close();

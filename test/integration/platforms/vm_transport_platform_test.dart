@@ -53,7 +53,7 @@ void main() {
 
       // Properly constructs VM implementation of WebSocket
       final webSocket =
-          await (transport.WebSocket.connect(IntegrationPaths.pingUri));
+          await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<VMWebSocket>());
       await webSocket?.close();
     });
@@ -73,7 +73,7 @@ void main() {
 
       // Properly constructs VM implementation of WebSocket
       final webSocket =
-          await (transport.WebSocket.connect(IntegrationPaths.pingUri));
+          await transport.WebSocket.connect(IntegrationPaths.pingUri);
       expect(webSocket, isA<VMWebSocket>());
       await webSocket?.close();
     });
@@ -216,9 +216,9 @@ void main() {
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
-          final webSocket = await (transport.WebSocket.connect(
+          final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform));
+              transportPlatform: vmTransportPlatform);
           await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
@@ -233,9 +233,9 @@ void main() {
                       Iterable<String>? protocols}) async =>
                   mockWebSocketServer);
 
-          final webSocket = await (transport.WebSocket.connect(
+          final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform));
+              transportPlatform: vmTransportPlatform);
           await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
@@ -451,9 +451,9 @@ void main() {
 
           MockTransports.webSocket
               .expect(IntegrationPaths.pingUri, connectTo: mockWebSocketServer);
-          final webSocket = await (transport.WebSocket.connect(
+          final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform));
+              transportPlatform: vmTransportPlatform);
           await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
@@ -468,9 +468,9 @@ void main() {
                       Iterable<String>? protocols}) async =>
                   mockWebSocketServer);
 
-          final webSocket = await (transport.WebSocket.connect(
+          final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform));
+              transportPlatform: vmTransportPlatform);
           await webSocket?.close();
 
           await mockWebSocketServer.shutDown();
@@ -534,9 +534,9 @@ void main() {
         test(
             'websockets without expectation or handler should switch to real websocket',
             () async {
-          final webSocket = await (transport.WebSocket.connect(
+          final webSocket = await transport.WebSocket.connect(
               IntegrationPaths.pingUri,
-              transportPlatform: vmTransportPlatform));
+              transportPlatform: vmTransportPlatform);
           await webSocket?.close();
         });
       });

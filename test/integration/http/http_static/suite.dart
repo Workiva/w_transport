@@ -251,7 +251,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           IntegrationPaths.reflectEndpointUri,
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('DELETE'));
     });
 
@@ -262,7 +262,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('DELETE'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -275,7 +275,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           IntegrationPaths.reflectEndpointUri,
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('GET'));
     });
 
@@ -286,7 +286,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('GET'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -314,7 +314,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           IntegrationPaths.reflectEndpointUri,
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('OPTIONS'));
     });
 
@@ -325,7 +325,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('OPTIONS'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -338,7 +338,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           IntegrationPaths.reflectEndpointUri,
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('PATCH'));
     });
 
@@ -349,7 +349,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('PATCH'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -371,7 +371,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           IntegrationPaths.reflectEndpointUri,
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('POST'));
     });
 
@@ -382,7 +382,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('POST'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -404,7 +404,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           IntegrationPaths.reflectEndpointUri,
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('PUT'));
     });
 
@@ -415,7 +415,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('PUT'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
@@ -437,7 +437,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           'COPY', IntegrationPaths.reflectEndpointUri,
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('COPY'));
     });
 
@@ -448,7 +448,7 @@ void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
 
-      final json = await (_decodeStreamedResponseToJson(response));
+      final json = await _decodeStreamedResponseToJson(response);
       expect(json!['method'], equals('COPY'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));

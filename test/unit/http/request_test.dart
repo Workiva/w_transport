@@ -19,7 +19,6 @@ import 'dart:convert';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/w_transport.dart' as transport;
-import 'package:w_transport/w_transport.dart';
 
 import '../../naming.dart';
 
@@ -218,10 +217,10 @@ void _runCommonRequestSuiteFor(String name,
           .send('COPY', uri: requestUri, headers: requestHeaders);
     });
 
-    // test('DELETE (streamed)', () async {
-    //   MockTransports.http.expect('DELETE', requestUri);
-    //   await requestFactory().streamDelete(uri: requestUri);
-    // });
+    test('DELETE (streamed)', () async {
+      MockTransports.http.expect('DELETE', requestUri);
+      await requestFactory().streamDelete(uri: requestUri);
+    });
 
     test('GET (streamed)', () async {
       MockTransports.http.expect('GET', requestUri);
@@ -268,10 +267,11 @@ void _runCommonRequestSuiteFor(String name,
       final dataCompleter = Completer<String>();
       MockTransports.http.when(requestUri, (FinalizedRequest request) async {
         if (request.body is transport.HttpBody) {
-          transport.HttpBody body = request.body as HttpBody;
+          transport.HttpBody body = request.body as transport.HttpBody;
           dataCompleter.complete(body.asString());
         } else {
-          transport.StreamedHttpBody body = request.body as StreamedHttpBody;
+          transport.StreamedHttpBody body =
+              request.body as transport.StreamedHttpBody;
           dataCompleter.complete(utf8.decode(await body.toBytes()));
         }
 
@@ -289,6 +289,25 @@ void _runCommonRequestSuiteFor(String name,
         ..headers = {'x-one': '1', 'x-two': '0'}
         ..uri = requestUri;
       await request.get(headers: {'x-two': '2', 'x-three': '3'});
+    });
+
+    test('request cancellation prior to dispatch should cancel request',
+        () async {
+      final request = requestFactory();
+      request.abort();
+      Future future = request.get(uri: requestUri);
+      expect(future, throwsA(isA<transport.RequestException>()));
+      try {
+        await future;
+        fail('Expected RequestException, but future completed successfully.');
+      } catch (error) {
+        expect(error, isA<transport.RequestException>());
+      }
+      expect(request.isDone, isTrue,
+          reason: 'canceled request should be marked as "done"');
+      expect(request.done, completes,
+          reason:
+              'canceled request should trigger completion of `done` future');
     });
 
     test(
@@ -505,7 +524,7 @@ void _runCommonRequestSuiteFor(String name,
       request.responseInterceptor =
           (request, transport.BaseResponse? response, [exception]) async {
         expect(response, isA<transport.Response>());
-        transport.Response standardResponse = response as Response;
+        transport.Response standardResponse = response as transport.Response;
         expect(standardResponse.body.asString(), equals('original'));
         return standardResponse;
       };

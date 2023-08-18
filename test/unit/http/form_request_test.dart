@@ -16,10 +16,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:http_parser/http_parser.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/w_transport.dart' as transport;
-import 'package:w_transport/w_transport.dart';
 
 import '../../naming.dart';
 
@@ -62,7 +62,7 @@ void main() {
 
         final c = Completer<String>();
         MockTransports.http.when(uri, (FinalizedRequest request) async {
-          transport.HttpBody body = request.body as HttpBody;
+          transport.HttpBody body = request.body as transport.HttpBody;
           c.complete(body.asString());
           return MockResponse.ok();
         });

@@ -54,7 +54,7 @@ void _runWebSocketSuite(Future<transport.WebSocket?> getWebSocket(Uri uri)) {
 
   test('message events should be discarded prior to a subscription', () async {
     MockTransports.webSocket.expect(webSocketUri, connectTo: mockServer);
-    final webSocket = await (getWebSocket(webSocketUri));
+    final webSocket = await getWebSocket(webSocketUri);
     final connection = await mockServer.onClientConnected.first;
 
     connection.send('1');
@@ -80,7 +80,7 @@ void _runWebSocketSuite(Future<transport.WebSocket?> getWebSocket(Uri uri)) {
       'the first event should be received if a subscription is made immediately',
       () async {
     MockTransports.webSocket.expect(webSocketUri, connectTo: mockServer);
-    final webSocket = await (getWebSocket(webSocketUri));
+    final webSocket = await getWebSocket(webSocketUri);
     final connection = await mockServer.onClientConnected.first;
 
     final c = Completer<String>();
@@ -96,7 +96,7 @@ void _runWebSocketSuite(Future<transport.WebSocket?> getWebSocket(Uri uri)) {
   test('all event streams should respect pause() and resume() signals',
       () async {
     MockTransports.webSocket.expect(webSocketUri, connectTo: mockServer);
-    final webSocket = await (getWebSocket(webSocketUri));
+    final webSocket = await getWebSocket(webSocketUri);
     final connection = await mockServer.onClientConnected.first;
     final messages = <String>[];
 
@@ -128,7 +128,7 @@ void _runWebSocketSuite(Future<transport.WebSocket?> getWebSocket(Uri uri)) {
 
   test('onData() handler should be reassignable', () async {
     MockTransports.webSocket.expect(webSocketUri, connectTo: mockServer);
-    final webSocket = await (getWebSocket(webSocketUri));
+    final webSocket = await getWebSocket(webSocketUri);
     final connection = await mockServer.onClientConnected.first;
 
     final origHandlerMessages = <String>[];
@@ -156,7 +156,7 @@ void _runWebSocketSuite(Future<transport.WebSocket?> getWebSocket(Uri uri)) {
 
   test('onDone() handler should be reassignable', () async {
     MockTransports.webSocket.expect(webSocketUri, connectTo: mockServer);
-    final webSocket = await (getWebSocket(webSocketUri));
+    final webSocket = await getWebSocket(webSocketUri);
     final connection = await mockServer.onClientConnected.first;
 
     final sub = webSocket?.listen((_) {}, onDone: () {});
@@ -174,7 +174,7 @@ void _runWebSocketSuite(Future<transport.WebSocket?> getWebSocket(Uri uri)) {
 
   test('add() should send data to underlying web socket', () async {
     MockTransports.webSocket.expect(webSocketUri, connectTo: mockServer);
-    final webSocket = await (getWebSocket(webSocketUri));
+    final webSocket = await getWebSocket(webSocketUri);
     final connection = await mockServer.onClientConnected.first;
 
     final c = Completer<String>();
@@ -192,7 +192,7 @@ void _runWebSocketSuite(Future<transport.WebSocket?> getWebSocket(Uri uri)) {
 
   test('addStream() should send data to underlying web socket', () async {
     MockTransports.webSocket.expect(webSocketUri, connectTo: mockServer);
-    final webSocket = await (getWebSocket(webSocketUri));
+    final webSocket = await getWebSocket(webSocketUri);
     final connection = await mockServer.onClientConnected.first;
 
     final controller = StreamController<dynamic>();
@@ -210,7 +210,7 @@ void _runWebSocketSuite(Future<transport.WebSocket?> getWebSocket(Uri uri)) {
   test('addStream() should cause the web socket to close when erorr is added',
       () async {
     MockTransports.webSocket.expect(webSocketUri, connectTo: mockServer);
-    final webSocket = await (getWebSocket(webSocketUri));
+    final webSocket = await getWebSocket(webSocketUri);
 
     final controller = StreamController<dynamic>();
     controller.add('message');
@@ -226,7 +226,7 @@ void _runWebSocketSuite(Future<transport.WebSocket?> getWebSocket(Uri uri)) {
 
   test('addError() should cause the web socket to close', () async {
     MockTransports.webSocket.expect(webSocketUri, connectTo: mockServer);
-    final webSocket = await (getWebSocket(webSocketUri));
+    final webSocket = await getWebSocket(webSocketUri);
 
     expect(webSocket?.done, throwsException);
     webSocket?.addError(Exception('web socket consumer error'));
@@ -236,7 +236,7 @@ void _runWebSocketSuite(Future<transport.WebSocket?> getWebSocket(Uri uri)) {
 
   test('server closing the connection should close the socket', () async {
     MockTransports.webSocket.expect(webSocketUri, connectTo: mockServer);
-    final webSocket = await (getWebSocket(webSocketUri));
+    final webSocket = await getWebSocket(webSocketUri);
     final connection = await mockServer.onClientConnected.first;
 
     await connection.close(1000, 'closed');

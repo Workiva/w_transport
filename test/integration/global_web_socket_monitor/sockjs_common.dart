@@ -51,7 +51,7 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
         var events = <transport.WebSocketConnectEvent>[];
         monitor.didAttemptToConnect.listen(events.add);
 
-        var webSocket = await (connect(echoUri, protocol));
+        var webSocket = await connect(echoUri, protocol);
         await webSocket?.close();
 
         await connect(fourOhFourUri, protocol).catchError((_) {});

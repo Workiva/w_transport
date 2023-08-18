@@ -41,7 +41,7 @@ void main() {
       var events = <transport.WebSocketConnectEvent>[];
       monitor.didAttemptToConnect.listen(events.add);
 
-      var webSocket = await (connect(IntegrationPaths.echoUri));
+      var webSocket = await connect(IntegrationPaths.echoUri);
       await webSocket?.close();
 
       await connect(IntegrationPaths.fourOhFourUri).catchError((_) {});

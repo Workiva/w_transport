@@ -36,14 +36,14 @@ void main() {
             transport.Request(transportPlatform: browserTransportPlatform)
               ..headers.addAll({'x-custom': 'causes-CORS-request'})
               ..uri = IntegrationPaths.errorEndpointUri;
-        request.autoRetry!
+        request.autoRetry
           ..enabled = true
           ..maxRetries = 2;
 
         expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
-        expect(request.autoRetry!.numAttempts, equals(1));
-        expect(request.autoRetry!.failures.length, equals(1));
+        expect(request.autoRetry.numAttempts, equals(1));
+        expect(request.autoRetry.failures.length, equals(1));
       });
 
       test('null response should be retried', () async {
@@ -51,7 +51,7 @@ void main() {
             transport.Request(transportPlatform: browserTransportPlatform)
               ..headers.addAll({'x-custom': 'causes-CORS-request'})
               ..uri = IntegrationPaths.errorEndpointUri;
-        request.autoRetry!
+        request.autoRetry
           ..enabled = true
           ..maxRetries = 2
           ..test = (request, response, willRetry) async {
@@ -63,8 +63,8 @@ void main() {
 
         expect(request.get(), throwsA(isA<transport.RequestException>()));
         await request.done;
-        expect(request.autoRetry!.numAttempts, equals(3));
-        expect(request.autoRetry!.failures.length, equals(3));
+        expect(request.autoRetry.numAttempts, equals(3));
+        expect(request.autoRetry.failures.length, equals(3));
       });
     });
   });

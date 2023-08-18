@@ -48,8 +48,8 @@ class HttpBody extends BaseHttpBody {
 
   String? _body;
   Uint8List? _bytes;
-  Encoding? _encoding;
-  Encoding? _fallbackEncoding;
+  final Encoding? _encoding;
+  final Encoding _fallbackEncoding;
 
   /// Construct the body to an HTTP request or an HTTP response from bytes.
   ///
@@ -66,12 +66,11 @@ class HttpBody extends BaseHttpBody {
   /// If an encoding cannot be parsed from the content-type header (via the
   /// `charset` param), then [fallbackEncoding] will be used (utf-8 by default).
   HttpBody.fromBytes(this.contentType, List<int>? bytes,
-      {Encoding? encoding, Encoding? fallbackEncoding}) {
-    _encoding =
-        encoding ?? http_utils.parseEncodingFromContentType(contentType);
-    _fallbackEncoding = fallbackEncoding ?? utf8;
-    _bytes = Uint8List.fromList(bytes ?? []);
-  }
+      {Encoding? encoding, Encoding? fallbackEncoding})
+      : _encoding =
+            encoding ?? http_utils.parseEncodingFromContentType(contentType),
+        _fallbackEncoding = fallbackEncoding ?? utf8,
+        _bytes = Uint8List.fromList(bytes ?? []);
 
   /// Construct the body to an HTTP request or an HTTP response from text.
   ///
@@ -88,12 +87,11 @@ class HttpBody extends BaseHttpBody {
   /// If an encoding cannot be parsed from the content-type header (via the
   /// `charset` param), then [fallbackEncoding] will be used (utf-8 by default).
   HttpBody.fromString(this.contentType, String? body,
-      {Encoding? encoding, Encoding? fallbackEncoding}) {
-    _encoding =
-        encoding ?? http_utils.parseEncodingFromContentType(contentType);
-    _fallbackEncoding = fallbackEncoding ?? utf8;
-    _body = body ?? '';
-  }
+      {Encoding? encoding, Encoding? fallbackEncoding})
+      : _encoding =
+            encoding ?? http_utils.parseEncodingFromContentType(contentType),
+        _fallbackEncoding = fallbackEncoding ?? utf8,
+        _body = body ?? '';
 
   /// The size of this request/response body in bytes.
   @override
@@ -101,7 +99,7 @@ class HttpBody extends BaseHttpBody {
 
   /// Encoding used to encode/decode this request/response body.
   @override
-  Encoding get encoding => _encoding ?? _fallbackEncoding!;
+  Encoding get encoding => _encoding ?? _fallbackEncoding;
 
   /// Returns this request/response body as a list of bytes.
   Uint8List asBytes() {
@@ -118,7 +116,7 @@ class HttpBody extends BaseHttpBody {
   }
 
   /// Returns this request/response body as a String.
-  String? asString() => _asString(encoding);
+  String asString() => _asString(encoding);
 
   String _asString(Encoding charset) {
     if (_body == null) {
@@ -147,7 +145,7 @@ class HttpBody extends BaseHttpBody {
 /// when uploading/downloading a file).
 class StreamedHttpBody extends BaseHttpBody {
   /// Single subscription stream of chunks of bytes.
-  Stream<List<int>>? byteStream;
+  Stream<List<int>> byteStream;
 
   /// The size of this request/response body in bytes.
   ///
@@ -164,7 +162,6 @@ class StreamedHttpBody extends BaseHttpBody {
 
   StreamedHttpBody._(this.contentType, this.byteStream, this.contentLength,
       this._fallbackEncoding) {
-    if (byteStream == null) throw ArgumentError.notNull('byteStream');
     _encoding = http_utils.parseEncodingFromContentType(contentType);
   }
 
@@ -172,7 +169,7 @@ class StreamedHttpBody extends BaseHttpBody {
   /// of chunks of bytes. The given [byteStream] should be a single-
   /// subscription stream.
   factory StreamedHttpBody.fromByteStream(
-      MediaType? contentType, Stream<List<int>>? byteStream,
+      MediaType? contentType, Stream<List<int>> byteStream,
       {int? contentLength, Encoding? fallbackEncoding}) {
     final nonNullFallbackEncoding =
         fallbackEncoding ?? utf8; // Use UTF-8 as the default fallback encoding.
@@ -188,5 +185,5 @@ class StreamedHttpBody extends BaseHttpBody {
 
   /// Listens to this streamed request/response body and combines all chunks of
   /// bytes into a single list of bytes.
-  Future<Uint8List> toBytes() => http_utils.reduceByteStream(byteStream!);
+  Future<Uint8List> toBytes() => http_utils.reduceByteStream(byteStream);
 }

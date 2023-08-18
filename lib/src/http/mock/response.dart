@@ -218,7 +218,7 @@ class MockStreamedResponse implements StreamedResponse {
           byteStream: byteStream, headers: headers, statusText: statusText);
 
   @override
-  StreamedHttpBody? get body => _response.body;
+  StreamedHttpBody get body => _response.body;
 
   @override
   int? get contentLength => _response.contentLength;

@@ -100,7 +100,7 @@ class MockWebSocketInternal {
   static Map<String, WebSocketConnectHandler?> _handlers = {};
   static Map<Pattern, WebSocketPatternConnectHandler?> _patternHandlers = {};
 
-  static Future<WebSocket?> handleWebSocketConnection(Uri uri,
+  static Future<WebSocket> handleWebSocketConnection(Uri uri,
       {Map<String, dynamic>? headers, Iterable<String>? protocols}) async {
     final matchingExpectations = _getMatchingExpectations(uri);
     if (matchingExpectations.isNotEmpty) {
@@ -165,7 +165,7 @@ class MockWebSocketInternal {
       return mockWebSocket;
     }
 
-    return null;
+    throw StateError('No matching web socket mock handler for $uri');
   }
 
   static bool hasHandlerForWebSocket(Uri uri) {

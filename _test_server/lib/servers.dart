@@ -7,7 +7,7 @@ CompoundTool withServers(DevTool tool) {
   return CompoundTool()
     ..addTool(DevTool.fromFunction(_streamServer), alwaysRun: true)
     ..addTool(sockjsServer.starter, alwaysRun: true)
-    ..addTool(tool)
+    ..addTool(tool, argMapper: takeAllArgs)
     ..addTool(DevTool.fromFunction(_stopServer), alwaysRun: true)
     ..addTool(sockjsServer.stopper, alwaysRun: true);
 }

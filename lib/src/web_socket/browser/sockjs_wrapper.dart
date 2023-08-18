@@ -57,7 +57,7 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
       bool noCredentials = false,
       List<String>? protocolsWhitelist,
       Duration? timeout}) async {
-    Uri sockjsUri = (uri.scheme == 'ws')
+    Uri sockjsUri = uri.scheme == 'ws'
         ? uri.replace(scheme: 'http')
         : uri.replace(scheme: 'https');
     // TODO: pass `debug`, `noCredentials`, and `timeout` through when possible.

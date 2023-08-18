@@ -190,12 +190,12 @@ void main() {
       test('clone()', () {
         const body = 'body';
         final orig = transport.Request()..body = body;
-        final clone = orig.clone()!;
+        final clone = orig.clone();
         expect(clone.body, equals(body));
 
         final bodyBytes = utf8.encode('bytes');
         final orig2 = transport.Request()..bodyBytes = bodyBytes;
-        final clone2 = orig2.clone()!;
+        final clone2 = orig2.clone();
         expect(clone2.bodyBytes, equals(bodyBytes));
       });
     });

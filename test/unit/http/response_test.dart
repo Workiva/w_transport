@@ -84,7 +84,7 @@ void main() {
         final bytes = <int>[1, 2, 3, 4];
         final response = transport.StreamedResponse.fromByteStream(
             200, 'OK', {}, Stream.fromIterable([bytes]));
-        expect(await response.body!.byteStream!.toList(), equals([bytes]));
+        expect(await response.body.byteStream.toList(), equals([bytes]));
       });
 
       test('replace', () async {
@@ -115,7 +115,7 @@ void main() {
         expect(response5.status, equals(200));
         expect(response5.statusText, equals('OK'));
         expect(response5.headers, equals({}));
-        expect(await response5.body!.byteStream!.toList(), equals([bytes2]));
+        expect(await response5.body.byteStream.toList(), equals([bytes2]));
       });
     });
   });

@@ -35,11 +35,9 @@ Uri downloadEndpoint =
     Uri.parse('http://localhost:8024/http/cross_origin_file_transfer/download');
 
 transport.HttpClient? client;
-transport.HttpClient? getHttpClient() {
-  if (client == null) {
-    client = transport.HttpClient(transportPlatform: vmTransportPlatform);
-  }
-  return client;
+transport.HttpClient getHttpClient() {
+  return client ??=
+      transport.HttpClient(transportPlatform: vmTransportPlatform);
 }
 
 class FilesProxy extends Handler {
@@ -53,7 +51,7 @@ class FilesProxy extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    final proxyRequest = getHttpClient()!.newRequest()..headers = headers;
+    final proxyRequest = getHttpClient().newRequest()..headers = headers;
 
     final proxyResponse = await proxyRequest.streamGet(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.ok;
@@ -61,7 +59,7 @@ class FilesProxy extends Handler {
     proxyResponse.headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
-    await request.response.addStream(proxyResponse.body!.byteStream!);
+    await request.response.addStream(proxyResponse.body.byteStream);
   }
 
   @override
@@ -70,7 +68,7 @@ class FilesProxy extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    final proxyRequest = getHttpClient()!.newRequest()..headers = headers;
+    final proxyRequest = getHttpClient().newRequest()..headers = headers;
 
     final proxyResponse = await proxyRequest.streamDelete(uri: filesEndpoint);
     request.response.statusCode = HttpStatus.ok;
@@ -78,7 +76,7 @@ class FilesProxy extends Handler {
     proxyResponse.headers.forEach((h, v) {
       request.response.headers.set(h, v);
     });
-    await request.response.addStream(proxyResponse.body!.byteStream!);
+    await request.response.addStream(proxyResponse.body.byteStream);
   }
 }
 
@@ -95,7 +93,7 @@ class UploadProxy extends Handler {
     });
     final contentType =
         transport.MediaType.parse(request.headers.value('content-type')!);
-    final proxyRequest = getHttpClient()!.newStreamedRequest()
+    final proxyRequest = getHttpClient().newStreamedRequest()
       ..headers = headers
       ..body = request.cast<List<int>>()
       ..contentLength = request.contentLength
@@ -113,7 +111,7 @@ class UploadProxy extends Handler {
       proxyResponse.headers.forEach((h, v) {
         request.response.headers.set(h, v);
       });
-      await request.response.addStream(proxyResponse.body!.byteStream!);
+      await request.response.addStream(proxyResponse.body.byteStream);
     } on HttpException catch (e) {
       proxyRequest.abort(e);
       request.response.statusCode = HttpStatus.internalServerError;
@@ -133,7 +131,7 @@ class DownloadProxy extends Handler {
     request.headers.forEach((name, values) {
       headers[name] = values.join(', ');
     });
-    final proxyRequest = getHttpClient()!.newRequest()
+    final proxyRequest = getHttpClient().newRequest()
       ..uri = downloadEndpoint
       ..query = request.uri.query
       ..headers = headers;
@@ -151,7 +149,7 @@ class DownloadProxy extends Handler {
       proxyResponse.headers.forEach((h, v) {
         request.response.headers.set(h, v);
       });
-      await request.response.addStream(proxyResponse.body!.byteStream!);
+      await request.response.addStream(proxyResponse.body.byteStream);
     } on HttpException catch (e) {
       proxyRequest.abort(e);
       request.response.statusCode = HttpStatus.internalServerError;

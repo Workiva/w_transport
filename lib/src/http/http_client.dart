@@ -39,12 +39,7 @@ abstract class HttpClient extends Client {
       return MockAwareTransportPlatform.newHttpClient(transportPlatform);
     } else if (transportPlatform != null) {
       // Otherwise, return a real instance using the given transport platform.
-      final httpClient = transportPlatform.newHttpClient();
-      if (httpClient != null) {
-        return httpClient;
-      } else {
-        throw TransportPlatformMissing.httpClientFailed();
-      }
+      return transportPlatform.newHttpClient();
     } else {
       // If transports are not mocked and a transport platform is not available
       // (neither explicitly given nor configured globally), then we cannot

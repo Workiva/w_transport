@@ -180,7 +180,7 @@ void main() {
       });
 
       test('autoRetry not supported', () {
-        expect(transport.StreamedRequest().autoRetry!.supported, isFalse);
+        expect(transport.StreamedRequest().autoRetry.supported, isFalse);
       });
     });
   });

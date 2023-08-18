@@ -270,7 +270,7 @@ class MockHttpInternal {
       return false;
     });
 
-    Map<String, Object>? handlersByMethod;
+    Map<String, Function>? handlersByMethod;
     if (matchingRequestHandlerKey != null) {
       handlersByMethod = _requestHandlers[matchingRequestHandlerKey];
     } else if (matchingPatternRequestHandlerKey != null) {
@@ -280,7 +280,7 @@ class MockHttpInternal {
       handlersByMethod = {};
     }
 
-    Object? handler;
+    Function? handler;
     if (handlersByMethod!.isNotEmpty) {
       // Try to find an applicable handler.
       if (handlersByMethod.containsKey(method)) {
@@ -290,7 +290,7 @@ class MockHttpInternal {
       }
     }
     if (handler == null) return null;
-    return _RequestHandlerMatch(handler as Function,
+    return _RequestHandlerMatch(handler,
         match: handler is PatternRequestHandler ? match : null);
   }
 

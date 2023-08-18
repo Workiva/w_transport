@@ -210,10 +210,10 @@ void main() {
         test('supports handler OR reject, but not both', () {
           expect(() {
             MockTransports.webSocket.when(webSocketUri,
-                // ignore: deprecated_member_use_from_same_package
                 handler: (uri,
                         {Iterable<String>? protocols,
                         Map<String, dynamic>? headers}) async =>
+                    // ignore: deprecated_member_use_from_same_package
                     MockWSocket(),
                 reject: true);
           }, throwsArgumentError);

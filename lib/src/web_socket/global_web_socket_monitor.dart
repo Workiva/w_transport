@@ -27,7 +27,7 @@ GlobalWebSocketMonitor newGlobalWebSocketMonitor() =>
 
 WebSocketConnectEvent newWebSocketConnectEvent(
         {required String url,
-        required bool? wasSuccessful,
+        required bool wasSuccessful,
         String? sockJsSelectedProtocol,
         List<String>? sockJsProtocolsWhitelist}) =>
     WebSocketConnectEvent._(
@@ -57,7 +57,7 @@ class WebSocketConnectEvent {
   final List<String>? sockJsProtocolsWhitelist;
   final String? sockJsSelectedProtocol;
   final String url;
-  final bool? wasSuccessful;
+  final bool wasSuccessful;
 
   WebSocketConnectEvent._(
       {required this.url,

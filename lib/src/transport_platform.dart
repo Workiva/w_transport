@@ -25,25 +25,25 @@ import 'package:w_transport/src/web_socket/web_socket.dart';
 
 abstract class TransportPlatform {
   /// Constructs a new [HttpClient] instance.
-  HttpClient? newHttpClient();
+  HttpClient newHttpClient();
 
   /// Constructs a new [FormRequest] instance.
-  FormRequest? newFormRequest();
+  FormRequest newFormRequest();
 
   /// Constructs a new [JsonRequest] instance.
-  JsonRequest? newJsonRequest();
+  JsonRequest newJsonRequest();
 
   /// Constructs a new [MultipartRequest] instance.
-  MultipartRequest? newMultipartRequest();
+  MultipartRequest newMultipartRequest();
 
   /// Constructs a new [Request] instance.
-  Request? newRequest();
+  Request newRequest();
 
   /// Constructs a new [StreamedRequest] instance.
-  StreamedRequest? newStreamedRequest();
+  StreamedRequest newStreamedRequest();
 
   /// Constructs a new [WebSocket] instance.
-  Future<WebSocket?> newWebSocket(Uri uri,
+  Future<WebSocket> newWebSocket(Uri uri,
       {Map<String, dynamic>? headers, Iterable<String>? protocols});
 }
 
@@ -90,7 +90,7 @@ class MockAwareTransportPlatform {
       MockStreamedRequest(realTransportPlatform);
 
   /// Construct a new [MockWebSocket] instance that implements [WebSocket].
-  static Future<WebSocket?> newWebSocket(
+  static Future<WebSocket> newWebSocket(
       TransportPlatform? realTransportPlatform, Uri uri,
       {Map<String, dynamic>? headers, Iterable<String>? protocols}) {
     if (MockTransportsInternal.isInstalled &&

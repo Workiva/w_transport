@@ -219,7 +219,7 @@ abstract class CommonMultipartRequest extends CommonRequest
       write(file['headers']); // File headers.
 
       // File bytes and ending newline.
-      return writeByteStream(byteStream).then(((_) => write(_crlf)));
+      return writeByteStream(byteStream).then((_) => write(_crlf));
     }).then((_) {
       // Ending boundary delimiter.
       write('$_boundaryHyphens$boundary$_boundaryHyphens$_crlf');

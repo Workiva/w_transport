@@ -1,8 +1,21 @@
-## [5.0.0] (<https://github.com/Workiva/w_transport/compare/4.1.6...5.0.0>)
+## [5.0.1](https://github.com/Workiva/w_transport/compare/5.0.0...5.0.1)
 
-- Updated to null safety
+- Made `RequestException.request` nullable and re-add the null check, as we
+found unsound consumer usages where this could be null.
+- Bumped `collection` dependency to a non-pre-release version.
 
-## [4.1.6] (https://github.com/Workiva/w_transport/compare/4.1.5...4.1.6)
+## [5.0.0](https://github.com/Workiva/w_transport/compare/4.1.6...5.0.0)
+
+- Updated to null safety:
+  - Made as much of the public API non-nullable as safely possible.
+  - One notable behavioral change that was required in order to make the request
+  dispatch methods (like `.get()` and `.post()`) return non-nullable: if any
+  response interceptor takes a non-null response but returns a null response,
+  the original non-null response will be used instead. In practice, we don't
+  think this is common, and being able to make request methods return
+  non-nullable was worth it.
+
+## [4.1.6](https://github.com/Workiva/w_transport/compare/4.1.5...4.1.6)
 
 - **Bug Fix:** When using `MockTransports.install(fallThrough: true)`, the
 optional `body` param on the `send()` method will now properly be applied when
@@ -10,11 +23,11 @@ the request "falls through" the mock config to a real request.
 - **Docs:** Suggest using `.streamGet()` over `.get()` for binary responses that
 will be read as bytes (via `body.asBytes()`).
 
-## [4.1.4] (https://github.com/Workiva/w_transport/compare/4.1.3...4.1.4)
+## [4.1.4](https://github.com/Workiva/w_transport/compare/4.1.3...4.1.4)
 
 - Widen ranges on `fluri` and `http_parser`
 
-## [4.1.3] (https://github.com/Workiva/w_transport/compare/4.1.2...4.1.3)
+## [4.1.3](https://github.com/Workiva/w_transport/compare/4.1.2...4.1.3)
 
 - **Improvement** JSON content will always decode as utf-8. Previously it would
 fall back to the encoding specified for the body, or to ISO-8859-1, which was

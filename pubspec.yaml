@@ -13,7 +13,7 @@ dependencies:
   mime: '>=0.9.6+3 <2.0.0'
   quiver: '>=2.1.5 <4.0.0'
   sockjs_client_wrapper: ^1.0.14
-  collection: ^1.15.0-nullsafety.4
+  collection: ^1.15.0
 
 dev_dependencies:
   _test_server:

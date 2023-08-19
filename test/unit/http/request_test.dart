@@ -380,7 +380,7 @@ void _runCommonRequestSuiteFor(String name,
       request.abort();
       expect(future, throwsA(predicate((dynamic error) {
         return error is transport.RequestException &&
-            error.request.autoRetry.numAttempts == 1;
+            error.request?.autoRetry.numAttempts == 1;
       })));
     });
 

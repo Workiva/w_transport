@@ -423,7 +423,7 @@ void _runCommonRequestSuiteFor(String name,
       try {
         transport.defaultTimeoutThreshold = Duration(milliseconds: 250);
         final request = requestFactory();
-        expect(request.get(uri: IntegrationPaths.timeoutEndpointUri),
+        await expectLater(request.get(uri: IntegrationPaths.timeoutEndpointUri),
             throwsA(predicate((error) {
           return error is transport.RequestException &&
               error.error is TimeoutException;

@@ -37,8 +37,7 @@ void main() {
           transport.FormRequest(transportPlatform: vmTransportPlatform)
             ..uri = IntegrationPaths.reflectEndpointUri;
       request.configure((request) async {
-        HttpClientRequest ioRequest = request;
-        ioRequest.headers.set('x-configured', 'true');
+        (request as HttpClientRequest).headers.set('x-configured', 'true');
       });
       final response = await request.get();
       expect(response.body.asJson()['headers']['x-configured'], equals('true'));

@@ -21,7 +21,7 @@ import 'package:w_transport/src/http/utils.dart' as http_utils;
 
 import '../../integration_paths.dart';
 
-void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
+void runFormRequestSuite([transport.TransportPlatform? transportPlatform]) {
   group('FormRequest', () {
     test('content-length should be set automatically', () async {
       // Empty request.
@@ -80,7 +80,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'ç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(utf8.name));
+      expect(response.encoding!.name, equals(utf8.name));
       final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
@@ -95,7 +95,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'ç®å';
       final response = await request.post();
-      expect(response.encoding.name, equals(latin1.name));
+      expect(response.encoding!.name, equals(latin1.name));
       final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));
@@ -110,7 +110,7 @@ void runFormRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..fields['field1'] = 'value1'
             ..fields['field2'] = 'value2';
       final response = await request.post();
-      expect(response.encoding.name, equals(ascii.name));
+      expect(response.encoding!.name, equals(ascii.name));
       final echo = http_utils.queryToMap(response.body.asString(),
           encoding: response.encoding);
       expect(echo, containsPair('field1', 'value1'));

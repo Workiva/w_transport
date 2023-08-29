@@ -24,30 +24,30 @@ import 'package:w_transport/src/transport_platform.dart';
 
 abstract class CommonStreamedRequest extends CommonRequest
     implements StreamedRequest {
-  CommonStreamedRequest(TransportPlatform transportPlatform)
+  CommonStreamedRequest(TransportPlatform? transportPlatform)
       : super(transportPlatform);
   // ignore: deprecated_member_use_from_same_package
   CommonStreamedRequest.fromClient(Client wTransportClient, client)
       : super.fromClient(wTransportClient, client);
 
-  Stream<List<int>> _body;
+  Stream<List<int>>? _body;
 
-  int _contentLength;
-
-  @override
-  Stream<List<int>> get body => _body;
+  int? _contentLength;
 
   @override
-  set body(Stream<List<int>> byteStream) {
+  Stream<List<int>>? get body => _body;
+
+  @override
+  set body(Stream<List<int>>? byteStream) {
     verifyUnsent();
     _body = byteStream;
   }
 
   @override
-  int get contentLength => _contentLength;
+  int? get contentLength => _contentLength;
 
   @override
-  set contentLength(int value) {
+  set contentLength(int? value) {
     verifyUnsent();
     _contentLength = value;
   }
@@ -75,7 +75,7 @@ abstract class CommonStreamedRequest extends CommonRequest
     }
 
     this.body ??= Stream.fromIterable([]);
-    return StreamedHttpBody.fromByteStream(contentType, this.body,
+    return StreamedHttpBody.fromByteStream(contentType, this.body!,
         contentLength: contentLength);
   }
 }

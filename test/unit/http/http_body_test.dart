@@ -173,7 +173,7 @@ void main() {
         final contentType =
             MediaType('application', 'json', {'charset': ascii.name});
         final body = transport.HttpBody.fromString(contentType, 'bodyçå®');
-        Object exception;
+        Object? exception;
         try {
           body.asBytes();
         } catch (e) {
@@ -196,7 +196,7 @@ void main() {
             MediaType('application', 'json', {'charset': ascii.name});
         final body =
             transport.HttpBody.fromBytes(contentType, utf8.encode('bodyçå®'));
-        Object exception;
+        Object? exception;
         try {
           body.asString();
         } catch (e) {
@@ -220,7 +220,7 @@ void main() {
         final contentType = MediaType('text', 'plain', {'charset': ascii.name});
         final body = transport.StreamedHttpBody.fromByteStream(
             contentType, Stream.fromIterable([]));
-        expect(body.encoding.name, equals(ascii.name));
+        expect(body.encoding!.name, equals(ascii.name));
       });
 
       test('should allow a fallback encoding', () {
@@ -228,7 +228,7 @@ void main() {
         final body = transport.StreamedHttpBody.fromByteStream(
             contentType, Stream.fromIterable([]),
             fallbackEncoding: latin1);
-        expect(body.encoding.name, equals(latin1.name));
+        expect(body.encoding!.name, equals(latin1.name));
       });
 
       test('toBytes()', () async {

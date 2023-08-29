@@ -27,10 +27,9 @@ Map<String, Handler> exampleHttpCrossOriginCredentialsRoutes = {
   '$pathPrefix/credentialed': CredentialedRequestHandler()
 };
 
-String session;
+String? session;
 String generateSessionCookie() {
-  session = Uuid().v4();
-  return session;
+  return session = Uuid().v4();
 }
 
 bool isValidSession(HttpRequest request) {

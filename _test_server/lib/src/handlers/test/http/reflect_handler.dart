@@ -18,6 +18,7 @@ import 'dart:io';
 
 import 'package:http_parser/http_parser.dart' show MediaType;
 
+// ignore: implementation_imports
 import 'package:w_transport/src/http/utils.dart' as http_utils;
 
 import '../../../handler.dart';
@@ -37,14 +38,14 @@ class ReflectHandler extends Handler {
       headers[name] = values.join(', ');
     });
 
-    Encoding encoding;
+    Encoding? encoding;
     if (request.headers.contentType == null) {
       encoding = latin1;
     } else {
       final contentType = MediaType(
-          request.headers.contentType.primaryType,
-          request.headers.contentType.subType,
-          request.headers.contentType.parameters);
+          request.headers.contentType!.primaryType,
+          request.headers.contentType!.subType,
+          request.headers.contentType!.parameters as Map<String, String>?);
       encoding = http_utils.parseEncodingFromContentType(contentType,
           fallback: latin1);
     }
@@ -53,7 +54,7 @@ class ReflectHandler extends Handler {
       'method': request.method,
       'path': request.uri.path,
       'headers': headers,
-      'body': await encoding.decodeStream(request),
+      'body': await encoding!.decodeStream(request),
     };
 
     request.response.statusCode = HttpStatus.ok;

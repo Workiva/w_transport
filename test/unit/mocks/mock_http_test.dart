@@ -56,7 +56,7 @@ void main() {
 
       test('verifies that requests are mock requests before controlling them',
           () {
-        transport.BaseRequest request;
+        transport.BaseRequest? request;
         expect(() {
           // ignore: deprecated_member_use_from_same_package
           MockTransports.http.completeRequest(request);
@@ -96,7 +96,8 @@ void main() {
         test('expected request failure', () async {
           final exception = Exception('Custom exception');
           MockTransports.http.expect('DELETE', requestUri, failWith: exception);
-          expect(transport.Http.delete(requestUri), throwsA(predicate((error) {
+          expect(transport.Http.delete(requestUri),
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('Custom exception');
           })));
         });
@@ -139,7 +140,8 @@ void main() {
           final exception = Exception('Custom exception');
           MockTransports.http.expectPattern('DELETE', requestUri.toString(),
               failWith: exception);
-          expect(transport.Http.delete(requestUri), throwsA(predicate((error) {
+          expect(transport.Http.delete(requestUri),
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('Custom exception');
           })));
         });
@@ -194,7 +196,8 @@ void main() {
           MockTransports.http
               // ignore: deprecated_member_use_from_same_package
               .failRequest(request, error: Exception('Custom exception'));
-          expect(request.get(uri: requestUri), throwsA(predicate((error) {
+          expect(request.get(uri: requestUri),
+              throwsA(predicate((dynamic error) {
             return error.toString().contains('Custom exception');
           })));
         });
@@ -204,9 +207,10 @@ void main() {
           final response = MockResponse.internalServerError();
           // ignore: deprecated_member_use_from_same_package
           MockTransports.http.failRequest(request, response: response);
-          expect(request.get(uri: requestUri), throwsA(predicate((error) {
+          expect(request.get(uri: requestUri),
+              throwsA(predicate((dynamic error) {
             return error is transport.RequestException &&
-                error.response.status == 500;
+                error.response!.status == 500;
           })));
         });
       });
@@ -223,7 +227,7 @@ void main() {
         // ignore: unawaited_futures
         request.get(uri: Uri.parse('/other'));
         // ignore: deprecated_member_use_from_same_package
-        MockPlainTextRequest mockRequest = request;
+        MockPlainTextRequest mockRequest = request as MockPlainTextRequest;
         await mockRequest.onSent;
         expect(MockTransports.http.numPendingRequests, equals(1));
 
@@ -235,7 +239,7 @@ void main() {
         // ignore: unawaited_futures
         request2.delete(uri: requestUri);
         // ignore: deprecated_member_use_from_same_package
-        MockPlainTextRequest mockRequest2 = request2;
+        MockPlainTextRequest mockRequest2 = request2 as MockPlainTextRequest;
         await mockRequest2.onSent;
 
         // Would have been expected, but should no longer be:
@@ -243,7 +247,7 @@ void main() {
         // ignore: unawaited_futures
         request3.get(uri: Uri.parse('/expected'));
         // ignore: deprecated_member_use_from_same_package
-        MockPlainTextRequest mockRequest3 = request3;
+        MockPlainTextRequest mockRequest3 = request3 as MockPlainTextRequest;
         await mockRequest3.onSent;
 
         expect(MockTransports.http.numPendingRequests, equals(2));
@@ -262,7 +266,7 @@ void main() {
           // ignore: unawaited_futures
           request.get(uri: requestUri);
           // ignore: deprecated_member_use_from_same_package
-          MockPlainTextRequest mockRequest = request;
+          MockPlainTextRequest mockRequest = request as MockPlainTextRequest;
           await mockRequest.onSent;
           expect(() {
             MockTransports.http.verifyNoOutstandingExceptions();
@@ -343,7 +347,8 @@ void main() {
 
         test('registers handler that throws to cause request failure',
             () async {
-          MockTransports.http.when(requestUri, (_) async => throw Exception());
+          MockTransports.http
+              .when(requestUri, ((_) async => throw Exception()));
           expect(transport.Http.get(requestUri),
               throwsA(isA<transport.RequestException>()));
         });
@@ -438,7 +443,7 @@ void main() {
         test('registers a handler that throws to cause request failure',
             () async {
           MockTransports.http.whenPattern(
-              requestUri.toString(), (_a, _b) async => throw Exception());
+              requestUri.toString(), ((_a, _b) async => throw Exception()));
           expect(transport.Http.get(requestUri),
               throwsA(isA<transport.RequestException>()));
         });
@@ -481,13 +486,13 @@ void main() {
             () async {
           final pattern = 'https:\/\/(google|github)\.com';
 
-          Match getMatch;
+          late Match getMatch;
           MockTransports.http.whenPattern(RegExp(pattern), (_, match) async {
             getMatch = match;
             return MockResponse.ok();
           }, method: 'GET');
 
-          Match postMatch;
+          late Match postMatch;
           MockTransports.http.whenPattern(RegExp(pattern), (_, match) async {
             postMatch = match;
             return MockResponse.ok();

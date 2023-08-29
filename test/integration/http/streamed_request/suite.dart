@@ -21,7 +21,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runStreamedRequestSuite([transport.TransportPlatform transportPlatform]) {
+void runStreamedRequestSuite([transport.TransportPlatform? transportPlatform]) {
   group('StreamedRequest', () {
     test('contentLength should NOT be set automatically', () async {
       final emptyRequest =
@@ -91,7 +91,7 @@ void runStreamedRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..encoding = utf8
             ..body = Stream.fromIterable([utf8.encode('dataç®å')]);
       final response = await request.post();
-      expect(response.encoding.name, equals(utf8.name));
+      expect(response.encoding!.name, equals(utf8.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
@@ -102,7 +102,7 @@ void runStreamedRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..encoding = latin1
             ..body = Stream.fromIterable([latin1.encode('dataç®å')]);
       final response = await request.post();
-      expect(response.encoding.name, equals(latin1.name));
+      expect(response.encoding!.name, equals(latin1.name));
       expect(response.body.asString(), equals('dataç®å'));
     });
 
@@ -113,7 +113,7 @@ void runStreamedRequestSuite([transport.TransportPlatform transportPlatform]) {
             ..encoding = ascii
             ..body = Stream.fromIterable([ascii.encode('data')]);
       final response = await request.post();
-      expect(response.encoding.name, equals(ascii.name));
+      expect(response.encoding!.name, equals(ascii.name));
       expect(response.body.asString(), equals('data'));
     });
   });

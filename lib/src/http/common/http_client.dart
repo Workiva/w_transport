@@ -33,19 +33,19 @@ abstract class CommonHttpClient implements HttpClient {
 
   /// A base URI that all requests created by this client should inherit.
   @override
-  Uri baseUri;
+  Uri? baseUri;
 
   /// Amount of time to wait for the request to finish before canceling it and
   /// considering it "timed out" (results in a [RequestException] being thrown).
   ///
   /// If null, a default threshold will be enforced.
   @override
-  Duration timeoutThreshold;
+  Duration? timeoutThreshold;
 
   /// Whether or not to send the request with credentials. Only applicable to
   /// requests in the browser, but does not adversely affect any other platform.
   @override
-  bool withCredentials;
+  bool? withCredentials;
 
   /// Headers to be inherited by all requests created from this client.
   CaseInsensitiveMap<String> _headers = CaseInsensitiveMap();

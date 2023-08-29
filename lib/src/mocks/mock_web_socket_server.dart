@@ -23,17 +23,17 @@ class MockWebSocketConnection {
   final MockWSocket _connectedClient;
 
   MockWebSocketConnection._(this._connectedClient, this.uri,
-      {Map<String, dynamic> headers, Iterable<String> protocols})
+      {Map<String, dynamic>? headers, Iterable<String>? protocols})
       : headers = Map.unmodifiable(headers ?? {}),
-        protocols = List.unmodifiable(protocols ?? []);
+        protocols = List.unmodifiable(protocols ?? <String>[]);
 
-  int get closeCode => _connectedClient.closeCode;
+  int? get closeCode => _connectedClient.closeCode;
 
-  String get closeReason => _connectedClient.closeReason;
+  String? get closeReason => _connectedClient.closeReason;
 
   Future<Null> get done => _connectedClient.done;
 
-  Future<Null> close([int code, String reason]) {
+  Future<Null> close([int? code, String? reason]) {
     return _connectedClient.close(code, reason);
   }
 
@@ -65,7 +65,7 @@ class MockWebSocketServer {
 
   // ignore: deprecated_member_use_from_same_package
   void _connectClient(MockWSocket client, Uri uri,
-      {Map<String, dynamic> headers, Iterable<String> protocols}) {
+      {Map<String, dynamic>? headers, Iterable<String>? protocols}) {
     _connectedClients.add(client);
     client.done.then((_) {
       _connectedClients.remove(client);

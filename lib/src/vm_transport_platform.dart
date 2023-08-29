@@ -55,12 +55,12 @@ class VMTransportPlatform implements TransportPlatform {
   /// Construct a [WebSocket] instance for use in the Dart VM.
   @override
   Future<WebSocket> newWebSocket(Uri uri,
-          {Map<String, dynamic> headers,
-          Iterable<String> protocols,
-          @Deprecated(v3Deprecation) bool sockJSDebug,
-          @Deprecated(v3Deprecation) bool sockJSNoCredentials,
-          @Deprecated(v3Deprecation) List<String> sockJSProtocolsWhitelist,
-          @Deprecated(v3Deprecation) Duration sockJSTimeout,
-          @Deprecated(v3Deprecation) bool useSockJS}) =>
+          {Map<String, dynamic>? headers,
+          Iterable<String>? protocols,
+          @Deprecated(v3Deprecation) bool? sockJSDebug,
+          @Deprecated(v3Deprecation) bool? sockJSNoCredentials,
+          @Deprecated(v3Deprecation) List<String>? sockJSProtocolsWhitelist,
+          @Deprecated(v3Deprecation) Duration? sockJSTimeout,
+          @Deprecated(v3Deprecation) bool? useSockJS}) =>
       VMWebSocket.connect(uri, headers: headers, protocols: protocols);
 }

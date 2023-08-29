@@ -26,7 +26,7 @@ import 'package:w_transport/src/transport_platform.dart';
 /// network connections between requests that share a client.
 // ignore: deprecated_member_use_from_same_package
 abstract class HttpClient extends Client {
-  factory HttpClient({TransportPlatform transportPlatform}) {
+  factory HttpClient({TransportPlatform? transportPlatform}) {
     // If a transport platform is not explicitly given, fallback to the globally
     // configured platform.
     transportPlatform ??= globalTransportPlatform;

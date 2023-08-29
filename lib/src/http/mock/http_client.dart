@@ -23,7 +23,7 @@ import 'package:w_transport/src/transport_platform.dart';
 /// don't ever actually send an HTTP request, this client doesn't need to do
 /// anything else.
 class MockHttpClient extends CommonHttpClient implements HttpClient {
-  TransportPlatform _transport;
+  TransportPlatform? _transport;
 
   MockHttpClient(this._transport);
 

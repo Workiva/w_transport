@@ -50,33 +50,33 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
         final blob = Blob(['one', 'two']);
         final socket = await connect(pingUri, protocol);
         expect(() {
-          socket.add(blob);
+          socket?.add(blob);
         }, throwsArgumentError);
-        await socket.close();
+        await socket?.close();
       });
 
       test('should support String', () async {
         const data = 'data';
         final socket = await connect(echoUri, protocol);
-        socket.add(data);
-        await socket.close();
+        socket?.add(data);
+        await socket?.close();
       });
 
       test('should not support TypedData', () async {
         final data = Uint16List.fromList([1, 2, 3]);
         final socket = await connect(echoUri, protocol);
         expect(() {
-          socket.add(data);
+          socket?.add(data);
         }, throwsArgumentError);
-        await socket.close();
+        await socket?.close();
       });
 
       test('should throw when attempting to send invalid data', () async {
         final socket = await connect(pingUri, protocol);
         expect(() {
-          socket.add(true);
+          socket?.add(true);
         }, throwsArgumentError);
-        await socket.close();
+        await socket?.close();
       });
     });
   }

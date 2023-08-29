@@ -29,27 +29,27 @@ abstract class BaseResponse {
   /// 'OK', 'Not Found', etc.
   final String statusText;
 
-  MediaType _contentType;
-  Encoding _encoding;
+  MediaType? _contentType;
+  Encoding? _encoding;
   Map<String, String> _headers;
 
-  BaseResponse(this.status, this.statusText, Map<String, String> headers) {
-    _headers = Map<String, String>.unmodifiable(
-        CaseInsensitiveMap<String>.from(headers));
-    _encoding = http_utils.parseEncodingFromHeaders(_headers, fallback: latin1);
-    _contentType = http_utils.parseContentTypeFromHeaders(_headers);
-  }
+  BaseResponse(this.status, this.statusText, Map<String, String> headers)
+      : _headers = Map<String, String>.unmodifiable(
+            CaseInsensitiveMap<String>.from(headers)),
+        _encoding =
+            http_utils.parseEncodingFromHeaders(headers, fallback: latin1),
+        _contentType = http_utils.parseContentTypeFromHeaders(headers);
 
   /// Gets and sets the content-length of the request, in bytes. If the size of
   /// the request is not known in advance, set this to null.
-  int get contentLength;
+  int? get contentLength;
 
   /// Content-type of this request.
   ///
   /// By default, the mime-type is "text/plain" and the charset is "utf-8".
   /// When the request body or the encoding is set or updated, the
   /// content-type will be updated accordingly.
-  MediaType get contentType => _contentType;
+  MediaType? get contentType => _contentType;
 
   /// Encoding that will be used to decode the response body. This encoding is
   /// selected based on [contentType]'s `charset` parameter. If `charset` is not
@@ -59,7 +59,7 @@ abstract class BaseResponse {
   // and there is no longer a default, it should use the charset of the media type.
   // But we don't have the media type's encoding, so leaving this for the moment. The most
   // important media type for this is JSON, which we hard-code to utf-8.
-  Encoding get encoding => _encoding;
+  Encoding? get encoding => _encoding;
 
   /// Headers sent with the response to the HTTP request.
   Map<String, String> get headers => _headers;
@@ -74,7 +74,7 @@ abstract class BaseResponse {
 /// - text (`String`)
 /// - JSON (`Map` or `List`) - assuming the response content type is JSON
 class Response extends BaseResponse {
-  HttpBody _body;
+  late HttpBody _body;
 
   Response._(
       int status, String statusText, Map<String, String> headers, HttpBody body)
@@ -87,10 +87,11 @@ class Response extends BaseResponse {
     _body = HttpBody.fromBytes(contentType, bytes, fallbackEncoding: encoding);
   }
 
-  Response.fromString(
-      int status, String statusText, Map<String, String> headers, String body)
+  Response.fromString(int status, String statusText,
+      Map<String, String> headers, String? bodyString)
       : super(status, statusText, headers) {
-    _body = HttpBody.fromString(contentType, body, fallbackEncoding: encoding);
+    _body = HttpBody.fromString(contentType, bodyString,
+        fallbackEncoding: encoding);
   }
 
   /// This response's body. Provides synchronous access to the response body as
@@ -105,14 +106,14 @@ class Response extends BaseResponse {
   /// Create a new [Response] using all the values from this instance except
   /// for the parameters specified.
   Response replace(
-      {List<int> bodyBytes,
-      String bodyString,
-      int status,
-      String statusText,
-      Map<String, String> headers}) {
-    status ??= this.status;
-    statusText ??= this.statusText;
-    headers ??= this.headers;
+      {List<int>? bodyBytes,
+      String? bodyString,
+      int? status,
+      String? statusText,
+      Map<String, String>? headers}) {
+    status = status ?? this.status;
+    statusText = statusText ?? this.statusText;
+    headers = headers ?? this.headers;
     if (bodyBytes == null) {
       if (bodyString == null) {
         return Response._(status, statusText, headers, _body);
@@ -130,7 +131,7 @@ class Response extends BaseResponse {
 /// status, statusText) are available immediately and synchronously. The
 /// response body is available as a stream of bytes.
 class StreamedResponse extends BaseResponse {
-  StreamedHttpBody _body;
+  late StreamedHttpBody _body;
 
   StreamedResponse._(int status, String statusText, Map<String, String> headers,
       StreamedHttpBody body)
@@ -151,20 +152,21 @@ class StreamedResponse extends BaseResponse {
   /// Gets and sets the content-length of the request, in bytes. If the size of
   /// the request is not known in advance, set this to null.
   @override
-  int get contentLength => headers.containsKey('content-length')
-      ? int.parse(headers['content-length'])
-      : null;
+  int? get contentLength {
+    final length = headers['content-length'];
+    return length != null ? int.parse(length) : null;
+  }
 
   /// Create a new [StreamedResponse] using all the values from this instance
   /// except for the parameters specified.
   StreamedResponse replace(
-      {Stream<List<int>> byteStream,
-      int status,
-      String statusText,
-      Map<String, String> headers}) {
-    status ??= this.status;
-    statusText ??= this.statusText;
-    headers ??= this.headers;
+      {Stream<List<int>>? byteStream,
+      int? status,
+      String? statusText,
+      Map<String, String>? headers}) {
+    status = status ?? this.status;
+    statusText = statusText ?? this.statusText;
+    headers = headers ?? this.headers;
     if (byteStream == null) {
       return StreamedResponse._(status, statusText, headers, _body);
     } else {

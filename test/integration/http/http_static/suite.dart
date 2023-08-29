@@ -20,7 +20,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
+void runHttpStaticSuite([transport.TransportPlatform? transportPlatform]) {
   group('Http static methods', () {
     final headers = <String, String>{
       'authorization': 'test',
@@ -238,10 +238,10 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
     Future<String> _decodeStreamedResponseToString(
         transport.StreamedResponse response) async {
       final bytes = await response.body.toBytes();
-      return response.encoding.decode(bytes.toList());
+      return response.encoding!.decode(bytes.toList());
     }
 
-    Future<Map> _decodeStreamedResponseToJson(
+    Future<Map?> _decodeStreamedResponseToJson(
         transport.StreamedResponse response) async {
       return json.decode(await _decodeStreamedResponseToString(response));
     }
@@ -252,7 +252,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('DELETE'));
+      expect(json!['method'], equals('DELETE'));
     });
 
     test('streamed DELETE request with headers', () async {
@@ -263,7 +263,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
       expect(response.status, equals(200));
 
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('DELETE'));
+      expect(json!['method'], equals('DELETE'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
       expect(json['headers'], containsPair('x-custom', headers['x-custom']));
@@ -276,7 +276,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('GET'));
+      expect(json!['method'], equals('GET'));
     });
 
     test('streamed GET request with headers', () async {
@@ -287,7 +287,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
       expect(response.status, equals(200));
 
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('GET'));
+      expect(json!['method'], equals('GET'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
       expect(json['headers'], containsPair('x-custom', headers['x-custom']));
@@ -315,7 +315,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('OPTIONS'));
+      expect(json!['method'], equals('OPTIONS'));
     });
 
     test('streamed OPTIONS request with headers', () async {
@@ -326,7 +326,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
       expect(response.status, equals(200));
 
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('OPTIONS'));
+      expect(json!['method'], equals('OPTIONS'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
       expect(json['headers'], containsPair('x-custom', headers['x-custom']));
@@ -339,7 +339,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('PATCH'));
+      expect(json!['method'], equals('PATCH'));
     });
 
     test('streamed PATCH request with headers', () async {
@@ -350,7 +350,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
       expect(response.status, equals(200));
 
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('PATCH'));
+      expect(json!['method'], equals('PATCH'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
       expect(json['headers'], containsPair('x-custom', headers['x-custom']));
@@ -372,7 +372,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('POST'));
+      expect(json!['method'], equals('POST'));
     });
 
     test('streamed POST request with headers', () async {
@@ -383,7 +383,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
       expect(response.status, equals(200));
 
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('POST'));
+      expect(json!['method'], equals('POST'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
       expect(json['headers'], containsPair('x-custom', headers['x-custom']));
@@ -405,7 +405,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('PUT'));
+      expect(json!['method'], equals('PUT'));
     });
 
     test('streamed PUT request with headers', () async {
@@ -416,7 +416,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
       expect(response.status, equals(200));
 
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('PUT'));
+      expect(json!['method'], equals('PUT'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
       expect(json['headers'], containsPair('x-custom', headers['x-custom']));
@@ -438,7 +438,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
           transportPlatform: transportPlatform);
       expect(response.status, equals(200));
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('COPY'));
+      expect(json!['method'], equals('COPY'));
     });
 
     test('streamed custom HTTP method request with headers', () async {
@@ -449,7 +449,7 @@ void runHttpStaticSuite([transport.TransportPlatform transportPlatform]) {
       expect(response.status, equals(200));
 
       final json = await _decodeStreamedResponseToJson(response);
-      expect(json['method'], equals('COPY'));
+      expect(json!['method'], equals('COPY'));
       expect(json['headers'],
           containsPair('authorization', headers['authorization']));
       expect(json['headers'], containsPair('x-custom', headers['x-custom']));

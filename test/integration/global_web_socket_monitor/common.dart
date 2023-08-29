@@ -20,8 +20,8 @@ import 'package:w_transport/w_transport.dart' as transport;
 import '../integration_paths.dart';
 
 void runCommonGlobalWebSocketMonitorIntegrationTests(
-    Future<transport.WebSocket> connect(Uri uri),
-    {int port}) {
+    Future<transport.WebSocket?> connect(Uri uri),
+    {int? port}) {
   var closeUri = IntegrationPaths.closeUri;
   var echoUri = IntegrationPaths.echoUri;
   var fourOhFourUri = IntegrationPaths.fourOhFourUri;
@@ -36,7 +36,7 @@ void runCommonGlobalWebSocketMonitorIntegrationTests(
       () async {
     // First connection attempt - no monitors.
     var webSocket1 = await connect(closeUri);
-    await webSocket1.close();
+    await webSocket1?.close();
 
     var monitor1 = transport.WebSocket.getGlobalEventMonitor();
     var monitor1Events = <transport.WebSocketConnectEvent>[];
@@ -44,7 +44,7 @@ void runCommonGlobalWebSocketMonitorIntegrationTests(
 
     // Second connection attempt - monitor 1 should receive it.
     var webSocket2 = await connect(echoUri);
-    await webSocket2.close();
+    await webSocket2?.close();
 
     var monitor2 = transport.WebSocket.getGlobalEventMonitor();
     var monitor2Events = <transport.WebSocketConnectEvent>[];
@@ -52,7 +52,7 @@ void runCommonGlobalWebSocketMonitorIntegrationTests(
 
     // Third connection attempt - monitors 1 & 2 should both receive it.
     var webSocket3 = await connect(pingUri);
-    await webSocket3.close();
+    await webSocket3?.close();
 
     await monitor2.close();
 

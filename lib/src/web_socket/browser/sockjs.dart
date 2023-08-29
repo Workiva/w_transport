@@ -27,8 +27,8 @@ abstract class SockJSWebSocket extends CommonWebSocket implements WebSocket {
   static Future<WebSocket> connect(Uri uri,
       {bool debug = false,
       bool noCredentials = false,
-      List<String> protocolsWhitelist,
-      Duration timeout}) async {
+      List<String>? protocolsWhitelist,
+      Duration? timeout}) async {
     // This SockJS implementation of WebSocket requires that the sockjs.js file
     // is loaded. We can check for that by checking for the existence of a
     // `SockJS` object on the window.

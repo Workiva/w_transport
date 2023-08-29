@@ -19,16 +19,16 @@ import 'package:w_transport/src/http/response.dart';
 /// an unsuccessful status code.
 class RequestException implements Exception {
   /// Original error, if any.
-  final Object error;
+  final Object? error;
 
   /// HTTP method.
-  final String method;
+  final String? method;
 
   /// Failed request.
-  final BaseRequest request;
+  final BaseRequest? request;
 
   /// Response to the failed request (some of the properties may be unavailable).
-  final BaseResponse response;
+  final BaseResponse? response;
 
   /// URL of the attempted/unsuccessful request.
   final Uri uri;
@@ -42,14 +42,15 @@ class RequestException implements Exception {
   /// response status.
   String get message {
     String msg;
-    if (request != null && request.autoRetry.numAttempts > 1) {
+    var r = request;
+    if (r != null && r.autoRetry.numAttempts > 1) {
       msg = '$method $uri';
-      for (int i = 0; i < request.autoRetry.failures.length; i++) {
-        final failure = request.autoRetry.failures[i];
+      for (int i = 0; i < r.autoRetry.failures.length; i++) {
+        final failure = r.autoRetry.failures[i];
         String attempt = '\n\tAttempt #${i + 1}:';
         if (failure.response != null) {
           attempt +=
-              ' ${failure.response.status} ${failure.response.statusText}';
+              ' ${failure.response!.status} ${failure.response!.statusText}';
         }
         if (failure.error != null) {
           attempt += ' (${failure.error})';
@@ -59,7 +60,7 @@ class RequestException implements Exception {
     } else {
       msg = '$method';
       if (response != null) {
-        msg += ' ${response.status} ${response.statusText}';
+        msg += ' ${response!.status} ${response!.statusText}';
       }
       msg += ' $uri';
       if (error != null) {

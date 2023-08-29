@@ -48,8 +48,8 @@ class RequestPayload {
 /// [StreamedResponse] as necessary.
 class ResponsePayload {
   final FinalizedRequest request;
-  BaseResponse response;
-  final RequestException exception;
+  BaseResponse? response;
+  final RequestException? exception;
   ResponsePayload(this.request, this.response, [this.exception]);
 }
 

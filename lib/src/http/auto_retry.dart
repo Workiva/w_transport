@@ -25,7 +25,7 @@ import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/http/response.dart';
 
 typedef RetryTest = Future<bool> Function(
-    FinalizedRequest request, BaseResponse response, bool willRetry);
+    FinalizedRequest request, BaseResponse? response, bool willRetry);
 
 /// The valid retry back-off methods.
 enum RetryBackOffMethod { exponential, fixed, none }
@@ -125,7 +125,7 @@ class AutoRetryConfig {
   ///         // In other words, we defer to the HTTP method & status code checks.
   ///         return willRetry;
   ///       };
-  RetryTest test;
+  RetryTest? test;
 }
 
 /// Representation of a single request's auto-retry configuration along with
@@ -170,7 +170,7 @@ class RequestAutoRetry extends AutoRetryConfig {
   }
 
   /// timeoutThreshold will not move beyond 60s or the [_request.timeoutThreshold], whichever is greater, when [increaseTimeoutOnRetry] is true.
-  Duration get timeoutThreshold {
+  Duration? get timeoutThreshold {
     if (increaseTimeoutOnRetry) {
       return getRetryTimeoutThreshold(_request.timeoutThreshold, numAttempts);
     }
@@ -180,8 +180,9 @@ class RequestAutoRetry extends AutoRetryConfig {
 }
 
 @visibleForTesting
-Duration getRetryTimeoutThreshold(Duration timeoutThreshold, int numAttempts) {
-  if (numAttempts <= 0) return timeoutThreshold;
+Duration? getRetryTimeoutThreshold(
+    Duration? timeoutThreshold, int numAttempts) {
+  if (numAttempts <= 0 || timeoutThreshold == null) return timeoutThreshold;
   var threshold = timeoutThreshold * numAttempts;
   var maxTimeout = Duration(seconds: max(timeoutThreshold.inSeconds, 60));
 
@@ -203,10 +204,10 @@ class RetryBackOff {
   /// For fixed back-off, the delay will always be this value. For exponential
   /// back-off, the delay will be this value multiplied by 2^n where `n` is the
   /// number of attempts so far.
-  final Duration interval;
+  final Duration? interval;
 
   /// The maximum duration between retries.
-  final Duration maxInterval;
+  final Duration? maxInterval;
 
   /// The back-off method to use. One of none, fixed, or exponential.
   final RetryBackOffMethod method;
@@ -217,7 +218,7 @@ class RetryBackOff {
   /// Construct a new exponential back-off representation where [interval] is
   /// the base duration from which each delay will be calculated.
   const RetryBackOff.exponential(this.interval,
-      {this.withJitter = true, Duration maxInterval})
+      {this.withJitter = true, Duration? maxInterval})
       : method = RetryBackOffMethod.exponential,
         maxInterval = maxInterval ?? defaultMaxInterval;
 
@@ -237,5 +238,5 @@ class RetryBackOff {
 
   /// Use [interval] instead.
   @Deprecated(v3Deprecation)
-  Duration get duration => interval;
+  Duration? get duration => interval;
 }

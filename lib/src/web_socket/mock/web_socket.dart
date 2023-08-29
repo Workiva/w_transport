@@ -24,8 +24,8 @@ import 'package:w_transport/src/web_socket/web_socket.dart';
 abstract class MockWebSocket implements WebSocket {
   factory MockWebSocket() => _MockWebSocket();
 
-  static Future<WebSocket> connect(Uri uri,
-          {Map<String, dynamic> headers, Iterable<String> protocols}) =>
+  static Future<WebSocket?> connect(Uri uri,
+          {Map<String, dynamic>? headers, Iterable<String>? protocols}) =>
       MockWebSocketInternal.handleWebSocketConnection(uri,
           headers: headers, protocols: protocols);
 
@@ -45,7 +45,7 @@ abstract class MockWebSocket implements WebSocket {
   /// Cause the "server" to close, effectively severing the connection between
   /// the server and client.
   @Deprecated(v3Deprecation)
-  void triggerServerClose([int code, String reason]);
+  void triggerServerClose([int? code, String? reason]);
 
   /// Cause the "server" to add an error to the stream.
   ///
@@ -54,7 +54,7 @@ abstract class MockWebSocket implements WebSocket {
   /// the error and thus an error will not be received by the client. For this
   /// reason, this method has been deprecated. Use [triggerServerClose] instead.
   @Deprecated('in 3.0.0. Use triggerServerClose() instead.')
-  void triggerServerError(Object error, [StackTrace stackTrace]);
+  void triggerServerError(Object error, [StackTrace? stackTrace]);
 }
 
 class _MockWebSocket extends CommonWebSocket
@@ -87,17 +87,17 @@ class _MockWebSocket extends CommonWebSocket
   }
 
   @override
-  void triggerServerClose([int code, String reason]) {
+  void triggerServerClose([int? code, String? reason]) {
     close(code, reason);
   }
 
   @override
-  void triggerServerError(Object error, [StackTrace stackTrace]) {
+  void triggerServerError(Object error, [StackTrace? stackTrace]) {
     close();
   }
 
   @override
-  void closeWebSocket(int code, String reason) {
+  void closeWebSocket(int code, String? reason) {
     closeCode = code;
     closeReason = reason;
     _mocket.close().then((_) {

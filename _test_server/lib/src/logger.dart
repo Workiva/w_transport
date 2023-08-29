@@ -15,7 +15,7 @@
 import 'dart:async';
 import 'dart:io';
 
-class Logger implements Function {
+class Logger {
   StreamController<String> _controller = StreamController<String>();
 
   Logger();
@@ -34,7 +34,7 @@ class Logger implements Function {
     await _controller.close();
   }
 
-  void logError(Object error, [StackTrace stackTrace]) {
+  void logError(Object error, [StackTrace? stackTrace]) {
     final e = stackTrace != null ? '$error\n$stackTrace' : '$error';
     this(e, isError: true);
   }

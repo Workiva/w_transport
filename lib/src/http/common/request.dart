@@ -38,7 +38,7 @@ import 'package:w_transport/src/transport_platform.dart';
 abstract class CommonRequest extends Object
     with FluriMixin
     implements BaseRequest, RequestDispatchers {
-  CommonRequest(TransportPlatform transportPlatform)
+  CommonRequest(TransportPlatform? transportPlatform)
       : this._transportPlatform = transportPlatform {
     autoRetry = RequestAutoRetry(this);
   }
@@ -54,18 +54,18 @@ abstract class CommonRequest extends Object
   /// that determines whether or not a request should be retried, as well as the
   /// number of retries to attempt.
   @override
-  RequestAutoRetry autoRetry;
+  late RequestAutoRetry autoRetry;
 
   /// The underlying HTTP client instance. In the browser, this will be null
   /// because there is no HTTP client API available. In the VM, this will be an
   /// instance of `dart:io.HttpClient`.
   ///
   /// If this is not null, it should be used to open and send the HTTP request.
-  Object client;
+  Object? client;
 
   /// Configuration callback for advanced request configuration.
   /// See [configure].
-  Function configureFn;
+  Function? configureFn;
 
   /// Whether or not the request has completed successfully.
   bool didSucceed = false;
@@ -88,21 +88,21 @@ abstract class CommonRequest extends Object
 
   /// HTTP method ('GET', 'POST', etc).
   @override
-  String method;
+  String? method;
 
   /// Request interceptor. Called right before request is sent.
-  RequestInterceptor _requestInterceptor;
+  RequestInterceptor? _requestInterceptor;
 
   /// Response interceptor. Called after response is received and before it is
   /// delivered to the request sender.
-  ResponseInterceptor _responseInterceptor;
+  ResponseInterceptor? _responseInterceptor;
 
   /// Amount of time to wait for the request to finish before canceling it and
   /// considering it "timed out" (results in a [RequestException] being thrown).
   ///
   /// If null, a default threshold will be enforced.
   @override
-  Duration timeoutThreshold;
+  Duration? timeoutThreshold;
 
   // Ignoring close() here because it cannot be closed, but it should not live
   // past the request's lifecycle
@@ -115,10 +115,10 @@ abstract class CommonRequest extends Object
   Completer<Null> _cancellationCompleter = Completer<Null>();
 
   /// Error associated with a cancellation.
-  Object _cancellationError;
+  Object? _cancellationError;
 
   /// Content-type of this request.
-  MediaType _contentType;
+  MediaType? _contentType;
 
   /// Whether or not the content-type was set manually. If `false`, the
   /// content-type will continue to be updated automatically when the [encoding]
@@ -131,7 +131,7 @@ abstract class CommonRequest extends Object
 
   /// Object used to carry state through multiple retries, if retries are
   /// specified.
-  utils.AdvancedBackOffCalculator _backOffCalculator;
+  utils.AdvancedBackOffCalculator? _backOffCalculator;
 
   /// Request body encoding.
   Encoding _encoding = utf8;
@@ -144,11 +144,11 @@ abstract class CommonRequest extends Object
   Completer<Null> _timeoutCompleter = Completer<Null>();
 
   /// Error associated with a cancellation.
-  Object _timeoutError;
+  Object? _timeoutError;
 
   /// TransportPlatform used to create this request. Required in order to
   /// support cloning and auto retrying.
-  TransportPlatform _transportPlatform;
+  TransportPlatform? _transportPlatform;
 
   /// Whether or not to send the request with credentials.
   bool _withCredentials = false;
@@ -156,18 +156,18 @@ abstract class CommonRequest extends Object
   /// HttpClient instance from which this request was created. Used in [clone]
   /// to correctly tie the clone to the same client.
   // ignore: deprecated_member_use_from_same_package
-  Client _wTransportClient;
+  Client? _wTransportClient;
 
   /// Gets the content length of the request. If the size of the request is not
   /// known in advance, the content length should be null.
   @override
-  int get contentLength;
+  int? get contentLength;
 
   /// Sets the content length of the request body. This is only supported in
   /// streamed requests since the body may be sent asynchronously after the
   /// headers have been sent.
   @override
-  set contentLength(int length) {
+  set contentLength(int? length) {
     throw UnsupportedError(
         'The content-length of a request cannot be set manually when the request body is known in advance.');
   }
@@ -175,11 +175,11 @@ abstract class CommonRequest extends Object
   /// Content-type of this request. Set automatically based on the body type and
   /// the [encoding].
   @override
-  MediaType get contentType {
+  MediaType? get contentType {
     if (_contentType == null) {
       _contentType = defaultContentType;
       if (_contentType != null) {
-        _contentType.change(parameters: {'charset': encoding.name});
+        _contentType!.change(parameters: {'charset': encoding.name});
       }
     }
     return _contentType;
@@ -192,7 +192,7 @@ abstract class CommonRequest extends Object
   /// we assume you are intentionally overriding this behavior and the
   /// content-type will no longer be updated when [encoding] changes.
   @override
-  set contentType(MediaType contentType) {
+  set contentType(MediaType? contentType) {
     verifyUnsent();
     _wasContentTypeSetManually = true;
     updateContentType(contentType);
@@ -200,13 +200,13 @@ abstract class CommonRequest extends Object
 
   /// Set the content-type of this request. Used to update the charset
   /// parameter when the encoding changes.
-  void updateContentType(MediaType contentType) {
+  void updateContentType(MediaType? contentType) {
     _contentType = contentType;
   }
 
   /// Default content-type. This will depend on the type of request and should
   /// be implemented by the subclasses.
-  MediaType get defaultContentType;
+  MediaType? get defaultContentType;
 
   /// Future that resolves when the request has completed (successful or
   /// otherwise).
@@ -225,13 +225,13 @@ abstract class CommonRequest extends Object
   /// Set the encoding to use to encode/decode the request body. Setting this
   /// will update the [contentType] `charset` parameter.
   @override
-  set encoding(Encoding encoding) {
+  set encoding(Encoding? encoding) {
     verifyUnsent();
     if (encoding == null) throw ArgumentError.notNull('encoding');
     _encoding = encoding;
     if (!_wasContentTypeSetManually) {
       updateContentType(
-          contentType.change(parameters: {'charset': encoding.name}));
+          contentType!.change(parameters: {'charset': encoding.name}));
     }
   }
 
@@ -264,12 +264,12 @@ abstract class CommonRequest extends Object
 
   /// Request interceptor. Called right before request is sent.
   @override
-  RequestInterceptor get requestInterceptor => _requestInterceptor;
+  RequestInterceptor? get requestInterceptor => _requestInterceptor;
 
   /// Set the request interceptor. Will throw if the request has already been
   /// sent.
   @override
-  set requestInterceptor(RequestInterceptor interceptor) {
+  set requestInterceptor(RequestInterceptor? interceptor) {
     verifyUnsent();
     _requestInterceptor = interceptor;
   }
@@ -277,12 +277,12 @@ abstract class CommonRequest extends Object
   /// Response interceptor. Called after response is received and before it is
   /// delivered to the request sender.
   @override
-  ResponseInterceptor get responseInterceptor => _responseInterceptor;
+  ResponseInterceptor? get responseInterceptor => _responseInterceptor;
 
   /// Set the response interceptor. Will throw if the request has already been
   /// sent.
   @override
-  set responseInterceptor(ResponseInterceptor interceptor) {
+  set responseInterceptor(ResponseInterceptor? interceptor) {
     verifyUnsent();
     _responseInterceptor = interceptor;
   }
@@ -326,7 +326,7 @@ abstract class CommonRequest extends Object
   /// the request.
   ///
   /// This logic is platform-specific and should be implemented by the subclass.
-  Future<Null> openRequest([Object client]);
+  Future<Null> openRequest([Object? client]);
 
   /// Send the request described in [finalizedRequest] and fetch the response.
   /// If [streamResponse] is true, the response should be streamed.
@@ -339,7 +339,7 @@ abstract class CommonRequest extends Object
   /// Cancel this request. If the request has already finished, this will do
   /// nothing.
   @override
-  void abort([Object error]) {
+  void abort([Object? error]) {
     if (isCanceled) return;
     isCanceled = true;
 
@@ -352,7 +352,7 @@ abstract class CommonRequest extends Object
   }
 
   /// Check if this request has been canceled.
-  void checkForCancellation({BaseResponse response}) {
+  void checkForCancellation({BaseResponse? response}) {
     if (isCanceled) {
       final error = RequestException(method, uri, this, response,
           _cancellationError ?? Exception('Request canceled'));
@@ -375,29 +375,29 @@ abstract class CommonRequest extends Object
   @override
   BaseRequest clone() {
     // StreamedRequests can't be cloned.
-    if (this is StreamedRequest) return null;
+    if (this is StreamedRequest) return this;
 
-    BaseRequest requestClone;
+    BaseRequest? requestClone;
     final fromClient = _wTransportClient != null;
     if (this is FormRequest) {
       requestClone = fromClient
-          ? _wTransportClient.newFormRequest()
+          ? _wTransportClient!.newFormRequest()
           : FormRequest(transportPlatform: _transportPlatform);
     } else if (this is JsonRequest) {
       requestClone = fromClient
-          ? _wTransportClient.newJsonRequest()
+          ? _wTransportClient!.newJsonRequest()
           : JsonRequest(transportPlatform: _transportPlatform);
     } else if (this is MultipartRequest) {
       requestClone = fromClient
-          ? _wTransportClient.newMultipartRequest()
+          ? _wTransportClient!.newMultipartRequest()
           : MultipartRequest(transportPlatform: _transportPlatform);
     } else if (this is Request) {
       requestClone = fromClient
-          ? _wTransportClient.newRequest()
+          ? _wTransportClient!.newRequest()
           : Request(transportPlatform: _transportPlatform);
     }
 
-    requestClone
+    requestClone!
       ..autoRetry = autoRetry
       ..headers = headers
       ..requestInterceptor = requestInterceptor
@@ -447,7 +447,7 @@ abstract class CommonRequest extends Object
     final finalizedHeaders = finalizeHeaders();
     final finalizedBody = await finalizeBody(body);
     final finalizedRequest = FinalizedRequest(
-        method, uri, finalizedHeaders, finalizedBody, withCredentials);
+        method!, uri, finalizedHeaders, finalizedBody, withCredentials);
 
     if (isSent)
       throw StateError(
@@ -462,7 +462,7 @@ abstract class CommonRequest extends Object
   /// a real request instance (created from a TransportPlatform instance).
   ///
   /// This is handled by the mock request mixin.
-  CommonRequest switchToRealRequest({bool streamResponse}) {
+  CommonRequest switchToRealRequest({bool? streamResponse}) {
     throw UnimplementedError();
   }
 
@@ -479,159 +479,146 @@ abstract class CommonRequest extends Object
   }
 
   @override
-  Future<Response> delete({Map<String, String> headers, Uri uri}) async {
-    final r = await _send('DELETE', headers: headers, uri: uri);
-    assert(r is Response, 'delete() should return a Response');
-    Response response = r;
-    return response;
+  Future<Response> delete({Map<String, String>? headers, Uri? uri}) async {
+    final response = await _send('DELETE', headers: headers, uri: uri);
+    assert(response is Response, 'delete() should return a Response');
+    return response as Response;
   }
 
   @override
-  Future<Response> get({Map<String, String> headers, Uri uri}) async {
-    final r = await _send('GET', headers: headers, uri: uri);
-    assert(r is Response, 'get() should return a Response');
-    Response response = r;
-    return response;
+  Future<Response> get({Map<String, String>? headers, Uri? uri}) async {
+    final response = await _send('GET', headers: headers, uri: uri);
+    assert(response is Response, 'get() should return a Response');
+    return response as Response;
   }
 
   @override
-  Future<Response> head({Map<String, String> headers, Uri uri}) async {
-    final r = await _send('HEAD', headers: headers, uri: uri);
-    assert(r is Response, 'head() should return a Response');
-    Response response = r;
-    return response;
+  Future<Response> head({Map<String, String>? headers, Uri? uri}) async {
+    final response = await _send('HEAD', headers: headers, uri: uri);
+    assert(response is Response, 'head() should return a Response');
+    return response as Response;
   }
 
   @override
-  Future<Response> options({Map<String, String> headers, Uri uri}) async {
-    final r = await _send('OPTIONS', headers: headers, uri: uri);
-    assert(r is Response, 'options() should return a Response');
-    Response response = r;
-    return response;
+  Future<Response> options({Map<String, String>? headers, Uri? uri}) async {
+    final response = await _send('OPTIONS', headers: headers, uri: uri);
+    assert(response is Response, 'options() should return a Response');
+    return response as Response;
   }
 
   @override
   Future<Response> patch(
-      {dynamic body, Map<String, String> headers, Uri uri}) async {
-    final r = await _send('PATCH', body: body, headers: headers, uri: uri);
-    assert(r is Response, 'patch() should return a Response');
-    Response response = r;
-    return response;
+      {dynamic body, Map<String, String>? headers, Uri? uri}) async {
+    final response =
+        await _send('PATCH', body: body, headers: headers, uri: uri);
+    assert(response is Response, 'patch() should return a Response');
+    return response as Response;
   }
 
   @override
   Future<Response> post(
-      {dynamic body, Map<String, String> headers, Uri uri}) async {
-    final r = await _send('POST', body: body, headers: headers, uri: uri);
-    assert(r is Response, 'post() should return a Response');
-    Response response = r;
-    return response;
+      {dynamic body, Map<String, String>? headers, Uri? uri}) async {
+    final response =
+        await _send('POST', body: body, headers: headers, uri: uri);
+    assert(response is Response, 'post() should return a Response');
+    return response as Response;
   }
 
   @override
   Future<Response> put(
-      {dynamic body, Map<String, String> headers, Uri uri}) async {
-    final r = await _send('PUT', body: body, headers: headers, uri: uri);
-    assert(r is Response, 'put() should return a Response');
-    Response response = r;
-    return response;
+      {dynamic body, Map<String, String>? headers, Uri? uri}) async {
+    final response = await _send('PUT', body: body, headers: headers, uri: uri);
+    assert(response is Response, 'put() should return a Response');
+    return response as Response;
   }
 
   @override
-  Future<Response> send(String method,
-      {dynamic body, Map<String, String> headers, Uri uri}) async {
-    final r = await _send(method, body: body, headers: headers, uri: uri);
-    assert(r is Response, 'send() should return a Response');
-    Response response = r;
-    return response;
+  Future<Response> send(String? method,
+      {dynamic body, Map<String, String>? headers, Uri? uri}) async {
+    final response =
+        await _send(method, body: body, headers: headers, uri: uri);
+    assert(response is Response, 'send() should return a Response');
+    return response as Response;
   }
 
   @override
   Future<StreamedResponse> streamDelete(
-      {Map<String, String> headers, Uri uri}) async {
-    final r =
+      {Map<String, String>? headers, Uri? uri}) async {
+    final response =
         await _send('DELETE', headers: headers, streamResponse: true, uri: uri);
-    assert(r is StreamedResponse,
+    assert(response is StreamedResponse,
         'streamDelete() should return a StreamedResponse');
-    StreamedResponse response = r;
-    return response;
+    return response as StreamedResponse;
   }
 
   @override
   Future<StreamedResponse> streamGet(
-      {Map<String, String> headers, Uri uri}) async {
-    final r =
+      {Map<String, String>? headers, Uri? uri}) async {
+    final response =
         await _send('GET', headers: headers, streamResponse: true, uri: uri);
-    assert(
-        r is StreamedResponse, 'streamGet() should return a StreamedResponse');
-    StreamedResponse response = r;
-    return response;
+    assert(response is StreamedResponse,
+        'streamGet() should return a StreamedResponse');
+    return response as StreamedResponse;
   }
 
   @override
   Future<StreamedResponse> streamHead(
-      {Map<String, String> headers, Uri uri}) async {
-    final r =
+      {Map<String, String>? headers, Uri? uri}) async {
+    final response =
         await _send('HEAD', headers: headers, streamResponse: true, uri: uri);
-    assert(
-        r is StreamedResponse, 'streamHead() should return a StreamedResponse');
-    StreamedResponse response = r;
-    return response;
+    assert(response is StreamedResponse,
+        'streamHead() should return a StreamedResponse');
+    return response as StreamedResponse;
   }
 
   @override
   Future<StreamedResponse> streamOptions(
-      {Map<String, String> headers, Uri uri}) async {
-    final r = await _send('OPTIONS',
+      {Map<String, String>? headers, Uri? uri}) async {
+    final response = await _send('OPTIONS',
         headers: headers, streamResponse: true, uri: uri);
-    assert(r is StreamedResponse,
+    assert(response is StreamedResponse,
         'streamOptions() should return a StreamedResponse');
-    StreamedResponse response = r;
-    return response;
+    return response as StreamedResponse;
   }
 
   @override
   Future<StreamedResponse> streamPatch(
-      {dynamic body, Map<String, String> headers, Uri uri}) async {
-    final r = await _send('PATCH',
+      {dynamic body, Map<String, String>? headers, Uri? uri}) async {
+    final response = await _send('PATCH',
         body: body, headers: headers, streamResponse: true, uri: uri);
-    assert(r is StreamedResponse,
+    assert(response is StreamedResponse,
         'streamPatch() should return a StreamedResponse');
-    StreamedResponse response = r;
-    return response;
+    return response as StreamedResponse;
   }
 
   @override
   Future<StreamedResponse> streamPost(
-      {dynamic body, Map<String, String> headers, Uri uri}) async {
-    final r = await _send('POST',
+      {dynamic body, Map<String, String>? headers, Uri? uri}) async {
+    final response = await _send('POST',
         body: body, headers: headers, streamResponse: true, uri: uri);
-    assert(
-        r is StreamedResponse, 'streamPost() should return a StreamedResponse');
-    StreamedResponse response = r;
-    return response;
+    assert(response is StreamedResponse,
+        'streamPost() should return a StreamedResponse');
+    return response as StreamedResponse;
   }
 
   @override
   Future<StreamedResponse> streamPut(
-      {dynamic body, Map<String, String> headers, Uri uri}) async {
-    final r = await _send('PUT',
+      {dynamic body, Map<String, String>? headers, Uri? uri}) async {
+    final response = await _send('PUT',
         body: body, headers: headers, streamResponse: true, uri: uri);
-    assert(
-        r is StreamedResponse, 'streamPut() should return a StreamedResponse');
-    StreamedResponse response = r;
-    return response;
+    assert(response is StreamedResponse,
+        'streamPut() should return a StreamedResponse');
+    return response as StreamedResponse;
   }
 
   @override
-  Future<StreamedResponse> streamSend(String method,
-      {dynamic body, Map<String, String> headers, Uri uri}) async {
-    final r = await _send(method,
+  Future<StreamedResponse> streamSend(String? method,
+      {dynamic body, Map<String, String>? headers, Uri? uri}) async {
+    final response = await _send(method,
         body: body, headers: headers, streamResponse: true, uri: uri);
-    assert(
-        r is StreamedResponse, 'streamSend() should return a StreamedResponse');
-    StreamedResponse response = r;
-    return response;
+    assert(response is StreamedResponse,
+        'streamSend() should return a StreamedResponse');
+    return response as StreamedResponse;
   }
 
   @override
@@ -647,7 +634,7 @@ abstract class CommonRequest extends Object
   }
 
   /// Determine if this request failure is eligible for retry.
-  Future<bool> _canRetry(FinalizedRequest request, BaseResponse response,
+  Future<bool> _canRetry(FinalizedRequest request, BaseResponse? response,
       RequestException requestException) async {
     if (!autoRetry.enabled ||
         !autoRetry.supported ||
@@ -663,14 +650,14 @@ abstract class CommonRequest extends Object
     }
 
     bool willRetry = autoRetry.forHttpMethods.contains(method);
-    if (response != null && response.status != null) {
+    if (response != null) {
       willRetry =
           willRetry && autoRetry.forStatusCodes.contains(response.status);
     } else {
       willRetry = false;
     }
     if (autoRetry.test != null) {
-      willRetry = await autoRetry.test(request, response, willRetry);
+      willRetry = await autoRetry.test!(request, response, willRetry);
     }
     return willRetry;
   }
@@ -710,20 +697,31 @@ abstract class CommonRequest extends Object
   /// During this process, we check for cancellation several times and catch any
   /// errors that may be thrown. These errors are wrapped in a
   /// [RequestException] and rethrown.
-  Future<BaseResponse> _send(String method,
-      {body, Map<String, String> headers, bool streamResponse, Uri uri}) async {
+  Future<BaseResponse> _send(String? method,
+      {body,
+      Map<String, String>? headers,
+      bool? streamResponse,
+      Uri? uri}) async {
     autoRetry.numAttempts++;
 
     // Use a completer so that an exception can be wrapped in a RequestException
     // instance while still preserving the stack trace of the original error.
-    final c = Completer<BaseResponse>();
+    final c = Completer<void>();
 
+    if (method != null) {
+      this.method = method;
+    }
+    if (this.method == null) {
+      throw StateError(
+          'Request: Cannot send a request without an HTTP method.');
+    }
     this.method = method;
     if (uri != null) {
       this.uri = uri;
     }
-    if (this.uri == null || this.uri.toString().isEmpty)
+    if (this.uri.toString().isEmpty) {
       throw StateError('Request: Cannot send a request without a URI.');
+    }
     if (headers != null) {
       headers.forEach((key, value) {
         this.headers[key] = value;
@@ -735,7 +733,7 @@ abstract class CommonRequest extends Object
 
     // Apply the request interceptor if set.
     if (requestInterceptor != null) {
-      await requestInterceptor(this);
+      await requestInterceptor!(this);
       checkForCancellation();
       checkForTimeout();
     }
@@ -759,40 +757,41 @@ abstract class CommonRequest extends Object
     checkForCancellation();
     checkForTimeout();
 
-    BaseResponse response;
+    late BaseResponse response;
+    BaseResponse? maybeResponse;
     bool responseInterceptorThrew = false;
     try {
       await openRequest(client);
       checkForCancellation();
       checkForTimeout();
-      final responseCompleter = Completer<BaseResponse>();
+      final maybeResponseCompleter = Completer<BaseResponse?>();
 
       // Enforce a timeout threshold if specified.
       if (timeoutThreshold == null && defaultTimeoutThreshold != null) {
         timeoutThreshold = defaultTimeoutThreshold;
       }
-      final timeout = Timer(autoRetry.timeoutThreshold, _timeoutRequest);
+      final timeout = Timer(autoRetry.timeoutThreshold!, _timeoutRequest);
 
       // Attempt to fetch the response.
       // ignore: unawaited_futures
       sendRequestAndFetchResponse(finalizedRequest,
               streamResponse: streamResponse)
-          .then((response) {
-        if (!responseCompleter.isCompleted) {
-          responseCompleter.complete(response);
+          .then((r) {
+        if (!maybeResponseCompleter.isCompleted) {
+          maybeResponseCompleter.complete(r);
         }
       }, onError: (error, stackTrace) {
-        if (!responseCompleter.isCompleted) {
-          responseCompleter.completeError(error, stackTrace);
+        if (!maybeResponseCompleter.isCompleted) {
+          maybeResponseCompleter.completeError(error, stackTrace);
         }
       });
 
       // Listen for cancellation and request timeout and break out of the
       // response fetching early if it occurs before the request has finished.
       void breakOutOfResponseFetching(_) {
-        if (!responseCompleter.isCompleted) {
-          response = null;
-          responseCompleter.complete();
+        if (!maybeResponseCompleter.isCompleted) {
+          maybeResponse = null;
+          maybeResponseCompleter.complete(null);
         }
       }
 
@@ -801,16 +800,19 @@ abstract class CommonRequest extends Object
       // ignore: unawaited_futures
       _timeoutCompleter.future.then(breakOutOfResponseFetching);
 
-      response = await responseCompleter.future;
-      if (response == null) {
+      maybeResponse = await maybeResponseCompleter.future;
+      if (maybeResponse == null) {
         checkForTimeout();
       }
-      checkForCancellation(response: response);
+      checkForCancellation(response: maybeResponse);
+
+      // The response should only be null if it timed out or was canceled, and
+      // in both cases an exception is thrown. In other words, we can safely
+      // assert non-nullability here.
+      response = maybeResponse!;
 
       // Response has been received, so the timeout timer can be canceled.
-      if (timeout != null) {
-        timeout.cancel();
-      }
+      timeout.cancel();
 
       if (response.status != 0 &&
           response.status != 304 &&
@@ -821,7 +823,10 @@ abstract class CommonRequest extends Object
       // Apply the response interceptor if set.
       if (responseInterceptor != null) {
         try {
-          response = await responseInterceptor(finalizedRequest, response);
+          // If any of the response interceptors return null, default to the
+          // original response.
+          response = await responseInterceptor!(finalizedRequest, response) ??
+              response;
         } catch (e) {
           // We try to apply the response interceptor even if the request fails,
           // but if the request failure was due to the response interceptor
@@ -833,20 +838,23 @@ abstract class CommonRequest extends Object
 
       c.complete();
     } catch (e, stackTrace) {
+      // Note: the exception may have been thrown prior to our assertion of a
+      // non-null `response`, so this catch block must read `maybeResponse`.
+
       Object exception = e;
       if (exception is! RequestException) {
         exception =
-            RequestException(method, this.uri, this, response, exception);
+            RequestException(method, this.uri, this, maybeResponse, exception);
       }
       RequestException requestException = exception;
 
       // Apply the response interceptor even in the event of failure, unless the
       // response interceptor was the cause of failure.
       if (responseInterceptor != null && !responseInterceptorThrew) {
-        response = await responseInterceptor(
-            finalizedRequest, response, requestException);
+        maybeResponse = await responseInterceptor!(
+            finalizedRequest, maybeResponse, requestException);
         requestException = RequestException(
-            method, this.uri, this, response, requestException.error);
+            method, this.uri, this, maybeResponse, requestException.error);
       }
 
       // Store the failure for context.
@@ -854,8 +862,8 @@ abstract class CommonRequest extends Object
 
       // Attempt to retry the request if configuration and state permit it.
       bool retrySucceeded = false;
-      if (await _canRetry(finalizedRequest, response, requestException)) {
-        final retryCompleter = Completer<BaseResponse>();
+      if (await _canRetry(finalizedRequest, maybeResponse, requestException)) {
+        final retryCompleter = Completer<void>();
 
         // If retry back-off is configured, wait as necessary.
         _backOffCalculator ??= utils.AdvancedBackOffCalculator();
@@ -869,7 +877,7 @@ abstract class CommonRequest extends Object
         // ignore: unawaited_futures
         _retry(streamResponse).then((retryResponse) {
           if (!retryCompleter.isCompleted) {
-            response = retryResponse;
+            response = maybeResponse = retryResponse;
             retrySucceeded = true;
             retryCompleter.complete();
           }
@@ -891,7 +899,7 @@ abstract class CommonRequest extends Object
         });
 
         await retryCompleter.future;
-        checkForCancellation(response: response);
+        checkForCancellation(response: maybeResponse);
       }
 
       retrySucceeded

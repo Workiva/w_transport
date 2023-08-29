@@ -36,9 +36,9 @@ const String topicWebSocket = 'WS';
 const String topicGlobalWebSocketMonitor = 'GlobalWebSocketMonitor';
 
 class Naming {
-  String platform;
-  String testType;
-  String topic;
+  String? platform;
+  String? testType;
+  String? topic;
 
   @override
   String toString() {

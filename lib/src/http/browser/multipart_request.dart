@@ -42,19 +42,19 @@ class BrowserMultipartRequest extends CommonRequest
   Map<String, dynamic> _files = {};
 
   @override
-  int get contentLength {
+  int? get contentLength {
     // Let the browser set the content-length.
     return null;
   }
 
   @override
-  set contentLength(int contentLength) {
+  set contentLength(int? contentLength) {
     throw UnsupportedError(
         'The content-length of a multipart request cannot be set manually.');
   }
 
   @override
-  MediaType get defaultContentType {
+  MediaType? get defaultContentType {
     // Let the browser set the content-type.
     return null;
   }
@@ -83,7 +83,7 @@ class BrowserMultipartRequest extends CommonRequest
 
   @override
   MultipartRequest clone() {
-    final MultipartRequest requestClone = super.clone();
+    final MultipartRequest requestClone = super.clone() as MultipartRequest;
     return requestClone
       ..fields = fields
       ..files = files;
@@ -128,7 +128,7 @@ class BrowserMultipartRequest extends CommonRequest
         } else if (value is Blob) {
           formData.appendBlob(name, value);
         } else if (value is MultipartFile) {
-          final contentType = value.contentType?.toString();
+          final contentType = value.contentType.toString();
           final blob = Blob(await value.byteStream.toList(), contentType);
           formData.appendBlob(name, blob, value.filename);
         }

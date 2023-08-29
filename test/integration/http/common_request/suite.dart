@@ -20,7 +20,7 @@ import 'package:w_transport/w_transport.dart' as transport;
 
 import '../../integration_paths.dart';
 
-void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
+void runCommonRequestSuite([transport.TransportPlatform? transportPlatform]) {
   group('Common Request API', () {
     transport.FormRequest formReqFactory({bool withBody = false}) {
       if (!withBody)
@@ -38,7 +38,7 @@ void runCommonRequestSuite([transport.TransportPlatform transportPlatform]) {
         ];
     }
 
-    transport.MultipartRequest multipartReqFactory({bool withBody}) {
+    transport.MultipartRequest multipartReqFactory({bool? withBody}) {
       // Multipart requests can't be empty.
       return transport.MultipartRequest(transportPlatform: transportPlatform)
         ..fields['field'] = 'value';
@@ -368,7 +368,7 @@ void _runCommonRequestSuiteFor(String name,
         ..uri = IntegrationPaths.fourOhFourEndpointUri;
       expect(
           request.get(),
-          throwsA(predicate((exception) {
+          throwsA(predicate((dynamic exception) {
             return exception != null &&
                 exception is transport.RequestException &&
                 exception.method == 'GET' &&
@@ -380,7 +380,7 @@ void _runCommonRequestSuiteFor(String name,
         () async {
       final request = requestFactory()..uri = IntegrationPaths.hostUri;
       request.abort();
-      expect(request.get(), throwsA(predicate((exception) {
+      expect(request.get(), throwsA(predicate((dynamic exception) {
         return exception is transport.RequestException &&
             exception.toString().contains('canceled');
       })));
@@ -412,7 +412,7 @@ void _runCommonRequestSuiteFor(String name,
       final request = requestFactory()
         ..timeoutThreshold = Duration(milliseconds: 250);
       expect(request.get(uri: IntegrationPaths.timeoutEndpointUri),
-          throwsA(predicate((error) {
+          throwsA(predicate((dynamic error) {
         return error is transport.RequestException &&
             error.error is TimeoutException;
       })));

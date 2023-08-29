@@ -26,12 +26,12 @@ import 'package:w_transport/src/http/request_progress.dart';
 import 'package:w_transport/src/http/response.dart';
 
 typedef RequestInterceptor = Future<Null> Function(BaseRequest request);
-typedef ResponseInterceptor = Future<BaseResponse> Function(
-    FinalizedRequest request, BaseResponse response,
-    [RequestException error]);
+typedef ResponseInterceptor = Future<BaseResponse?> Function(
+    FinalizedRequest request, BaseResponse? response,
+    [RequestException? error]);
 
 /// Specifies the default timeout for any request without an explicit one.
-Duration defaultTimeoutThreshold;
+Duration? defaultTimeoutThreshold;
 
 /// A common API that applies to all request types. The piece that is missing is
 /// that which is specific to the request body. Setting the request body differs
@@ -47,18 +47,19 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// Information about this request related to retries is also available here.
   /// This includes the current number of attempts and the current list of
   /// failures.
-  RequestAutoRetry autoRetry;
+  RequestAutoRetry get autoRetry;
+  set autoRetry(RequestAutoRetry value);
 
   /// Gets and sets the content-length of the request, in bytes. If the size of
   /// the request is not known in advance, set this to null.
-  int contentLength;
+  int? contentLength;
 
   /// Content-type of this request.
   ///
   /// By default, the mime-type is "text/plain" and the charset is "utf-8".
   /// When the request body or the encoding is set or updated, the content-type
   /// will be updated accordingly.
-  MediaType contentType;
+  MediaType? contentType;
 
   /// Future that resolves when the request has completed (successful or
   /// otherwise).
@@ -71,7 +72,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// will also update the [contentType]'s charset.
   ///
   /// Defaults to utf-8.
-  Encoding encoding = utf8;
+  Encoding? encoding = utf8;
 
   /// Headers to send with the HTTP request. Headers are case-insensitive.
   ///
@@ -90,7 +91,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// request will not be sent until the returned `Future` completes.
   ///
   /// _The request instance cannot be replaced, it must be modified in place._
-  RequestInterceptor requestInterceptor;
+  RequestInterceptor? requestInterceptor;
 
   /// Hook into the request lifecycle after the response has been received and
   /// before the request is considered "complete" (in other words, before the
@@ -101,17 +102,17 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// [RequestException] if the request failed. This function should return a
   /// `Future<BaseResponse>`, allowing the opportunity to modify, augment, or
   /// replace the response before considering it "complete".
-  ResponseInterceptor responseInterceptor;
+  ResponseInterceptor? responseInterceptor;
 
   /// HTTP method ('GET', 'POST', etc). Set automatically when the request is
   /// sent via one of the request dispatch methods.
-  String get method;
+  String? get method;
 
   /// Amount of time to wait for the request to finish before canceling it and
   /// considering it "timed out" (results in a [RequestException] being thrown).
   ///
   /// If null, a default timeout threshold will be enforced.
-  Duration timeoutThreshold;
+  Duration? timeoutThreshold;
 
   /// [RequestProgress] stream for this HTTP request's upload.
   Stream<RequestProgress> get uploadProgress;
@@ -125,7 +126,7 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   ///
   /// If automatic retrying is enabled, this will also cancel a retry attempt if
   /// one is in flight and prevent any further retry attempts.
-  void abort([Object error]);
+  void abort([Object? error]);
 
   /// Returns an clone of this request.
   BaseRequest clone();

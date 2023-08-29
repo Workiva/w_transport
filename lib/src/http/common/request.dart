@@ -770,7 +770,10 @@ abstract class CommonRequest extends Object
       if (timeoutThreshold == null && defaultTimeoutThreshold != null) {
         timeoutThreshold = defaultTimeoutThreshold;
       }
-      final timeout = Timer(autoRetry.timeoutThreshold!, _timeoutRequest);
+      Timer? timeout;
+      if (timeoutThreshold != null) {
+        timeout = Timer(timeoutThreshold!, _timeoutRequest);
+      }
 
       // Attempt to fetch the response.
       // ignore: unawaited_futures
@@ -812,7 +815,7 @@ abstract class CommonRequest extends Object
       response = maybeResponse!;
 
       // Response has been received, so the timeout timer can be canceled.
-      timeout.cancel();
+      timeout?.cancel();
 
       if (response.status != 0 &&
           response.status != 304 &&

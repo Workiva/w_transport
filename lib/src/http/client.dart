@@ -55,7 +55,7 @@ abstract class Client {
   /// before canceling it and considering it "timed out" (results in a
   /// [RequestException] being thrown).
   ///
-  /// If null, no timeout threshold will be enforced.
+  /// If null, a default threshold will be enforced.
   Duration? timeoutThreshold;
 
   /// Whether or not to send requests from this client with credentials. Only

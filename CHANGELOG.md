@@ -1,3 +1,7 @@
+## [5.0.2](https://github.com/Workiva/w_transport/compare/5.0.1...5.0.2)
+
+- Added `defaultTimeoutThreshold` top level field to add a timeout for all requests by default.
+
 ## [5.0.1](https://github.com/Workiva/w_transport/compare/5.0.0...5.0.1)
 
 - Made `RequestException.request` nullable and re-add the null check, as we

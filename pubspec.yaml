@@ -34,3 +34,6 @@ dependency_validator:
     - example/**
   ignore:
     - mockito
+
+dependency_overrides:
+  mockito: ^5.3.2

@@ -6,6 +6,12 @@ homepage: https://github.com/Workiva/w_transport
 environment:
   sdk: ">=2.11.0 <3.0.0"
 
+dependency_overrides:
+  sockjs_client_wrapper:
+    git:
+      url: git@github.com:Workiva/sockjs_client_wrapper.git
+      ref: expose-debug-transport-url
+
 dev_dependencies:
   _test_server:
     path: ../_test_server

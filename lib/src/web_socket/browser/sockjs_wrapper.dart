@@ -79,10 +79,12 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
     client.onOpen.listen((event) {
       connected.complete();
       emitWebSocketConnectEvent(newWebSocketConnectEvent(
-          url: uri.toString(),
-          wasSuccessful: true,
-          sockJsProtocolsWhitelist: protocolsWhitelist,
-          sockJsSelectedProtocol: event.transport));
+        url: uri.toString(),
+        wasSuccessful: true,
+        debugUrl: event.debugUrl.toString(),
+        sockJsProtocolsWhitelist: protocolsWhitelist,
+        sockJsSelectedProtocol: event.transport,
+      ));
     });
     // ignore: unawaited_futures
     closed.future.then((_) {
@@ -90,9 +92,10 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
         connected
             .completeError(WebSocketException('Could not connect to $uri'));
         emitWebSocketConnectEvent(newWebSocketConnectEvent(
-            url: uri.toString(),
-            wasSuccessful: false,
-            sockJsProtocolsWhitelist: protocolsWhitelist));
+          url: uri.toString(),
+          wasSuccessful: false,
+          sockJsProtocolsWhitelist: protocolsWhitelist,
+        ));
       }
     });
 

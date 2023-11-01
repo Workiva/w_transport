@@ -25,16 +25,20 @@ void emitWebSocketConnectEvent(WebSocketConnectEvent connectEvent) {
 GlobalWebSocketMonitor newGlobalWebSocketMonitor() =>
     GlobalWebSocketMonitor._();
 
-WebSocketConnectEvent newWebSocketConnectEvent(
-        {required String url,
-        required bool wasSuccessful,
-        String? sockJsSelectedProtocol,
-        List<String>? sockJsProtocolsWhitelist}) =>
+WebSocketConnectEvent newWebSocketConnectEvent({
+  required String url,
+  required bool wasSuccessful,
+  String? debugUrl,
+  String? sockJsSelectedProtocol,
+  List<String>? sockJsProtocolsWhitelist,
+}) =>
     WebSocketConnectEvent._(
-        url: url,
-        wasSuccessful: wasSuccessful,
-        sockJsProtocolsWhitelist: sockJsProtocolsWhitelist,
-        sockJsSelectedProtocol: sockJsSelectedProtocol);
+      url: url,
+      wasSuccessful: wasSuccessful,
+      debugUrl: debugUrl,
+      sockJsProtocolsWhitelist: sockJsProtocolsWhitelist,
+      sockJsSelectedProtocol: sockJsSelectedProtocol,
+    );
 
 class GlobalWebSocketMonitor {
   StreamController<WebSocketConnectEvent> _didAttemptToConnect =
@@ -54,14 +58,17 @@ class GlobalWebSocketMonitor {
 }
 
 class WebSocketConnectEvent {
+  final String? debugUrl;
   final List<String>? sockJsProtocolsWhitelist;
   final String? sockJsSelectedProtocol;
   final String url;
   final bool wasSuccessful;
 
-  WebSocketConnectEvent._(
-      {required this.url,
-      required this.wasSuccessful,
-      this.sockJsProtocolsWhitelist,
-      this.sockJsSelectedProtocol});
+  WebSocketConnectEvent._({
+    required this.url,
+    required this.wasSuccessful,
+    this.debugUrl,
+    this.sockJsProtocolsWhitelist,
+    this.sockJsSelectedProtocol,
+  });
 }

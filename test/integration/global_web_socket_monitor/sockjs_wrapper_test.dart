@@ -29,5 +29,5 @@ const _protocolsToTest = [
 ];
 
 void main() {
-  runCommonSockJSSuite(_protocolsToTest, usingSockjsPort: false);
+  runCommonSockJSSuite(_protocolsToTest);
 }

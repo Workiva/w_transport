@@ -1,3 +1,10 @@
+## [5.2.0](https://github.com/Workiva/w_transport/compare/5.1.0...5.2.0)
+
+- Added `debugUrl` to `WebSocketConnectEvent` which is emitted via the
+`GlobalWebSocketMonitor`. When using SockJS, this will be populated with the
+full URL that the underlying transport is using, which can be useful information
+for debugging.
+
 ## [5.1.0](https://github.com/Workiva/w_transport/compare/5.0.1...5.1.0)
 
 - Added `defaultTimeoutThreshold` top level field to add a timeout for all requests by default.

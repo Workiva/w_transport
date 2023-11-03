@@ -24,8 +24,7 @@ import 'common.dart';
 
 const _sockjsPort = 8026;
 
-void runCommonSockJSSuite(List<String> protocolsToTest,
-    {bool usingSockjsPort = true}) {
+void runCommonSockJSSuite(List<String> protocolsToTest) {
   final naming = Naming()
     ..platform = platformBrowserSockjsWrapper
     ..testType = testTypeIntegration
@@ -62,11 +61,13 @@ void runCommonSockJSSuite(List<String> protocolsToTest,
 
         expect(events[0].url, equals(echoUri.toString()));
         expect(events[0].wasSuccessful, isTrue);
+        expect(events[0].debugUrl, isNotEmpty);
         expect(events[0].sockJsProtocolsWhitelist, equals([protocol]));
         expect(events[0].sockJsSelectedProtocol, equals(protocol));
 
         expect(events[1].url, equals(fourOhFourUri.toString()));
         expect(events[1].wasSuccessful, isFalse);
+        expect(events[1].debugUrl, isNull);
         expect(events[1].sockJsProtocolsWhitelist, equals([protocol]));
         expect(events[1].sockJsSelectedProtocol, isNull);
       });

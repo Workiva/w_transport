@@ -70,7 +70,8 @@ void main() {
         () async {
       transport.globalTransportPlatform = browserTransportPlatformWithSockJS;
 
-      final btpwsj = transport.globalTransportPlatform! as BrowserTransportPlatformWithSockJS;
+      final btpwsj = transport.globalTransportPlatform!
+          as BrowserTransportPlatformWithSockJS;
       expect(btpwsj.sockJSDebug, isFalse);
       expect(btpwsj.sockJSNoCredentials, isFalse);
       expect(btpwsj.sockJSProtocolsWhitelist, isNull);
@@ -95,7 +96,8 @@ void main() {
           sockJSProtocolsWhitelist: ['websocket', 'xhr-streaming'],
           sockJSTimeout: Duration(seconds: 1));
 
-      final btpwsj = transport.globalTransportPlatform! as BrowserTransportPlatformWithSockJS;
+      final btpwsj = transport.globalTransportPlatform!
+          as BrowserTransportPlatformWithSockJS;
       expect(btpwsj.sockJSDebug, isTrue);
       expect(btpwsj.sockJSNoCredentials, isFalse);
       expect(btpwsj.sockJSProtocolsWhitelist,

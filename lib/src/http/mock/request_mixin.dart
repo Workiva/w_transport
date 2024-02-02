@@ -158,7 +158,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
             streamedResponse.headers,
             progressListener.byteStream);
       } else {
-        final  standardResponse = checkedResponse as Response;
+        final standardResponse = checkedResponse as Response;
         final total = standardResponse.body.asBytes().length;
         downloadProgressController.add(RequestProgress(total, total));
       }

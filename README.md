@@ -6,7 +6,7 @@
 **Transport library for sending HTTP requests and opening WebSockets.**
 
 HTTP support includes plain-text, JSON, form-data, and multipart data, as well
-as custom encoding. Also supports automatic retrying and request & response
+as custom encoding. Also supports automatic retrying and request & response asdf
 interception.
 
 WebSocket support includes native WebSockets in the browser and the VM with

@@ -71,7 +71,7 @@ void main() {
       transport.globalTransportPlatform = browserTransportPlatformWithSockJS;
 
       BrowserTransportPlatformWithSockJS btpwsj = transport
-          .globalTransportPlatform as BrowserTransportPlatformWithSockJS;
+          .globalTransportPlatform! as BrowserTransportPlatformWithSockJS;
       expect(btpwsj.sockJSDebug, isFalse);
       expect(btpwsj.sockJSNoCredentials, isFalse);
       expect(btpwsj.sockJSProtocolsWhitelist, isNull);
@@ -97,7 +97,7 @@ void main() {
           sockJSTimeout: Duration(seconds: 1));
 
       BrowserTransportPlatformWithSockJS btpwsj = transport
-          .globalTransportPlatform as BrowserTransportPlatformWithSockJS;
+          .globalTransportPlatform! as BrowserTransportPlatformWithSockJS;
       expect(btpwsj.sockJSDebug, isTrue);
       expect(btpwsj.sockJSNoCredentials, isFalse);
       expect(btpwsj.sockJSProtocolsWhitelist,

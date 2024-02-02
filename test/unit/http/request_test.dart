@@ -524,7 +524,7 @@ void _runCommonRequestSuiteFor(String name,
       request.responseInterceptor =
           (request, transport.BaseResponse? response, [exception]) async {
         expect(response, isA<transport.Response>());
-        transport.Response standardResponse = response as transport.Response;
+        transport.Response standardResponse = response! as transport.Response;
         expect(standardResponse.body.asString(), equals('original'));
         return standardResponse;
       };

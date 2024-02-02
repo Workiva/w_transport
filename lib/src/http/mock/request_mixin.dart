@@ -129,7 +129,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
     onSent.then((_) async {
       // Coerce the response to the correct format (streamed or not).
       if (_streamResponse && response is Response) {
-        final Response standardResponse = response as Response;
+        final Response standardResponse = response! as Response;
         response = StreamedResponse.fromByteStream(
             standardResponse.status,
             standardResponse.statusText,
@@ -137,7 +137,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
             Stream.fromIterable([standardResponse.body.asBytes()]));
       }
       if (!_streamResponse && response is StreamedResponse) {
-        final StreamedResponse streamedResponse = response as StreamedResponse;
+        final StreamedResponse streamedResponse = response! as StreamedResponse;
         response = Response.fromBytes(
             streamedResponse.status,
             streamedResponse.statusText,
@@ -146,7 +146,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
       }
 
       if (response is StreamedResponse) {
-        final StreamedResponse streamedResponse = response as StreamedResponse;
+        final StreamedResponse streamedResponse = response! as StreamedResponse;
         final progressListener = http_utils.ByteStreamProgressListener(
             streamedResponse.body.byteStream,
             total: streamedResponse.contentLength);
@@ -157,7 +157,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
             streamedResponse.headers,
             progressListener.byteStream);
       } else {
-        final Response standardResponse = response as Response;
+        final Response standardResponse = response! as Response;
         final total = standardResponse.body.asBytes().length;
         downloadProgressController.add(RequestProgress(total, total));
       }

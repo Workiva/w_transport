@@ -14,7 +14,7 @@ the option to use SockJS in the browser.
 
 All transport classes are platform-independent and can be configured to work
 in the browser or on the Dart VM. Additionally, all transport classes can be
-mocked out and controlled through an API included with this library.
+mocked out and controlled through an API included with this library. asdf
 
 ---
 

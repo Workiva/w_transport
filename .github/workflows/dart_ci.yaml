@@ -23,6 +23,21 @@ jobs:
 
       - name: Install Node dependencies
         run: npm install
+
+      - name: Install Dart dependencies
+        run: dart pub get
+
+      - name: Run tests
+        run: dart run dart_dev test -P ci
+
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 2.19.6
+
       - name: Install Dart dependencies
         run: dart pub get
 
@@ -34,6 +49,3 @@ jobs:
 
       - name: Analyze project source
         run: dart analyze
-
-      - name: Run tests
-        run: dart run dart_dev test -P ci

@@ -124,12 +124,13 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
 
   @override
   void complete({BaseResponse? response}) {
-    response ??= MockResponse.ok();
+    final checkedResponse = response ?? MockResponse.ok();
+
     // Defer the "fetching" of the response until the request has been sent.
     onSent.then((_) async {
       // Coerce the response to the correct format (streamed or not).
       if (_streamResponse && response is Response) {
-        final Response standardResponse = response as Response;
+        final standardResponse = checkedResponse as Response;
         response = StreamedResponse.fromByteStream(
             standardResponse.status,
             standardResponse.statusText,
@@ -137,7 +138,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
             Stream.fromIterable([standardResponse.body.asBytes()]));
       }
       if (!_streamResponse && response is StreamedResponse) {
-        final StreamedResponse streamedResponse = response as StreamedResponse;
+        final streamedResponse = checkedResponse as StreamedResponse;
         response = Response.fromBytes(
             streamedResponse.status,
             streamedResponse.statusText,
@@ -146,7 +147,7 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
       }
 
       if (response is StreamedResponse) {
-        final StreamedResponse streamedResponse = response as StreamedResponse;
+        final streamedResponse = checkedResponse as StreamedResponse;
         final progressListener = http_utils.ByteStreamProgressListener(
             streamedResponse.body.byteStream,
             total: streamedResponse.contentLength);
@@ -157,12 +158,12 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
             streamedResponse.headers,
             progressListener.byteStream);
       } else {
-        final Response standardResponse = response as Response;
+        final  standardResponse = checkedResponse as Response;
         final total = standardResponse.body.asBytes().length;
         downloadProgressController.add(RequestProgress(total, total));
       }
 
-      _response.complete(response);
+      _response.complete(checkedResponse);
     });
   }
 

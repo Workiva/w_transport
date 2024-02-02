@@ -31,16 +31,6 @@ class MockHttp {
     mockRequest.causeFailureOnOpen();
   }
 
-  @Deprecated(v3Deprecation)
-  void completeRequest(BaseRequest? request, {BaseResponse? response}) {
-    MockHttpInternal._verifyRequestIsMock(request);
-    final MockBaseRequest mockRequest = request as MockBaseRequest;
-    mockRequest.complete(response: response);
-    mockRequest.done.then((_) {
-      MockHttpInternal._pending.remove(request);
-    });
-  }
-
   void expect(String method, Uri uri,
       {Object? failWith,
       Map<String, String>? headers,

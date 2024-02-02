@@ -12,6 +12,14 @@ dependency_overrides:
       url: git@github.com:Workiva/sockjs_client_wrapper.git
       ref: expose-debug-transport-url
 
+  over_react:
+    git:
+      url: https://github.com/Workiva/over_react.git
+      ref: v5_wip
+  over_react_test:
+    git:
+      url: https://github.com/Workiva/over_react_test.git
+      ref: v3_wip
 dev_dependencies:
   _test_server:
     path: ../_test_server

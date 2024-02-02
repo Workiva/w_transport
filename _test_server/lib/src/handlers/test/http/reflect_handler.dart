@@ -45,7 +45,7 @@ class ReflectHandler extends Handler {
       final contentType = MediaType(
           request.headers.contentType!.primaryType,
           request.headers.contentType!.subType,
-          request.headers.contentType!.parameters as Map<String, String>?);
+          request.headers.contentType!.parameters.map((key, val) => MapEntry(key, val ?? '')));
       encoding = http_utils.parseEncodingFromContentType(contentType,
           fallback: latin1);
     }

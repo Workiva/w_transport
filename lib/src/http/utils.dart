@@ -248,7 +248,7 @@ Map<String, Object> queryToMap(String query, {Encoding? encoding}) {
       if (fields[key] is! List) {
         fields[key] = [fields[key]];
       }
-      final List currentFields = fields[key] as List<dynamic>;
+      final currentFields = fields[key]! as List<dynamic>;
       currentFields.add(value);
     } else {
       fields[key] = value;

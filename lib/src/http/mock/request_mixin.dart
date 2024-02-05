@@ -124,45 +124,46 @@ abstract class MockRequestMixin implements MockBaseRequest, CommonRequest {
 
   @override
   void complete({BaseResponse? response}) {
-    response ??= MockResponse.ok();
+    var resp = response ?? MockResponse.ok();
+
     // Defer the "fetching" of the response until the request has been sent.
     onSent.then((_) async {
       // Coerce the response to the correct format (streamed or not).
-      if (_streamResponse && response is Response) {
-        final Response standardResponse = response as Response;
-        response = StreamedResponse.fromByteStream(
+      if (_streamResponse && resp is Response) {
+        final standardResponse = resp as Response;
+        resp = StreamedResponse.fromByteStream(
             standardResponse.status,
             standardResponse.statusText,
             standardResponse.headers,
             Stream.fromIterable([standardResponse.body.asBytes()]));
       }
-      if (!_streamResponse && response is StreamedResponse) {
-        final StreamedResponse streamedResponse = response as StreamedResponse;
-        response = Response.fromBytes(
+      if (!_streamResponse && resp is StreamedResponse) {
+        final streamedResponse = resp as StreamedResponse;
+        resp = Response.fromBytes(
             streamedResponse.status,
             streamedResponse.statusText,
             streamedResponse.headers,
             await streamedResponse.body.toBytes());
       }
 
-      if (response is StreamedResponse) {
-        final StreamedResponse streamedResponse = response as StreamedResponse;
+      if (resp is StreamedResponse) {
+        final streamedResponse = resp as StreamedResponse;
         final progressListener = http_utils.ByteStreamProgressListener(
             streamedResponse.body.byteStream,
             total: streamedResponse.contentLength);
         progressListener.progressStream.listen(downloadProgressController.add);
-        response = StreamedResponse.fromByteStream(
+        resp = StreamedResponse.fromByteStream(
             streamedResponse.status,
             streamedResponse.statusText,
             streamedResponse.headers,
             progressListener.byteStream);
       } else {
-        final Response standardResponse = response as Response;
+        final standardResponse = resp as Response;
         final total = standardResponse.body.asBytes().length;
         downloadProgressController.add(RequestProgress(total, total));
       }
 
-      _response.complete(response);
+      _response.complete(resp);
     });
   }
 

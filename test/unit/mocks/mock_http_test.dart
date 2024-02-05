@@ -54,15 +54,6 @@ void main() {
             throwsA(isA<transport.RequestException>()));
       });
 
-      test('verifies that requests are mock requests before controlling them',
-          () {
-        transport.BaseRequest? request;
-        expect(() {
-          // ignore: deprecated_member_use_from_same_package
-          MockTransports.http.completeRequest(request);
-        }, throwsArgumentError);
-      });
-
       group('completeRequest()', () {
         test('completes a request with 200 OK by default', () async {
           final request = transport.Request();

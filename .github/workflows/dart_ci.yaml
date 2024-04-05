@@ -49,3 +49,9 @@ jobs:
 
       - name: Analyze project source
         run: dart analyze
+
+      - name: SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./  
+          format: cyclonedx-json

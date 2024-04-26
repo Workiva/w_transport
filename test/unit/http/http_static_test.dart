@@ -47,7 +47,7 @@ void main() {
 
       test('DELETE withCredentials', () async {
         final c = Completer<Null>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
@@ -68,7 +68,7 @@ void main() {
 
       test('GET withCredentials', () async {
         final c = Completer<Null>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
@@ -87,7 +87,7 @@ void main() {
 
       test('HEAD withCredentials', () async {
         final c = Completer<Null>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
@@ -106,7 +106,7 @@ void main() {
 
       test('OPTIONS withCredentials', () async {
         final c = Completer<Null>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
@@ -127,7 +127,7 @@ void main() {
 
       test('PATCH with body', () async {
         final c = Completer<String>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           transport.HttpBody body = request.body as transport.HttpBody;
           c.complete(body.asString());
           return MockResponse.ok();
@@ -139,7 +139,7 @@ void main() {
 
       test('PATCH withCredentials', () async {
         final c = Completer<Null>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
@@ -160,7 +160,7 @@ void main() {
 
       test('POST with body', () async {
         final c = Completer<String>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           transport.HttpBody body = request.body as transport.HttpBody;
           c.complete(body.asString());
           return MockResponse.ok();
@@ -172,7 +172,7 @@ void main() {
 
       test('POST withCredentials', () async {
         final c = Completer<Null>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
@@ -191,7 +191,7 @@ void main() {
 
       test('PUT with body', () async {
         final c = Completer<String>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           transport.HttpBody body = request.body as transport.HttpBody;
           c.complete(body.asString());
           return MockResponse.ok();
@@ -203,7 +203,7 @@ void main() {
 
       test('PUT withCredentials', () async {
         final c = Completer<Null>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {
@@ -222,7 +222,7 @@ void main() {
 
       test('custom method with body', () async {
         final c = Completer<String>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           transport.HttpBody body = request.body as transport.HttpBody;
           c.complete(body.asString());
           return MockResponse.ok();
@@ -234,7 +234,7 @@ void main() {
 
       test('custom method withCredentials', () async {
         final c = Completer<Null>();
-        MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+        MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
           if (request.withCredentials) {
             c.complete();
           } else {

@@ -16,7 +16,7 @@ import 'dart:convert';
 import 'package:w_transport/mock.dart';
 
 void mockReflectEndpoint(Uri uri) {
-  MockTransports.http.when(uri, (request) async {
+  MockTransports.http.when(() => uri, (request) async {
     final reflection = <String, Object?>{
       'method': request.method,
       'path': request.uri.path,

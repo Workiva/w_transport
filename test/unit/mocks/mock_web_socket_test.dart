@@ -150,7 +150,7 @@ void main() {
                 Iterable<String>? protocols}) async =>
             // ignore: deprecated_member_use_from_same_package
             MockWSocket();
-        MockTransports.webSocket.when(webSocketUri, handler: handler);
+        MockTransports.webSocket.when(() => webSocketUri, handler: handler);
         MockTransports.webSocket
             .whenPattern(webSocketUri.toString(), handler: patternHandler);
         MockTransports.webSocket
@@ -175,7 +175,7 @@ void main() {
                   {Map<String, dynamic>? headers,
                   Iterable<String>? protocols}) async =>
               webSocket;
-          MockTransports.webSocket.when(webSocketUri, handler: handler);
+          MockTransports.webSocket.when(() => webSocketUri, handler: handler);
 
           // Multiple matching connections succeed.
           expect(await transport.WebSocket.connect(webSocketUri),
@@ -190,7 +190,7 @@ void main() {
 
         test('registers a rejection for all requests with matching URI',
             () async {
-          MockTransports.webSocket.when(webSocketUri, reject: true);
+          MockTransports.webSocket.when(() => webSocketUri, reject: true);
 
           // Multiple matching connections work as expected.
           expect(transport.WebSocket.connect(webSocketUri),
@@ -209,7 +209,7 @@ void main() {
 
         test('supports handler OR reject, but not both', () {
           expect(() {
-            MockTransports.webSocket.when(webSocketUri,
+            MockTransports.webSocket.when(() => webSocketUri,
                 handler: (uri,
                         {Iterable<String>? protocols,
                         Map<String, dynamic>? headers}) async =>
@@ -221,14 +221,14 @@ void main() {
 
         test('requires handler OR reject', () {
           expect(() {
-            MockTransports.webSocket.when(webSocketUri);
+            MockTransports.webSocket.when(() => webSocketUri);
           }, throwsArgumentError);
         });
 
         test(
             'requires that the handler returns MockWSocket or MockWebSocketServer',
             () {
-          MockTransports.webSocket.when(webSocketUri,
+          MockTransports.webSocket.when(() => webSocketUri,
               handler: (Uri uri,
                       {Map<String, dynamic>? headers,
                       Iterable<String>? protocols}) async =>
@@ -240,7 +240,7 @@ void main() {
         test('registers a handler that can be canceled', () async {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
-          final handler = MockTransports.webSocket.when(webSocketUri,
+          final handler = MockTransports.webSocket.when(() => webSocketUri,
               handler: (uri,
                       {Iterable<String>? protocols,
                       Map<String, dynamic>? headers}) async =>
@@ -258,8 +258,8 @@ void main() {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
           final oldHandler =
-              MockTransports.webSocket.when(webSocketUri, reject: true);
-          MockTransports.webSocket.when(webSocketUri,
+              MockTransports.webSocket.when(() => webSocketUri, reject: true);
+          MockTransports.webSocket.when(() => webSocketUri,
               handler: (uri,
                       {Iterable<String>? protocols,
                       Map<String, dynamic>? headers}) async =>
@@ -275,7 +275,7 @@ void main() {
         test('canceling a handler does nothing if handler was reset', () async {
           // ignore: deprecated_member_use_from_same_package
           final webSocket = MockWSocket();
-          final oldHandler = MockTransports.webSocket.when(webSocketUri,
+          final oldHandler = MockTransports.webSocket.when(() => webSocketUri,
               handler: (uri,
                       {Iterable<String>? protocols,
                       Map<String, dynamic>? headers}) async =>
@@ -474,7 +474,7 @@ void main() {
         });
 
         test('returns true if there is a matching handler', () async {
-          MockTransports.webSocket.when(webSocketUri, reject: true);
+          MockTransports.webSocket.when(() => webSocketUri, reject: true);
           expect(MockWebSocketInternal.hasHandlerForWebSocket(webSocketUri),
               isTrue);
           await MockTransports.reset();

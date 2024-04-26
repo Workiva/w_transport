@@ -18,7 +18,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/w_transport.dart' as transport;

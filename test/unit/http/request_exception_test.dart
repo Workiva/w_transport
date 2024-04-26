@@ -1,5 +1,5 @@
 @TestOn('vm || browser')
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 import 'package:w_transport/mock.dart';
 import 'package:w_transport/src/http/auto_retry.dart';

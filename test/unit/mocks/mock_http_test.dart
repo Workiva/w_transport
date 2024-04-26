@@ -209,7 +209,7 @@ void main() {
       test(
           'reset() should clear all expectations, pending requests, and handlers',
           () async {
-        MockTransports.http.when(requestUri, (req) async => MockResponse.ok());
+        MockTransports.http.when(() => requestUri, (req) async => MockResponse.ok());
         MockTransports.http.whenPattern(
             requestUri.toString(), (req, match) async => MockResponse.ok());
         MockTransports.http.expect('GET', Uri.parse('/expected'));
@@ -281,7 +281,7 @@ void main() {
             'registers a handler for all requests with matching URI and method',
             () async {
           final ok = MockResponse.ok();
-          MockTransports.http.when(requestUri, (_) async => ok, method: 'GET');
+          MockTransports.http.when(() => requestUri, (_) async => ok, method: 'GET');
           // ignore: unawaited_futures
           transport.Http.get(Uri.parse('/wrong')); // Wrong URI.
           // ignore: unawaited_futures
@@ -297,7 +297,7 @@ void main() {
             'registers a handler for all requests with matching URI and ANY method',
             () async {
           final ok = MockResponse.ok();
-          MockTransports.http.when(requestUri, (_) async => ok);
+          MockTransports.http.when(() => requestUri, (_) async => ok);
           // ignore: unawaited_futures
           transport.Http.get(Uri.parse('/wrong')); // Wrong URI.
           await transport.Http.delete(requestUri); // Matches.
@@ -311,15 +311,15 @@ void main() {
         test('supports all standard methods', () async {
           final ok = MockResponse.ok();
           MockTransports.http
-              .when(requestUri, (_) async => ok, method: 'DELETE');
-          MockTransports.http.when(requestUri, (_) async => ok, method: 'GET');
-          MockTransports.http.when(requestUri, (_) async => ok, method: 'HEAD');
+              .when(() => requestUri, (_) async => ok, method: 'DELETE');
+          MockTransports.http.when(() => requestUri, (_) async => ok, method: 'GET');
+          MockTransports.http.when(() => requestUri, (_) async => ok, method: 'HEAD');
           MockTransports.http
-              .when(requestUri, (_) async => ok, method: 'OPTIONS');
+              .when(() => requestUri, (_) async => ok, method: 'OPTIONS');
           MockTransports.http
-              .when(requestUri, (_) async => ok, method: 'PATCH');
-          MockTransports.http.when(requestUri, (_) async => ok, method: 'POST');
-          MockTransports.http.when(requestUri, (_) async => ok, method: 'PUT');
+              .when(() => requestUri, (_) async => ok, method: 'PATCH');
+          MockTransports.http.when(() => requestUri, (_) async => ok, method: 'POST');
+          MockTransports.http.when(() => requestUri, (_) async => ok, method: 'PUT');
 
           await transport.Http.delete(requestUri);
           await transport.Http.get(requestUri);
@@ -332,21 +332,21 @@ void main() {
 
         test('supports custom method', () async {
           final ok = MockResponse.ok();
-          MockTransports.http.when(requestUri, (_) async => ok, method: 'COPY');
+          MockTransports.http.when(() => requestUri, (_) async => ok, method: 'COPY');
           await transport.Http.send('COPY', requestUri);
         });
 
         test('registers handler that throws to cause request failure',
             () async {
           MockTransports.http
-              .when(requestUri, ((_) async => throw Exception()));
+              .when(() => requestUri, ((_) async => throw Exception()));
           expect(transport.Http.get(requestUri),
               throwsA(isA<transport.RequestException>()));
         });
 
         test('registers a handler that can be canceled', () async {
           final ok = MockResponse.ok();
-          final handler = MockTransports.http.when(requestUri, (_) async => ok);
+          final handler = MockTransports.http.when(() => requestUri, (_) async => ok);
           await transport.Http.get(requestUri);
           handler.cancel();
           // ignore: unawaited_futures
@@ -360,8 +360,8 @@ void main() {
         test('canceling a handler does nothing if handler no longer exists',
             () async {
           MockHttpHandler oldHandler = MockTransports.http
-              .when(requestUri, (_) async => MockResponse.notFound());
-          MockTransports.http.when(requestUri, (_) async => MockResponse.ok());
+              .when(() => requestUri, (_) async => MockResponse.notFound());
+          MockTransports.http.when(() => requestUri, (_) async => MockResponse.ok());
           expect(() {
             oldHandler.cancel();
           }, returnsNormally);
@@ -369,9 +369,9 @@ void main() {
 
           // Test the same, but with a specific method.
           oldHandler = MockTransports.http.when(
-              requestUri, (_) async => MockResponse.notFound(),
+              () => requestUri, (_) async => MockResponse.notFound(),
               method: 'DELETE');
-          MockTransports.http.when(requestUri, (_) async => MockResponse.ok(),
+          MockTransports.http.when(() => requestUri, (_) async => MockResponse.ok(),
               method: 'DELETE');
           expect(() {
             oldHandler.cancel();
@@ -381,7 +381,7 @@ void main() {
 
         test('canceling a handler does nothing if handler was reset', () async {
           MockHttpHandler oldHandler = MockTransports.http
-              .when(requestUri, (_) async => MockResponse.ok());
+              .when(() => requestUri, (_) async => MockResponse.ok());
           await MockTransports.reset();
           expect(() {
             oldHandler.cancel();
@@ -566,7 +566,7 @@ void main() {
 
         test('returns true if there is a matching handler', () async {
           MockTransports.http.when(
-              requestUri, (FinalizedRequest request) async => MockResponse.ok(),
+              () => requestUri, (FinalizedRequest request) async => MockResponse.ok(),
               method: 'GET');
           expect(MockHttpInternal.hasHandlerForRequest('GET', requestUri, {}),
               isTrue);

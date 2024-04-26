@@ -82,7 +82,7 @@ void main() {
       final requestUri = Uri.parse('/mock/request');
 
       // Hold the requests long enough to let the client cancel them on close
-      MockTransports.http.when(requestUri, (request) async {
+      MockTransports.http.when(() => requestUri, (request) async {
         await Future.delayed(Duration(seconds: 10));
         return MockResponse.ok();
       }, method: 'GET');
@@ -265,7 +265,7 @@ void _runCommonRequestSuiteFor(String name,
         'URI and data should be accepted as parameters to a request dispatch method',
         () async {
       final dataCompleter = Completer<String>();
-      MockTransports.http.when(requestUri, (FinalizedRequest request) async {
+      MockTransports.http.when(() => requestUri, (FinalizedRequest request) async {
         if (request.body is transport.HttpBody) {
           transport.HttpBody body = request.body as transport.HttpBody;
           dataCompleter.complete(body.asString());
@@ -1047,7 +1047,7 @@ void _runAutoRetryTestSuiteFor(String name,
           () async {
         // 1st request = 500, 2nd request hangs indefinitely
         int c = 0;
-        MockTransports.http.when(requestUri, (request) async {
+        MockTransports.http.when(() => requestUri, (request) async {
           if (++c == 1) {
             return MockResponse.internalServerError();
           } else {
@@ -1073,7 +1073,7 @@ void _runAutoRetryTestSuiteFor(String name,
       test('request timeout should be retried by default', () async {
         // 1st request = hangs until timeout, 2nd request succeeds
         int c = 0;
-        MockTransports.http.when(requestUri, (request) async {
+        MockTransports.http.when(() => requestUri, (request) async {
           if (++c == 1) {
             await Future.delayed(Duration(seconds: 1));
           }
@@ -1095,7 +1095,7 @@ void _runAutoRetryTestSuiteFor(String name,
           () async {
         // 1st and 2nd request = hangs until timeout, 3nd request succeeds
         int c = 0;
-        MockTransports.http.when(requestUri, (request) async {
+        MockTransports.http.when(() => requestUri, (request) async {
           if (++c <= 2) {
             await Future.delayed(Duration(seconds: 1));
           }
@@ -1117,7 +1117,7 @@ void _runAutoRetryTestSuiteFor(String name,
 
       test('request timeout should not be retried if disabled', () async {
         // 1st request = hangs until timeout
-        MockTransports.http.when(requestUri, (request) async {
+        MockTransports.http.when(() => requestUri, (request) async {
           await Future.delayed(Duration(seconds: 1));
           return MockResponse.ok();
         }, method: 'GET');
@@ -1287,7 +1287,7 @@ void _runAutoRetryTestSuiteFor(String name,
       test('RequestException should detail all attempts', () async {
         // 1st = 400, 2nd = 403, 3rd = 500, 4th = error, 5th = timeout
         int c = 0;
-        MockTransports.http.when(requestUri, (request) async {
+        MockTransports.http.when(() => requestUri, (request) async {
           switch (++c) {
             case 1:
               return MockResponse.badRequest();
@@ -1347,7 +1347,7 @@ void _runAutoRetryTestSuiteFor(String name,
       });
 
       test('manual retry() throws if not yet complete', () async {
-        MockTransports.http.when(requestUri,
+        MockTransports.http.when(() => requestUri,
             (request) => Completer<transport.BaseResponse>().future);
         final request = requestFactory();
         // ignore: unawaited_futures
@@ -1382,7 +1382,7 @@ void _runAutoRetryTestSuiteFor(String name,
       });
 
       test('manual streamRetry() throws if not yet complete', () async {
-        MockTransports.http.when(requestUri,
+        MockTransports.http.when(() => requestUri,
             (request) => Completer<transport.BaseResponse>().future);
         final request = requestFactory();
         // ignore: unawaited_futures

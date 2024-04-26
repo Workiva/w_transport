@@ -15,7 +15,7 @@
 @TestOn('vm || browser')
 import 'dart:async';
 
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import 'package:w_transport/src/web_socket/w_socket_subscription.dart';

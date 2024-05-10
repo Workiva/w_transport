@@ -18,7 +18,7 @@ import 'dart:convert';
 import 'package:w_transport/mock.dart';
 
 void mockDownloadEndpoint(Uri uri) {
-  MockTransports.http.when(() => uri, (_) async {
+  MockTransports.http.when(uri, (_) async {
     final byteStream = Stream.fromIterable([utf8.encode('file')]);
     return MockStreamedResponse.ok(byteStream: byteStream);
   });

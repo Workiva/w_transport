@@ -78,21 +78,21 @@ void main() {
       });
 
       MockTransports.webSocket
-          .when(() => IntegrationPaths.fourOhFourUri, reject: true);
+          .when(IntegrationPaths.fourOhFourUri, reject: true);
 
-      MockTransports.webSocket.when(() => IntegrationPaths.closeUri,
+      MockTransports.webSocket.when(IntegrationPaths.closeUri,
           handler: (Uri uri,
                   {Iterable<String>? protocols,
                   Map<String, dynamic>? headers}) async =>
               mockCloseWebSocketServer);
 
-      MockTransports.webSocket.when(() => IntegrationPaths.echoUri,
+      MockTransports.webSocket.when(IntegrationPaths.echoUri,
           handler: (Uri uri,
                   {Iterable<String>? protocols,
                   Map<String, dynamic>? headers}) async =>
               mockEchoWebSocketServer);
 
-      MockTransports.webSocket.when(() => IntegrationPaths.pingUri,
+      MockTransports.webSocket.when(IntegrationPaths.pingUri,
           handler: (Uri uri,
                   {Iterable<String>? protocols,
                   Map<String, dynamic>? headers}) async =>
@@ -117,9 +117,9 @@ void main() {
       MockTransports.install();
 
       MockTransports.webSocket
-          .when(() => IntegrationPaths.fourOhFourUri, reject: true);
+          .when(IntegrationPaths.fourOhFourUri, reject: true);
 
-      MockTransports.webSocket.when(() => IntegrationPaths.closeUri, handler:
+      MockTransports.webSocket.when(IntegrationPaths.closeUri, handler:
           (Uri uri,
               {Iterable<String>? protocols,
               Map<String, dynamic>? headers}) async {
@@ -145,7 +145,7 @@ void main() {
         return webSocket;
       });
 
-      MockTransports.webSocket.when(() => IntegrationPaths.echoUri, handler: (Uri uri,
+      MockTransports.webSocket.when(IntegrationPaths.echoUri, handler: (Uri uri,
           {Iterable<String>? protocols, Map<String, dynamic>? headers}) async {
         // ignore: deprecated_member_use_from_same_package
         final webSocket = MockWSocket();
@@ -154,7 +154,7 @@ void main() {
         return webSocket;
       });
 
-      MockTransports.webSocket.when(() => IntegrationPaths.pingUri, handler: (Uri uri,
+      MockTransports.webSocket.when(IntegrationPaths.pingUri, handler: (Uri uri,
           {Iterable<String>? protocols, Map<String, dynamic>? headers}) async {
         // ignore: deprecated_member_use_from_same_package
         final webSocket = MockWSocket();

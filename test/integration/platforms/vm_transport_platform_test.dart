@@ -155,7 +155,7 @@ void main() {
         });
 
         test('requests with matching handler should be handled', () async {
-          MockTransports.http.when(() => IntegrationPaths.pingEndpointUri,
+          MockTransports.http.when(IntegrationPaths.pingEndpointUri,
               (request) async => MockResponse.ok());
 
           final formRequest =
@@ -227,7 +227,7 @@ void main() {
         test('websockets with matching handler should be handled', () async {
           final mockWebSocketServer = MockWebSocketServer();
 
-          MockTransports.webSocket.when(() => IntegrationPaths.pingUri,
+          MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
                       {Map<String, dynamic>? headers,
                       Iterable<String>? protocols}) async =>
@@ -390,7 +390,7 @@ void main() {
         });
 
         test('requests with matching handler should be handled', () async {
-          MockTransports.http.when(() => IntegrationPaths.pingEndpointUri,
+          MockTransports.http.when(IntegrationPaths.pingEndpointUri,
               (request) async => MockResponse.ok());
 
           final formRequest =
@@ -462,7 +462,7 @@ void main() {
         test('websockets with matching handler should be handled', () async {
           final mockWebSocketServer = MockWebSocketServer();
 
-          MockTransports.webSocket.when(() => IntegrationPaths.pingUri,
+          MockTransports.webSocket.when(IntegrationPaths.pingUri,
               handler: (Uri uri,
                       {Map<String, dynamic>? headers,
                       Iterable<String>? protocols}) async =>

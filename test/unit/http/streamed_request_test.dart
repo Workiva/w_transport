@@ -60,7 +60,7 @@ void main() {
         final uri = Uri.parse('/test');
 
         final c = Completer<String>();
-        MockTransports.http.when(() => uri, (FinalizedRequest request) async {
+        MockTransports.http.when(uri, (FinalizedRequest request) async {
           transport.StreamedHttpBody body =
               request.body as transport.StreamedHttpBody;
           c.complete(utf8.decode(await body.toBytes()));

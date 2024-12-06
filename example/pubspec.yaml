@@ -12,6 +12,7 @@ dependency_overrides:
       url: git@github.com:Workiva/sockjs_client_wrapper.git
       ref: expose-debug-transport-url
 
+  uuid: 4.2.2
 dev_dependencies:
   _test_server:
     path: ../_test_server

@@ -34,3 +34,6 @@ dependency_validator:
     - example/**
   ignore:
     - mockito
+
+dependency_overrides:
+  uuid: 4.2.2

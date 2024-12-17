@@ -37,8 +37,7 @@ void main() {
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: ${ascii.name}'));
         // Do not log bytes, which may contain sensitive information
-        expect(
-            exception.toString(), isNot(contains(bytes).toString()));
+        expect(exception.toString(), isNot(contains(bytes).toString()));
       });
 
       test('should detail why string could not be encoded', () {

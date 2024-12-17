@@ -210,8 +210,8 @@ void main() {
         expect(exception.toString(), contains('Bytes could not be decoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: ${ascii.name}'));
-        expect(
-            exception.toString(), isNot(contains(utf8.encode('bodyçå®')).toString()));
+        expect(exception.toString(),
+            isNot(contains(utf8.encode('bodyçå®')).toString()));
       });
     });
 

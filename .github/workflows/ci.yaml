@@ -17,7 +17,7 @@ jobs:
 
   # note, we're not using the test-unit workflow here because of
   # the need to install npm dependencies
-  test-unit:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

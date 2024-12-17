@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+    tags:
+      - '**'
+
+jobs:
+  checks:
+    uses: Workiva/gha-dart-oss/.github/workflows/checks.yaml@v0.1.7
+
+  build:
+    uses: Workiva/gha-dart-oss/.github/workflows/build.yaml@v0.1.7
+
+  # note, we're not using the test-unit workflow here because of
+  # the need to install npm dependencies
+  test-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 2.19.6
+  
+      - name: Install Node dependencies
+        run: npm install
+  
+      - name: Install Dart dependencies
+        run: dart pub get
+  
+      - name: Run tests
+        run: dart run dart_dev test -P ci

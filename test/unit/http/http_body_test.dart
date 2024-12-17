@@ -187,7 +187,7 @@ void main() {
         expect(exception.toString(), contains('Body could not be encoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: ${ascii.name}'));
-        expect(exception.toString(), contains('bodyçå®'));
+        expect(exception.toString(), isNot(contains('bodyçå®')));
       });
 
       test('should throw ResponseFormatException if bytes cannot be decoded',
@@ -210,8 +210,8 @@ void main() {
         expect(exception.toString(), contains('Bytes could not be decoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: ${ascii.name}'));
-        expect(
-            exception.toString(), contains(utf8.encode('bodyçå®').toString()));
+        expect(exception.toString(),
+            isNot(contains(utf8.encode('bodyçå®')).toString()));
       });
     });
 

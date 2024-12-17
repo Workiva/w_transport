@@ -34,25 +34,21 @@ class ResponseFormatException implements Exception {
   ResponseFormatException(this.contentType, this.encoding,
       {this.body, this.bytes});
 
-  /// Descriptive error message that includes the content-type, encoding, as
-  /// well as the string or bytes that could not be encoded or decoded,
-  /// respectively.
+  /// Error message that includes the content-type an encoding
   String get message {
     String description;
-    String bodyLine;
     if (body != null) {
       description = 'Body could not be encoded.';
-      bodyLine = 'Body: $body';
     } else {
       description = 'Bytes could not be decoded.';
-      bodyLine = 'Bytes: $bytes';
     }
 
     String msg = description;
     final encodingName = encoding?.name ?? 'null';
     msg += '\n\tContent-Type: $contentType';
     msg += '\n\tEncoding: $encodingName';
-    msg += '\n\t$bodyLine';
+    // WARNING: Do not include `bytes` or `body` in the error message. It may contain
+    // sensitive information that we do not want logged.
 
     return msg;
   }

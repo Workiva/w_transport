@@ -36,8 +36,8 @@ void main() {
         expect(exception.toString(), contains('Bytes could not be decoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: ${ascii.name}'));
-        expect(
-            exception.toString(), contains(utf8.encode('bodyçå®').toString()));
+        // Do not log bytes, which may contain sensitive information
+        expect(exception.toString(), isNot(contains(bytes).toString()));
       });
 
       test('should detail why string could not be encoded', () {
@@ -49,7 +49,8 @@ void main() {
         expect(exception.toString(), contains('Body could not be encoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: ${ascii.name}'));
-        expect(exception.toString(), contains('bodyçå®'));
+        // Do not log body, which may contain sensitive information
+        expect(exception.toString(), isNot(contains(body)));
       });
 
       test('should warn if encoding is null', () {
@@ -61,7 +62,8 @@ void main() {
         expect(exception.toString(), contains('Body could not be encoded'));
         expect(exception.toString(), contains('Content-Type: $contentType'));
         expect(exception.toString(), contains('Encoding: null'));
-        expect(exception.toString(), contains('bodyçå®'));
+        // Do not log body, which may contain sensitive information
+        expect(exception.toString(), isNot(contains(body)));
       });
     });
   });

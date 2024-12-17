@@ -195,6 +195,7 @@ MediaType parseContentTypeFromHeaders(Map<String, String> headers) {
 Encoding? parseEncodingFromContentType(MediaType? contentType,
     {Encoding? fallback}) {
   if (contentType == null) return fallback;
+  if (contentType.type == 'application' && contentType.subtype == 'json') return utf8;
   if (contentType.parameters['charset'] == null) return fallback;
   final encoding = Encoding.getByName(contentType.parameters['charset']);
   return encoding ?? fallback;

@@ -14,6 +14,7 @@
 
 import 'dart:async';
 
+import 'package:opentelemetry/api.dart';
 import 'package:sockjs_client_wrapper/sockjs_client_wrapper.dart';
 
 import 'package:w_transport/src/web_socket/common/web_socket.dart';
@@ -57,6 +58,22 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
       bool noCredentials = false,
       List<String>? protocolsWhitelist,
       Duration? timeout}) async {
+    return trace(
+        'SockJSWrapperWebSocket.connect',
+        () => SockJSWrapperWebSocket._connect(uri,
+            debug: debug,
+            noCredentials: noCredentials,
+            protocolsWhitelist: protocolsWhitelist,
+            timeout: timeout),
+        tracer: globalTracerProvider.getTracer('w_transport'));
+  }
+
+  static Future<WebSocket> _connect(Uri uri,
+      {bool debug = false,
+      bool noCredentials = false,
+      List<String>? protocolsWhitelist,
+      Duration? timeout}) async {
+    final span = spanFromContext(Context.current);
     Uri sockjsUri = uri.scheme == 'ws'
         ? uri.replace(scheme: 'http')
         : uri.replace(scheme: 'https');
@@ -64,43 +81,34 @@ class SockJSWrapperWebSocket extends CommonWebSocket implements WebSocket {
     final client = SockJSClient(sockjsUri,
         options: SockJSOptions(transports: protocolsWhitelist));
 
-    // Listen for and store the close event. This will determine whether or
-    // not the socket connected successfully, and will also be used later
-    // to handle the web socket closing.
-    final closed = Completer<SockJSCloseEvent>();
-    // ignore: unawaited_futures
-    client.onClose.first.then(closed.complete);
-
-    // Will complete if the socket successfully opens, or complete with
-    // an error if the socket moves straight to the closed state.
-    final connected = Completer<Null>();
-    // Note: the SockJSClient always closes the onOpen event stream, so we don't
-    // need to manually manage this subscription.
-    client.onOpen.listen((event) {
-      connected.complete();
-      emitWebSocketConnectEvent(newWebSocketConnectEvent(
+    final open = client.onOpen.first.then((e) {
+      span.setAttribute(Attribute.fromString('sockjs.transport', e.transport));
+      return newWebSocketConnectEvent(
         url: uri.toString(),
         wasSuccessful: true,
-        debugUrl: event.debugUrl.toString(),
+        debugUrl: e.debugUrl.toString(),
         sockJsProtocolsWhitelist: protocolsWhitelist,
-        sockJsSelectedProtocol: event.transport,
-      ));
-    });
-    // ignore: unawaited_futures
-    closed.future.then((_) {
-      if (!connected.isCompleted) {
-        connected
-            .completeError(WebSocketException('Could not connect to $uri'));
-        emitWebSocketConnectEvent(newWebSocketConnectEvent(
-          url: uri.toString(),
-          wasSuccessful: false,
-          sockJsProtocolsWhitelist: protocolsWhitelist,
-        ));
-      }
+        sockJsSelectedProtocol: e.transport,
+      );
     });
 
-    await connected.future;
-    return SockJSWrapperWebSocket._(client, closed.future);
+    final close = client.onClose.first.then((e) => newWebSocketConnectEvent(
+        url: uri.toString(),
+        wasSuccessful: false,
+        sockJsProtocolsWhitelist: protocolsWhitelist));
+
+    // Wait for the first open, close, or timeout.
+    // The timeout will most likely apply to the initial info request made by
+    // SockJS. The actual websocket connection has a dynamic timeout set by
+    // SockJS based on the round trip time (RTT) of the info request. The
+    // dynamic timeout is RTT * 4 * 2. RTT will generally be 50 to 150 ms. This
+    // means the dynamic timeout will most likely be less than 1.2 seconds.
+    final event = await Future.any([open, close]).timeout(
+        timeout ?? const Duration(seconds: 5),
+        onTimeout: () => throw WebSocketException('Could not connect to $uri'));
+    emitWebSocketConnectEvent(event);
+
+    return SockJSWrapperWebSocket._(client, client.onClose.first);
   }
 
   @override

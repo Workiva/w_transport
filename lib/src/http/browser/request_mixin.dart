@@ -14,6 +14,7 @@
 
 import 'dart:async';
 import 'dart:html';
+import 'dart:typed_data';
 
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/browser/form_data_body.dart';
@@ -86,6 +87,9 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
 
     if (streamResponse == true) {
       request.responseType = 'blob';
+    } else if (contentType?.subtype == 'binary') {
+      // TODO this needs to be more standard
+      request.responseType = 'arraybuffer';
     }
 
     // Allow the caller to configure the request.
@@ -132,6 +136,15 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         request.statusText ?? '',
         request.responseHeaders,
         byteStream,
+      );
+    } else if (contentType?.subtype == 'binary') {
+      // TODO this needs to be more standard
+      print('shannan _createResponse bytes ${this.contentType}');
+      response = Response.fromBytes(
+          request.status!,
+          request.statusText ?? '',
+          request.responseHeaders,
+          request.response.asUint8List(),
       );
     } else {
       response = Response.fromString(

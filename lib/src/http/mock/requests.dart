@@ -99,7 +99,16 @@ class MockPlainTextRequest extends CommonPlainTextRequest
     if (_realTransport == null) {
       throw TransportPlatformMissing.httpRequestFailed('Request');
     }
-    return _realTransport!.newRequest()..body = body;
+    // return _realTransport!.newRequest()..body = body;
+    final req = _realTransport!.newRequest();
+    // TODO this is the wrong thing to do, should check which one is set
+    // we don't have access to _body or _bodyBytes here, though
+    try {
+      req.body = body;
+    } on FormatException catch (_) {
+      req.bodyBytes = bodyBytes;
+    }
+    return req;
   }
 }
 

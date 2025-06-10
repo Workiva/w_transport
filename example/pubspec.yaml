@@ -7,23 +7,23 @@ environment:
   sdk: ">=2.11.0 <3.0.0"
 
 dependency_overrides:
+  dart_dev_workiva:
+    git:
+      url: git@github.com:Workiva/dart_dev_workiva.git
+      ref: override-react-js-files-for-r18
+  react:
+    git:
+      url: git@github.com:Workiva/react-dart.git
+      ref: react-18-2-0-testing
+  react_testing_library:
+    git:
+      url: git@github.com:Workiva/react_testing_library.git
+      ref: r18
   sockjs_client_wrapper:
     git:
       url: git@github.com:Workiva/sockjs_client_wrapper.git
       ref: expose-debug-transport-url
 
-  react:
-    git:
-      url: https://github.com/Workiva/react-dart.git
-      ref: react-18-2-0-testing
-  react_testing_library:
-    git:
-      url: https://github.com/Workiva/react_testing_library.git
-      ref: r18
-  dart_dev_workiva:
-    git:
-      url: https://github.com/Workiva/dart_dev_workiva.git
-      ref: override-react-js-files-for-r18
 dev_dependencies:
   _test_server:
     path: ../_test_server

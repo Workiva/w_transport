@@ -36,10 +36,6 @@ dependency_validator:
     - mockito
 
 dependency_overrides:
-  dart_dev_workiva:
-    git:
-      url: git@github.com:Workiva/dart_dev_workiva.git
-      ref: override-react-js-files-for-r18
   react:
     git:
       url: git@github.com:Workiva/react-dart.git

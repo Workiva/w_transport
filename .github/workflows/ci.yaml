@@ -10,7 +10,7 @@ on:
 
 jobs:
   checks:
-    uses: Workiva/gha-dart-oss/.github/workflows/checks.yaml@f988281bd53b73a1429dda93bf7b0333885eebee
+    uses: Workiva/gha-dart-oss/.github/workflows/checks.yaml@v0.1.7
 
   build:
     uses: Workiva/gha-dart-oss/.github/workflows/build.yaml@v0.1.7
@@ -27,12 +27,12 @@ jobs:
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: 2.19.6
-
+  
       - name: Install Node dependencies
         run: npm install
-
+  
       - name: Install Dart dependencies
         run: dart pub get
-
+  
       - name: Run tests
         run: dart run dart_dev test -P ci

@@ -122,6 +122,10 @@ abstract class WebSocket implements Stream, StreamSink {
   static GlobalWebSocketMonitor getGlobalEventMonitor() =>
       newGlobalWebSocketMonitor();
 
+  /// The binary type of the WebSocket connection.
+  /// This only applies to native WebSockets in the browser.
+  String? binaryType;
+
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
   int? get closeCode;

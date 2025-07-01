@@ -73,6 +73,14 @@ class BrowserWebSocket extends CommonWebSocket implements WebSocket {
   }
 
   @override
+  String? get binaryType => _webSocket.binaryType;
+
+  @override
+  set binaryType(String? value) {
+    _webSocket.binaryType = value;
+  }
+
+  @override
   void closeWebSocket(int code, String? reason) {
     _webSocket.close(code, reason);
   }

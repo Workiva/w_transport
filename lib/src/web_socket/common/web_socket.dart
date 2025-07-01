@@ -20,6 +20,11 @@ import 'package:w_transport/src/web_socket/w_socket_subscription.dart';
 /// Implementation of the [WebSocket] class that is common across all platforms.
 /// Platform-dependent pieces are left as unimplemented abstract members.
 abstract class CommonWebSocket extends Stream implements WebSocket {
+  /// The binary type of the WebSocket connection.
+  /// This only applies to native WebSockets in the browser.
+  @override
+  String? binaryType;
+
   /// The close code set when the WebSocket connection is closed. If there is
   /// no close code available this property will be `null`.
   @override

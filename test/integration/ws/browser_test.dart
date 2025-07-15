@@ -58,6 +58,24 @@ void main() {
       await socket?.close();
     });
 
+    test('should support configuring the binaryType to blob', () async {
+      final socket = await transport.WebSocket.connect(IntegrationPaths.pingUri,
+          transportPlatform: browserTransportPlatform);
+      socket?.binaryType = 'blob';
+      expect(socket?.binaryType, equals('blob'));
+      socket?.add('data');
+      await socket?.close();
+    });
+
+    test('should support configuring the binaryType to arraybuffer', () async {
+      final socket = await transport.WebSocket.connect(IntegrationPaths.pingUri,
+          transportPlatform: browserTransportPlatform);
+      socket?.binaryType = 'arraybuffer';
+      expect(socket?.binaryType, equals('arraybuffer'));
+      socket?.add('data');
+      await socket?.close();
+    });
+
     test('should throw when attempting to send invalid data', () async {
       final socket = await transport.WebSocket.connect(IntegrationPaths.pingUri,
           transportPlatform: browserTransportPlatform);

@@ -1,3 +1,8 @@
+## Unreleased
+
+- Added `WebSocket.binaryType` field to allow configuring the [binary type](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/binaryType)
+for WebSocket connections in the browser. Has no impact on the VM or when using SockJS.
+
 ## [5.2.0](https://github.com/Workiva/w_transport/compare/5.1.0...5.2.0)
 
 - Added `debugUrl` to `WebSocketConnectEvent` which is emitted via the

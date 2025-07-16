@@ -10,10 +10,10 @@ on:
 
 jobs:
   checks:
-    uses: Workiva/gha-dart-oss/.github/workflows/checks.yaml@v0.1.7
+    uses: Workiva/gha-dart-oss/.github/workflows/checks.yaml@v0.1.10
 
   build:
-    uses: Workiva/gha-dart-oss/.github/workflows/build.yaml@v0.1.7
+    uses: Workiva/gha-dart-oss/.github/workflows/build.yaml@v0.1.10
 
   # note, we're not using the test-unit workflow here because of
   # the need to install npm dependencies
@@ -27,12 +27,12 @@ jobs:
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: 2.19.6
-  
+
       - name: Install Node dependencies
         run: npm install
-  
+
       - name: Install Dart dependencies
         run: dart pub get
-  
+
       - name: Run tests
         run: dart run dart_dev test -P ci

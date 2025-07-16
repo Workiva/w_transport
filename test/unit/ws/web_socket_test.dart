@@ -247,4 +247,14 @@ void _runWebSocketSuite(Future<transport.WebSocket?> getWebSocket(Uri uri)) {
     expect(connection.closeReason, equals('closed'));
     await webSocket?.close().catchError((_) {});
   });
+
+  test('should allow setting the binaryType field', () async {
+    MockTransports.webSocket.expect(webSocketUri, connectTo: mockServer);
+    final webSocket = await getWebSocket(webSocketUri);
+
+    webSocket?.binaryType = 'arraybuffer';
+    expect(webSocket?.binaryType, equals('arraybuffer'));
+
+    await webSocket?.close();
+  });
 }

@@ -21,7 +21,7 @@ dev_dependencies:
   dart_dev: ^4.0.0
   dependency_validator: ^3.0.0
   http_server: ^1.0.0
-  over_react: ^5.0.0
+  over_react: ^5.4.5
   uuid: ^4.0.0
   workiva_analysis_options: ^1.0.2
   w_transport:

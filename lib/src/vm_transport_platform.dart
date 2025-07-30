@@ -32,6 +32,10 @@ class VMTransportPlatform implements TransportPlatform {
   @override
   HttpClient newHttpClient() => VMHttpClient();
 
+  /// Construct a [BinaryRequest] instance for use in the Dart VM.
+  @override
+  BinaryRequest newBinaryRequest() => VMBinaryRequest(this);
+
   /// Construct a [FormRequest] instance for use in the Dart VM.
   @override
   FormRequest newFormRequest() => VMFormRequest(this);

@@ -68,6 +68,10 @@ abstract class Client {
   /// Closes the client, cancelling or closing any outstanding connections.
   void close();
 
+  /// Constructs a new [BinaryRequest] that will use this client to send the
+  /// request. Throws a [StateError] if this client has been closed.
+  BinaryRequest newBinaryRequest();
+
   /// Constructs a new [FormRequest] that will use this client to send the
   /// request. Throws a [StateError] if this client has been closed.
   FormRequest newFormRequest();

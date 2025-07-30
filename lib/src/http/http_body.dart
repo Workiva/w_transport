@@ -70,7 +70,7 @@ class HttpBody extends BaseHttpBody {
       : _encoding =
             encoding ?? http_utils.parseEncodingFromContentType(contentType),
         _fallbackEncoding = fallbackEncoding ?? utf8,
-        _bytes = Uint8List.fromList(bytes ?? []);
+        _bytes = bytes is Uint8List ? bytes : Uint8List.fromList(bytes ?? []);
 
   /// Construct the body to an HTTP request or an HTTP response from text.
   ///

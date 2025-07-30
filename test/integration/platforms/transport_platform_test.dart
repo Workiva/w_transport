@@ -170,7 +170,13 @@ class StubTransportPlatform implements transport.TransportPlatform {
       StubWebSocket();
 
   @override
-  transport.StreamedRequest newStreamedRequest() => StubStreamedRequest();
+  transport.BinaryRequest newBinaryRequest() => StubBinaryRequest();
+
+  @override
+  transport.FormRequest newFormRequest() => StubFormRequest();
+
+  @override
+  transport.JsonRequest newJsonRequest() => StubJsonRequest();
 
   @override
   transport.Request newRequest() => StubRequest();
@@ -179,10 +185,7 @@ class StubTransportPlatform implements transport.TransportPlatform {
   transport.MultipartRequest newMultipartRequest() => StubMultipartRequest();
 
   @override
-  transport.JsonRequest newJsonRequest() => StubJsonRequest();
-
-  @override
-  transport.FormRequest newFormRequest() => StubFormRequest();
+  transport.StreamedRequest newStreamedRequest() => StubStreamedRequest();
 }
 
 class StubHttpClient extends Mock implements transport.HttpClient {}
@@ -198,3 +201,5 @@ class StubMultipartRequest extends Mock implements transport.MultipartRequest {}
 class StubJsonRequest extends Mock implements transport.JsonRequest {}
 
 class StubFormRequest extends Mock implements transport.FormRequest {}
+
+class StubBinaryRequest extends Mock implements transport.BinaryRequest {}

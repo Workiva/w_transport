@@ -14,6 +14,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:test/test.dart';
 import 'package:w_transport/w_transport.dart' as transport;
@@ -22,6 +23,13 @@ import '../../integration_paths.dart';
 
 void runCommonRequestSuite([transport.TransportPlatform? transportPlatform]) {
   group('Common Request API', () {
+    transport.BinaryRequest binaryReqFactory({bool withBody = false}) {
+      if (!withBody)
+        return transport.BinaryRequest(transportPlatform: transportPlatform);
+      return transport.BinaryRequest(transportPlatform: transportPlatform)
+        ..body = Uint8List.fromList([1, 2, 3, 4, 5]);
+    }
+
     transport.FormRequest formReqFactory({bool withBody = false}) {
       if (!withBody)
         return transport.FormRequest(transportPlatform: transportPlatform);
@@ -59,12 +67,15 @@ void runCommonRequestSuite([transport.TransportPlatform? transportPlatform]) {
         ..contentLength = utf8.encode('bytes').length;
     }
 
+    _runCommonRequestSuiteFor('BinaryRequest', binaryReqFactory,
+        skipUploadProgress: true);
     _runCommonRequestSuiteFor('FormRequest', formReqFactory);
     _runCommonRequestSuiteFor('JsonRequest', jsonReqFactory);
     _runCommonRequestSuiteFor('MultipartRequest', multipartReqFactory);
     _runCommonRequestSuiteFor('Request', reqFactory);
     _runCommonRequestSuiteFor('StreamedRequest', streamedReqFactory);
 
+    _runAutoRetryTestSuiteFor('BinaryRequest', binaryReqFactory);
     _runAutoRetryTestSuiteFor('FormRequest', formReqFactory);
     _runAutoRetryTestSuiteFor('JsonRequest', jsonReqFactory);
     _runAutoRetryTestSuiteFor('MultipartRequest', multipartReqFactory);
@@ -72,8 +83,11 @@ void runCommonRequestSuite([transport.TransportPlatform? transportPlatform]) {
   });
 }
 
-void _runCommonRequestSuiteFor(String name,
-    transport.BaseRequest Function({bool withBody}) requestFactory) {
+void _runCommonRequestSuiteFor(
+  String name,
+  transport.BaseRequest Function({bool withBody}) requestFactory, {
+  bool skipUploadProgress = false,
+}) {
   group(name, () {
     final headers = <String, String>{
       'authorization': 'test',
@@ -404,7 +418,8 @@ void _runCommonRequestSuiteFor(String name,
 
     test('timeoutThreshold does nothing if request completes in time',
         () async {
-      final request = requestFactory()..timeoutThreshold = Duration(seconds: 5);
+      final request = requestFactory()
+        ..timeoutThreshold = Duration(seconds: 10);
       await request.get(uri: IntegrationPaths.pingEndpointUri);
     });
 

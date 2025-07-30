@@ -97,6 +97,18 @@ abstract class CommonRequest extends Object
   /// delivered to the request sender.
   ResponseInterceptor? _responseInterceptor;
 
+  /// The type of response to expect from the server.
+  ///
+  /// This is only applicable to requests in the browser, but does not adversely
+  /// affect any other platform.
+  ///
+  /// See [HttpRequest.responseType](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType)
+  /// for more information and valid values.
+  ///
+  /// Defaults to null, which means the response will be treated as text.
+  @override
+  String? responseType;
+
   /// Amount of time to wait for the request to finish before canceling it and
   /// considering it "timed out" (results in a [RequestException] being thrown).
   ///

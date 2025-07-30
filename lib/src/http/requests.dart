@@ -22,6 +22,40 @@ import 'package:w_transport/src/mocks/mock_transports.dart'
     show MockTransportsInternal;
 import 'package:w_transport/src/transport_platform.dart';
 
+/// Representation of an HTTP request where the request body is bytes.
+abstract class BinaryRequest extends BaseRequest {
+  factory BinaryRequest({TransportPlatform? transportPlatform}) {
+    // If a transport platform is not explicitly given, fallback to the globally
+    // configured platform.
+    transportPlatform ??= globalTransportPlatform;
+
+    if (MockTransportsInternal.isInstalled) {
+      // If transports are mocked, return a mock-aware BinaryRequest instance.
+      // This mock-aware instance will be able to decide at the time of dispatch
+      // whether or not the mock logic should handle the request.
+      return MockAwareTransportPlatform.newBinaryRequest(transportPlatform);
+    } else if (transportPlatform != null) {
+      // Otherwise, return a real instance using the given transport platform.
+      return transportPlatform.newBinaryRequest();
+    } else {
+      // If transports are not mocked and a transport platform is not available
+      // (neither explicitly given nor configured globally), then we cannot
+      // successfully construct a BinaryRequest.
+      throw TransportPlatformMissing.httpRequestFailed('BinaryRequest');
+    }
+  }
+
+  /// Gets this request's body as bytes.
+  Uint8List? get body;
+
+  /// Sets this request's body from bytes.
+  set body(Uint8List? bytes);
+
+  /// Returns an clone of this request.
+  @override
+  BinaryRequest clone();
+}
+
 /// Representation of an HTTP request where the request body is a form that will
 /// be encoded as a url query string.
 ///

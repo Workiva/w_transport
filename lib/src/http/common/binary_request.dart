@@ -62,6 +62,6 @@ abstract class CommonBinaryRequest extends CommonRequest
     if (body != null) {
       this.body = body;
     }
-    return HttpBody.fromBytes(contentType, body ?? Uint8List(0));
+    return HttpBody.fromBytes(contentType, this.body ?? Uint8List(0));
   }
 }

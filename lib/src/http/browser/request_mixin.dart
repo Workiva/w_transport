@@ -73,12 +73,15 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     request.onLoad.listen((event) {
       if (!c.isCompleted) {
         c.complete(_createResponse(
-            responseType: responseType, streamResponse: streamResponse));
+            responseType: finalizedResponseType,
+            streamResponse: streamResponse));
       }
     });
     Future<Null> onError(Object error) async {
       if (!c.isCompleted) {
-        final response = await _createResponse(streamResponse: streamResponse);
+        final response = await _createResponse(
+            responseType: finalizedResponseType,
+            streamResponse: streamResponse);
         error = RequestException(method, uri, this, response, error);
         c.completeError(error, StackTrace.current);
       }
@@ -87,10 +90,10 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     request.onError.listen(onError);
     request.onAbort.listen(onError);
 
-    if (finalizedResponseType?.isNotEmpty == true) {
-      request.responseType = finalizedResponseType!;
-    } else if (streamResponse == true) {
+    if (streamResponse == true) {
       request.responseType = 'blob';
+    } else if (finalizedResponseType?.isNotEmpty == true) {
+      request.responseType = finalizedResponseType!;
     }
 
     // Allow the caller to configure the request.
@@ -121,16 +124,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
       {String? responseType, bool streamResponse = false}) async {
     BaseResponse response;
     final request = _request!;
-    if (responseType == 'arraybuffer') {
-      final buffer = request.response as ByteBuffer?;
-      final bytes = buffer != null ? Uint8List.view(buffer) : Uint8List(0);
-      response = Response.fromBytes(
-        request.status!,
-        request.statusText ?? '',
-        request.responseHeaders,
-        bytes,
-      );
-    } else if (streamResponse) {
+    if (streamResponse) {
       final result = Completer<List<int>>();
       final reader = FileReader();
       // ignore: unawaited_futures
@@ -147,6 +141,15 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         request.statusText ?? '',
         request.responseHeaders,
         byteStream,
+      );
+    } else if (responseType == 'arraybuffer') {
+      final buffer = request.response as ByteBuffer?;
+      final bytes = buffer != null ? Uint8List.view(buffer) : Uint8List(0);
+      response = Response.fromBytes(
+        request.status!,
+        request.statusText ?? '',
+        request.responseHeaders,
+        bytes,
       );
     } else {
       response = Response.fromString(

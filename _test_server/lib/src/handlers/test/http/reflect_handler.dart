@@ -38,24 +38,37 @@ class ReflectHandler extends Handler {
       headers[name] = values.join(', ');
     });
 
-    Encoding? encoding;
-    if (request.headers.contentType == null) {
-      encoding = latin1;
-    } else {
-      final contentType = MediaType(
-          request.headers.contentType!.primaryType,
-          request.headers.contentType!.subType,
-          request.headers.contentType!.parameters
-              .map((key, val) => MapEntry(key, val ?? '')));
-      encoding = http_utils.parseEncodingFromContentType(contentType,
-          fallback: latin1);
+    Future<Object> getBody(HttpRequest request) async {
+      // For binary content, read as bytes.
+      if (request.headers.contentType?.mimeType == 'application/octet-stream') {
+        return request.fold<List<int>>(
+          <int>[],
+          (List<int> previous, List<int> element) => previous..addAll(element),
+        );
+      }
+
+      // For text content, decode using appropriate encoding.
+      late Encoding encoding;
+      if (request.headers.contentType == null) {
+        encoding = latin1;
+      } else {
+        final contentType = MediaType(
+            request.headers.contentType!.primaryType,
+            request.headers.contentType!.subType,
+            request.headers.contentType!.parameters
+                .map((key, val) => MapEntry(key, val ?? '')));
+        encoding = http_utils.parseEncodingFromContentType(contentType,
+            fallback: latin1)!;
+      }
+
+      return await encoding.decodeStream(request);
     }
 
     final reflection = <String, Object>{
       'method': request.method,
       'path': request.uri.path,
       'headers': headers,
-      'body': await encoding!.decodeStream(request),
+      'body': await getBody(request),
     };
 
     request.response.statusCode = HttpStatus.ok;

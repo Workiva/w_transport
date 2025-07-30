@@ -391,7 +391,11 @@ abstract class CommonRequest extends Object
 
     BaseRequest? requestClone;
     final fromClient = _wTransportClient != null;
-    if (this is FormRequest) {
+    if (this is BinaryRequest) {
+      requestClone = fromClient
+          ? _wTransportClient!.newBinaryRequest()
+          : BinaryRequest(transportPlatform: _transportPlatform);
+    } else if (this is FormRequest) {
       requestClone = fromClient
           ? _wTransportClient!.newFormRequest()
           : FormRequest(transportPlatform: _transportPlatform);

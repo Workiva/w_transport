@@ -32,6 +32,10 @@ class BrowserTransportPlatform implements TransportPlatform {
   @override
   HttpClient newHttpClient() => BrowserHttpClient();
 
+  /// Construct a [BinaryRequest] instance for use in the browser.
+  @override
+  BinaryRequest newBinaryRequest() => BrowserBinaryRequest(this);
+
   /// Construct a [FormRequest] instance for use in the browser.
   @override
   FormRequest newFormRequest() => BrowserFormRequest(this);

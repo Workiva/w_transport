@@ -1,0 +1,94 @@
+// Copyright 2015 Workiva Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import 'dart:typed_data';
+import 'package:http_parser/http_parser.dart';
+import 'package:test/test.dart';
+import 'package:w_transport/w_transport.dart' as transport;
+
+import '../../integration_paths.dart';
+
+void runBinaryRequestSuite([transport.TransportPlatform? transportPlatform]) {
+  group('BinaryRequest', () {
+    test('contentLength should be set automatically', () async {
+      final emptyRequest =
+          transport.BinaryRequest(transportPlatform: transportPlatform);
+      final response =
+          await emptyRequest.post(uri: IntegrationPaths.reflectEndpointUri);
+      final contentLength =
+          int.parse(response.body.asJson()['headers']['content-length']);
+      expect(contentLength, equals(0),
+          reason: 'Empty binary request\'s content-length should be 0.');
+
+      final nonEmptyRequest =
+          transport.BinaryRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.reflectEndpointUri
+            ..body = Uint8List.fromList([1, 2, 3, 4, 5]);
+      final response2 = await nonEmptyRequest.post();
+      final contentLength2 =
+          int.parse(response2.body.asJson()['headers']['content-length']);
+      expect(contentLength2, equals(5),
+          reason:
+              'Binary request with 5 bytes should have content-length of 5.');
+    });
+
+    test('content-type should be set automatically', () async {
+      final request =
+          transport.BinaryRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.reflectEndpointUri
+            ..body = Uint8List.fromList([1, 2, 3, 4, 5]);
+      final response = await request.post();
+      final contentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
+      expect(contentType.mimeType, equals('application/octet-stream'));
+    });
+
+    test('content-type should be overridable', () async {
+      final contentType = MediaType('application', 'x-custom');
+      final request =
+          transport.BinaryRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.reflectEndpointUri
+            ..body = Uint8List.fromList([1, 2, 3, 4, 5])
+            ..contentType = contentType;
+      final response = await request.post();
+      final reflectedContentType =
+          MediaType.parse(response.body.asJson()['headers']['content-type']);
+      expect(reflectedContentType.mimeType, equals(contentType.mimeType));
+    });
+
+    test('binary data round-trip', () async {
+      final testData = Uint8List.fromList([0, 1, 2, 255, 254, 128, 127]);
+      final request =
+          transport.BinaryRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.echoEndpointUri
+            ..body = testData;
+      final response = await request.post();
+      expect(response.body.asBytes(), equals(testData));
+    });
+
+    test('large binary data', () async {
+      // Create a 1KB test pattern
+      final testData = Uint8List(1024);
+      for (int i = 0; i < testData.length; i++) {
+        testData[i] = i % 256;
+      }
+      final request =
+          transport.BinaryRequest(transportPlatform: transportPlatform)
+            ..uri = IntegrationPaths.echoEndpointUri
+            ..body = testData;
+      final response = await request.post();
+      expect(response.body.asBytes(), equals(testData));
+    });
+  });
+}

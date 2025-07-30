@@ -15,6 +15,7 @@
 import 'dart:io';
 
 import 'package:w_transport/src/http/client.dart';
+import 'package:w_transport/src/http/common/binary_request.dart';
 import 'package:w_transport/src/http/common/form_request.dart';
 import 'package:w_transport/src/http/common/json_request.dart';
 import 'package:w_transport/src/http/common/multipart_request.dart';
@@ -22,6 +23,14 @@ import 'package:w_transport/src/http/common/plain_text_request.dart';
 import 'package:w_transport/src/http/common/streamed_request.dart';
 import 'package:w_transport/src/http/vm/request_mixin.dart';
 import 'package:w_transport/src/transport_platform.dart';
+
+class VMBinaryRequest extends CommonBinaryRequest with VMRequestMixin {
+  VMBinaryRequest(TransportPlatform transportPlatform)
+      : super(transportPlatform);
+  // ignore: deprecated_member_use_from_same_package
+  VMBinaryRequest.fromClient(Client wTransportClient, HttpClient client)
+      : super.fromClient(wTransportClient, client);
+}
 
 class VMFormRequest extends CommonFormRequest with VMRequestMixin {
   VMFormRequest(TransportPlatform transportPlatform) : super(transportPlatform);

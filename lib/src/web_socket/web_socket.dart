@@ -37,7 +37,7 @@ import 'package:w_transport/src/web_socket/global_web_socket_monitor.dart';
 ///
 /// To establish a connection, use the static [connect] method:
 ///
-///     
+///
 ///
 ///     main() async {
 ///       Uri uri = Uri.parse('ws://echo.websocket.org');

@@ -14,7 +14,10 @@
 
 import 'dart:async';
 
-
+import 'package:w_transport/mock.dart';
+import 'package:w_transport/src/http/base_request.dart';
+import 'package:w_transport/src/http/request_exception.dart';
+import 'package:w_transport/src/http/response.dart';
 
 /// Base class representing an interceptor that can be registered with a
 /// HttpClient instance to intercept HTTP requests and responses in order to

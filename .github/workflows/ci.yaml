@@ -10,10 +10,12 @@ on:
 
 jobs:
   checks:
-    uses: Workiva/gha-dart-oss/.github/workflows/checks.yaml@v0.1.10
-
+    uses: Workiva/gha-dart-oss/.github/workflows/checks.yaml@v0.1.11
+    with:
+      additional-checks: |
+        no_entrypoint_imports
   build:
-    uses: Workiva/gha-dart-oss/.github/workflows/build.yaml@v0.1.10
+    uses: Workiva/gha-dart-oss/.github/workflows/build.yaml@v0.1.11
 
   # note, we're not using the test-unit workflow here because of
   # the need to install npm dependencies

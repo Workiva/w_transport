@@ -14,7 +14,7 @@
 
 import 'dart:async';
 
-import 'package:w_transport/mock.dart';
+import 'package:w_transport/src/http/finalized_request.dart';
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/request_exception.dart';
 import 'package:w_transport/src/http/response.dart';

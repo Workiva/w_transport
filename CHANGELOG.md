@@ -1,5 +1,10 @@
 ## Unreleased
 
+- Added `BinaryRequest` for sending raw bytes with proper browser support using
+the `responseType` field on the XHR instance.
+
+## 5.3.0
+
 - Added `WebSocket.binaryType` field to allow configuring the [binary type](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/binaryType)
 for WebSocket connections in the browser. Has no impact on the VM or when using SockJS.
 

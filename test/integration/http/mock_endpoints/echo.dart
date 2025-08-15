@@ -21,10 +21,14 @@ void mockEchoEndpoint(Uri uri) {
       'content-type': request.headers['content-type'] ?? ''
     };
     if (request.body is HttpBody) {
-      HttpBody body = request.body as HttpBody;
-      return MockResponse.ok(body: body.asString(), headers: headers);
+      final body = request.body as HttpBody;
+      final responseBody =
+          request.headers['content-type'] == 'application/octet-stream'
+              ? body.asBytes()
+              : body.asString();
+      return MockResponse.ok(body: responseBody, headers: headers);
     } else {
-      StreamedHttpBody body = request.body as StreamedHttpBody;
+      final body = request.body as StreamedHttpBody;
       return MockStreamedResponse.ok(
           byteStream: body.byteStream, headers: headers);
     }

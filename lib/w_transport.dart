@@ -116,7 +116,13 @@ export 'package:w_transport/src/http/request_exception.dart'
 export 'package:w_transport/src/http/request_progress.dart'
     show RequestProgress;
 export 'package:w_transport/src/http/requests.dart'
-    show FormRequest, JsonRequest, MultipartRequest, Request, StreamedRequest;
+    show
+        BinaryRequest,
+        FormRequest,
+        JsonRequest,
+        MultipartRequest,
+        Request,
+        StreamedRequest;
 export 'package:w_transport/src/http/response.dart'
     show BaseResponse, Response, StreamedResponse;
 export 'package:w_transport/src/http/response_format_exception.dart'

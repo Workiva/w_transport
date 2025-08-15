@@ -32,6 +32,16 @@ class VMHttpClient extends CommonHttpClient implements HttpClient {
     _ioHttpClient.close();
   }
 
+  /// Constructs a new [BinaryRequest] that will use this client to send the
+  /// request. Throws a [StateError] if this client has been closed.
+  @override
+  BinaryRequest newBinaryRequest() {
+    verifyNotClosed();
+    final request = VMBinaryRequest.fromClient(this, _ioHttpClient);
+    registerAndDecorateRequest(request);
+    return request;
+  }
+
   /// Constructs a new [FormRequest] that will use this client to send the
   /// request. Throws a [StateError] if this client has been closed.
   @override

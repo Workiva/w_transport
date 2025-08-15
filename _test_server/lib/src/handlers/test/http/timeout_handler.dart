@@ -23,6 +23,12 @@ class TimeoutHandler extends Handler {
     enableCors();
   }
 
+  // NOTE: The `options` handler is intentionally not implemented to timeout
+  // like the other handlers because in the browser an OPTIONS request might be
+  // made by the browser before the actual request. We want the OPTIONS request
+  // to return successfully so that the browser can make the actual request,
+  // and then we can timeout the actual request.
+
   Future<Null> timeout() => Completer<Null>().future;
 
   @override
@@ -33,9 +39,6 @@ class TimeoutHandler extends Handler {
 
   @override
   Future<Null> head(HttpRequest request) => timeout();
-
-  @override
-  Future<Null> options(HttpRequest request) => timeout();
 
   @override
   Future<Null> patch(HttpRequest request) => timeout();

@@ -14,6 +14,7 @@
 
 import 'dart:async';
 import 'dart:html';
+import 'dart:typed_data';
 
 import 'package:w_transport/src/http/base_request.dart';
 import 'package:w_transport/src/http/browser/form_data_body.dart';
@@ -44,6 +45,7 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
       {bool streamResponse = false}) async {
     final c = Completer<BaseResponse>();
     final request = _request!;
+    final finalizedResponseType = responseType;
 
     // Add request headers.
     final headersToAdd = Map<String, String>.from(finalizedRequest.headers);
@@ -70,12 +72,16 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     // Listen for request completion/errors.
     request.onLoad.listen((event) {
       if (!c.isCompleted) {
-        c.complete(_createResponse(streamResponse: streamResponse));
+        c.complete(_createResponse(
+            responseType: finalizedResponseType,
+            streamResponse: streamResponse));
       }
     });
     Future<Null> onError(Object error) async {
       if (!c.isCompleted) {
-        final response = await _createResponse(streamResponse: streamResponse);
+        final response = await _createResponse(
+            responseType: finalizedResponseType,
+            streamResponse: streamResponse);
         error = RequestException(method, uri, this, response, error);
         c.completeError(error, StackTrace.current);
       }
@@ -86,6 +92,8 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
 
     if (streamResponse == true) {
       request.responseType = 'blob';
+    } else if (finalizedResponseType?.isNotEmpty == true) {
+      request.responseType = finalizedResponseType!;
     }
 
     // Allow the caller to configure the request.
@@ -112,7 +120,8 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
     return await c.future;
   }
 
-  Future<BaseResponse> _createResponse({bool streamResponse = false}) async {
+  Future<BaseResponse> _createResponse(
+      {String? responseType, bool streamResponse = false}) async {
     BaseResponse response;
     final request = _request!;
     if (streamResponse) {
@@ -132,6 +141,15 @@ abstract class BrowserRequestMixin implements BaseRequest, CommonRequest {
         request.statusText ?? '',
         request.responseHeaders,
         byteStream,
+      );
+    } else if (responseType == 'arraybuffer') {
+      final buffer = request.response as ByteBuffer?;
+      final bytes = buffer != null ? Uint8List.view(buffer) : Uint8List(0);
+      response = Response.fromBytes(
+        request.status!,
+        request.statusText ?? '',
+        request.responseHeaders,
+        bytes,
       );
     } else {
       response = Response.fromString(

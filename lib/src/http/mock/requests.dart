@@ -14,6 +14,7 @@
 
 import 'package:w_transport/src/constants.dart' show v3Deprecation;
 import 'package:w_transport/src/http/client.dart';
+import 'package:w_transport/src/http/common/binary_request.dart';
 import 'package:w_transport/src/http/common/form_request.dart';
 import 'package:w_transport/src/http/common/json_request.dart';
 import 'package:w_transport/src/http/common/multipart_request.dart';
@@ -22,6 +23,24 @@ import 'package:w_transport/src/http/common/streamed_request.dart';
 import 'package:w_transport/src/http/mock/request_mixin.dart';
 import 'package:w_transport/src/http/requests.dart';
 import 'package:w_transport/src/transport_platform.dart';
+
+class MockBinaryRequest extends CommonBinaryRequest with MockRequestMixin {
+  TransportPlatform? _realTransport;
+
+  MockBinaryRequest(TransportPlatform? realTransport)
+      : _realTransport = realTransport,
+        super(realTransport);
+  MockBinaryRequest.fromClient(Client wTransportClient, this._realTransport)
+      : super.fromClient(wTransportClient, null);
+
+  @override
+  BinaryRequest createRealRequest() {
+    if (_realTransport == null) {
+      throw TransportPlatformMissing.httpRequestFailed('BinaryRequest');
+    }
+    return _realTransport!.newBinaryRequest()..body = body;
+  }
+}
 
 @Deprecated(v3Deprecation)
 class MockFormRequest extends CommonFormRequest with MockRequestMixin {

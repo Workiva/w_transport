@@ -27,6 +27,9 @@ abstract class TransportPlatform {
   /// Constructs a new [HttpClient] instance.
   HttpClient newHttpClient();
 
+  /// Constructs a new [BinaryRequest] instance.
+  BinaryRequest newBinaryRequest();
+
   /// Constructs a new [FormRequest] instance.
   FormRequest newFormRequest();
 
@@ -51,6 +54,11 @@ class MockAwareTransportPlatform {
   /// Construct a new [MockHttpClient] instance that implements [HttpClient].
   static HttpClient newHttpClient(TransportPlatform? realTransportPlatform) =>
       MockHttpClient(realTransportPlatform);
+
+  /// Construct a new [MockBinaryRequest] instance that implements [BinaryRequest].
+  static BinaryRequest newBinaryRequest(
+          TransportPlatform? realTransportPlatform) =>
+      MockBinaryRequest(realTransportPlatform);
 
   // ignore: deprecated_member_use_from_same_package
   /// Construct a new [MockFormRequest] instance that implements

@@ -23,6 +23,16 @@ import 'package:w_transport/src/http/requests.dart';
 /// factory for each type of request. It does, however, still retain the benefit
 /// that all outstanding requests will be canceled when this client is closed.
 class BrowserHttpClient extends CommonHttpClient implements HttpClient {
+  /// Constructs a new [BinaryRequest] that will use this client to send the
+  /// request. Throws a [StateError] if this client has been closed.
+  @override
+  BinaryRequest newBinaryRequest() {
+    verifyNotClosed();
+    final request = BrowserBinaryRequest.fromClient(this);
+    registerAndDecorateRequest(request);
+    return request;
+  }
+
   /// Constructs a new [FormRequest] that will use this client to send the
   /// request. Throws a [StateError] if this client has been closed.
   @override

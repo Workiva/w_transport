@@ -104,6 +104,17 @@ abstract class BaseRequest implements FluriMixin, RequestDispatchers {
   /// replace the response before considering it "complete".
   ResponseInterceptor? responseInterceptor;
 
+  /// The type of response to expect from the server.
+  ///
+  /// This is only applicable to requests in the browser, but does not adversely
+  /// affect any other platform.
+  ///
+  /// See [HttpRequest.responseType](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType)
+  /// for more information and valid values.
+  ///
+  /// Defaults to null, which means the response will be treated as text.
+  String? responseType;
+
   /// HTTP method ('GET', 'POST', etc). Set automatically when the request is
   /// sent via one of the request dispatch methods.
   String? get method;

@@ -23,7 +23,7 @@ StreamTransformer<ProgressEvent, RequestProgress> transformProgressEvents =
     StreamTransformer<ProgressEvent, RequestProgress>(
         (Stream<ProgressEvent> input, bool cancelOnError) {
   late StreamController<RequestProgress> controller;
-  late StreamSubscription<ProgressEvent> subscription;
+  StreamSubscription<ProgressEvent>? subscription;
   controller = StreamController<RequestProgress>(onListen: () {
     subscription = input.listen((ProgressEvent event) {
       controller.add(event.lengthComputable
@@ -34,11 +34,11 @@ StreamTransformer<ProgressEvent, RequestProgress> transformProgressEvents =
         onDone: controller.close,
         cancelOnError: cancelOnError);
   }, onPause: () {
-    subscription.pause();
+    subscription?.pause();
   }, onResume: () {
-    subscription.resume();
+    subscription?.resume();
   }, onCancel: () {
-    subscription.cancel();
+    subscription?.cancel();
   });
   return controller.stream.listen(null);
 });

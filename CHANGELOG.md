@@ -1,12 +1,16 @@
 ## Unreleased
 
+## [5.4.1](https://github.com/Workiva/w_transport/compare/5.4.0...5.4.1)
+
 - Removed possibility for a LateInitializationError when transforming a ProgressEvent stream from an HttpRequest into
 a RequestProgress stream.
+
+## [5.4.0](https://github.com/Workiva/w_transport/compare/5.3.0...5.4.0)
 
 - Added `BinaryRequest` for sending raw bytes with proper browser support using
 the `responseType` field on the XHR instance.
 
-## 5.3.0
+## [5.3.0](https://github.com/Workiva/w_transport/compare/5.2.0...5.3.0)
 
 - Added `WebSocket.binaryType` field to allow configuring the [binary type](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/binaryType)
 for WebSocket connections in the browser. Has no impact on the VM or when using SockJS.

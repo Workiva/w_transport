@@ -18,7 +18,7 @@ import 'dart:html';
 import 'package:w_transport/src/http/request_progress.dart';
 
 /// Transforms an [ProgressEvent] stream from an [HttpRequest] into
-/// a [WProgress] stream.
+/// a [RequestProgress] stream.
 StreamTransformer<ProgressEvent, RequestProgress> transformProgressEvents =
     StreamTransformer<ProgressEvent, RequestProgress>(
         (Stream<ProgressEvent> input, bool cancelOnError) {

@@ -22,10 +22,9 @@ import 'package:w_transport/src/http/request_progress.dart';
 StreamTransformer<ProgressEvent, RequestProgress> transformProgressEvents =
     StreamTransformer<ProgressEvent, RequestProgress>(
         (Stream<ProgressEvent> input, bool cancelOnError) {
-  late StreamController<RequestProgress> controller;
-  StreamSubscription<ProgressEvent>? subscription;
-  controller = StreamController<RequestProgress>(onListen: () {
-    subscription = input.listen((ProgressEvent event) {
+  final controller = StreamController<RequestProgress>(sync: true);
+  controller.onListen = () {
+    final subscription = input.listen((ProgressEvent event) {
       controller.add(event.lengthComputable
           ? RequestProgress(event.loaded!, event.total!)
           : RequestProgress());
@@ -33,12 +32,10 @@ StreamTransformer<ProgressEvent, RequestProgress> transformProgressEvents =
         onError: controller.addError,
         onDone: controller.close,
         cancelOnError: cancelOnError);
-  }, onPause: () {
-    subscription?.pause();
-  }, onResume: () {
-    subscription?.resume();
-  }, onCancel: () {
-    subscription?.cancel();
-  });
+    controller
+      ..onPause = subscription.pause
+      ..onResume = subscription.resume
+      ..onCancel = subscription.cancel;
+  };
   return controller.stream.listen(null);
 });

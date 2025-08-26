@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Removed possibility for a LateInitializationError when transforming a ProgressEvent stream from an HttpRequest into
+a RequestProgress stream.
+
 - Added `BinaryRequest` for sending raw bytes with proper browser support using
 the `responseType` field on the XHR instance.
 

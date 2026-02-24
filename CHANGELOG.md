@@ -1,5 +1,13 @@
 ## Unreleased
 
+## [5.4.3](https://github.com/Workiva/w_transport/compare/5.4.2...5.4.3)
+
+- Updated SDK ranges in the example package to keep it aligned with current tooling.
+
+## [5.4.2](https://github.com/Workiva/w_transport/compare/5.4.1...5.4.2)
+
+- Raised build dependency ranges to support newer analyzer versions under Dart 3.
+
 ## [5.4.1](https://github.com/Workiva/w_transport/compare/5.4.0...5.4.1)
 
 - Removed possibility for a LateInitializationError when transforming a ProgressEvent stream from an HttpRequest into

@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: "pub"
+    directories:
+      - "/"
+      - "/_test_server"
+      - "/example"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 4
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 4
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
